@@ -3,7 +3,7 @@
 /**
  * Bugsnag PHP Client
  *
- * @package		Bugsnag
+ * @package     Bugsnag
  * @author      James Smith <notifiers@bugsnag.com>
  * @copyright   (c) 2013 Bugsnag
  * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
