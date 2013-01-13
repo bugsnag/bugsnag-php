@@ -109,7 +109,7 @@ Bugsnag::setContext("Backport Job");
 Bugsnag helps you understand how many of your users are affected by each
 error. In order to do this, we send along a userId with every exception. 
 By default we will generate a unique ID and send this ID along with every 
-exception from an individual device.
+exception.
     
 If you would like to override this `userId`, for example to set it to be a
 username of your currently logged in user, you can call `setUserId`:
