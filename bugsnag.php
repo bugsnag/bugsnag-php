@@ -55,8 +55,11 @@ class Bugsnag {
     private static $projectRoot;
     private static $filters = array('password');
     private static $endpoint = 'notify.bugsnag.com';
+    private static $context;
+    private static $userId;
     private static $metaDataFunction;
     private static $registeredShutdown = false;
+    private static $projectRootRegex;
     
 
     /**
@@ -111,6 +114,7 @@ class Bugsnag {
      */
     public static function setProjectRoot($projectRoot) {
         self::$projectRoot = $projectRoot;
+        self::$projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
     }
 
     /**
@@ -121,6 +125,24 @@ class Bugsnag {
      */
     public static function setFilters($filters) {
         self::$filters = $filters;
+    }
+
+    /**
+     * Set the unique userId representing the current request.
+     *
+     * @param String $userId the current user id
+     */
+    public static function setUserId($userId) {
+        self::$userId = $userId;
+    }
+
+    /**
+     * Set a context representing the current type of request, or location in code.
+     *
+     * @param String $context the current context
+     */
+    public static function setContext($context) {
+        self::$context = $context;
     }
 
     /**
@@ -142,32 +164,47 @@ class Bugsnag {
     }
 
     /**
-     * The Bugsnag exception handling function to use with PHP's 
-     * set_exception_handler method.
+     * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about
+     * @param Array $metaData optional metaData to send with this error
      */
-    public static function exceptionHandler($exception) {
+    public static function notifyException($exception, $metaData=null) {
         // Build a sensible stacktrace
         $stacktrace = self::buildStacktrace($exception->getFile(), $exception->getLine(), $exception->getTrace());
 
         // Send the notification to bugsnag
-        self::notify(get_class($exception), $exception->getMessage(), $stacktrace);
+        self::notify(get_class($exception), $exception->getMessage(), $stacktrace, $metaData);
     }
 
     /**
-     * The Bugsnag error handling function to use with PHP's set_error_handler.
+     * Notify Bugsnag of a non-fatal/handled error
      *
-     * @param Integer $errno the error code
-     * @param String $errstr the error message
-     * @param String $errfile the file the error occurred in
-     * @param String $errline the line the error occurred on
-     * @param String $errcontext unused
+     * @param String $errorName the name of the error, a short (1 word) string
+     * @param String $errorMessage the error message
+     * @param Array $metaData optional metaData to send with this error
      */
+    public static function notifyError($errorName, $errorMessage, $metaData=null) {
+        // Get the stack, remove the current function, build a sensible stacktrace]
+        $backtrace = debug_backtrace();
+        $firstFrame = array_shift($backtrace);
+        $stacktrace = self::buildStacktrace($firstFrame["file"], $firstFrame["line"], $backtrace);
+
+        // Send the notification to bugsnag
+        self::notify($errorName, $errorMessage, $stacktrace, $metaData);
+    }
+
+
+
+    // Exception handler callback, should only be called internally by PHP's set_exception_handler
+    public static function exceptionHandler($exception) {
+        self::notifyException($exception);
+    }
+
+    // Exception handler callback, should only be called internally by PHP's set_error_handler
     public static function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
         // Get the stack, remove the current function, build a sensible stacktrace]
         $backtrace = debug_backtrace();
-        // TODO What if this is called from the users errorHandler?
         array_shift($backtrace);
         $stacktrace = self::buildStacktrace($errfile, $errline, $backtrace);
 
@@ -175,9 +212,7 @@ class Bugsnag {
         self::notify(self::$ERROR_NAMES[$errno], $errstr, $stacktrace);
     }
 
-
-
-    // Private or undocumented methods
+    // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
     public static function fatalErrorHandler() {
         $lastError = error_get_last();
 
@@ -191,8 +226,10 @@ class Bugsnag {
         }
     }
 
-    // TODO Add a manual notify method that supports metaData
-    private static function notify($errorName, $errorMessage, $stacktrace=null, $metaData=null) {
+
+
+    // Private methods
+    private static function notify($errorName, $errorMessage, $stacktrace=null, $passedMetaData=null) {
         // Check if we should notify
         if(is_array(self::$notifyReleaseStages) && !in_array(self::$releaseStage, self::$notifyReleaseStages)) {
             return;
@@ -204,20 +241,20 @@ class Bugsnag {
             return;
         }
 
-        // TODO userId
         // Post the request to bugsnag
         $statusCode = self::postJSON(self::getEndpoint(), array(
             'apiKey' => self::$apiKey,
             'notifier' => self::$NOTIFIER,
             'events' => array(array(
+                'userId' => self::getUserId(),
                 'releaseStage' => self::$releaseStage,
+                'context' => self::getContext(),
                 'exceptions' => array(array(
                     'errorClass' => $errorName,
                     'message' => $errorMessage,
                     'stacktrace' => $stacktrace
                 )),
-                'context' => self::getContext(),
-                'metaData' => self::getMetaData()
+                'metaData' => self::getMetaData($passedMetaData)
             ))
         ));
     }
@@ -225,36 +262,38 @@ class Bugsnag {
     private static function buildStacktrace($topFile, $topLine, $backtrace=null) {
         $stacktrace = array();
 
-        //TODO split out hash generation
         if(!is_null($backtrace)) {
             foreach ($backtrace as $line) {
-                array_push($stacktrace, array(
-                    'file' => self::stripProjectRoot($topFile),
-                    'lineNumber' => $topLine,
-                    'method' => $line['function'],
-                    'inProject' => self::isInProject($topFile)
-                ));
+                array_push($stacktrace, self::buildStacktraceFrame($topFile, $topLine, $line['function']));
 
                 $topFile = $line['file'];
                 $topLine = $line['line'];
             }
 
-            array_push($stacktrace, array(
-                'file' => self::stripProjectRoot($topFile),
-                'lineNumber' => $topLine,
-                'method' => '[main]',
-                'inProject' => self::isInProject($topFile)
-            ));
+            array_push($stacktrace, self::buildStacktraceFrame($topFile, $topLine, '[main]'));
         } else {
-            array_push($stacktrace, array(
-                'file' => self::stripProjectRoot($topFile),
-                'lineNumber' => $topLine,
-                'method' => '[unknown]',
-                'inProject' => self::isInProject($topFile)
-            ));
+            array_push($stacktrace, self::buildStacktraceFrame($topFile, $topLine, '[unknown]'));
         }
 
         return $stacktrace;
+    }
+
+    private static function buildStacktraceFrame($file, $line, $method) {
+        // Check if this frame is inProject
+        $inProject = !is_null(self::$projectRoot) && preg_match(self::$projectRootRegex, $file);
+
+        // Strip out projectRoot from start of file path
+        if($inProject) {
+            $file = preg_replace(self::$projectRootRegex, '', $file);
+        }
+
+        // Construct and return the frame
+        return array(
+            'file' => $file,
+            'lineNumber' => $line,
+            'method' => $method,
+            'inProject' => $inProject
+        );
     }
 
     private static function postJSON($url, $data) {
@@ -285,23 +324,6 @@ class Bugsnag {
         return self::$useSSL ? 'https://'.self::$endpoint : 'http://'.self::$endpoint;
     }
 
-    private static function stripProjectRoot($path) {
-        if(self::isInProject($path)) {
-            return preg_replace(self::projectRootRegex(), '', $path);
-        } else {
-            return $path;
-        }
-    }
-
-    private static function isInProject($path) {
-        return !is_null(self::$projectRoot) && preg_match(self::projectRootRegex(), $path);
-    }
-
-    private static function projectRootRegex() {
-        // TODO Cache this as a result of setting projectRoot
-        return '/'.preg_quote(self::$projectRoot, '/')."[\\/]?/i";
-    }
-
     private static function isRequest() {
         return isset($_SERVER['REQUEST_METHOD']);
     }
@@ -311,7 +333,7 @@ class Bugsnag {
 
         // Add http request info
         if(self::isRequest()) {
-            $metaData = array_merge($metaData, self::getRequestData());
+            $metaData = array_merge_recursive($metaData, self::getRequestData());
         }
 
         // Add environment info
@@ -322,16 +344,14 @@ class Bugsnag {
         // Merge user-defined metadata if custom function is specified
         if(isset(self::$metaDataFunction) && is_callable(self::$metaDataFunction)) {
             $customMetaData = call_user_func(self::$metaDataFunction);
-            // TODO What if this is null?
-            if(is_array($customMetaData)) {
-                // TODO deep merge?
-                $metaData = array_merge($metaData, $customMetaData);
+            if(!is_null($customMetaData) && is_array($customMetaData)) {
+                $metaData = array_merge_recursive($metaData, $customMetaData);
             }
         }
 
         // Merge $passedMetaData
         if(!empty($passedMetaData)) {
-            $metaData = array_merge($metaData, $passedMetaData);
+            $metaData = array_merge_recursive($metaData, $passedMetaData);
         }
 
         // Filter metaData according to self::$filters
@@ -350,7 +370,7 @@ class Bugsnag {
         if(!empty($_POST)) {
             $requestData['request']['params'] = $_POST;
         }
-        $requestData['request']['ip'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+        $requestData['request']['ip'] = self::getRequestIp();
         $requestData['request']['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
 
         // Session Tab
@@ -372,14 +392,30 @@ class Bugsnag {
         return $schema.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     }
 
+    private static function getRequestIp() {
+        return isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+    }
+
     private static function getContext() {
-        if(self::isRequest()) {
+        if(self::$context) {
+            return self::$context;
+        } elseif(self::isRequest()) {
             return $_SERVER['REQUEST_METHOD'] . ' ' . strtok($_SERVER["REQUEST_URI"], '?');
         } else {
             return null;
         }
     }
-    
+
+    private static function getUserId() {
+        if(self::$userId) {
+            return self::$userId;
+        } elseif(self::isRequest()) {
+            return self::getRequestIp();
+        } else {
+            return null;
+        }
+    }
+
     private static function applyFilters($metaData) {
         if(!empty(self::$filters)) {
             $cleanMetaData = array();
