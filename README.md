@@ -50,7 +50,10 @@ exceptions, to help debug problems.
 To send custom data, simply call `Bugsnag::setMetaDataFunction`:
 
 ```php
-// Define a bugsnag metadata callable
+// Tell Bugsnag to use a metadata function
+Bugsnag::setMetaDataFunction("bugsnag_metadata");
+
+// Define the bugsnag metadata function
 function bugsnag_metadata() {
     return array(
       "user" => array(
@@ -60,9 +63,6 @@ function bugsnag_metadata() {
       )
     );
 }
-
-// Now tell Bugsnag about the new metadata callable
-Bugsnag::setMetaDataFunction("bugsnag_metadata");
 ```
 
 
