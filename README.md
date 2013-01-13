@@ -82,7 +82,7 @@ You can also send custom errors to Bugsnag with `Bugsnag.notifyError`:
 Bugsnag::notifyError("ErrorType", "Something bad happened here too");
 ```
 
-Both of these functions can also be passed an optional $metaData parameter,
+Both of these functions can also be passed an optional `$metaData` parameter,
 which should take the same format as the return value of
 [setMetaDataFunction](#setmetadatafunction) below.
 
