@@ -57,9 +57,9 @@ Bugsnag::setMetaDataFunction("bugsnag_metadata");
 function bugsnag_metadata() {
     return array(
         "user" => array(
-            "name" => "Bob Hoskins",
+            "name"  => "Bob Hoskins",
             "email" => "bob@example.com",
-            "role" => "Super Mario"
+            "role"  => "Super Mario"
         )
     );
 }
