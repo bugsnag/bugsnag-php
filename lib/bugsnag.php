@@ -207,7 +207,7 @@ class Bugsnag {
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public static function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
         // Get the stack, remove the current function, build a sensible stacktrace]
-        // TODO: Need to find a way to remove any user's set_error_handler functions from this stacktrace
+        // TODO: Add a method to remove any user's set_error_handler functions from this stacktrace
         $backtrace = debug_backtrace();
         array_shift($backtrace);
         $stacktrace = self::buildStacktrace($errfile, $errline, $backtrace);
@@ -244,6 +244,8 @@ class Bugsnag {
             error_log('Bugsnag Warning: No API key configured, couldn\'t notify');
             return;
         }
+
+        // TODO: Batch up multiple notify calls in one request, flush on shutdown
 
         // Post the request to bugsnag
         $statusCode = self::postJSON(self::getEndpoint(), array(
@@ -314,8 +316,7 @@ class Bugsnag {
 
         $responseBody = curl_exec($http);
         $statusCode = curl_getinfo($http, CURLINFO_HTTP_CODE);
-        
-        // TODO Can we make this async or batch them up
+
         if($statusCode > 200) {
             error_log('Bugsnag Warning: Couldn\'t notify ('.$responseBody.')');
         }
