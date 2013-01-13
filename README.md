@@ -45,7 +45,7 @@ Sending Custom Data With Exceptions
 
 It is often useful to send additional meta-data about your app, such as 
 information about the currently logged in user, along with any
-exceptions, to help debug problems. 
+error or exceptions, to help debug problems. 
 
 To send custom data, simply call `Bugsnag::setMetaDataFunction`:
 
@@ -107,7 +107,7 @@ Bugsnag::setContext("Backport Job");
 ###setUserId
 
 Bugsnag helps you understand how many of your users are affected by each
-error. In order to do this, we send along a userId with every exception. 
+error. In order to do this, we send along a userId with every error. 
 By default we will generate a unique ID and send this ID along with every 
 error.
     
@@ -132,9 +132,9 @@ By default this is set to be "production".
 
 ###setNotifyReleaseStages
 
-By default, we will only notify Bugsnag of exceptions that happen when 
+By default, we will only notify Bugsnag of errors that happen when 
 your `releaseStage` is set to be "production". If you would like to 
-change which release stages notify Bugsnag of exceptions you can
+change which release stages notify Bugsnag of errors you can
 call `setNotifyReleaseStages`:
     
 ```php
