@@ -48,14 +48,13 @@ class Bugsnag {
     private static $apiKey;
     private static $releaseStage = 'production';
     private static $notifyReleaseStages = array('production');
-    private static $useSSL = false;
+    private static $useSSL = true;
     private static $projectRoot;
     private static $filters = array('password');
     private static $endpoint = 'notify.bugsnag.com';
-    private static $registeredShutdown = false;
     private static $metaDataFunction;
-
-
+    private static $registeredShutdown = false;
+    
 
     /**
      * Initialize Bugsnag
@@ -165,6 +164,7 @@ class Bugsnag {
     public static function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
         // Get the stack, remove the current function, build a sensible stacktrace]
         $backtrace = debug_backtrace();
+        // TODO What if this is called from the users errorHandler?
         array_shift($backtrace);
         $stacktrace = self::buildStacktrace($errfile, $errline, $backtrace);
 
@@ -188,6 +188,7 @@ class Bugsnag {
         }
     }
 
+    // TODO Add a manual notify method that supports metaData
     private static function notify($errorName, $errorMessage, $stacktrace=null, $metaData=null) {
         // Check if we should notify
         if(is_array(self::$notifyReleaseStages) && !in_array(self::$releaseStage, self::$notifyReleaseStages)) {
@@ -200,6 +201,7 @@ class Bugsnag {
             return;
         }
 
+        // TODO userId
         // Post the request to bugsnag
         $statusCode = self::postJSON(self::getEndpoint(), array(
             'apiKey' => self::$apiKey,
@@ -220,6 +222,7 @@ class Bugsnag {
     private static function buildStacktrace($topFile, $topLine, $backtrace=null) {
         $stacktrace = array();
 
+        //TODO split out hash generation
         if(!is_null($backtrace)) {
             foreach ($backtrace as $line) {
                 array_push($stacktrace, array(
@@ -264,7 +267,8 @@ class Bugsnag {
 
         $responseBody = curl_exec($http);
         $statusCode = curl_getinfo($http, CURLINFO_HTTP_CODE);
-
+        
+        // TODO Can we make this async or batch them up
         if($statusCode > 200) {
             error_log('Bugsnag Warning: Couldn\'t notify ('.$responseBody.')');
         }
@@ -291,6 +295,7 @@ class Bugsnag {
     }
 
     private static function projectRootRegex() {
+        // TODO Cache this as a result of setting projectRoot
         return '/'.preg_quote(self::$projectRoot, '/')."[\\/]?/i";
     }
 
@@ -314,7 +319,9 @@ class Bugsnag {
         // Merge user-defined metadata if custom function is specified
         if(isset(self::$metaDataFunction) && is_callable(self::$metaDataFunction)) {
             $customMetaData = call_user_func(self::$metaDataFunction);
+            // TODO What if this is null?
             if(is_array($customMetaData)) {
+                // TODO deep merge?
                 $metaData = array_merge($metaData, $customMetaData);
             }
         }
@@ -333,7 +340,7 @@ class Bugsnag {
     private static function getRequestData() {
         $requestData = array();
 
-        // Request summary
+        // Request Tab
         $requestData['request'] = array();
         $requestData['request']['url'] = self::getCurrentUrl();
         $requestData['request']['httpMethod'] = $_SERVER['REQUEST_METHOD'];
@@ -343,12 +350,12 @@ class Bugsnag {
         $requestData['request']['ip'] = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
         $requestData['request']['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
 
-        // Session
+        // Session Tab
         if(!empty($_SESSION)) {
             $requestData['session'] = $_SESSION;
         }
 
-        // Cookies
+        // Cookies Tab
         if(!empty($_COOKIE)) {
             $requestData['cookies'] = $_COOKIE;
         }
@@ -357,13 +364,13 @@ class Bugsnag {
     }
 
     private static function getCurrentUrl() {
-        $schema = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+        $schema = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 
         return $schema.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     }
 
     private static function getContext() {
-        if(self::isRequest() && !empty($_SERVER['REQUEST_METHOD']) && !empty($_SERVER["REQUEST_URI"])) {
+        if(self::isRequest()) {
             return $_SERVER['REQUEST_METHOD'] . ' ' . strtok($_SERVER["REQUEST_URI"], '?');
         } else {
             return null;
@@ -375,19 +382,19 @@ class Bugsnag {
             $cleanMetaData = array();
 
             foreach ($metaData as $key => $value) {
-                if(is_array($value)) {
-                    $cleanMetaData[$key] = self::applyFilters($value);
-                } else {
-                    $shouldFilter = false;
-                    foreach(self::$filters as $filter) {
-                        if(strpos($key, $filter) !== false) {
-                            $shouldFilter = true;
-                            break;
-                        }
+                $shouldFilter = false;
+                foreach(self::$filters as $filter) {
+                    if(strpos($key, $filter) !== false) {
+                        $shouldFilter = true;
+                        break;
                     }
+                }
 
-                    if($shouldFilter) {
-                        $cleanMetaData[$key] = '[FILTERED]';
+                if($shouldFilter) {
+                    $cleanMetaData[$key] = '[FILTERED]';
+                } else {
+                    if(is_array($value)) {
+                        $cleanMetaData[$key] = self::applyFilters($value);
                     } else {
                         $cleanMetaData[$key] = $value;
                     }
