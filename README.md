@@ -209,5 +209,5 @@ Contributing
 License
 -------
 
-The Bugsnag Android notifier is free software released under the MIT License. 
+The Bugsnag PHP notifier is free software released under the MIT License. 
 See [LICENSE.txt](https://github.com/bugsnag/bugsnag-php/blob/master/LICENSE.txt) for details.
