@@ -2,6 +2,9 @@
 
 /**
  * Bugsnag PHP Client
+ * https://bugsnag.com
+ *
+ * Supports PHP 5.2+
  *
  * @package     Bugsnag
  * @author      James Smith <notifiers@bugsnag.com>
