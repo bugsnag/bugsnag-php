@@ -1,0 +1,21 @@
+{
+    "name": "bugsnag/bugsnag",
+    "type": "library",
+    "description": "A PHP library for sending errors to Bugsnag.",
+    "keywords": ["bugsnag", "exceptions", "errors", "logging", "tracking"],
+    "homepage": "https://github.com/bugsnag/bugsnag-php",
+    "license": "MIT",
+    "authors": [{
+        "name": "James Smith",
+        "email": "notifiers@bugsnag.com",
+        "homepage": "https://bugsnag.com"
+    }],
+
+    "require": {
+        "php": ">=5.2.0"
+    },
+
+    "autoload": {
+        "files": ["lib/bugsnag.php"]
+    }
+}

@@ -204,6 +204,7 @@ class Bugsnag {
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public static function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
         // Get the stack, remove the current function, build a sensible stacktrace]
+        // TODO: Need to find a way to remove any user's set_error_handler functions from this stacktrace
         $backtrace = debug_backtrace();
         array_shift($backtrace);
         $stacktrace = self::buildStacktrace($errfile, $errline, $backtrace);
@@ -305,7 +306,8 @@ class Bugsnag {
         curl_setopt($http, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
         curl_setopt($http, CURLOPT_POSTFIELDS, json_encode($data));
         curl_setopt($http, CURLOPT_CONNECTTIMEOUT, 2);
-        curl_setopt($http, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($http, CURLOPT_VERBOSE, false);
 
         $responseBody = curl_exec($http);
         $statusCode = curl_getinfo($http, CURLINFO_HTTP_CODE);
