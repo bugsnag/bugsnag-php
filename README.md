@@ -35,9 +35,9 @@ How to Install
     set_exception_handler("Bugsnag::exceptionHandler");
     ```
 
-    *Note: You can also call call `Bugsnag::errorHandler` and call 
-    `Bugsnag::exceptionHandler` directly if you already have your own error 
-    handler functions, simply pass all parameters through.*
+    *Note: You can also call `Bugsnag::errorHandler` or 
+    `Bugsnag::exceptionHandler` from within your own error handler functions,
+    simply pass all parameters through.*
 
 
 Sending Custom Data With Exceptions
