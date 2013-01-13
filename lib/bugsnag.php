@@ -6,6 +6,9 @@
  *
  * Supports PHP 5.2+
  *
+ * Full documentation here: 
+ * https://bugsnag.com/docs/notifiers/php
+ *
  * @package     Bugsnag
  * @author      James Smith <notifiers@bugsnag.com>
  * @copyright   (c) 2013 Bugsnag
