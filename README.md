@@ -15,29 +15,29 @@ How to Install
 
 1.  Copy `bugsnag.php` to your PHP project and require it in your app:
 
-```php
-require_once("path/to/bugsnag.php");
-```
+    ```php
+    require_once("path/to/bugsnag.php");
+    ```
 
-*Note: If your project uses [Composer](http://getcomposer.org/), you can 
-instead add `bugsnag/bugsnag` as a dependency in your `composer.json`.*
+    *Note: If your project uses [Composer](http://getcomposer.org/), you can 
+    instead add `bugsnag/bugsnag` as a dependency in your `composer.json`.*
 
 2.  Configure Bugsnag with your API key:
 
-```php
-Bugsnag::register("YOUR-API-KEY-HERE");
-```
+    ```php
+    Bugsnag::register("YOUR-API-KEY-HERE");
+    ```
 
 3.  Attach Bugsnag's error and exception handlers:
 
-```php
-set_error_handler("Bugsnag::errorHandler");
-set_exception_handler("Bugsnag::exceptionHandler");
-```
+    ```php
+    set_error_handler("Bugsnag::errorHandler");
+    set_exception_handler("Bugsnag::exceptionHandler");
+    ```
 
-*Note: You can also call call Bugsnag::errorHandler and call 
-Bugsnag::exceptionHandler directly if you already have your own error handler
-functions, simply pass all parameters through.*
+    *Note: You can also call call Bugsnag::errorHandler and call 
+    Bugsnag::exceptionHandler directly if you already have your own error 
+    handler functions, simply pass all parameters through.*
 
 
 Sending Custom Data With Exceptions
