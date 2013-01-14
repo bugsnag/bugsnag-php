@@ -23,21 +23,21 @@ class Bugsnag {
     );                                                                      
 
     private static $ERROR_NAMES = array (
-        \E_ERROR             => 'Fatal Error',
-        \E_PARSE             => 'Parse Error',
-        \E_COMPILE_ERROR     => 'Compile Error',
-        \E_CORE_ERROR        => 'Core Error',
+        \E_ERROR             => 'PHP Fatal Error',
+        \E_PARSE             => 'PHP Parse Error',
+        \E_COMPILE_ERROR     => 'PHP Compile Error',
+        \E_CORE_ERROR        => 'PHP Core Error',
+        \E_NOTICE            => 'PHP Notice',
+        \E_STRICT            => 'PHP Strict',
+        \E_DEPRECATED        => 'PHP Deprecated',
+        \E_WARNING           => 'PHP Warning',
+        \E_CORE_WARNING      => 'PHP Core Warning',
+        \E_COMPILE_WARNING   => 'PHP Compile Warning',
+        \E_RECOVERABLE_ERROR => 'PHP Recoverable Error',
         \E_USER_ERROR        => 'User Error',
-        \E_NOTICE            => 'Notice',
-        \E_STRICT            => 'Strict',
         \E_USER_WARNING      => 'User Warning',
         \E_USER_NOTICE       => 'User Notice',
-        \E_DEPRECATED        => 'Deprecated',
-        \E_WARNING           => 'Warning',
-        \E_USER_DEPRECATED   => 'User Deprecated',
-        \E_CORE_WARNING      => 'Core Warning',
-        \E_COMPILE_WARNING   => 'Compile Warning',
-        \E_RECOVERABLE_ERROR => 'Recoverable Error'
+        \E_USER_DEPRECATED   => 'User Deprecated'
     );
 
     private static $FATAL_ERRORS = array(
