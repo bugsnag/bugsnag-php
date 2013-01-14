@@ -1,7 +1,7 @@
 {
     "name": "bugsnag/bugsnag",
     "type": "library",
-    "description": "A PHP library for sending errors to Bugsnag.",
+    "description": "Official Bugsnag notifier for PHP applications.",
     "keywords": ["bugsnag", "exceptions", "errors", "logging", "tracking"],
     "homepage": "https://github.com/bugsnag/bugsnag-php",
     "license": "MIT",
