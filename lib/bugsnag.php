@@ -245,7 +245,7 @@ class Bugsnag {
             return;
         }
 
-        // TODO: Batch up multiple notify calls in one request, flush on shutdown
+        // TODO: If we are inside a http request, batch up multiple notify calls and flush on shutdown
 
         // Post the request to bugsnag
         $statusCode = self::postJSON(self::getEndpoint(), array(
@@ -269,16 +269,19 @@ class Bugsnag {
         $stacktrace = array();
 
         if(!is_null($backtrace)) {
+            // PHP backtrace's are misaligned, we need to shift the file/line down a frame
             foreach ($backtrace as $line) {
-                array_push($stacktrace, self::buildStacktraceFrame($topFile, $topLine, $line['function']));
+                $stacktrace[] = self::buildStacktraceFrame($topFile, $topLine, $line['function']);
 
                 $topFile = $line['file'];
                 $topLine = $line['line'];
             }
 
-            array_push($stacktrace, self::buildStacktraceFrame($topFile, $topLine, '[main]'));
+            // Add a final stackframe for the "main" method
+            $stacktrace[] = self::buildStacktraceFrame($topFile, $topLine, '[main]');
         } else {
-            array_push($stacktrace, self::buildStacktraceFrame($topFile, $topLine, '[unknown]'));
+            // No backtrace given, show what we know
+            $stacktrace[] = self::buildStacktraceFrame($topFile, $topLine, '[unknown]');
         }
 
         return $stacktrace;
