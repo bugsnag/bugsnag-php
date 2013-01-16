@@ -188,6 +188,38 @@ function bugsnag_metadata() {
 ```
 
 
+CakePHP Installation
+--------------------
+
+If you are using CakePHP, installation is easy:
+
+1.  Copy bugsnag.php into your CakePHP project
+
+2.  Edit `App/Config/core.php`:
+
+    ```php
+    // Require Bugsnag
+    require_once("path/to/bugsnag.php");
+
+    // Initialize Bugsnag
+    Bugsnag::register("YOUR-API-KEY-HERE");
+
+    // Change the default error handler to be Bugsnag
+    Configure::write('Error', array(
+        'handler' => 'Bugsnag::errorHandler',
+        'level' => E_ALL & ~E_DEPRECATED,
+        'trace' => true
+    ));
+
+    // Change the default exception handler to be Bugsnag
+    Configure::write('Error', array(
+        'handler' => 'Bugsnag::errorHandler',
+        'level' => E_ALL & ~E_DEPRECATED,
+        'trace' => true
+    ));
+    ```
+
+
 Reporting Bugs or Feature Requests
 ----------------------------------
 
