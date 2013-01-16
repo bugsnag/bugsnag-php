@@ -73,6 +73,11 @@ class Bugsnag {
     public static function register($apiKey) {
         self::$apiKey = $apiKey;
 
+        // Attempt to determine a sensible default for projectRoot
+        if(isset($_SERVER) && !empty($_SERVER['DOCUMENT_ROOT']) && !isset(self::$projectRoot)) {
+            self::setProjectRoot($_SERVER['DOCUMENT_ROOT']);
+        }
+
         // Register a shutdown function to check for fatal errors
         if(!self::$registeredShutdown) {
             register_shutdown_function('Bugsnag::fatalErrorHandler');
