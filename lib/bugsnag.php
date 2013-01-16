@@ -63,6 +63,7 @@ class Bugsnag {
     private static $metaDataFunction;
     private static $registeredShutdown = false;
     private static $projectRootRegex;
+    private static $errorQueue = array();
     
 
     /**
@@ -233,6 +234,11 @@ class Bugsnag {
             // Send the notification to bugsnag
             self::notify(self::$ERROR_NAMES[$lastError['type']], $lastError['message'], $stacktrace);
         }
+
+        // Check if we should flush errors
+        if(self::sendErrorsOnShutdown()) {
+            self::flushErrorQueue();
+        }
     }
 
 
@@ -250,24 +256,42 @@ class Bugsnag {
             return;
         }
 
-        // TODO: If we are inside a http request, batch up multiple notify calls and flush on shutdown
+        // Build the error payload to send to Bugsnag
+        $error = array(
+            'userId' => self::getUserId(),
+            'releaseStage' => self::$releaseStage,
+            'context' => self::getContext(),
+            'exceptions' => array(array(
+                'errorClass' => $errorName,
+                'message' => $errorMessage,
+                'stacktrace' => $stacktrace
+            )),
+            'metaData' => self::getMetaData($passedMetaData)
+        );
 
+        // Add this error payload to the send queue
+        self::$errorQueue[] = $error;
+
+        // Flush the queue immediately unless we are batching errors
+        if(!self::sendErrorsOnShutdown()) {
+            self::flushErrorQueue();
+        }
+    }
+
+    private static function sendErrorsOnShutdown() {
+        return true;
+    }
+
+    private static function flushErrorQueue() {
         // Post the request to bugsnag
         $statusCode = self::postJSON(self::getEndpoint(), array(
             'apiKey' => self::$apiKey,
             'notifier' => self::$NOTIFIER,
-            'events' => array(array(
-                'userId' => self::getUserId(),
-                'releaseStage' => self::$releaseStage,
-                'context' => self::getContext(),
-                'exceptions' => array(array(
-                    'errorClass' => $errorName,
-                    'message' => $errorMessage,
-                    'stacktrace' => $stacktrace
-                )),
-                'metaData' => self::getMetaData($passedMetaData)
-            ))
+            'events' => self::$errorQueue
         ));
+
+        // Clear the error queue
+        self::$errorQueue = array();
     }
 
     private static function buildStacktrace($topFile, $topLine, $backtrace=null) {
