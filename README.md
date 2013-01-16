@@ -188,8 +188,10 @@ function bugsnag_metadata() {
 ```
 
 
-CakePHP Installation
---------------------
+PHP Frameworks
+--------------
+
+###CakePHP
 
 If you are using CakePHP, installation is easy:
 
