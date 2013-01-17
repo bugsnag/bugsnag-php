@@ -13,7 +13,8 @@ capturing errors from your applications.
 How to Install
 --------------
 
-1.  Copy `bugsnag.php` to your PHP project and require it in your app:
+1.  Copy [bugsnag.php](https://raw.github.com/bugsnag/bugsnag-php/master/lib/bugsnag.php)
+    to your PHP project and require it in your app:
 
     ```php
     require_once("path/to/bugsnag.php");
@@ -211,7 +212,8 @@ PHP Frameworks
 
 If you are using CakePHP, installation is easy:
 
-1.  Copy bugsnag.php into your CakePHP project
+1.  Copy [bugsnag.php](https://raw.github.com/bugsnag/bugsnag-php/master/lib/bugsnag.php)
+    into your CakePHP project
 
 2.  Edit `App/Config/core.php`:
 
