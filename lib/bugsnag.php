@@ -299,7 +299,7 @@ class Bugsnag {
     }
 
     private static function sendErrorsOnShutdown() {
-        return true;
+        return self::isRequest();
     }
 
     private static function flushErrorQueue() {
