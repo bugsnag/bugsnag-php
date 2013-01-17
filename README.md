@@ -230,10 +230,10 @@ If you are using CakePHP, installation is easy:
     ));
 
     // Change the default exception handler to be Bugsnag
-    Configure::write('Error', array(
-        'handler' => 'Bugsnag::errorHandler',
-        'level' => E_ALL & ~E_DEPRECATED,
-        'trace' => true
+    Configure::write('Exception', array(
+        'handler' => 'Bugsnag::exceptionHandler',
+        'renderer' => 'ExceptionRenderer',
+        'log' => true
     ));
     ```
 
