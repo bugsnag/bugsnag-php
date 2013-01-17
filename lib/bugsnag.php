@@ -182,7 +182,7 @@ class Bugsnag {
      * @param Integer $errorReportingLevel the error reporting level integer
      *                exactly as you would pass to PHP's error_reporting
      */
-    public self function setErrorReportingLevel($errorReportingLevel) {
+    public static function setErrorReportingLevel($errorReportingLevel) {
         self::$errorReportingLevel = $errorReportingLevel;
     }
 
