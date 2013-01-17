@@ -10,6 +10,7 @@
  * https://bugsnag.com/docs/notifiers/php
  *
  * @package     Bugsnag
+ * @version     1.0.2
  * @author      James Smith <notifiers@bugsnag.com>
  * @copyright   (c) 2013 Bugsnag
  * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
