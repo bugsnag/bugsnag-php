@@ -61,8 +61,11 @@ class Bugsnag {
     private static $context;
     private static $userId;
     private static $metaDataFunction;
+    private static $errorReportingLevel;
+
     private static $registeredShutdown = false;
     private static $projectRootRegex;
+    private static $errorQueue = array();
     
 
     /**
@@ -172,6 +175,18 @@ class Bugsnag {
     }
 
     /**
+     * Set Bugsnag's error reporting level.
+     * If this is not set, we'll use your current PHP error_reporting value
+     * from your ini file or error_reporting(...) calls.
+     *
+     * @param Integer $errorReportingLevel the error reporting level integer
+     *                exactly as you would pass to PHP's error_reporting
+     */
+    public static function setErrorReportingLevel($errorReportingLevel) {
+        self::$errorReportingLevel = $errorReportingLevel;
+    }
+
+    /**
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about
@@ -211,6 +226,11 @@ class Bugsnag {
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public static function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
+        // Check if we should notify Bugsnag about errors of this type
+        if(!self::shouldNotify($errno)) {
+            return;
+        }
+
         // Get the stack, remove the current function, build a sensible stacktrace]
         // TODO: Add a method to remove any user's set_error_handler functions from this stacktrace
         $backtrace = debug_backtrace();
@@ -223,6 +243,7 @@ class Bugsnag {
 
     // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
     public static function fatalErrorHandler() {
+        // Get last error
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
@@ -232,6 +253,11 @@ class Bugsnag {
 
             // Send the notification to bugsnag
             self::notify(self::$ERROR_NAMES[$lastError['type']], $lastError['message'], $stacktrace);
+        }
+
+        // Check if we should flush errors
+        if(self::sendErrorsOnShutdown()) {
+            self::flushErrorQueue();
         }
     }
 
@@ -250,24 +276,42 @@ class Bugsnag {
             return;
         }
 
-        // TODO: If we are inside a http request, batch up multiple notify calls and flush on shutdown
+        // Build the error payload to send to Bugsnag
+        $error = array(
+            'userId' => self::getUserId(),
+            'releaseStage' => self::$releaseStage,
+            'context' => self::getContext(),
+            'exceptions' => array(array(
+                'errorClass' => $errorName,
+                'message' => $errorMessage,
+                'stacktrace' => $stacktrace
+            )),
+            'metaData' => self::getMetaData($passedMetaData)
+        );
 
+        // Add this error payload to the send queue
+        self::$errorQueue[] = $error;
+
+        // Flush the queue immediately unless we are batching errors
+        if(!self::sendErrorsOnShutdown()) {
+            self::flushErrorQueue();
+        }
+    }
+
+    private static function sendErrorsOnShutdown() {
+        return self::isRequest();
+    }
+
+    private static function flushErrorQueue() {
         // Post the request to bugsnag
         $statusCode = self::postJSON(self::getEndpoint(), array(
             'apiKey' => self::$apiKey,
             'notifier' => self::$NOTIFIER,
-            'events' => array(array(
-                'userId' => self::getUserId(),
-                'releaseStage' => self::$releaseStage,
-                'context' => self::getContext(),
-                'exceptions' => array(array(
-                    'errorClass' => $errorName,
-                    'message' => $errorMessage,
-                    'stacktrace' => $stacktrace
-                )),
-                'metaData' => self::getMetaData($passedMetaData)
-            ))
+            'events' => self::$errorQueue
         ));
+
+        // Clear the error queue
+        self::$errorQueue = array();
     }
 
     private static function buildStacktrace($topFile, $topLine, $backtrace=null) {
@@ -457,6 +501,14 @@ class Bugsnag {
             return $cleanMetaData;
         } else {
             return $metaData;
+        }
+    }
+
+    private static function shouldNotify($errno) {
+        if(isset(self::$errorReportingLevel)) {
+            return self::$errorReportingLevel & $errno;
+        } else {
+            return error_reporting() & $errno;
         }
     }
 }

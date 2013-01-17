@@ -187,6 +187,22 @@ function bugsnag_metadata() {
 }
 ```
 
+###setErrorReportingLevel
+
+Set the levels of PHP errors to report to Bugsnag, by default we'll use
+the value of `error_reporting` from your `php.ini` or any value you set
+at runtime using the `error_reporting(...)` function.
+
+If you'd like to send different levels of errors to Bugsnag, you can call
+`setErrorReportingLevel`:
+
+```php
+Bugsnag::setErrorReportingLevel(E_ALL & ~E_NOTICE);
+```
+
+See PHP's [error reporting documentation](http://php.net/manual/en/errorfunc.configuration.php#ini.error-reporting)
+for allowed values.
+
 
 PHP Frameworks
 --------------
