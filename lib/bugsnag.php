@@ -322,8 +322,13 @@ class Bugsnag {
             foreach ($backtrace as $line) {
                 $stacktrace[] = self::buildStacktraceFrame($topFile, $topLine, $line['function']);
 
-                $topFile = $line['file'];
-                $topLine = $line['line'];
+                if(isset($line['file']) && isset($line['line'])) {
+                    $topFile = $line['file'];
+                    $topLine = $line['line'];
+                } else {
+                    $topFile = "[internal]";
+                    $topLine = 0;
+                }
             }
 
             // Add a final stackframe for the "main" method
