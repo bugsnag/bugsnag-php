@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.2
+-----
+-   Fix bug with 'internal' stacktrace lines (missing line/file)
+
 1.0.1
 -----
 -   Renamed default error classes for clarity

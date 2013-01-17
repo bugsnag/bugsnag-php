@@ -18,7 +18,7 @@ class Bugsnag {
     // "Constants"
     private static $NOTIFIER = array(
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '1.0.1',
+        'version' => '1.0.2',
         'url' => 'https://bugsnag.com'
     );                                                                      
 
