@@ -61,6 +61,8 @@ class Bugsnag {
     private static $context;
     private static $userId;
     private static $metaDataFunction;
+    private static $errorReportingLevel;
+
     private static $registeredShutdown = false;
     private static $projectRootRegex;
     private static $errorQueue = array();
@@ -173,6 +175,18 @@ class Bugsnag {
     }
 
     /**
+     * Set Bugsnag's error reporting level.
+     * If this is not set, we'll use your current PHP error_reporting value
+     * from your ini file or error_reporting(...) calls.
+     *
+     * @param Integer $errorReportingLevel the error reporting level integer
+     *                exactly as you would pass to PHP's error_reporting
+     */
+    public self function setErrorReportingLevel($errorReportingLevel) {
+        self::$errorReportingLevel = $errorReportingLevel;
+    }
+
+    /**
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about
@@ -212,6 +226,11 @@ class Bugsnag {
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public static function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
+        // Check if we should notify Bugsnag about errors of this type
+        if(!self::shouldNotify($errno)) {
+            return;
+        }
+
         // Get the stack, remove the current function, build a sensible stacktrace]
         // TODO: Add a method to remove any user's set_error_handler functions from this stacktrace
         $backtrace = debug_backtrace();
@@ -224,6 +243,7 @@ class Bugsnag {
 
     // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
     public static function fatalErrorHandler() {
+        // Get last error
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
@@ -481,6 +501,14 @@ class Bugsnag {
             return $cleanMetaData;
         } else {
             return $metaData;
+        }
+    }
+
+    private static function shouldNotify($errno) {
+        if(isset(self::$errorReportingLevel)) {
+            return self::$errorReportingLevel & $errno;
+        } else {
+            return error_reporting() & $errno;
         }
     }
 }
