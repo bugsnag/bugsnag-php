@@ -304,15 +304,17 @@ class Bugsnag {
     }
 
     private static function flushErrorQueue() {
-        // Post the request to bugsnag
-        $statusCode = self::postJSON(self::getEndpoint(), array(
-            'apiKey' => self::$apiKey,
-            'notifier' => self::$NOTIFIER,
-            'events' => self::$errorQueue
-        ));
+        if(!empty(self::$errorQueue)) {
+            // Post the request to bugsnag
+            $statusCode = self::postJSON(self::getEndpoint(), array(
+                'apiKey' => self::$apiKey,
+                'notifier' => self::$NOTIFIER,
+                'events' => self::$errorQueue
+            ));
 
-        // Clear the error queue
-        self::$errorQueue = array();
+            // Clear the error queue
+            self::$errorQueue = array();
+        }
     }
 
     private static function buildStacktrace($topFile, $topLine, $backtrace=null) {
