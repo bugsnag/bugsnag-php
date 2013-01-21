@@ -131,6 +131,9 @@ Bugsnag::setReleaseStage("development");
     
 By default this is set to be "production".
 
+*Note: If you would like errors from stages other than production to be sent
+to Bugsnag, you'll also have to call `setNotifyReleaseStages`.*
+
 ###setNotifyReleaseStages
 
 By default, we will only notify Bugsnag of errors that happen when 
