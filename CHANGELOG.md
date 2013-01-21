@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.3
+-----
+-   Remove unnecessary post to Bugsnag when error list is empty
+
 1.0.2
 -----
 -   Fix bug with 'internal' stacktrace lines (missing line/file)
