@@ -433,11 +433,24 @@ class Bugsnag {
         $requestData['request'] = array();
         $requestData['request']['url'] = self::getCurrentUrl();
         $requestData['request']['httpMethod'] = $_SERVER['REQUEST_METHOD'];
+
         if(!empty($_POST)) {
             $requestData['request']['params'] = $_POST;
+        } else {
+            if(stripos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
+                $requestData['request']['params'] = json_decode(file_get_contents('php://input'));
+            }
         }
+
         $requestData['request']['ip'] = self::getRequestIp();
         $requestData['request']['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
+
+        if(function_exists("getallheaders")) {
+            $headers = getallheaders();
+            if(!empty($headers)) {
+                $requestData['request']['headers'] = $headers;
+            }
+        }
 
         // Session Tab
         if(!empty($_SESSION)) {
