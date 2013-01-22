@@ -1,6 +1,11 @@
 Changelog
 =========
 
+HEAD
+----
+-   Send JSON POST params to Bugsnag if available
+-   Send HTTP headers to Bugsnag if available
+
 1.0.3
 -----
 -   Remove unnecessary post to Bugsnag when error list is empty
