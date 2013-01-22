@@ -48,23 +48,9 @@ It is often useful to send additional meta-data about your app, such as
 information about the currently logged in user, along with any
 error or exceptions, to help debug problems. 
 
-To send custom data, simply call `Bugsnag::setMetaDataFunction`:
-
-```php
-// Tell Bugsnag to use a metadata function
-Bugsnag::setMetaDataFunction("bugsnag_metadata");
-
-// Define the bugsnag metadata function
-function bugsnag_metadata() {
-    return array(
-        "user" => array(
-            "name"  => "Bob Hoskins",
-            "email" => "bob@example.com",
-            "role"  => "Super Mario"
-        )
-    );
-}
-```
+To send custom data, you should define a special *meta-data* function, which
+should return an array of "tabs" of meta-data, and tell Bugsnag about your 
+function using [setMetaDataFunction](#setmetadatafunction) (see below).
 
 
 Sending Custom Errors or Non-Fatal Exceptions
