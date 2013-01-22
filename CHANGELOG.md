@@ -1,8 +1,8 @@
 Changelog
 =========
 
-HEAD
-----
+1.0.4
+-----
 -   Send JSON POST params to Bugsnag if available
 -   Send HTTP headers to Bugsnag if available
 
