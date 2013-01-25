@@ -432,18 +432,22 @@ class Bugsnag {
         // Request Tab
         $requestData['request'] = array();
         $requestData['request']['url'] = self::getCurrentUrl();
-        $requestData['request']['httpMethod'] = $_SERVER['REQUEST_METHOD'];
+        if(isset($_SERVER['REQUEST_METHOD'])) {
+            $requestData['request']['httpMethod'] = $_SERVER['REQUEST_METHOD'];
+        }
 
         if(!empty($_POST)) {
             $requestData['request']['params'] = $_POST;
         } else {
-            if(stripos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
+            if(isset($_SERVER['CONTENT_TYPE']) && stripos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
                 $requestData['request']['params'] = json_decode(file_get_contents('php://input'));
             }
         }
 
         $requestData['request']['ip'] = self::getRequestIp();
-        $requestData['request']['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
+        if(isset($_SERVER['HTTP_USER_AGENT'])) {
+            $requestData['request']['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
+        }
 
         if(function_exists("getallheaders")) {
             $headers = getallheaders();
@@ -478,7 +482,7 @@ class Bugsnag {
     private static function getContext() {
         if(self::$context) {
             return self::$context;
-        } elseif(self::isRequest()) {
+        } elseif(self::isRequest() && isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER["REQUEST_URI"])) {
             return $_SERVER['REQUEST_METHOD'] . ' ' . strtok($_SERVER["REQUEST_URI"], '?');
         } else {
             return null;
