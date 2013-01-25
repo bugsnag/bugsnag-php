@@ -437,7 +437,7 @@ class Bugsnag {
         if(!empty($_POST)) {
             $requestData['request']['params'] = $_POST;
         } else {
-            if(stripos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
+            if(isset($_SERVER['CONTENT_TYPE']) and stripos($_SERVER['CONTENT_TYPE'], 'application/json') === 0) {
                 $requestData['request']['params'] = json_decode(file_get_contents('php://input'));
             }
         }
