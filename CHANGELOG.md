@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.5
+-----
+-   Protect against missing $_SERVER variables
+
 1.0.4
 -----
 -   Send JSON POST params to Bugsnag if available
