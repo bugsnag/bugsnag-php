@@ -10,7 +10,7 @@
  * https://bugsnag.com/docs/notifiers/php
  *
  * @package     Bugsnag
- * @version     1.0.3
+ * @version     1.0.6
  * @author      James Smith <notifiers@bugsnag.com>
  * @copyright   (c) 2013 Bugsnag
  * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -19,7 +19,7 @@ class Bugsnag {
     // "Constants"
     private static $NOTIFIER = array(
         'name'      => 'Bugsnag PHP (Official)',
-        'version'   => '1.0.3',
+        'version'   => '1.0.6',
         'url'       => 'https://bugsnag.com'
     );                                                                      
 
