@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.6
+-----
+-   Fix PHP 5.2 bug with missing constants
+
 1.0.5
 -----
 -   Protect against missing $_SERVER variables
