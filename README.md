@@ -193,6 +193,25 @@ Bugsnag::setErrorReportingLevel(E_ALL & ~E_NOTICE);
 See PHP's [error reporting documentation](http://php.net/manual/en/errorfunc.configuration.php#ini.error-reporting)
 for allowed values.
 
+###setProjectRoot
+
+We mark stacktrace lines as in-project if they come from files inside your
+`projectRoot`. By default this value is automatically set to be
+`$_SERVER['DOCUMENT_ROOT']` but sometimes this can cause problems with
+stacktrace highlighting. You can set this manually by calling `setProjectRoot`:
+otherwise you should set it manually:
+
+```php
+Bugsnag::setProjectRoot("/path/to/your/app");
+```
+
+If your app has files in many different locations, you can disable the 
+projectRoot as follows:
+
+```php
+Bugsnag::setProjectRoot(null);
+```
+
 
 PHP Frameworks
 --------------
