@@ -199,7 +199,6 @@ We mark stacktrace lines as in-project if they come from files inside your
 `projectRoot`. By default this value is automatically set to be
 `$_SERVER['DOCUMENT_ROOT']` but sometimes this can cause problems with
 stacktrace highlighting. You can set this manually by calling `setProjectRoot`:
-otherwise you should set it manually:
 
 ```php
 Bugsnag::setProjectRoot("/path/to/your/app");
