@@ -42,7 +42,7 @@ How to Install
 
 
 *Note: The Bugsnag PHP notifier requires cURL support to be enabled on your
-PHP installation*
+PHP installation.*
 
 
 Sending Custom Data With Exceptions
