@@ -41,6 +41,10 @@ How to Install
     simply pass all parameters through.*
 
 
+*Note: The Bugsnag PHP notifier requires cURL support to be enabled on your
+PHP installation*
+
+
 Sending Custom Data With Exceptions
 -----------------------------------
 
