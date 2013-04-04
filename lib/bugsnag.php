@@ -56,7 +56,7 @@ class Bugsnag {
     // Configuration state
     private static $apiKey;
     private static $releaseStage = 'production';
-    private static $notifyReleaseStages = array('production');
+    private static $notifyReleaseStages;
     private static $useSSL = true;
     private static $projectRoot;
     private static $filters = array('password');

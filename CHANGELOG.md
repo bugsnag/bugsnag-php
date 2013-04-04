@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.0.7
+-----
+- Don't default `notifyReleaseStages` to anything to reduce confusion
+
 1.0.6
 -----
 -   Fix PHP 5.2 bug with missing constants
