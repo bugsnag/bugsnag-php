@@ -172,7 +172,7 @@ Set a custom function to call before notifying Bugsnag of an error.
 You can use this to call your own error handling functions, or to add custom
 tabs of data to each error on your Bugsnag dashboard.
 
-To add custom tabs of meta-data, simply add to the $metaData array
+To add custom tabs of meta-data, simply add to the `$metaData` array
 that is passed as the first parameter to your function, for example:
 
 ```php
