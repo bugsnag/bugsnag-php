@@ -52,9 +52,10 @@ It is often useful to send additional meta-data about your app, such as
 information about the currently logged in user, along with any
 error or exceptions, to help debug problems. 
 
-To send custom data, you should define a special *meta-data* function, which
-should return an array of "tabs" of meta-data, and tell Bugsnag about your 
-function using [setMetaDataFunction](#setmetadatafunction) (see below).
+To send custom data, you should define a *before-notify* function, 
+adding an array of "tabs" of custom data to the $metaData parameter.
+For an example, see the [setBeforeNotifyFunction](#setbeforenotifyfunction)
+documentation below.
 
 
 Sending Custom Errors or Non-Fatal Exceptions
@@ -74,8 +75,16 @@ Bugsnag::notifyError("ErrorType", "Something bad happened here too");
 ```
 
 Both of these functions can also be passed an optional `$metaData` parameter,
-which should take the same format as the return value of
-[setMetaDataFunction](#setmetadatafunction) below.
+which should take the following format:
+
+```php
+$metaData =  array(
+    "user" => array(
+        "name" => "James",
+        "email" => "james@example.com"
+    )
+);
+```
 
 
 Additional Configuration
@@ -157,21 +166,23 @@ Bugsnag::setUseSSL(true);
 
 By default, this is set to be true.
 
-###setMetaDataFunction
+###setBeforeNotifyFunction
 
-Set a custom metadata generation function to call before notifying
-Bugsnag of an error. You can use this to add custom tabs of data
-to each error on your Bugsnag dashboard.
+Set a custom function to call before notifying Bugsnag of an error.
+You can use this to call your own error handling functions, or to add custom
+tabs of data to each error on your Bugsnag dashboard.
 
-This function should return an array of arrays, the outer array should 
-represent the "tabs" to display on your Bugsnag dashboard, and the inner
-array should be the values to display on each tab, for example:
+To add custom tabs of meta-data, simply add to the $metaData array
+that is passed as the first parameter to your function, for example:
 
 ```php
-Bugsnag::setMetaDataFunction("bugsnag_metadata");
+Bugsnag::setBeforeNotifyFunction("before_bugsnag_notify");
 
-function bugsnag_metadata() {
-    return array(
+function before_bugsnag_notify($metaData) {
+    // Do any custom error handling here
+
+    // Also add some meta data to each error
+    $metaData = array(
         "user" => array(
             "name" => "James",
             "email" => "james@example.com"
