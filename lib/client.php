@@ -1,4 +1,6 @@
-<?php
+<?php namespace Bugsnag;
+
+require_once(__DIR__."/http_client.php");
 
 /**
  * Bugsnag PHP Client
@@ -15,7 +17,7 @@
  * @copyright   (c) 2013 Bugsnag
  * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-class Bugsnag {
+class Client {
     // "Constants"
     private static $NOTIFIER = array(
         'name'      => 'Bugsnag PHP (Official)',
@@ -54,22 +56,21 @@ class Bugsnag {
     );
 
     // Configuration state
-    private static $apiKey;
-    private static $releaseStage = 'production';
-    private static $notifyReleaseStages;
-    private static $useSSL = true;
-    private static $projectRoot;
-    private static $filters = array('password');
-    private static $endpoint = 'notify.bugsnag.com';
-    private static $context;
-    private static $userId;
-    private static $beforeNotifyFunction;
-    private static $metaDataFunction;
-    private static $errorReportingLevel;
+    private $apiKey;
+    private $releaseStage = 'production';
+    private $notifyReleaseStages;
+    private $useSSL = true;
+    private $projectRoot;
+    private $filters = array('password');
+    private $endpoint = 'notify.bugsnag.com';
+    private $context;
+    private $userId;
+    private $beforeNotifyFunction;
+    private $metaDataFunction;
+    private $errorReportingLevel;
 
-    private static $registeredShutdown = false;
-    private static $projectRootRegex;
-    private static $errorQueue = array();
+    private $projectRootRegex;
+    private $errorQueue = array();
     
 
     /**
@@ -77,19 +78,16 @@ class Bugsnag {
      *
      * @param String $apiKey your Bugsnag API key
      */
-    public static function register($apiKey) {
-        self::$apiKey = $apiKey;
+    public function __construct($apiKey) {
+        $this->apiKey = $apiKey;
 
         // Attempt to determine a sensible default for projectRoot
-        if(isset($_SERVER) && !empty($_SERVER['DOCUMENT_ROOT']) && !isset(self::$projectRoot)) {
+        if(isset($_SERVER) && !empty($_SERVER['DOCUMENT_ROOT']) && !isset($this->projectRoot)) {
             self::setProjectRoot($_SERVER['DOCUMENT_ROOT']);
         }
 
         // Register a shutdown function to check for fatal errors
-        if(!self::$registeredShutdown) {
-            register_shutdown_function('Bugsnag::fatalErrorHandler');
-            self::$registeredShutdown = true;
-        }
+        register_shutdown_function(array($this, "fatalErrorHandler"));
     }
 
     /**
@@ -97,8 +95,8 @@ class Bugsnag {
      *
      * @param String $releaseStage the app's current release stage
      */
-    public static function setReleaseStage($releaseStage) {
-        self::$releaseStage = $releaseStage;
+    public function setReleaseStage($releaseStage) {
+        $this->releaseStage = $releaseStage;
     }
 
     /**
@@ -107,8 +105,13 @@ class Bugsnag {
      *
      * @param Array $notifyReleaseStages array of release stages to notify for
      */
-    public static function setNotifyReleaseStages($notifyReleaseStages) {
-        self::$notifyReleaseStages = $notifyReleaseStages;
+    public function setNotifyReleaseStages($notifyReleaseStages) {
+        $this->notifyReleaseStages = $notifyReleaseStages;
+    }
+
+    /* TODO */
+    public function setEndpoint($endpoint) {
+        $this->endpoint = $endpoint;
     }
 
     /**
@@ -116,8 +119,8 @@ class Bugsnag {
      *
      * @param Boolean $useSSL whether to use SSL
      */
-    public static function setUseSSL($useSSL) {
-        self::$useSSL = $useSSL;
+    public function setUseSSL($useSSL) {
+        $this->useSSL = $useSSL;
     }
 
     /**
@@ -127,9 +130,9 @@ class Bugsnag {
      *
      * @param String $projectRoot the root path for your application
      */
-    public static function setProjectRoot($projectRoot) {
-        self::$projectRoot = $projectRoot;
-        self::$projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
+    public function setProjectRoot($projectRoot) {
+        $this->projectRoot = $projectRoot;
+        $this->projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
     }
 
     /**
@@ -138,8 +141,8 @@ class Bugsnag {
      *
      * @param Array $filters an array of metaData filters 
      */
-    public static function setFilters($filters) {
-        self::$filters = $filters;
+    public function setFilters($filters) {
+        $this->filters = $filters;
     }
 
     /**
@@ -147,8 +150,8 @@ class Bugsnag {
      *
      * @param String $userId the current user id
      */
-    public static function setUserId($userId) {
-        self::$userId = $userId;
+    public function setUserId($userId) {
+        $this->userId = $userId;
     }
 
     /**
@@ -156,8 +159,8 @@ class Bugsnag {
      *
      * @param String $context the current context
      */
-    public static function setContext($context) {
-        self::$context = $context;
+    public function setContext($context) {
+        $this->context = $context;
     }
 
     /**
@@ -165,8 +168,8 @@ class Bugsnag {
      * Set a custom metadata generation function to call before notifying
      * Bugsnag of an error.
      */
-    public static function setMetaDataFunction($metaDataFunction) {
-        self::$metaDataFunction = $metaDataFunction;
+    public function setMetaDataFunction($metaDataFunction) {
+        $this->metaDataFunction = $metaDataFunction;
     }
 
     /**
@@ -189,8 +192,8 @@ class Bugsnag {
      *            )
      *        }
      */
-    public static function setBeforeNotifyFunction($beforeNotifyFunction) {
-        self::$beforeNotifyFunction = $beforeNotifyFunction;
+    public function setBeforeNotifyFunction($beforeNotifyFunction) {
+        $this->beforeNotifyFunction = $beforeNotifyFunction;
     }
 
     /**
@@ -201,8 +204,8 @@ class Bugsnag {
      * @param Integer $errorReportingLevel the error reporting level integer
      *                exactly as you would pass to PHP's error_reporting
      */
-    public static function setErrorReportingLevel($errorReportingLevel) {
-        self::$errorReportingLevel = $errorReportingLevel;
+    public function setErrorReportingLevel($errorReportingLevel) {
+        $this->errorReportingLevel = $errorReportingLevel;
     }
 
     /**
@@ -211,7 +214,7 @@ class Bugsnag {
      * @param Exception $exception the exception to notify Bugsnag about
      * @param Array $metaData optional metaData to send with this error
      */
-    public static function notifyException($exception, $metaData=null) {
+    public function notifyException($exception, $metaData=null) {
         // Build a sensible stacktrace
         $stacktrace = self::buildStacktrace($exception->getFile(), $exception->getLine(), $exception->getTrace());
 
@@ -226,7 +229,7 @@ class Bugsnag {
      * @param String $errorMessage the error message
      * @param Array $metaData optional metaData to send with this error
      */
-    public static function notifyError($errorName, $errorMessage, $metaData=null) {
+    public function notifyError($errorName, $errorMessage, $metaData=null) {
         // Get the stack, remove the current function, build a sensible stacktrace]
         $backtrace = debug_backtrace();
         $firstFrame = array_shift($backtrace);
@@ -239,12 +242,12 @@ class Bugsnag {
 
 
     // Exception handler callback, should only be called internally by PHP's set_exception_handler
-    public static function exceptionHandler($exception) {
+    public function exceptionHandler($exception) {
         self::notifyException($exception);
     }
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
-    public static function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
+    public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
         // Check if we should notify Bugsnag about errors of this type
         if(!self::shouldNotify($errno)) {
             return;
@@ -261,7 +264,7 @@ class Bugsnag {
     }
 
     // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
-    public static function fatalErrorHandler() {
+    public function fatalErrorHandler() {
         // Get last error
         $lastError = error_get_last();
 
@@ -283,34 +286,34 @@ class Bugsnag {
 
 
     // Private methods
-    private static function notify($errorName, $errorMessage, $stacktrace=null, $passedMetaData=null) {
+    private function notify($errorName, $errorMessage, $stacktrace=null, $passedMetaData=null) {
         $customMetaData = array();
 
         // Check if we should notify
-        if(is_array(self::$notifyReleaseStages) && !in_array(self::$releaseStage, self::$notifyReleaseStages)) {
+        if(is_array($this->notifyReleaseStages) && !in_array($this->releaseStage, $this->notifyReleaseStages)) {
             return;
         }
 
         // Check we have at least an api_key
-        if(!isset(self::$apiKey)) {
+        if(!isset($this->apiKey)) {
             error_log('Bugsnag Warning: No API key configured, couldn\'t notify');
             return;
         }
 
         // For backwards compatibility
-        if(isset(self::$metaDataFunction) && is_callable(self::$metaDataFunction)) {
-            $customMetaData = call_user_func(self::$metaDataFunction);
+        if(isset($this->metaDataFunction) && is_callable($this->metaDataFunction)) {
+            $customMetaData = call_user_func($this->metaDataFunction);
         }
 
         // Call the custom beforeNotify function
-        if(isset(self::$beforeNotifyFunction) && is_callable(self::$beforeNotifyFunction)) {
-            call_user_func(self::$beforeNotifyFunction, &$customMetaData);
+        if(isset($this->beforeNotifyFunction) && is_callable($this->beforeNotifyFunction)) {
+            // call_user_func($this->beforeNotifyFunction, &$customMetaData);
         }
 
         // Build the error payload to send to Bugsnag
         $error = array(
             'userId' => self::getUserId(),
-            'releaseStage' => self::$releaseStage,
+            'releaseStage' => $this->releaseStage,
             'context' => self::getContext(),
             'exceptions' => array(array(
                 'errorClass' => $errorName,
@@ -321,7 +324,7 @@ class Bugsnag {
         );
 
         // Add this error payload to the send queue
-        self::$errorQueue[] = $error;
+        $this->errorQueue[] = $error;
 
         // Flush the queue immediately unless we are batching errors
         if(!self::sendErrorsOnShutdown()) {
@@ -329,25 +332,25 @@ class Bugsnag {
         }
     }
 
-    private static function sendErrorsOnShutdown() {
+    private function sendErrorsOnShutdown() {
         return self::isRequest();
     }
 
-    private static function flushErrorQueue() {
-        if(!empty(self::$errorQueue)) {
+    private function flushErrorQueue() {
+        if(!empty($this->errorQueue)) {
             // Post the request to bugsnag
-            $statusCode = self::postJSON(self::getEndpoint(), array(
-                'apiKey' => self::$apiKey,
+            $statusCode = HttpClient::post(self::getEndpoint(), array(
+                'apiKey' => $this->apiKey,
                 'notifier' => self::$NOTIFIER,
-                'events' => self::$errorQueue
+                'events' => $this->errorQueue
             ));
 
             // Clear the error queue
-            self::$errorQueue = array();
+            $this->errorQueue = array();
         }
     }
 
-    private static function buildStacktrace($topFile, $topLine, $backtrace=null) {
+    private function buildStacktrace($topFile, $topLine, $backtrace=null) {
         $stacktrace = array();
 
         if(!is_null($backtrace)) {
@@ -374,13 +377,13 @@ class Bugsnag {
         return $stacktrace;
     }
 
-    private static function buildStacktraceFrame($file, $line, $method) {
+    private function buildStacktraceFrame($file, $line, $method) {
         // Check if this frame is inProject
-        $inProject = !is_null(self::$projectRoot) && preg_match(self::$projectRootRegex, $file);
+        $inProject = !is_null($this->projectRoot) && preg_match($this->projectRootRegex, $file);
 
         // Strip out projectRoot from start of file path
         if($inProject) {
-            $file = preg_replace(self::$projectRootRegex, '', $file);
+            $file = preg_replace($this->projectRootRegex, '', $file);
         }
 
         // Construct and return the frame
@@ -392,39 +395,15 @@ class Bugsnag {
         );
     }
 
-    private static function postJSON($url, $data) {
-        $http = curl_init($url);
-
-        curl_setopt($http, CURLOPT_HEADER, false);
-        curl_setopt($http, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($http, CURLOPT_POST, true);
-        curl_setopt($http, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
-        curl_setopt($http, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($http, CURLOPT_CONNECTTIMEOUT, 2);
-        curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($http, CURLOPT_VERBOSE, false);
-
-        $responseBody = curl_exec($http);
-        $statusCode = curl_getinfo($http, CURLINFO_HTTP_CODE);
-
-        if($statusCode > 200) {
-            error_log('Bugsnag Warning: Couldn\'t notify ('.$responseBody.')');
-        }
-
-        curl_close($http);
-
-        return $statusCode;
+    private function getEndpoint() {
+        return $this->useSSL ? 'https://'.$this->endpoint : 'http://'.$this->endpoint;
     }
 
-    private static function getEndpoint() {
-        return self::$useSSL ? 'https://'.self::$endpoint : 'http://'.self::$endpoint;
-    }
-
-    private static function isRequest() {
+    private function isRequest() {
         return isset($_SERVER['REQUEST_METHOD']);
     }
 
-    private static function getMetaData($passedMetaData=array(), $customMetaData=array()) {
+    private function getMetaData($passedMetaData=array(), $customMetaData=array()) {
         $metaData = array();
 
         // Add http request info
@@ -447,13 +426,13 @@ class Bugsnag {
             $metaData = array_merge_recursive($metaData, $passedMetaData);
         }
 
-        // Filter metaData according to self::$filters
+        // Filter metaData according to $this->filters
         $metaData = self::applyFilters($metaData);
 
         return $metaData;
     }
 
-    private static function getRequestData() {
+    private function getRequestData() {
         $requestData = array();
 
         // Request Tab
@@ -496,19 +475,19 @@ class Bugsnag {
         return $requestData;
     }
 
-    private static function getCurrentUrl() {
+    private function getCurrentUrl() {
         $schema = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 
         return $schema.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     }
 
-    private static function getRequestIp() {
+    private function getRequestIp() {
         return isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
     }
 
-    private static function getContext() {
-        if(self::$context) {
-            return self::$context;
+    private function getContext() {
+        if($this->context) {
+            return $this->context;
         } elseif(self::isRequest() && isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER["REQUEST_URI"])) {
             return $_SERVER['REQUEST_METHOD'] . ' ' . strtok($_SERVER["REQUEST_URI"], '?');
         } else {
@@ -516,9 +495,9 @@ class Bugsnag {
         }
     }
 
-    private static function getUserId() {
-        if(self::$userId) {
-            return self::$userId;
+    private function getUserId() {
+        if($this->userId) {
+            return $this->userId;
         } elseif(self::isRequest()) {
             return self::getRequestIp();
         } else {
@@ -526,13 +505,13 @@ class Bugsnag {
         }
     }
 
-    private static function applyFilters($metaData) {
-        if(!empty(self::$filters)) {
+    private function applyFilters($metaData) {
+        if(!empty($this->filters)) {
             $cleanMetaData = array();
 
             foreach ($metaData as $key => $value) {
                 $shouldFilter = false;
-                foreach(self::$filters as $filter) {
+                foreach($this->filters as $filter) {
                     if(strpos($key, $filter) !== false) {
                         $shouldFilter = true;
                         break;
@@ -556,9 +535,9 @@ class Bugsnag {
         }
     }
 
-    private static function shouldNotify($errno) {
-        if(isset(self::$errorReportingLevel)) {
-            return self::$errorReportingLevel & $errno;
+    private function shouldNotify($errno) {
+        if(isset($this->errorReportingLevel)) {
+            return $this->errorReportingLevel & $errno;
         } else {
             return error_reporting() & $errno;
         }
