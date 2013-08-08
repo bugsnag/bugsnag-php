@@ -63,7 +63,6 @@ class Bugsnag {
     private static $endpoint = 'notify.bugsnag.com';
     private static $context;
     private static $userId;
-    private static $beforeNotifyFunction;
     private static $metaDataFunction;
     private static $errorReportingLevel;
 
@@ -161,36 +160,21 @@ class Bugsnag {
     }
 
     /**
-     * DEPRECATED: Please use `setBeforeNotifyFunction` instead.
      * Set a custom metadata generation function to call before notifying
-     * Bugsnag of an error.
+     * Bugsnag of an error. You can use this to add custom tabs of data
+     * to each error on your Bugsnag dashboard.
+     *
+     * @param Callback $metaDataFunction a function that should return an
+     *        array of arrays of custom data. Eg:
+     *        array(
+     *            "user" => array(
+     *                "name" => "James",
+     *                "email" => "james@example.com"
+     *            )
+     *        )
      */
     public static function setMetaDataFunction($metaDataFunction) {
         self::$metaDataFunction = $metaDataFunction;
-    }
-
-    /**
-     * Set a custom function to call before notifying Bugsnag of an error.
-     * You can use this to call your own error handling functions, or to
-     * add custom tabs of data to each error on your Bugsnag dashboard.
-     *
-     * To add custom tabs of meta-data, simply add to the $metaData array
-     * that is passed as the first parameter to your function.
-     *
-     * @param Callback $beforeNotifyFunction a function that will be called
-     *        before notifying Bugsnag of errors. Eg:
-     *
-     *        function before_bugsnag_notify($metaData) {
-     *            $metaData = array(
-     *                "user" => array(
-     *                    "name" => "James",
-     *                    "email" => "james@example.com"
-     *                )
-     *            )
-     *        }
-     */
-    public static function setBeforeNotifyFunction($beforeNotifyFunction) {
-        self::$beforeNotifyFunction = $beforeNotifyFunction;
     }
 
     /**
@@ -284,8 +268,6 @@ class Bugsnag {
 
     // Private methods
     private static function notify($errorName, $errorMessage, $stacktrace=null, $passedMetaData=null) {
-        $customMetaData = array();
-
         // Check if we should notify
         if(is_array(self::$notifyReleaseStages) && !in_array(self::$releaseStage, self::$notifyReleaseStages)) {
             return;
@@ -295,16 +277,6 @@ class Bugsnag {
         if(!isset(self::$apiKey)) {
             error_log('Bugsnag Warning: No API key configured, couldn\'t notify');
             return;
-        }
-
-        // For backwards compatibility
-        if(isset(self::$metaDataFunction) && is_callable(self::$metaDataFunction)) {
-            $customMetaData = call_user_func(self::$metaDataFunction);
-        }
-
-        // Call the custom beforeNotify function
-        if(isset(self::$beforeNotifyFunction) && is_callable(self::$beforeNotifyFunction)) {
-            call_user_func(self::$beforeNotifyFunction, &$customMetaData);
         }
 
         // Build the error payload to send to Bugsnag
@@ -317,7 +289,7 @@ class Bugsnag {
                 'message' => $errorMessage,
                 'stacktrace' => $stacktrace
             )),
-            'metaData' => self::getMetaData($passedMetaData, $customMetaData)
+            'metaData' => self::getMetaData($passedMetaData)
         );
 
         // Add this error payload to the send queue
@@ -424,7 +396,7 @@ class Bugsnag {
         return isset($_SERVER['REQUEST_METHOD']);
     }
 
-    private static function getMetaData($passedMetaData=array(), $customMetaData=array()) {
+    private static function getMetaData($passedMetaData=array()) {
         $metaData = array();
 
         // Add http request info
@@ -438,8 +410,11 @@ class Bugsnag {
         }
 
         // Merge user-defined metadata if custom function is specified
-        if(!is_null($customMetaData) && is_array($customMetaData)) {
-            $metaData = array_merge_recursive($metaData, $customMetaData);
+        if(isset(self::$metaDataFunction) && is_callable(self::$metaDataFunction)) {
+            $customMetaData = call_user_func(self::$metaDataFunction);
+            if(!is_null($customMetaData) && is_array($customMetaData)) {
+                $metaData = array_merge_recursive($metaData, $customMetaData);
+            }
         }
 
         // Merge $passedMetaData

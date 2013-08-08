@@ -1,14 +1,9 @@
 Changelog
 =========
 
-1.1.0
------
--   Add a new `setBeforeNotifyFunction` to execute custom code before
-    sending errors to Bugsnag.
-
 1.0.7
 -----
--   Don't default `notifyReleaseStages` to anything to reduce confusion
+- Don't default `notifyReleaseStages` to anything to reduce confusion
 
 1.0.6
 -----
