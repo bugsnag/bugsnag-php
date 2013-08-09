@@ -2,8 +2,11 @@
 
 class Stacktrace {
     private $frames;
+    private $config;
 
     public function __construct($config, $topFile=null, $topLine=null, $backtrace=null, $generateBacktrace=true) {
+        $this->config = $config;
+
         if($generateBacktrace) {
             // Generate a new backtrace unless we were given one
             if(is_null($backtrace)) {
@@ -47,11 +50,20 @@ class Stacktrace {
     }
 
     private function buildFrame($file, $line, $method) {
-        // TODO: inProject stuff
+        // Check if this frame is inProject
+        $inProject = !is_null($this->config->projectRoot) && preg_match($this->config->projectRootRegex, $file);
+
+        // Strip out projectRoot from start of file path
+        if($inProject) {
+            $file = preg_replace($this->config->projectRootRegex, '', $file);
+        }
+
+        // Construct and return the frame
         return array(
             'file' => $file,
             'lineNumber' => $line,
-            'method' => $method
+            'method' => $method,
+            'inProject' => $inProject
         );
     }
 }

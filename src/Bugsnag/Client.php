@@ -2,6 +2,7 @@
 
 class Client {
     private $requestNotification;
+    private $config;
 
     /**
      * Initialize Bugsnag
@@ -73,8 +74,7 @@ class Client {
      * @param String $projectRoot the root path for your application
      */
     public function setProjectRoot($projectRoot) {
-        $this->config->projectRoot = $projectRoot;
-        // $this->projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
+        $this->config->setProjectRoot($projectRoot);
     }
 
     /**

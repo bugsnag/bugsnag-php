@@ -33,6 +33,11 @@ class Configuration {
         return is_null($this->notifyReleaseStages) || (is_array($this->notifyReleaseStages) && in_array($this->releaseStage, $this->notifyReleaseStages));
     }
 
+    public function setProjectRoot($projectRoot) {
+        $this->projectRoot = $projectRoot;
+        $this->projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
+    }
+
     private function getProtocol() {
         return $this->useSSL ? "https" : "http";
     }
