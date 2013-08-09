@@ -39,7 +39,6 @@ class Notification {
     }
 
     public function postJSON($url, $data) {
-        var_dump($data);
         $http = curl_init($url);
 
         curl_setopt($http, CURLOPT_HEADER, false);

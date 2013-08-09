@@ -19,6 +19,7 @@ class Configuration {
 
     public $metaDataFunction;
     public $projectRootRegex;
+    public $errorReportingLevel;
 
     public function __construct() {
         $this->endpoint = self::$DEFAULT_ENDPOINT;

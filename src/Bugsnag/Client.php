@@ -1,17 +1,20 @@
 <?php namespace Bugsnag;
 
-// TODO: Autoloading?
-require_once __DIR__."/Configuration.php";
-
 class Client {
+    private $requestNotification;
+
     /**
      * Initialize Bugsnag
      *
      * @param String $apiKey your Bugsnag API key
      */
     public function __construct($apiKey) {
-        // TODO: Check for missing API key
+        // Check API key has been passed
+        if(!is_string($apiKey)) {
+            throw new \Exception("Bugsnag Error: Invalid API key");
+        }
 
+        // Create a configuration object
         $this->config = new Configuration();
         $this->config->apiKey = $apiKey;
 
@@ -19,6 +22,10 @@ class Client {
         if(isset($_SERVER) && !empty($_SERVER['DOCUMENT_ROOT'])) {
             $this->setProjectRoot($_SERVER['DOCUMENT_ROOT']);
         }
+
+        // Register a shutdown function to check for fatal errors
+        // and flush any buffered errors
+        register_shutdown_function(array($this, 'fatalErrorHandler'));
     }
 
     /**
@@ -40,7 +47,11 @@ class Client {
         $this->config->notifyReleaseStages = $notifyReleaseStages;
     }
 
-    /* TODO */
+    /**
+     * Set which Bugsnag endpoint to send errors to.
+     *
+     * @param String $endpoint endpoint URL
+     */
     public function setEndpoint($endpoint) {
         $this->config->endpoint = $endpoint;
     }
@@ -95,39 +106,118 @@ class Client {
     }
 
     /**
-     * TODO
+     * Set a custom metadata generation function to call before notifying
+     * Bugsnag of an error. You can use this to add custom tabs of data
+     * to each error on your Bugsnag dashboard.
+     *
+     * @param Callback $metaDataFunction a function that should return an
+     *        array of arrays of custom data. Eg:
+     *        array(
+     *            "user" => array(
+     *                "name" => "James",
+     *                "email" => "james@example.com"
+     *            )
+     *        )
      */
     public function setMetaDataFunction($metaDataFunction) {
         $this->config->metaDataFunction = $metaDataFunction;
     }
 
+    /**
+     * Set Bugsnag's error reporting level.
+     * If this is not set, we'll use your current PHP error_reporting value
+     * from your ini file or error_reporting(...) calls.
+     *
+     * @param Integer $errorReportingLevel the error reporting level integer
+     *                exactly as you would pass to PHP's error_reporting
+     */
+    public static function setErrorReportingLevel($errorReportingLevel) {
+        $this->config->errorReportingLevel = $errorReportingLevel;
+    }
 
-
-
-
-    // Manual Notification
+    /**
+     * Notify Bugsnag of a non-fatal/handled exception
+     *
+     * @param Exception $exception the exception to notify Bugsnag about
+     * @param Array $metaData optional metaData to send with this error
+     */
     public function notifyException($exception, $metaData=null) {
-        $error = Bugsnag\Error::fromPHPException($this->config, $exception);
+        $error = Error::fromPHPException($this->config, $exception);
+        $this->notify($error, $metaData);
     }
 
+    /**
+     * Notify Bugsnag of a non-fatal/handled error
+     *
+     * @param String $errorName the name of the error, a short (1 word) string
+     * @param String $errorMessage the error message
+     * @param Array $metaData optional metaData to send with this error
+     */
     public function notifyError($name, $message, $metaData=null) {
-        $backtrace = debug_backtrace();
-        $firstFrame = array_shift($backtrace);
-
-        $error = new Bugsnag\Error($config, $name, $message);
-        $error->buildStacktrace($firstFrame["file"], $firstFrame["line"], $backtrace);
+        $error = Error::fromNamedError($this->config, $name, $message);
+        $this->notify($error, $metaData);
     }
 
-    // Auto notification
+    // Exception handler callback, should only be called internally by PHP's set_exception_handler
     public function exceptionHandler($exception) {
-        $this->notifyException($exception);
+        $error = Error::fromPHPException($this->config, $exception);
+        $this->notify($error);
     }
 
+    // Exception handler callback, should only be called internally by PHP's set_error_handler
     public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
-        $backtrace = debug_backtrace();
-        array_shift($backtrace);
+        $error = Error::fromPHPError($this->config, $errno, $errstr, $errfile, $errline);
+        $this->notify($error);
+    }
 
-        $error = Bugsnag\Error::fromPHPError($config, $errno, $errstr, $errfile, $errline, $backtrace);
+    // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
+    public function fatalErrorHandler() {
+        // Get last error
+        $lastError = error_get_last();
+
+        // Check if a fatal error caused this shutdown
+        if(!is_null($lastError) && in_array($lastError['type'], Error::$FATAL_ERRORS)) {
+            $error = Error::fromPHPFatalError($this->config, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
+            $this->notify($error);
+        }
+
+        // Flush any buffered errors
+        if($this->requestNotification) {
+            $this->requestNotification->deliver();
+            $this->requestNotification = null;
+        }
+    }
+
+    // Batches up errors into notifications for later sending
+    private function notify($error, $metaData=array()) {
+        // Add request metadata to error
+        if(Request::isRequest()) {
+            $error->setMetaData(array("Request" => Request::getRequestMetaData()));
+        }
+
+        // Add user-specified metaData to error
+        $error->setMetaData($metaData);
+
+        // Queue or send the error
+        if($this->sendErrorsOnShutdown()) {
+            // Create a batch notification unless we already have one
+            if(is_null($this->requestNotification)) {
+                $this->requestNotification = new Notification($this->config);
+            }
+
+            // Add this error to the notification
+            $this->requestNotification->addError($error);
+        } else {
+            // Create and deliver notification immediatelt
+            $notif = new Notification($this->config);
+            $notif->addError($error);
+            $notif->deliver();
+        }
+    }
+
+    // Should we send errors immediately or on shutdown
+    private static function sendErrorsOnShutdown() {
+        return Request::isRequest();
     }
 }
 
