@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<phpunit bootstrap="./vendor/autoload.php">
+<phpunit 
+    backupStaticAttributes="false"
+    colors="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    bootstrap="./vendor/autoload.php">
 
     <testsuites>
         <testsuite name="Bugsnag tests">
