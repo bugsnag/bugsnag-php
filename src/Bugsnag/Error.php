@@ -71,7 +71,7 @@ class Error {
         return $error;
     }
 
-    public function __construct($config, $name, $message) {
+    private function __construct($config, $name, $message) {
         $this->config = $config;
         $this->name = $name;
         $this->message = $message;
