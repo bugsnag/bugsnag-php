@@ -18,20 +18,23 @@ class Notification {
         $this->errorQueue[] = $error;
     }
 
+    public function toArray() {
+        $events = array();
+        foreach ($this->errorQueue as $error) {
+            $events[] = $error->toArray();
+        }
+
+        return array(
+            'apiKey' => $this->config->apiKey,
+            'notifier' => self::$NOTIFIER,
+            'events' => $events
+        );
+    }
+
     public function deliver() {
         if(!empty($this->errorQueue)) {
-            // Create an array from the error objects
-            $events = array();
-            foreach ($this->errorQueue as $error) {
-                $events[] = $error->toArray();
-            }
-
             // Post the request to bugsnag
-            $statusCode = $this->postJSON($this->config->getNotifyEndpoint(), array(
-                'apiKey' => $this->config->apiKey,
-                'notifier' => self::$NOTIFIER,
-                'events' => $events
-            ));
+            $statusCode = $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
 
             // Clear the error queue
             $this->errorQueue = array();

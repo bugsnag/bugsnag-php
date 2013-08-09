@@ -1,43 +1,45 @@
 <?php
 
 class ConfigurationTest extends PHPUnit_Framework_TestCase {
-    public function testEndpoint() {
-        // Test default endpoint
-        $config = new Bugsnag\Configuration();
-        $this->assertEquals($config->getNotifyEndpoint(), "https://notify.bugsnag.com");
+    protected $config;
 
-        // Test non-ssl endpoint
-        $config = new Bugsnag\Configuration();
-        $config->useSSL = false;
-        $this->assertEquals($config->getNotifyEndpoint(), "http://notify.bugsnag.com");
-
-        // Test custom endpoint
-        $config = new Bugsnag\Configuration();
-        $config->useSSL = false;
-        $config->endpoint = "localhost";
-        $this->assertEquals($config->getNotifyEndpoint(), "http://localhost");
+    protected function setUp(){
+        $this->config = new Bugsnag\Configuration();
     }
 
-    public function testShouldNotify() {
-        // Test default releaseStage
-        $config = new Bugsnag\Configuration();
-        $this->assertEquals($config->shouldNotify(), true);
+    public function testDefaultEndpoint() {
+        $this->assertEquals($this->config->getNotifyEndpoint(), "https://notify.bugsnag.com");
+    }
 
-        // Test custom releaseStage
-        $config = new Bugsnag\Configuration();
-        $config->releaseStage = "staging";
-        $this->assertEquals($config->shouldNotify(), true);
+    public function testNonSSLEndpoint() {
+        $this->config->useSSL = false;
+        $this->assertEquals($this->config->getNotifyEndpoint(), "http://notify.bugsnag.com");
+    }
 
-        // Test custom notifyReleaseStages
-        $config = new Bugsnag\Configuration();
-        $config->notifyReleaseStages = array("banana");
-        $this->assertEquals($config->shouldNotify(), false);
+    public function testCustomEndpoint() {
+        $this->config->useSSL = false;
+        $this->config->endpoint = "localhost";
+        $this->assertEquals($this->config->getNotifyEndpoint(), "http://localhost");
+    }
 
-        // Test custom releaseStage and notifyReleaseStages
-        $config = new Bugsnag\Configuration();
-        $config->releaseStage = "banana";
-        $config->notifyReleaseStages = array("banana");
-        $this->assertEquals($config->shouldNotify(), true);
+    public function testDefaultReleaseStageShouldNotify() {
+        $this->assertEquals($this->config->shouldNotify(), true);
+    }
+
+    public function testCustomReleaseStageShouldNotify() {
+        $this->config->releaseStage = "staging";
+        $this->assertEquals($this->config->shouldNotify(), true);
+    }
+
+    public function testCustomNotifyReleaseStagesShouldNotify() {
+        $this->config->notifyReleaseStages = array("banana");
+        $this->assertEquals($this->config->shouldNotify(), false);
+    }
+
+    public function testBothCustomShouldNotify() {
+        $this->config->releaseStage = "banana";
+        $this->config->notifyReleaseStages = array("banana");
+        $this->assertEquals($this->config->shouldNotify(), true);
     }
 }
 

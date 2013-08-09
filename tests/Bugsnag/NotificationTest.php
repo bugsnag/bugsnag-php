@@ -1,20 +1,28 @@
 <?php
 
 class NotificationTest extends PHPUnit_Framework_TestCase {
+    protected $config;
+
+    protected function setUp(){
+        $this->config = new Bugsnag\Configuration();
+        $this->config->apiKey = "6015a72ff14038114c3d12623dfb018f";
+    }
+
     public function testNotification() {
-        // Configuration
-        $config = new Bugsnag\Configuration();
-        $config->apiKey = "6015a72ff14038114c3d12623dfb018f";
-
         // Create a mock notification object
-        $notification = $this->getMock('Bugsnag\Notification', array("postJSON"), array($config));
+        $notification = $this->getMockBuilder('Bugsnag\Notification')
+                             ->setMethods(array("toArray"))
+                             ->setConstructorArgs(array($this->config))
+                             ->getMock();
 
-        // Expect postJSON to be called
+        // Expect toArray to be called
         $notification->expects($this->once())
-                     ->method("postJSON");
+                     ->method("toArray");
+
+        // TODO: Check toArray return value
 
         // Add an error to the notification and deliver it
-        $notification->addError(Bugsnag\Error::fromNamedError($config, "Name", "Message"));
+        $notification->addError(Bugsnag\Error::fromNamedError($this->config, "Name", "Message"));
         $notification->deliver();
     }
 }
