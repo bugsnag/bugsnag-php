@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__."/../src/Bugsnag/Configuration.php";
-
 class ConfigurationTest extends PHPUnit_Framework_TestCase {
     public function testEndpoint() {
         // Test default endpoint
