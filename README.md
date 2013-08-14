@@ -26,15 +26,17 @@ Installation
 Configuration
 -------------
 
-Add the Bugsnag configuration after autoloading.  In Zend Framework this is done in the public/index.php file.
+Add the Bugsnag configuration after autoloading.  In Zend Framework this is done in the public/index.php file.  
+The $bugsnag->bind() call will bind the errorHandler, exceptionHandler, fatalErrorHandler to Bugsnag.
+
 
 ```
 // Setup autoloading
 include 'init_autoloader.php';
 
+// Include Bugsnag
 $bugsnag = new \Bugsnag\Client($apikey);
-set_error_handler(array($bugsnag, 'errorHandler'));
-set_exception_handler(array($bugsnag, 'exceptionHandler'));
+$bugsnag->bindHandlers();
 ```
 
 
