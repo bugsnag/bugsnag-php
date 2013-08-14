@@ -9,40 +9,42 @@ mobile and desktop applications, helping you to understand and resolve them
 as fast as possible. [Create a free account](https://bugsnag.com) to start 
 capturing errors from your applications.
 
+Installation
+------------
+  1. edit `composer.json` file with following contents:
 
-How to Install
---------------
-
-1.  Copy [bugsnag.php](https://raw.github.com/bugsnag/bugsnag-php/master/lib/bugsnag.php)
-    to your PHP project and require it in your app:
-
-    ```php
-    require_once("path/to/bugsnag.php");
-    ```
-
-    *Note: If your project uses [Composer](http://getcomposer.org/), you can 
-    instead add `bugsnag/bugsnag` as a dependency in your `composer.json`.*
-
-2.  Configure Bugsnag with your API key:
-
-    ```php
-    Bugsnag::register("YOUR-API-KEY-HERE");
-    ```
-
-3.  Attach Bugsnag's error and exception handlers:
-
-    ```php
-    set_error_handler("Bugsnag::errorHandler");
-    set_exception_handler("Bugsnag::exceptionHandler");
-    ```
-
-    *Note: You can also call `Bugsnag::errorHandler` or 
-    `Bugsnag::exceptionHandler` from within your own error handler functions,
-    simply pass all parameters through.*
+     ```json
+     "require": {
+        "bugsnag/bugsnag": "dev-refactor"
+     }
+     ```
+  2. install composer via `curl -s http://getcomposer.org/installer | php` (on windows, download
+     http://getcomposer.org/installer and execute it with PHP)
+  3. run `php composer.phar install`
 
 
-*Note: The Bugsnag PHP notifier requires cURL support to be enabled on your
-PHP installation.*
+Configuration
+-------------
+
+Add the Bugsnag configuration after autoloading.  In Zend Framework this is done in the public/index.php file.  
+The $bugsnag->bind() call will bind the errorHandler, exceptionHandler, fatalErrorHandler to Bugsnag.
+
+
+```
+// Setup autoloading
+include 'init_autoloader.php';
+
+// Include Bugsnag
+$bugsnag = new \Bugsnag\Client($apikey);
+$bugsnag->bindHandlers();
+```
+
+
+Refactor
+--------
+
+This library is under refactor and the documentation below this line has not been updated to reflect the changes
+included in this refactor.
 
 
 Sending Custom Data With Exceptions
@@ -226,57 +228,11 @@ Bugsnag::setProjectRoot(null);
 ```
 
 
-PHP Frameworks
---------------
-
-###CakePHP
-
-If you are using CakePHP, installation is easy:
-
-1.  Copy [bugsnag.php](https://raw.github.com/bugsnag/bugsnag-php/master/lib/bugsnag.php)
-    into your CakePHP project
-
-2.  Edit `App/Config/core.php`:
-
-    ```php
-    // Require Bugsnag
-    require_once("path/to/bugsnag.php");
-
-    // Initialize Bugsnag
-    Bugsnag::register("YOUR-API-KEY-HERE");
-
-    // Change the default error handler to be Bugsnag
-    Configure::write('Error', array(
-        'handler' => 'Bugsnag::errorHandler',
-        'level' => E_ALL & ~E_DEPRECATED,
-        'trace' => true
-    ));
-
-    // Change the default exception handler to be Bugsnag
-    Configure::write('Exception', array(
-        'handler' => 'Bugsnag::exceptionHandler',
-        'renderer' => 'ExceptionRenderer',
-        'log' => true
-    ));
-    ```
-
-
 Reporting Bugs or Feature Requests
 ----------------------------------
 
 Please report any bugs or feature requests on the github issues page for this
-project here:
-
-<https://github.com/bugsnag/bugsnag-php/issues>
-
-
-Contributing
-------------
-
--   [Fork](https://help.github.com/articles/fork-a-repo) the [notifier on github](https://github.com/bugsnag/bugsnag-php)
--   Commit and push until you are happy with your contribution
--   [Make a pull request](https://help.github.com/articles/using-pull-requests)
--   Thanks!
+project:  https://github.com/bugsnag/bugsnag-php/issues
 
 
 License

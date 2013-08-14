@@ -30,6 +30,20 @@ class Client {
     }
 
     /**
+     * Bind handlers to Bugsnag
+     */
+    public function bindHandlers()
+    {
+        if (!$this->config) {
+            throw new \Exception('Configuration is not set');
+        }
+
+        set_error_handler(array($this, 'errorHandler'));
+        set_exception_handler(array($this, 'exceptionHandler'));
+        register_shutdown_function(array($this, 'fatalErrorHandler'));
+    }
+
+    /**
      * Set your release stage, eg "production" or "development"
      *
      * @param String $releaseStage the app's current release stage
@@ -67,7 +81,7 @@ class Client {
     }
 
     /**
-     * Set the absolute path to the root of your application. 
+     * Set the absolute path to the root of your application.
      * We use this to help with error grouping and to highlight "in project"
      * stacktrace lines.
      *
@@ -81,7 +95,7 @@ class Client {
      * Set the strings to filter out from metaData arrays before sending then
      * to Bugsnag. Eg. array("password", "credit_card")
      *
-     * @param Array $filters an array of metaData filters 
+     * @param Array $filters an array of metaData filters
      */
     public function setFilters($filters) {
         $this->config->filters = $filters;
