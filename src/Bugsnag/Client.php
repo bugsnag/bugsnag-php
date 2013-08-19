@@ -1,8 +1,8 @@
 <?php namespace Bugsnag;
 
 class Client {
-    private $requestNotification;
-    private $config;
+    public $config;
+    private $notification;
 
     /**
      * Initialize Bugsnag
@@ -131,8 +131,15 @@ class Client {
      * @param Integer $errorReportingLevel the error reporting level integer
      *                exactly as you would pass to PHP's error_reporting
      */
-    public static function setErrorReportingLevel($errorReportingLevel) {
+    public function setErrorReportingLevel($errorReportingLevel) {
         $this->config->errorReportingLevel = $errorReportingLevel;
+    }
+
+    /**
+     * Set the notification object to use for batching up notifications.
+     */
+    public function setNotification($notification) {
+        $this->notification = $notification;
     }
 
     /**
@@ -182,9 +189,9 @@ class Client {
         }
 
         // Flush any buffered errors
-        if($this->requestNotification) {
-            $this->requestNotification->deliver();
-            $this->requestNotification = null;
+        if($this->notification) {
+            $this->notification->deliver();
+            $this->notification = null;
         }
     }
 
@@ -201,12 +208,12 @@ class Client {
         // Queue or send the error
         if($this->sendErrorsOnShutdown()) {
             // Create a batch notification unless we already have one
-            if(is_null($this->requestNotification)) {
-                $this->requestNotification = new Notification($this->config);
+            if(is_null($this->notification)) {
+                $this->notification = new Notification($this->config);
             }
 
             // Add this error to the notification
-            $this->requestNotification->addError($error);
+            $this->notification->addError($error);
         } else {
             // Create and deliver notification immediatelt
             $notif = new Notification($this->config);
