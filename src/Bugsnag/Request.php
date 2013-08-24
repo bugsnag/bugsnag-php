@@ -64,10 +64,17 @@ class Request {
         }
     }
 
-    private static function getCurrentUrl() {
+    private static function getCurrentUrl() 
+    {
         $schema = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 
-        return $schema.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+        if (isset($_SERVER['HTTP_HOST']) && isset($_SERVER['REQUEST_URI'])) {
+            return $schema . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        } elseif (isset($_SERVER['REQUEST_URI'])) {
+            return $schema . $_SERVER['REQUEST_URI'];
+        } else {
+            return $schema;
+        }
     }
 
     private static function getRequestIp() {
