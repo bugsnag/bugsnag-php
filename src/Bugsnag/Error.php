@@ -80,6 +80,11 @@ class Error {
         // Merge custom metadata
         $this->setMetaData($this->config->metaData);
 
+        // Run beforeNotify function
+        if(isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
+            call_user_func($this->config->beforeNotifyFunction, $this);
+        }
+
         // Merge metadata from user metadata function
         if(isset($this->config->metaDataFunction) && is_callable($this->config->metaDataFunction)) {
             $this->setMetaData(call_user_func($this->config->metaDataFunction));

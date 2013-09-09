@@ -140,6 +140,15 @@ class Client {
     }
 
     /**
+     * Set a custom function to call before notifying Bugsnag of an error.
+     * You can use this to call your own error handling functions, or to add
+     * custom tabs of data to each error on your Bugsnag dashboard.
+    */
+    public function setBeforeNotifyFunction($beforeNotifyFunction) {
+        $this->config->beforeNotifyFunction = $beforeNotifyFunction;
+    }
+
+    /**
      * Set Bugsnag's error reporting level.
      * If this is not set, we'll use your current PHP error_reporting value
      * from your ini file or error_reporting(...) calls.
