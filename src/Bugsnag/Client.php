@@ -106,6 +106,22 @@ class Client {
     }
 
     /**
+     * Set custom metadata to send to Bugsnag with every error. You can use
+     * this to add custom tabs of data to each error on your Bugsnag dashboard
+     *
+     * @param Array $metaData an array of arrays of custom data. Eg:
+     *        array(
+     *            "user" => array(
+     *                "name" => "James",
+     *                "email" => "james@example.com"
+     *            )
+     *        )
+     */
+    public function setMetaData($metaData) {
+        $this->config->metaData = $metaData;
+    }
+
+    /**
      * Set a custom metadata generation function to call before notifying
      * Bugsnag of an error. You can use this to add custom tabs of data
      * to each error on your Bugsnag dashboard.
@@ -196,7 +212,7 @@ class Client {
     }
 
     // Batches up errors into notifications for later sending
-    private function notify($error, $metaData=array()) {
+    public function notify($error, $metaData=array()) {
         // Add request metadata to error
         if(Request::isRequest()) {
             $error->setMetaData(array("Request" => Request::getRequestMetaData()));

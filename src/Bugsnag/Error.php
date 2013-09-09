@@ -75,12 +75,14 @@ class Error {
         $this->config = $config;
         $this->name = $name;
         $this->message = $message;
+        $this->metaData = array();
+
+        // Merge custom metadata
+        $this->setMetaData($this->config->metaData);
 
         // Merge metadata from user metadata function
         if(isset($this->config->metaDataFunction) && is_callable($this->config->metaDataFunction)) {
-            $this->metaData = call_user_func($this->config->metaDataFunction);
-        } else {
-            $this->metaData = array();
+            $this->setMetaData(call_user_func($this->config->metaDataFunction));
         }
 
         // Set up the context and userId

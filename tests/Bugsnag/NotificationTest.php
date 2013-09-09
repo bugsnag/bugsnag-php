@@ -18,7 +18,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
         // Expect postJSON to be called
         $notification->expects($this->once())
                      ->method("postJSON")
-                     ->with($this->anything(), 
+                     ->with($this->equalTo("https://notify.bugsnag.com"),
                             $this->anything());
 
         // Add an error to the notification and deliver it

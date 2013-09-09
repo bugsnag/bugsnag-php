@@ -17,6 +17,7 @@ class Configuration {
     public $appVersion;
     public $osVersion;
 
+    public $metaData;
     public $metaDataFunction;
     public $projectRootRegex;
     public $errorReportingLevel;
