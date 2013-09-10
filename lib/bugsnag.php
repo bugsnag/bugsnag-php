@@ -10,7 +10,7 @@
  * https://bugsnag.com/docs/notifiers/php
  *
  * @package     Bugsnag
- * @version     1.0.7
+ * @version     1.0.8
  * @author      James Smith <notifiers@bugsnag.com>
  * @copyright   (c) 2013 Bugsnag
  * @license     MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -19,7 +19,7 @@ class Bugsnag {
     // "Constants"
     private static $NOTIFIER = array(
         'name'      => 'Bugsnag PHP (Official)',
-        'version'   => '1.0.7',
+        'version'   => '1.0.8',
         'url'       => 'https://bugsnag.com'
     );                                                                      
 
@@ -63,6 +63,7 @@ class Bugsnag {
     private static $endpoint = 'notify.bugsnag.com';
     private static $context;
     private static $userId;
+    private static $metaData;
     private static $metaDataFunction;
     private static $errorReportingLevel;
 
@@ -157,6 +158,23 @@ class Bugsnag {
      */
     public static function setContext($context) {
         self::$context = $context;
+    }
+
+    /**
+     * Set custom metadata to send to Bugsnag with every error.
+     * You can use this to add custom tabs of data to each error on your
+     * Bugsnag dashboard.
+     *
+     * @param Array $metaData an array of arrays of custom data. Eg:
+     *        array(
+     *            "user" => array(
+     *                "name" => "James",
+     *                "email" => "james@example.com"
+     *            )
+     *        )
+     */
+    public static function setMetaData($metaData) {
+        self::$metaData = $metaData;
     }
 
     /**
@@ -407,6 +425,11 @@ class Bugsnag {
         // Add environment info
         if(!empty($_ENV)) {
             $metaData['environment'] = $_ENV;
+        }
+
+        // Merge custom meta-data
+        if(isset(self::$metaData) && is_array(self::$metaData)) {
+            $metaData = array_merge_recursive($metaData, self::$metaData);
         }
 
         // Merge user-defined metadata if custom function is specified
