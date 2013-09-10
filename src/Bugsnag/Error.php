@@ -42,14 +42,14 @@ class Error {
     public $context;
 
     public static function fromPHPException($config, $exception) {
-        $error = new Error($config, get_class($exception), $exception->getMessage());
+        $error = new self($config, get_class($exception), $exception->getMessage());
         $error->stacktrace = new Stacktrace($config, $exception->getFile(), $exception->getLine(), $exception->getTrace());
 
         return $error;
     }
 
     public static function fromPHPError($config, $code, $message, $file, $line) {
-        $error = new Error($config, self::$ERROR_NAMES[$code], $message);
+        $error = new self($config, self::$ERROR_NAMES[$code], $message);
         $error->stacktrace = new Stacktrace($config, $file, $line);
         $error->code = $code;
 
@@ -57,7 +57,7 @@ class Error {
     }
 
     public static function fromPHPFatalError($config, $code, $message, $file, $line) {
-        $error = new Error($config, self::$ERROR_NAMES[$code], $message);
+        $error = new self($config, self::$ERROR_NAMES[$code], $message);
         $error->stacktrace = new Stacktrace($config, $file, $line, null, false);
         $error->code = $code;
 
@@ -65,7 +65,7 @@ class Error {
     }
 
     public static function fromNamedError($config, $name, $message) {
-        $error = new Error($config, $name, $message);
+        $error = new self($config, $name, $message);
         $error->stacktrace = new Stacktrace($config);
 
         return $error;
