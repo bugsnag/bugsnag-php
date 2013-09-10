@@ -1,9 +1,13 @@
 Changelog
 =========
 
+1.0.8
+-----
+-   Added a `setMetaData` function for sending custom data with every error
+
 1.0.7
 -----
-- Don't default `notifyReleaseStages` to anything to reduce confusion
+-   Don't default `notifyReleaseStages` to anything to reduce confusion
 
 1.0.6
 -----
