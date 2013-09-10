@@ -1,6 +1,6 @@
-<?php namespace Bugsnag;
+<?php
 
-class Notification {
+class BugsnagNotification {
     private static $NOTIFIER = array(
         'name'      => 'Bugsnag PHP (Official)',
         'version'   => '2.0.0',

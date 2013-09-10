@@ -1,6 +1,6 @@
-<?php namespace Bugsnag;
+<?php
 
-class Configuration {
+class BugsnagConfiguration {
     private static $DEFAULT_ENDPOINT = "notify.bugsnag.com";
 
     public $apiKey;
