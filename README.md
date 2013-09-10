@@ -157,6 +157,25 @@ Bugsnag::setUseSSL(true);
 
 By default, this is set to be true.
 
+###setMetaData
+
+Set custom metadata to send to Bugsnag with every error.
+You can use this to add custom tabs of data to each error on your
+Bugsnag dashboard.
+
+This function accepts an array of arrays, the outer array should 
+represent the "tabs" to display on your Bugsnag dashboard, and the inner
+array should be the values to display on each tab, for example:
+
+```php
+Bugsnag::setMetaData(array(
+    "user" => array(
+        "name" => "James",
+        "email" => "james@example.com"
+    )
+));
+```
+
 ###setMetaDataFunction
 
 Set a custom metadata generation function to call before notifying
