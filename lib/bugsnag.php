@@ -65,6 +65,7 @@ class Bugsnag {
     private static $userId;
     private static $metaData;
     private static $metaDataFunction;
+    private static $autoNotify = true;
     private static $errorReportingLevel;
 
     private static $registeredShutdown = false;
@@ -86,7 +87,7 @@ class Bugsnag {
         }
 
         // Register a shutdown function to check for fatal errors
-        if(!self::$registeredShutdown) {
+        if(self::$autoNotify && !self::$registeredShutdown) {
             register_shutdown_function('Bugsnag::fatalErrorHandler');
             self::$registeredShutdown = true;
         }
@@ -196,6 +197,15 @@ class Bugsnag {
     }
 
     /**
+     * Sets whether we should automatically notify of fatal errors.
+     *
+     * @param Boolean $autoNotify true if we should notify
+     */
+    public static funcation setAutoNotify($autoNotify) {
+        self::$autoNotify = $autoNotify;
+    }
+
+    /**
      * Set Bugsnag's error reporting level.
      * If this is not set, we'll use your current PHP error_reporting value
      * from your ini file or error_reporting(...) calls.
@@ -242,13 +252,17 @@ class Bugsnag {
 
     // Exception handler callback, should only be called internally by PHP's set_exception_handler
     public static function exceptionHandler($exception) {
+        if(!self::$autoNotify) {
+            return;
+        }
+        
         self::notifyException($exception);
     }
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public static function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
         // Check if we should notify Bugsnag about errors of this type
-        if(!self::shouldNotify($errno)) {
+        if(!self::$autoNotify || !self::shouldNotify($errno)) {
             return;
         }
 
@@ -264,6 +278,10 @@ class Bugsnag {
 
     // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
     public static function fatalErrorHandler() {
+        if(!self::$autoNotify) {
+            return;
+        }
+
         // Get last error
         $lastError = error_get_last();
 
