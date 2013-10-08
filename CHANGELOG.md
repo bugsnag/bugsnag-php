@@ -1,6 +1,9 @@
 Changelog
 =========
 
+1.0.9
+-   Added a `setAutoNotify` function to allow disabling of automatic error handling
+
 1.0.8
 -----
 -   Added a `setMetaData` function for sending custom data with every error

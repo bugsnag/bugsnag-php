@@ -155,7 +155,7 @@ Enforces all communication with bugsnag.com be made via ssl.
 Bugsnag::setUseSSL(true);
 ```
 
-By default, this is set to be true.
+By default, this is set to `true`.
 
 ###setMetaData
 
@@ -209,7 +209,7 @@ Bugsnag registering a shutdown function.
 Bugsnag::setAutoNotify(false);
 ```
 
-By default, this is set to be true.
+By default, this is set to `true`.
 
 ###setErrorReportingLevel
 
