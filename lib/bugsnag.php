@@ -286,7 +286,7 @@ class Bugsnag {
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
-        if(!is_null($lastError) && in_array($lastError['type'], self::$FATAL_ERRORS)) {
+        if(!is_null($lastError) && in_array($lastError['type'], self::$FATAL_ERRORS) && self::shouldNotify($lastError['type'])) {
             // NOTE: We can't get the error's backtrace here :(
             $stacktrace = self::buildStacktrace($lastError['file'], $lastError['line']);
 
