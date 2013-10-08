@@ -2,7 +2,9 @@ Changelog
 =========
 
 1.0.9
--   Added a `setAutoNotify` function to allow disabling of automatic error handling
+-----
+-   Add `setAutoNotify` function to allow disabling of automatic error handling
+-   Fix bug where error reporting level was being ignored for fatal errors
 
 1.0.8
 -----
