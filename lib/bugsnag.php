@@ -201,7 +201,7 @@ class Bugsnag {
      *
      * @param Boolean $autoNotify true if we should notify
      */
-    public static funcation setAutoNotify($autoNotify) {
+    public static function setAutoNotify($autoNotify) {
         self::$autoNotify = $autoNotify;
     }
 
