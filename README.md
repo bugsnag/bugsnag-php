@@ -199,6 +199,18 @@ function bugsnag_metadata() {
 }
 ```
 
+###setAutoNotify
+
+Controls whether bugsnag should automatically notify about any errors it detects in
+the PHP error handlers. Set this before you call `Bugsnag::register()` function to prevent
+Bugsnag registering a shutdown function.
+
+```php
+Bugsnag::setAutoNotify(false);
+```
+
+By default, this is set to be true.
+
 ###setErrorReportingLevel
 
 Set the levels of PHP errors to report to Bugsnag, by default we'll use
