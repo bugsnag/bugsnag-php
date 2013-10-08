@@ -87,7 +87,7 @@ class Bugsnag {
         }
 
         // Register a shutdown function to check for fatal errors
-        if(self::$autoNotify && !self::$registeredShutdown) {
+        if(!self::$registeredShutdown) {
             register_shutdown_function('Bugsnag::fatalErrorHandler');
             self::$registeredShutdown = true;
         }
