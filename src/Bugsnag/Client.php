@@ -214,7 +214,7 @@ class BugsnagClient {
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
-        if(!is_null($lastError) && in_array($lastError['type'], Error::$FATAL_ERRORS)) {
+        if(!is_null($lastError) && in_array($lastError['type'], BugsnagError::$FATAL_ERRORS)) {
             $error = BugsnagError::fromPHPFatalError($this->config, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
 
             if(!$error->shouldIgnore()) {
