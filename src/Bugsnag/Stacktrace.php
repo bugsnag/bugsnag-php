@@ -1,6 +1,6 @@
-<?php namespace Bugsnag;
+<?php
 
-class Stacktrace {
+class BugsnagStacktrace {
     private $frames;
     private $config;
 
@@ -14,6 +14,7 @@ class Stacktrace {
             }
 
             // Throw away any stackframes that occurred in Bugsnag code
+            // TODO: Make this work with new filename prefix
             $lastFrame = null;
             while(!empty($backtrace) && isset($backtrace[0]["class"]) &&strpos($backtrace[0]["class"], "Bugsnag\\") == 0) {
               $lastFrame = array_shift($backtrace);

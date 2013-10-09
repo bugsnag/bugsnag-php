@@ -2,39 +2,39 @@
 
 class errorTest extends PHPUnit_Framework_TestCase {
     public function testMetaData() {
-        $config = new Bugsnag\Configuration();
+        $config = new BugsnagConfiguration();
         $config->metaData = array("Testing" => array("globalArray" => "hi"));
 
-        $error = Bugsnag\Error::fromNamedError($config, "Name", "Message");
+        $error = BugsnagError::fromNamedError($config, "Name", "Message");
 
         $this->assertEquals($error->metaData["Testing"]["globalArray"], "hi");
     }
 
     public function testMetaDataFunction() {
-        $config = new Bugsnag\Configuration();
+        $config = new BugsnagConfiguration();
         $config->metaDataFunction = "bugsnag_metadata";
 
-        $error = Bugsnag\Error::fromNamedError($config, "Name", "Message");
+        $error = BugsnagError::fromNamedError($config, "Name", "Message");
 
         $this->assertEquals($error->metaData["Testing"]["globalFunction"], "hello");
     }
 
     public function testBeforeNotifyFunction() {
-        $config = new Bugsnag\Configuration();
+        $config = new BugsnagConfiguration();
         $config->beforeNotifyFunction = "bugsnag_before_notify";
 
-        $error = Bugsnag\Error::fromNamedError($config, "Name", "Message");
+        $error = BugsnagError::fromNamedError($config, "Name", "Message");
 
         $this->assertEquals($error->metaData["Testing"]["callbackFunction"], "blergh");
     }
 
     public function testMetaDataMerging() {
-        $config = new Bugsnag\Configuration();
+        $config = new BugsnagConfiguration();
         $config->metaData = array("Testing" => array("globalArray" => "hi"));
         $config->metaDataFunction = "bugsnag_metadata";
         $config->beforeNotifyFunction = "bugsnag_before_notify";
 
-        $error = Bugsnag\Error::fromNamedError($config, "Name", "Message");
+        $error = BugsnagError::fromNamedError($config, "Name", "Message");
         $error->setMetaData(array("Testing" => array("localArray" => "yo")));
 
         $this->assertEquals($error->metaData["Testing"]["globalArray"], "hi");

@@ -1,6 +1,6 @@
-<?php namespace Bugsnag;
+<?php
 
-class Request {
+class BugsnagRequest {
     public static function isRequest() {
         return isset($_SERVER['REQUEST_METHOD']);
     }
