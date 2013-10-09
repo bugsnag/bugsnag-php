@@ -16,10 +16,14 @@
     },
 
     "require-dev": {
-        "phpunit/phpunit": "3.7.*"
+        "phpunit/phpunit": "3.7.*",
+        "phpunit/dbunit": ">=1.2",
+        "phpunit/php-invoker": "*",
+        "phpunit/phpunit-selenium": ">=1.2",
+        "phpunit/phpunit-story": "*"
     },
 
     "autoload": {
-        "psr-0": { "Bugsnag\\": "src/" }
+        "files": ["src/Bugsnag.php"]
     }
 }
