@@ -109,13 +109,13 @@ class BugsnagError {
         return $this->config->userId || BugsnagRequest::getUserId();
     }
 
-    public function shouldIgnore($errno) {
+    public function shouldIgnore() {
         // Check if we should ignore errors of this type
         if(isset($this->code)) {
             if(isset($this->config->errorReportingLevel)) {
-                return $this->config->errorReportingLevel & $this->code;
+                return !($this->config->errorReportingLevel & $this->code);
             } else {
-                return error_reporting() & $this->code;
+                return !(error_reporting() & $this->code);
             }
         }
 

@@ -193,13 +193,19 @@ class BugsnagClient {
     // Exception handler callback, should only be called internally by PHP's set_exception_handler
     public function exceptionHandler($exception) {
         $error = BugsnagError::fromPHPException($this->config, $exception);
-        $this->notify($error);
+
+        if(!$error->shouldIgnore()) {
+            $this->notify($error);
+        }
     }
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
         $error = BugsnagError::fromPHPError($this->config, $errno, $errstr, $errfile, $errline);
-        $this->notify($error);
+
+        if(!$error->shouldIgnore()) {
+            $this->notify($error);
+        }
     }
 
     // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
@@ -210,7 +216,10 @@ class BugsnagClient {
         // Check if a fatal error caused this shutdown
         if(!is_null($lastError) && in_array($lastError['type'], Error::$FATAL_ERRORS)) {
             $error = BugsnagError::fromPHPFatalError($this->config, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
-            $this->notify($error);
+
+            if(!$error->shouldIgnore()) {
+                $this->notify($error);
+            }
         }
 
         // Flush any buffered errors
