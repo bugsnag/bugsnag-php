@@ -161,6 +161,16 @@ class BugsnagClient {
     }
 
     /**
+     * Sets whether Bugsnag should be automatically notified of unhandled
+     * exceptions and errors.
+     *
+     * @param Boolean $autoNotify whether to auto notify or not
+     */
+    public function setAutoNotify($autoNotify) {
+        $this->config->autoNotify = $autoNotify;
+    }
+
+    /**
      * Set the notification object to use for batching up notifications.
      */
     public function setNotification($notification) {
@@ -194,7 +204,7 @@ class BugsnagClient {
     public function exceptionHandler($exception) {
         $error = BugsnagError::fromPHPException($this->config, $exception);
 
-        if(!$error->shouldIgnore()) {
+        if(!$error->shouldIgnore() && $this->config->autoNotify) {
             $this->notify($error);
         }
     }
@@ -203,7 +213,7 @@ class BugsnagClient {
     public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
         $error = BugsnagError::fromPHPError($this->config, $errno, $errstr, $errfile, $errline);
 
-        if(!$error->shouldIgnore()) {
+        if(!$error->shouldIgnore() && $this->config->autoNotify) {
             $this->notify($error);
         }
     }
@@ -217,7 +227,7 @@ class BugsnagClient {
         if(!is_null($lastError) && in_array($lastError['type'], BugsnagError::$FATAL_ERRORS)) {
             $error = BugsnagError::fromPHPFatalError($this->config, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
 
-            if(!$error->shouldIgnore()) {
+            if(!$error->shouldIgnore() && $this->config->autoNotify) {
                 $this->notify($error);
             }
         }
