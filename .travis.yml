@@ -6,6 +6,10 @@ php:
   - 5.3
   - 5.2
 
+before_script:
+  - pear config-set auto_discover 1
+  - pear install pear.phpunit.de/PHPUnit
+
 notifications:
   hipchat:
     secure: "MftG2Vm1EUhj43QtT6CvXByKQqLZ4OC9lyOFTVf71qmQBcZtt0plfjt58Onte1gsMGQYZMX9Bja4QtmqKrE5qaa6cjgDRmHyUpCgjwP22Z2jY3WYUqGZg4sdkYR/bMfYlURPap7+Zbqxya8xB3NwT2KeNwrWb5iCdTAbG72NoNE="
