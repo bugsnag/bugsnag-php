@@ -110,19 +110,18 @@ class Bugsnag_Error {
         $this->setMetaData($this->config->metaData);
 
         // Run beforeNotify function
-        $beforeNotifyReturn = NULL;
         if(isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
             $beforeNotifyReturn = call_user_func($this->config->beforeNotifyFunction, $this);
+        }
+
+        // Skip this error if the beforeNotify function returned FALSE
+        if(isset($beforeNotifyReturn) && $beforeNotifyReturn === FALSE) {
+            return NULL;
         }
 
         // Set up the context and userId
         $this->context = Bugsnag_Request::getContext();
         $this->userId = Bugsnag_Request::getUserId();
-
-        // Skip this error if the beforeNotify function returned FALSE
-        if($beforeNotifyReturn === FALSE) {
-            return NULL;
-        }
 
         return array(
             'userId' => $this->userId,
