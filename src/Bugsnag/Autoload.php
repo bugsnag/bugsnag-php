@@ -7,7 +7,7 @@ function __autoload($class) {
     }
 
     // Approximate namespaces (to maintain compatibility with PHP 5.2)
-    $file = realpath(dirname(__FILE__).'/../'.str_replace(array('_', "\0"), array('/', ''), $class).'.php');
+    $file = dirname(__FILE__).DIRECTORY_SEPARATOR.str_replace("Bugsnag_", '', $class).".php";
     if(is_file($file)) {
         require_once($file);
     }
