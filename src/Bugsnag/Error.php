@@ -76,6 +76,9 @@ class Bugsnag_Error {
         $this->name = $name;
         $this->message = $message;
         $this->metaData = array();
+
+        // Merge custom metadata
+        $this->setMetaData($this->config->metaData);
     }
 
     public function setMetaData($metaData) {
@@ -106,9 +109,6 @@ class Bugsnag_Error {
     }
 
     public function toArray() {
-        // Merge custom metadata
-        $this->setMetaData($this->config->metaData);
-
         // Run beforeNotify function
         if(isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
             $beforeNotifyReturn = call_user_func($this->config->beforeNotifyFunction, $this);
