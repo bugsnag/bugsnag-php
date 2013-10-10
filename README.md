@@ -20,7 +20,7 @@ How to Install
     ```json
     {
         "require": {
-            "bugsnag/bugsnag": "dev-master"
+            "bugsnag/bugsnag": "2.*.*"
         }
     }
     ```
