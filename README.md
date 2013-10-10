@@ -51,7 +51,7 @@ How to Install
 2.  Require it in your app using the autoloader:
 
     ```php
-    require_once "/path/to/Bugsnag/Autoloader.php";
+    require_once "/path/to/Bugsnag/Autoload.php";
     ```
 
 
