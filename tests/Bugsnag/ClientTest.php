@@ -25,8 +25,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $this->client->expects($this->once())
                      ->method('notify');
 
-        // Triggers a E_NOTICE, which should be handled by our errorHandler
-        $foo = $bar;
+        $this->client->errorHandler(E_NOTICE, "Something broke", "somefile.php", 123);
     }
 
     public function testExceptionHandler() {
