@@ -164,13 +164,6 @@ class Bugsnag_Client {
     }
 
     /**
-     * Set the notification object to use for batching up notifications.
-     */
-    public function setNotification($notification) {
-        $this->notification = $notification;
-    }
-
-    /**
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about
