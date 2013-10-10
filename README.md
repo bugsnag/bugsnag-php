@@ -13,7 +13,7 @@ capturing errors from your applications.
 How to Install
 --------------
 
-### Using Composer (Recommended)
+### Using [Composer](http://getcomposer.org/) (Recommended)
 
 1.  Add `bugsnag/bugsnag` to your `composer.json` requirements
 
@@ -31,7 +31,7 @@ How to Install
     $ composer install
     ```
 
-### Using our Phar Package
+### Using Phar Package
 
 1.  Download [bugsnag.phar](https://raw.github.com/bugsnag/bugsnag-php/master/build/bugsnag.phar)
     to your PHP project and require it in your app:
