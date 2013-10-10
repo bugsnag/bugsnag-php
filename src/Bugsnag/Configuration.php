@@ -18,7 +18,6 @@ class Bugsnag_Configuration {
     public $osVersion;
 
     public $metaData;
-    public $metaDataFunction;
     public $beforeNotifyFunction;
     public $projectRootRegex;
     public $errorReportingLevel;

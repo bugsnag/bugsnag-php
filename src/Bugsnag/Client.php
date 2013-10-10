@@ -122,27 +122,20 @@ class Bugsnag_Client {
     }
 
     /**
-     * Set a custom metadata generation function to call before notifying
-     * Bugsnag of an error. You can use this to add custom tabs of data
-     * to each error on your Bugsnag dashboard.
-     *
-     * @param Callback $metaDataFunction a function that should return an
-     *        array of arrays of custom data. Eg:
-     *        array(
-     *            "user" => array(
-     *                "name" => "James",
-     *                "email" => "james@example.com"
-     *            )
-     *        )
-     */
-    public function setMetaDataFunction($metaDataFunction) {
-        $this->config->metaDataFunction = $metaDataFunction;
-    }
-
-    /**
      * Set a custom function to call before notifying Bugsnag of an error.
      * You can use this to call your own error handling functions, or to add
      * custom tabs of data to each error on your Bugsnag dashboard.
+     *
+     * // Adding meta-data example
+     * function before_bugsnag_notify($error) {
+     *     $error->addMetaData(array(
+     *         "user" => array(
+     *             "name" => "James"
+     *         )
+     *     ));
+     * }
+     * $bugsnag->setBeforeNotifyFunction("before_bugsnag_notify");
+     *
     */
     public function setBeforeNotifyFunction($beforeNotifyFunction) {
         $this->config->beforeNotifyFunction = $beforeNotifyFunction;

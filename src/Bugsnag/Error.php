@@ -76,23 +76,6 @@ class Bugsnag_Error {
         $this->name = $name;
         $this->message = $message;
         $this->metaData = array();
-
-        // Merge custom metadata
-        $this->setMetaData($this->config->metaData);
-
-        // Run beforeNotify function
-        if(isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
-            call_user_func($this->config->beforeNotifyFunction, $this);
-        }
-
-        // Merge metadata from user metadata function
-        if(isset($this->config->metaDataFunction) && is_callable($this->config->metaDataFunction)) {
-            $this->setMetaData(call_user_func($this->config->metaDataFunction));
-        }
-
-        // Set up the context and userId
-        $this->context = Bugsnag_Request::getContext();
-        $this->userId = Bugsnag_Request::getUserId();
     }
 
     public function setMetaData($metaData) {
@@ -123,6 +106,24 @@ class Bugsnag_Error {
     }
 
     public function toArray() {
+        // Merge custom metadata
+        $this->setMetaData($this->config->metaData);
+
+        // Run beforeNotify function
+        $beforeNotifyReturn = NULL;
+        if(isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
+            $beforeNotifyReturn = call_user_func($this->config->beforeNotifyFunction, $this);
+        }
+
+        // Set up the context and userId
+        $this->context = Bugsnag_Request::getContext();
+        $this->userId = Bugsnag_Request::getUserId();
+
+        // Skip this error if the beforeNotify function returned FALSE
+        if($beforeNotifyReturn === FALSE) {
+            return NULL;
+        }
+
         return array(
             'userId' => $this->userId,
             'releaseStage' => $this->config->releaseStage,

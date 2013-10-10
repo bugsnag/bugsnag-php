@@ -21,7 +21,11 @@ class Bugsnag_Notification {
     public function toArray() {
         $events = array();
         foreach ($this->errorQueue as $error) {
-            $events[] = $error->toArray();
+            $errorArray = $error->toArray();
+
+            if(!is_null($errorArray)) {
+                $events[] = $errorArray;
+            }
         }
 
         return array(

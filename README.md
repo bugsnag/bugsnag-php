@@ -13,17 +13,52 @@ capturing errors from your applications.
 How to Install
 --------------
 
-1.  Copy [bugsnag.phar](https://raw.github.com/bugsnag/bugsnag-php/master/build/bugsnag.phar)
+### Using Composer (Recommended)
+
+1.  Add `bugsnag/bugsnag` to your `composer.json` requirements
+
+    ```json
+    {
+        "require": {
+            "bugsnag/bugsnag": "dev-master"
+        }
+    }
+    ```
+
+2.  Install packages
+
+    ```shell
+    $ composer install
+    ```
+
+### Using our Phar Package
+
+1.  Download [bugsnag.phar](https://raw.github.com/bugsnag/bugsnag-php/master/build/bugsnag.phar)
     to your PHP project and require it in your app:
 
     ```php
-    require_once "path/to/bugsnag.phar";
+    require_once "/path/to/bugsnag.phar";
     ```
 
-    *Note: If your project uses [Composer](http://getcomposer.org/), you can 
-    instead add `bugsnag/bugsnag` as a dependency in your `composer.json`.*
+### Manual Installation
 
-2.  Configure Bugsnag with your API key:
+1.  Download the Bugsnag source code:
+
+    ```shell
+    $ git clone git://github.com/bugsnag/bugsnag.git
+    ```
+
+2.  Require it in your app using the autoloader:
+
+    ```php
+    require_once "/path/to/Bugsnag/Autoloader.php";
+    ```
+
+
+Configuration
+-------------
+
+1.  Configure Bugsnag with your API key:
 
     ```php
     $bugsnag = new Bugsnag_Client("YOUR-API-KEY-HERE");
@@ -39,10 +74,6 @@ How to Install
     *Note: You can also call `$bugsnag->errorHandler` or 
     `$bugsnag->exceptionHandler` from within your own error handler functions,
     simply pass all parameters through.*
-
-
-*Note: The Bugsnag PHP notifier requires cURL support to be enabled on your
-PHP installation.*
 
 
 Sending Custom Data With Exceptions
@@ -143,6 +174,20 @@ Bugsnag of errors you can call `setNotifyReleaseStages`:
 $bugsnag->setNotifyReleaseStages(array("development", "production"));
 ```
 
+###setMetaData
+
+Sets additional meta-data to send with every bugsnag notification,
+for example:
+
+```php
+$bugsnag->setMeta(array(
+    "user" => array(
+        "name" => "James",
+        "email" => "james@example.com"
+    )
+));
+```
+
 ###setFilters
 
 Sets the strings to filter out from the `metaData` arrays before sending
@@ -178,18 +223,32 @@ that is passed as the first parameter to your function, for example:
 ```php
 $bugsnag->setBeforeNotifyFunction("before_bugsnag_notify");
 
-function before_bugsnag_notify($metaData) {
+function before_bugsnag_notify($error) {
     // Do any custom error handling here
 
     // Also add some meta data to each error
-    $metaData = array(
+    $error->setMetaData(array(
         "user" => array(
             "name" => "James",
             "email" => "james@example.com"
         )
-    );
+    ));
 }
 ```
+
+You can also return `FALSE` from your beforeNotifyFunction to stop this error
+from being sent to bugsnag.
+
+###setAutoNotify
+
+Controls whether bugsnag should automatically notify about any errors it detects in
+the PHP error handlers.
+
+```php
+$bugsnag->setAutoNotify(false);
+```
+
+By default, this is set to `true`.
 
 ###setErrorReportingLevel
 
