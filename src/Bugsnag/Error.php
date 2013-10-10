@@ -1,6 +1,6 @@
 <?php
 
-class BugsnagError {
+class Bugsnag_Error {
     private static $ERROR_NAMES = array (
         E_ERROR             => 'PHP Fatal Error',
         E_PARSE             => 'PHP Parse Error',
@@ -43,14 +43,14 @@ class BugsnagError {
 
     public static function fromPHPException($config, $exception) {
         $error = new self($config, get_class($exception), $exception->getMessage());
-        $error->stacktrace = new BugsnagStacktrace($config, $exception->getFile(), $exception->getLine(), $exception->getTrace());
+        $error->stacktrace = new Bugsnag_Stacktrace($config, $exception->getFile(), $exception->getLine(), $exception->getTrace());
 
         return $error;
     }
 
     public static function fromPHPError($config, $code, $message, $file, $line) {
         $error = new self($config, self::$ERROR_NAMES[$code], $message);
-        $error->stacktrace = new BugsnagStacktrace($config, $file, $line);
+        $error->stacktrace = new Bugsnag_Stacktrace($config, $file, $line);
         $error->code = $code;
 
         return $error;
@@ -58,7 +58,7 @@ class BugsnagError {
 
     public static function fromPHPFatalError($config, $code, $message, $file, $line) {
         $error = new self($config, self::$ERROR_NAMES[$code], $message);
-        $error->stacktrace = new BugsnagStacktrace($config, $file, $line, null, false);
+        $error->stacktrace = new Bugsnag_Stacktrace($config, $file, $line, null, false);
         $error->code = $code;
 
         return $error;
@@ -66,7 +66,7 @@ class BugsnagError {
 
     public static function fromNamedError($config, $name, $message) {
         $error = new self($config, $name, $message);
-        $error->stacktrace = new BugsnagStacktrace($config);
+        $error->stacktrace = new Bugsnag_Stacktrace($config);
 
         return $error;
     }
@@ -91,8 +91,8 @@ class BugsnagError {
         }
 
         // Set up the context and userId
-        $this->context = BugsnagRequest::getContext();
-        $this->userId = BugsnagRequest::getUserId();
+        $this->context = Bugsnag_Request::getContext();
+        $this->userId = Bugsnag_Request::getUserId();
     }
 
     public function setMetaData($metaData) {
@@ -102,11 +102,11 @@ class BugsnagError {
     }
 
     public function getContext() {
-        return $this->config->context || BugsnagRequest::getContext();
+        return $this->config->context || Bugsnag_Request::getContext();
     }
 
     public function getUserId() {
-        return $this->config->userId || BugsnagRequest::getUserId();
+        return $this->config->userId || Bugsnag_Request::getUserId();
     }
 
     public function shouldIgnore() {

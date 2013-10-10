@@ -1,6 +1,6 @@
 <?php
 
-class BugsnagStacktrace {
+class Bugsnag_Stacktrace {
     private $frames;
     private $config;
 

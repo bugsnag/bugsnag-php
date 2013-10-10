@@ -1,6 +1,6 @@
 <?php
 
-class BugsnagClient {
+class Bugsnag_Client {
     public $config;
     private $notification;
 
@@ -16,7 +16,7 @@ class BugsnagClient {
         }
 
         // Create a configuration object
-        $this->config = new BugsnagConfiguration();
+        $this->config = new Bugsnag_Configuration();
         $this->config->apiKey = $apiKey;
 
         // Attempt to determine a sensible default for projectRoot
@@ -184,7 +184,7 @@ class BugsnagClient {
      * @param Array $metaData optional metaData to send with this error
      */
     public function notifyException($exception, $metaData=null) {
-        $error = BugsnagError::fromPHPException($this->config, $exception);
+        $error = Bugsnag_Error::fromPHPException($this->config, $exception);
         $this->notify($error, $metaData);
     }
 
@@ -196,13 +196,13 @@ class BugsnagClient {
      * @param Array $metaData optional metaData to send with this error
      */
     public function notifyError($name, $message, $metaData=null) {
-        $error = BugsnagError::fromNamedError($this->config, $name, $message);
+        $error = Bugsnag_Error::fromNamedError($this->config, $name, $message);
         $this->notify($error, $metaData);
     }
 
     // Exception handler callback, should only be called internally by PHP's set_exception_handler
     public function exceptionHandler($exception) {
-        $error = BugsnagError::fromPHPException($this->config, $exception);
+        $error = Bugsnag_Error::fromPHPException($this->config, $exception);
 
         if(!$error->shouldIgnore() && $this->config->autoNotify) {
             $this->notify($error);
@@ -211,7 +211,7 @@ class BugsnagClient {
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
-        $error = BugsnagError::fromPHPError($this->config, $errno, $errstr, $errfile, $errline);
+        $error = Bugsnag_Error::fromPHPError($this->config, $errno, $errstr, $errfile, $errline);
 
         if(!$error->shouldIgnore() && $this->config->autoNotify) {
             $this->notify($error);
@@ -224,8 +224,8 @@ class BugsnagClient {
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
-        if(!is_null($lastError) && in_array($lastError['type'], BugsnagError::$FATAL_ERRORS)) {
-            $error = BugsnagError::fromPHPFatalError($this->config, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
+        if(!is_null($lastError) && in_array($lastError['type'], Bugsnag_Error::$FATAL_ERRORS)) {
+            $error = Bugsnag_Error::fromPHPFatalError($this->config, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
 
             if(!$error->shouldIgnore() && $this->config->autoNotify) {
                 $this->notify($error);
@@ -242,8 +242,8 @@ class BugsnagClient {
     // Batches up errors into notifications for later sending
     public function notify($error, $metaData=array()) {
         // Add request metadata to error
-        if(BugsnagRequest::isRequest()) {
-            $error->setMetaData(array("Request" => BugsnagRequest::getRequestMetaData()));
+        if(Bugsnag_Request::isRequest()) {
+            $error->setMetaData(array("Request" => Bugsnag_Request::getRequestMetaData()));
         }
 
         // Add user-specified metaData to error
@@ -253,14 +253,14 @@ class BugsnagClient {
         if($this->sendErrorsOnShutdown()) {
             // Create a batch notification unless we already have one
             if(is_null($this->notification)) {
-                $this->notification = new BugsnagNotification($this->config);
+                $this->notification = new Bugsnag_Notification($this->config);
             }
 
             // Add this error to the notification
             $this->notification->addError($error);
         } else {
             // Create and deliver notification immediatelt
-            $notif = new BugsnagNotification($this->config);
+            $notif = new Bugsnag_Notification($this->config);
             $notif->addError($error);
             $notif->deliver();
         }
@@ -268,7 +268,7 @@ class BugsnagClient {
 
     // Should we send errors immediately or on shutdown
     private static function sendErrorsOnShutdown() {
-        return BugsnagRequest::isRequest();
+        return Bugsnag_Request::isRequest();
     }
 }
 

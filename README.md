@@ -26,7 +26,7 @@ How to Install
 2.  Configure Bugsnag with your API key:
 
     ```php
-    $bugsnag = new BugsnagClient("YOUR-API-KEY-HERE");
+    $bugsnag = new Bugsnag_Client("YOUR-API-KEY-HERE");
     ```
 
 3.  Attach Bugsnag's error and exception handlers:

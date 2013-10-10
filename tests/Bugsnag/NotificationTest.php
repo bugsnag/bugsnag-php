@@ -4,13 +4,13 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
     protected $config;
 
     protected function setUp(){
-        $this->config = new BugsnagConfiguration();
+        $this->config = new Bugsnag_Configuration();
         $this->config->apiKey = "6015a72ff14038114c3d12623dfb018f";
     }
 
     public function testNotification() {
         // Create a mock notification object
-        $notification = $this->getMockBuilder('BugsnagNotification')
+        $notification = $this->getMockBuilder('Bugsnag_Notification')
                              ->setMethods(array("postJSON"))
                              ->setConstructorArgs(array($this->config))
                              ->getMock();
@@ -22,7 +22,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
                             $this->anything());
 
         // Add an error to the notification and deliver it
-        $notification->addError(BugsnagError::fromNamedError($this->config, "Name", "Message"));
+        $notification->addError(Bugsnag_Error::fromNamedError($this->config, "Name", "Message"));
         $notification->deliver();
     }
 }

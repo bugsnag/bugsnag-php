@@ -1,6 +1,6 @@
 <?php
 
-class BugsnagRequest {
+class Bugsnag_Request {
     public static function isRequest() {
         return isset($_SERVER['REQUEST_METHOD']);
     }
