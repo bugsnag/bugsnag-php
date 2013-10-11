@@ -296,8 +296,7 @@ PHP Frameworks
 
 If you are using CakePHP, installation is easy:
 
-1.  Copy [bugsnag.php](https://raw.github.com/bugsnag/bugsnag-php/master/lib/bugsnag.php)
-    into your CakePHP project
+1.  Follow the [Bugsnag installation instructions](#how-to-install) above
 
 2.  Edit `App/Config/core.php`:
 
