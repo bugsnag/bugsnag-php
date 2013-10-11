@@ -69,9 +69,9 @@ Configuration
     set_exception_handler(array($bugsnag, "exceptionHandler"));
     ```
 
-    You can also call `$bugsnag->errorHandler` or `$bugsnag->exceptionHandler`
-    directly from your PHP framework's existing error handling functions, 
-    simply pass all parameters through.
+    If you app or PHP framework already has error handling functions, you can
+    also call `$bugsnag->errorHandler` and `$bugsnag->exceptionHandler` 
+    directly from your existing functions, simply pass all parameters through.
 
 
 Sending Custom Data With Exceptions
