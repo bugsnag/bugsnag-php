@@ -42,13 +42,9 @@ How to Install
 
 ### Manual Installation
 
-1.  Download the Bugsnag source code:
+1.  Download and extract the [latest Bugsnag source code](https://github.com/bugsnag/bugsnag-php/archive/master.zip)
 
-    ```shell
-    $ git clone git://github.com/bugsnag/bugsnag.git
-    ```
-
-2.  Require it in your app using the autoloader:
+2.  Require it in your app using the provided autoloader:
 
     ```php
     require_once "/path/to/Bugsnag/Autoload.php";
@@ -64,7 +60,7 @@ Configuration
     $bugsnag = new Bugsnag_Client("YOUR-API-KEY-HERE");
     ```
 
-3.  Attach Bugsnag's error and exception handlers:
+2.  Attach Bugsnag's error and exception handlers:
 
     ```php
     set_error_handler(array($bugsnag, "errorHandler"));
