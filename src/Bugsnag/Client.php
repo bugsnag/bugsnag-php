@@ -26,7 +26,7 @@ class Bugsnag_Client {
 
         // Register a shutdown function to check for fatal errors
         // and flush any buffered errors
-        register_shutdown_function(array($this, 'fatalErrorHandler'));
+        register_shutdown_function(array($this, 'shutdownHandler'));
     }
 
     /**
@@ -215,7 +215,7 @@ class Bugsnag_Client {
     }
 
     // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
-    public function fatalErrorHandler() {
+    public function shutdownHandler() {
         // Get last error
         $lastError = error_get_last();
 
