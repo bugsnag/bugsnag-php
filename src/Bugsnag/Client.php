@@ -12,7 +12,12 @@ class Bugsnag_Client {
     public function __construct($apiKey) {
         // Check API key has been passed
         if(!is_string($apiKey)) {
-            throw new Exception("Bugsnag Error: Invalid API key");
+            throw new Exception('Bugsnag Error: Invalid API key');
+        }
+
+        if(!function_exists('curl_version')) {
+            error_log('Bugsnag Error: Bugsnag requires cURL support to be enabled on your PHP installation');
+            return -1;
         }
 
         // Create a configuration object
