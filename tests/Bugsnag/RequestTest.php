@@ -28,10 +28,6 @@ class RequestTest extends PHPUnit_Framework_TestCase {
     public function testRequestIp() {
         $this->assertEquals(Bugsnag_Request::getRequestIp(), "123.45.67.8");
     }
-
-    public function testGetRequestMetaData() {
-        var_dump(Bugsnag_Request::getRequestMetaData());
-    }
 }
 
 ?>
