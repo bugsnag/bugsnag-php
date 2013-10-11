@@ -15,7 +15,11 @@
         "php": ">=5.2.0"
     },
 
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+
     "autoload": {
-        "files": ["lib/bugsnag.php"]
+        "files": ["src/Bugsnag/Autoload.php"]
     }
 }

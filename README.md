@@ -13,36 +13,67 @@ capturing errors from your applications.
 How to Install
 --------------
 
-1.  Copy [bugsnag.php](https://raw.github.com/bugsnag/bugsnag-php/master/lib/bugsnag.php)
+### Using [Composer](http://getcomposer.org/) (Recommended)
+
+1.  Add `bugsnag/bugsnag` to your `composer.json` requirements
+
+    ```json
+    {
+        "require": {
+            "bugsnag/bugsnag": "2.*.*"
+        }
+    }
+    ```
+
+2.  Install packages
+
+    ```shell
+    $ composer install
+    ```
+
+### Using Phar Package
+
+1.  Download [bugsnag.phar](https://raw.github.com/bugsnag/bugsnag-php/master/build/bugsnag.phar)
     to your PHP project and require it in your app:
 
     ```php
-    require_once("path/to/bugsnag.php");
+    require_once "/path/to/bugsnag.phar";
     ```
 
-    *Note: If your project uses [Composer](http://getcomposer.org/), you can 
-    instead add `bugsnag/bugsnag` as a dependency in your `composer.json`.*
+### Manual Installation
 
-2.  Configure Bugsnag with your API key:
+1.  Download the Bugsnag source code:
+
+    ```shell
+    $ git clone git://github.com/bugsnag/bugsnag.git
+    ```
+
+2.  Require it in your app using the autoloader:
 
     ```php
-    Bugsnag::register("YOUR-API-KEY-HERE");
+    require_once "/path/to/Bugsnag/Autoload.php";
+    ```
+
+
+Configuration
+-------------
+
+1.  Configure Bugsnag with your API key:
+
+    ```php
+    $bugsnag = new Bugsnag_Client("YOUR-API-KEY-HERE");
     ```
 
 3.  Attach Bugsnag's error and exception handlers:
 
     ```php
-    set_error_handler("Bugsnag::errorHandler");
-    set_exception_handler("Bugsnag::exceptionHandler");
+    set_error_handler(array($bugsnag, "errorHandler"));
+    set_exception_handler(array($bugsnag, "exceptionHandler"));
     ```
 
-    *Note: You can also call `Bugsnag::errorHandler` or 
-    `Bugsnag::exceptionHandler` from within your own error handler functions,
+    *Note: You can also call `$bugsnag->errorHandler` or 
+    `$bugsnag->exceptionHandler` from within your own error handler functions,
     simply pass all parameters through.*
-
-
-*Note: The Bugsnag PHP notifier requires cURL support to be enabled on your
-PHP installation.*
 
 
 Sending Custom Data With Exceptions
@@ -52,30 +83,39 @@ It is often useful to send additional meta-data about your app, such as
 information about the currently logged in user, along with any
 error or exceptions, to help debug problems. 
 
-To send custom data, you should define a special *meta-data* function, which
-should return an array of "tabs" of meta-data, and tell Bugsnag about your 
-function using [setMetaDataFunction](#setmetadatafunction) (see below).
+To send custom data, you should define a *before-notify* function, 
+adding an array of "tabs" of custom data to the $metaData parameter.
+For an example, see the [setBeforeNotifyFunction](#setbeforenotifyfunction)
+documentation below.
 
 
 Sending Custom Errors or Non-Fatal Exceptions
 ---------------------------------------------
 
 You can easily tell Bugsnag about non-fatal or caught exceptions by 
-calling `Bugsnag::notifyException`:
+calling `$bugsnag->notifyException`:
 
 ```php
-Bugsnag::notifyException(new Exception("Something bad happened"));
+$bugsnag->notifyException(new Exception("Something bad happened"));
 ```
 
 You can also send custom errors to Bugsnag with `Bugsnag.notifyError`:
 
 ```php
-Bugsnag::notifyError("ErrorType", "Something bad happened here too");
+$bugsnag->notifyError("ErrorType", "Something bad happened here too");
 ```
 
 Both of these functions can also be passed an optional `$metaData` parameter,
-which should take the same format as the return value of
-[setMetaDataFunction](#setmetadatafunction) below.
+which should take the following format:
+
+```php
+$metaData =  array(
+    "user" => array(
+        "name" => "James",
+        "email" => "james@example.com"
+    )
+);
+```
 
 
 Additional Configuration
@@ -92,7 +132,7 @@ If you would like to set the bugsnag context manually, you can call
 `setContext`:
 
 ```php
-Bugsnag::setContext("Backport Job");
+$bugsnag->setContext("Backport Job");
 ```
 
 ###setUserId
@@ -106,7 +146,7 @@ If you would like to override this `userId`, for example to set it to be a
 username of your currently logged in user, you can call `setUserId`:
 
 ```php
-Bugsnag::setUserId("leeroy-jenkins");
+$bugsnag->setUserId("leeroy-jenkins");
 ```
 
 ###setReleaseStage
@@ -116,7 +156,7 @@ stages of the application release process (development, production, etc)
 you can set the `releaseStage` that is reported to Bugsnag.
 
 ```php
-Bugsnag::setReleaseStage("development");
+$bugsnag->setReleaseStage("development");
 ```
     
 By default this is set to be "production".
@@ -126,12 +166,26 @@ to Bugsnag, you'll also have to call `setNotifyReleaseStages`.*
 
 ###setNotifyReleaseStages
 
-By default, we will only notify Bugsnag of errors that happen in any
+By default, we will notify Bugsnag of errors that happen in any
 `releaseStage` If you would like to change which release stages notify 
 Bugsnag of errors you can call `setNotifyReleaseStages`:
     
 ```php
-Bugsnag::setNotifyReleaseStages(array("development", "production"));
+$bugsnag->setNotifyReleaseStages(array("development", "production"));
+```
+
+###setMetaData
+
+Sets additional meta-data to send with every bugsnag notification,
+for example:
+
+```php
+$bugsnag->setMeta(array(
+    "user" => array(
+        "name" => "James",
+        "email" => "james@example.com"
+    )
+));
 ```
 
 ###setFilters
@@ -142,7 +196,7 @@ sensitive data such as passwords, and credit card numbers to our
 servers. Any keys which contain these strings will be filtered.
 
 ```php
-Bugsnag::setFilters(array("password", "credit_card"));
+$bugsnag->setFilters(array("password", "credit_card"));
 ```
 
 By default, this is set to be `array("password")`.
@@ -152,61 +206,46 @@ By default, this is set to be `array("password")`.
 Enforces all communication with bugsnag.com be made via ssl.
 
 ```php
-Bugsnag::setUseSSL(true);
+$bugsnag->setUseSSL(true);
 ```
 
-By default, this is set to `true`.
+By default, this is set to be true.
 
-###setMetaData
+###setBeforeNotifyFunction
 
-Set custom metadata to send to Bugsnag with every error.
-You can use this to add custom tabs of data to each error on your
-Bugsnag dashboard.
+Set a custom function to call before notifying Bugsnag of an error.
+You can use this to call your own error handling functions, or to add custom
+tabs of data to each error on your Bugsnag dashboard.
 
-This function accepts an array of arrays, the outer array should 
-represent the "tabs" to display on your Bugsnag dashboard, and the inner
-array should be the values to display on each tab, for example:
-
-```php
-Bugsnag::setMetaData(array(
-    "user" => array(
-        "name" => "James",
-        "email" => "james@example.com"
-    )
-));
-```
-
-###setMetaDataFunction
-
-Set a custom metadata generation function to call before notifying
-Bugsnag of an error. You can use this to add custom tabs of data
-to each error on your Bugsnag dashboard.
-
-This function should return an array of arrays, the outer array should 
-represent the "tabs" to display on your Bugsnag dashboard, and the inner
-array should be the values to display on each tab, for example:
+To add custom tabs of meta-data, simply add to the `$metaData` array
+that is passed as the first parameter to your function, for example:
 
 ```php
-Bugsnag::setMetaDataFunction("bugsnag_metadata");
+$bugsnag->setBeforeNotifyFunction("before_bugsnag_notify");
 
-function bugsnag_metadata() {
-    return array(
+function before_bugsnag_notify($error) {
+    // Do any custom error handling here
+
+    // Also add some meta data to each error
+    $error->setMetaData(array(
         "user" => array(
             "name" => "James",
             "email" => "james@example.com"
         )
-    );
+    ));
 }
 ```
+
+You can also return `FALSE` from your beforeNotifyFunction to stop this error
+from being sent to bugsnag.
 
 ###setAutoNotify
 
 Controls whether bugsnag should automatically notify about any errors it detects in
-the PHP error handlers. Set this before you call `Bugsnag::register()` function to prevent
-Bugsnag registering a shutdown function.
+the PHP error handlers.
 
 ```php
-Bugsnag::setAutoNotify(false);
+$bugsnag->setAutoNotify(false);
 ```
 
 By default, this is set to `true`.
@@ -221,7 +260,7 @@ If you'd like to send different levels of errors to Bugsnag, you can call
 `setErrorReportingLevel`:
 
 ```php
-Bugsnag::setErrorReportingLevel(E_ALL & ~E_NOTICE);
+$bugsnag->setErrorReportingLevel(E_ALL & ~E_NOTICE);
 ```
 
 See PHP's [error reporting documentation](http://php.net/manual/en/errorfunc.configuration.php#ini.error-reporting)
@@ -235,14 +274,20 @@ We mark stacktrace lines as in-project if they come from files inside your
 stacktrace highlighting. You can set this manually by calling `setProjectRoot`:
 
 ```php
-Bugsnag::setProjectRoot("/path/to/your/app");
+$bugsnag->setProjectRoot("/path/to/your/app");
 ```
 
-If your app has files in many different locations, you can disable the 
-projectRoot as follows:
+If your app has files in many different locations, you should consider using
+[setProjectRootRegex](#setprojectrootregex) instead.
+
+###setProjectRootRegex
+
+If your app has files in many different locations, you can set the a regular
+expression for matching filenames in stacktrace lines that are part of your
+application:
 
 ```php
-Bugsnag::setProjectRoot(null);
+$bugsnag->setProjectRootRegex("(".preg_quote("/app")."|".preg_quote("/libs").")");
 ```
 
 
@@ -263,18 +308,18 @@ If you are using CakePHP, installation is easy:
     require_once("path/to/bugsnag.php");
 
     // Initialize Bugsnag
-    Bugsnag::register("YOUR-API-KEY-HERE");
+    $bugsnag->register("YOUR-API-KEY-HERE");
 
     // Change the default error handler to be Bugsnag
     Configure::write('Error', array(
-        'handler' => 'Bugsnag::errorHandler',
+        'handler' => array($bugsnag, 'errorHandler'),
         'level' => E_ALL & ~E_DEPRECATED,
         'trace' => true
     ));
 
     // Change the default exception handler to be Bugsnag
     Configure::write('Exception', array(
-        'handler' => 'Bugsnag::exceptionHandler',
+        'handler' => array($bugsnag, 'exceptionHandler'),
         'renderer' => 'ExceptionRenderer',
         'log' => true
     ));
@@ -295,6 +340,7 @@ Contributing
 
 -   [Fork](https://help.github.com/articles/fork-a-repo) the [notifier on github](https://github.com/bugsnag/bugsnag-php)
 -   Commit and push until you are happy with your contribution
+-   Run the tests to make sure they all pass: `composer install && ./vendor/bin/phpunit`
 -   [Make a pull request](https://help.github.com/articles/using-pull-requests)
 -   Thanks!
 
