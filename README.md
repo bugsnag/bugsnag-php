@@ -51,7 +51,7 @@ How to Install
 2.  Require it in your app using the autoloader:
 
     ```php
-    require_once "/path/to/Bugsnag/Autoloader.php";
+    require_once "/path/to/Bugsnag/Autoload.php";
     ```
 
 
@@ -277,11 +277,17 @@ stacktrace highlighting. You can set this manually by calling `setProjectRoot`:
 $bugsnag->setProjectRoot("/path/to/your/app");
 ```
 
-If your app has files in many different locations, you can disable the 
-projectRoot as follows:
+If your app has files in many different locations, you should consider using
+[setProjectRootRegex](#setprojectrootregex) instead.
+
+###setProjectRootRegex
+
+If your app has files in many different locations, you can set the a regular
+expression for matching filenames in stacktrace lines that are part of your
+application:
 
 ```php
-$bugsnag->setProjectRoot(null);
+$bugsnag->setProjectRootRegex("(".preg_quote("/app")."|".preg_quote("/libs").")");
 ```
 
 

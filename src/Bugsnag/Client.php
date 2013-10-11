@@ -12,7 +12,12 @@ class Bugsnag_Client {
     public function __construct($apiKey) {
         // Check API key has been passed
         if(!is_string($apiKey)) {
-            throw new Exception("Bugsnag Error: Invalid API key");
+            throw new Exception('Bugsnag Error: Invalid API key');
+        }
+
+        if(!function_exists('curl_version')) {
+            error_log('Bugsnag Error: Bugsnag requires cURL support to be enabled on your PHP installation');
+            return -1;
         }
 
         // Create a configuration object
@@ -26,7 +31,7 @@ class Bugsnag_Client {
 
         // Register a shutdown function to check for fatal errors
         // and flush any buffered errors
-        register_shutdown_function(array($this, 'fatalErrorHandler'));
+        register_shutdown_function(array($this, 'shutdownHandler'));
     }
 
     /**
@@ -75,6 +80,16 @@ class Bugsnag_Client {
      */
     public function setProjectRoot($projectRoot) {
         $this->config->setProjectRoot($projectRoot);
+    }
+
+    /**
+     * Set the a regular expression for matching filenames in stacktrace lines
+     * that are part of your application.
+     *
+     * @param String $projectRootRegex regex matching paths belong to your project
+     */
+    public function setProjectRootRegex($projectRootRegex) {
+        $this->config->projectRootRegex = $projectRootRegex;
     }
 
     /**
@@ -164,13 +179,6 @@ class Bugsnag_Client {
     }
 
     /**
-     * Set the notification object to use for batching up notifications.
-     */
-    public function setNotification($notification) {
-        $this->notification = $notification;
-    }
-
-    /**
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about
@@ -211,8 +219,9 @@ class Bugsnag_Client {
         }
     }
 
-    // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
-    public function fatalErrorHandler() {
+    // Shutdown handler callback, called when the PHP process has finished running
+    // Should only be called internally by PHP's register_shutdown_function
+    public function shutdownHandler() {
         // Get last error
         $lastError = error_get_last();
 

@@ -14,9 +14,8 @@ class Bugsnag_Stacktrace {
             }
 
             // Throw away any stackframes that occurred in Bugsnag code
-            // TODO: Make this work with new filename prefix
             $lastFrame = null;
-            while(!empty($backtrace) && isset($backtrace[0]["class"]) &&strpos($backtrace[0]["class"], "Bugsnag\\") == 0) {
+            while(!empty($backtrace) && isset($backtrace[0]["class"]) && strpos($backtrace[0]["class"], "Bugsnag_") == 0) {
               $lastFrame = array_shift($backtrace);
             }
 
@@ -42,6 +41,12 @@ class Bugsnag_Stacktrace {
             // Add a final stackframe for the "main" method
             $this->frames[] = $this->buildFrame($topFile, $topLine, '[main]');
         } else {
+            // In some situations (PHP fatal errors) generating stacktrace
+            // information is not possible, since this code executes when the
+            // PHP process shuts down, rather than at the time of the crash.
+            //
+            // In these situations, we generate a "stacktrace" containing only
+            // the line and file number where the crash occurred.
             $this->frames[] = $this->buildFrame($topFile, $topLine, '[unknown]');
         }
     }
@@ -52,7 +57,7 @@ class Bugsnag_Stacktrace {
 
     private function buildFrame($file, $line, $method) {
         // Check if this frame is inProject
-        $inProject = !is_null($this->config->projectRoot) && preg_match($this->config->projectRootRegex, $file);
+        $inProject = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);
 
         // Strip out projectRoot from start of file path
         if($inProject) {

@@ -1,10 +1,21 @@
 Changelog
 =========
 
-1.1.0
+2.0.0
 -----
--   Add a new `setBeforeNotifyFunction` to execute custom code before
-    sending errors to Bugsnag.
+-   Backwards-incompatible rewrite (using non-static access)
+-   Full suite of tests and Travis CI testing on PHP 5.2+
+-   Add `setBeforeNotify` functionality to add meta-data or execute code
+    before each error is sent to Bugsnag
+
+1.0.9
+-----
+-   Add `setAutoNotify` function to allow disabling of automatic error handling
+-   Fix bug where error reporting level was being ignored for fatal errors
+
+1.0.8
+-----
+-   Added a `setMetaData` function for sending custom data with every error
 
 1.0.7
 -----

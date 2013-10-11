@@ -38,7 +38,7 @@ class Bugsnag_Notification {
     public function deliver() {
         if(!empty($this->errorQueue)) {
             // Post the request to bugsnag
-            $statusCode = $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
+            $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
 
             // Clear the error queue
             $this->errorQueue = array();
@@ -46,11 +46,6 @@ class Bugsnag_Notification {
     }
 
     public function postJSON($url, $data) {
-        if(!function_exists('curl_version')) {
-            error_log('Bugsnag Warning: Couldn\'t notify, Bugsnag requires cURL support to be enabled on your PHP installation.');
-            return -1;
-        }
-
         $http = curl_init($url);
 
         curl_setopt($http, CURLOPT_HEADER, false);
