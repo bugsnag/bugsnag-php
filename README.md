@@ -178,7 +178,7 @@ Sets additional meta-data to send with every bugsnag notification,
 for example:
 
 ```php
-$bugsnag->setMeta(array(
+$bugsnag->setMetaData(array(
     "user" => array(
         "name" => "James",
         "email" => "james@example.com"
