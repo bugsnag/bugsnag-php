@@ -32,7 +32,9 @@ How to Install
 ### Using Phar Package
 
 1.  Download the latest [bugsnag.phar](https://raw.github.com/bugsnag/bugsnag-php/master/build/bugsnag.phar)
-    to your PHP project and require it in your app.
+    to your PHP project.
+
+2.  Require it in your app.
 
     ```php
     require_once "/path/to/bugsnag.phar";
