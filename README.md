@@ -18,10 +18,8 @@ How to Install
 1.  Add `bugsnag/bugsnag` to your `composer.json` requirements
 
     ```json
-    {
-        "require": {
-            "bugsnag/bugsnag": "2.*.*"
-        }
+    "require": {
+        "bugsnag/bugsnag": "2.*.*"
     }
     ```
 
