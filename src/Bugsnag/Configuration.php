@@ -8,6 +8,7 @@ class Bugsnag_Configuration {
     public $notifyReleaseStages;
     public $filters = array('password');
     public $projectRoot;
+    public $projectRootRegex;
 
     public $context;
     public $userId;
@@ -17,7 +18,6 @@ class Bugsnag_Configuration {
 
     public $metaData;
     public $beforeNotifyFunction;
-    public $projectRootRegex;
     public $errorReportingLevel;
 
     public function getNotifyEndpoint() {

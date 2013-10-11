@@ -78,6 +78,16 @@ class Bugsnag_Client {
     }
 
     /**
+     * Set the a regular expression for matching filenames in stacktrace lines
+     * that are part of your application.
+     *
+     * @param String $projectRootRegex regex matching paths belong to your project
+     */
+    public function setProjectRootRegex($projectRootRegex) {
+        $this->config->projectRootRegex = $projectRootRegex;
+    }
+
+    /**
      * Set the strings to filter out from metaData arrays before sending then
      * to Bugsnag. Eg. array("password", "credit_card")
      *

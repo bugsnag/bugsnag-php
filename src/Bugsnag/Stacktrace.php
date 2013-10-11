@@ -51,7 +51,7 @@ class Bugsnag_Stacktrace {
 
     private function buildFrame($file, $line, $method) {
         // Check if this frame is inProject
-        $inProject = !is_null($this->config->projectRoot) && preg_match($this->config->projectRootRegex, $file);
+        $inProject = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);
 
         // Strip out projectRoot from start of file path
         if($inProject) {
