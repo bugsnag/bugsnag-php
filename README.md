@@ -204,10 +204,10 @@ By default, this is set to be `array("password")`.
 Enforces all communication with bugsnag.com be made via ssl.
 
 ```php
-$bugsnag->setUseSSL(true);
+$bugsnag->setUseSSL(TRUE);
 ```
 
-By default, this is set to be true.
+By default, this is set to be `TRUE`.
 
 ###setBeforeNotifyFunction
 
@@ -243,10 +243,10 @@ Controls whether bugsnag should automatically notify about any errors it detects
 the PHP error handlers.
 
 ```php
-$bugsnag->setAutoNotify(false);
+$bugsnag->setAutoNotify(FALSE);
 ```
 
-By default, this is set to `true`.
+By default, this is set to `TRUE`.
 
 ###setErrorReportingLevel
 
