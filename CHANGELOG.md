@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.0
+-----
+-   Backwards-incompatible rewrite (using non-static access)
+-   Full suite of tests and Travis CI testing on PHP 5.2+
+-   Add `setBeforeNotify` functionality to add meta-data or execute code
+    before each error is sent to Bugsnag
+
 1.0.9
 -----
 -   Add `setAutoNotify` function to allow disabling of automatic error handling
