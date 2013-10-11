@@ -38,7 +38,7 @@ class Bugsnag_Notification {
     public function deliver() {
         if(!empty($this->errorQueue)) {
             // Post the request to bugsnag
-            $statusCode = $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
+            $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
 
             // Clear the error queue
             $this->errorQueue = array();
