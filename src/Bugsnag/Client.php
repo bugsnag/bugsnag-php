@@ -214,7 +214,8 @@ class Bugsnag_Client {
         }
     }
 
-    // Shutdown handler callback, should only be called internally by PHP's register_shutdown_function
+    // Shutdown handler callback, called when the PHP process has finished running
+    // Should only be called internally by PHP's register_shutdown_function
     public function shutdownHandler() {
         // Get last error
         $lastError = error_get_last();
