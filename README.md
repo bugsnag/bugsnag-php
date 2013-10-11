@@ -61,16 +61,17 @@ Configuration
     $bugsnag = new Bugsnag_Client("YOUR-API-KEY-HERE");
     ```
 
-2.  Attach Bugsnag's error and exception handlers:
+2.  Enable automatic error and exception notification by attaching Bugsnag's
+    error and exception handlers:
 
     ```php
     set_error_handler(array($bugsnag, "errorHandler"));
     set_exception_handler(array($bugsnag, "exceptionHandler"));
     ```
 
-    *Note: You can also call `$bugsnag->errorHandler` or 
-    `$bugsnag->exceptionHandler` from within your own error handler functions,
-    simply pass all parameters through.*
+    You can also call `$bugsnag->errorHandler` or `$bugsnag->exceptionHandler`
+    directly from your PHP framework's existing error handling functions, 
+    simply pass all parameters through.
 
 
 Sending Custom Data With Exceptions
