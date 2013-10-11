@@ -64,13 +64,13 @@ class Bugsnag_Request {
         }
     }
 
-    private static function getCurrentUrl() {
+    public static function getCurrentUrl() {
         $schema = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 
         return $schema.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
     }
 
-    private static function getRequestIp() {
+    public static function getRequestIp() {
         return isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
     }
 }

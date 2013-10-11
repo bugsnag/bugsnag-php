@@ -245,7 +245,12 @@ class Bugsnag_Client {
     public function notify($error, $metaData=array()) {
         // Add request metadata to error
         if(Bugsnag_Request::isRequest()) {
-            $error->setMetaData(array("Request" => Bugsnag_Request::getRequestMetaData()));
+            $error->setMetaData(Bugsnag_Request::getRequestMetaData());
+        }
+
+        // Add environment info to metadata
+        if(!empty($_ENV)) {
+            $error->setMetaData(array("Environment" => $_ENV));
         }
 
         // Add user-specified metaData to error

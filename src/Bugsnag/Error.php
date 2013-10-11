@@ -88,11 +88,11 @@ class Bugsnag_Error {
     }
 
     public function getContext() {
-        return $this->config->context || Bugsnag_Request::getContext();
+        return $this->config->context ? $this->config->context : Bugsnag_Request::getContext();
     }
 
     public function getUserId() {
-        return $this->config->userId || Bugsnag_Request::getUserId();
+        return $this->config->userId ? $this->config->userId : Bugsnag_Request::getUserId();
     }
 
     public function shouldIgnore() {
@@ -120,8 +120,8 @@ class Bugsnag_Error {
         }
 
         // Set up the context and userId
-        $this->context = Bugsnag_Request::getContext();
-        $this->userId = Bugsnag_Request::getUserId();
+        $this->context = $this->getContext();
+        $this->userId = $this->getUserId();
 
         return array(
             'userId' => $this->userId,
