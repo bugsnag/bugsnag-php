@@ -9,16 +9,6 @@ class ClientTest extends PHPUnit_Framework_TestCase {
                              ->setMethods(array('notify'))
                              ->setConstructorArgs(array('6015a72ff14038114c3d12623dfb018f'))
                              ->getMock();
-
-        // Activate the Bugsnag handlers
-        set_error_handler(array($this->client, "errorHandler"));
-        set_exception_handler(array($this->client, "exceptionHandler"));
-    }
-
-    protected function tearDown() {
-        // Remove the Bugsnag handlers
-        restore_error_handler();
-        restore_exception_handler();
     }
 
     public function testErrorHandler() {
