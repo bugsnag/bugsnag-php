@@ -76,9 +76,6 @@ class Bugsnag_Error {
         $this->name = $name;
         $this->message = $message;
         $this->metaData = array();
-
-        // Merge custom metadata
-        $this->setMetaData($this->config->metaData);
     }
 
     public function setMetaData($metaData) {
