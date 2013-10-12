@@ -14,8 +14,35 @@ class Bugsnag_Notification {
         $this->config = $config;
     }
 
-    public function addError($error) {
-        $this->errorQueue[] = $error;
+    public function addError($error, $passedMetaData=array()) {
+        // Add global meta-data to error
+        $error->setMetaData($this->config->metaData);
+
+        // Add request meta-data to error
+        if(Bugsnag_Request::isRequest()) {
+            $error->setMetaData(Bugsnag_Request::getRequestMetaData());
+        }
+
+        // Add environment meta-data to error
+        if(!empty($_ENV)) {
+            $error->setMetaData(array("Environment" => $_ENV));
+        }
+
+        // Add user-specified meta-data to error
+        $error->setMetaData($passedMetaData);
+
+        // Run beforeNotify function (can cause more meta-data to be merged)
+        if(isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
+            $beforeNotifyReturn = call_user_func($this->config->beforeNotifyFunction, $error);
+        }
+
+        // Skip this error if the beforeNotify function returned FALSE
+        if(!isset($beforeNotifyReturn) || $beforeNotifyReturn !== FALSE) {
+            $this->errorQueue[] = $error;
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 
     public function toArray() {
