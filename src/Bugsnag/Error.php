@@ -38,9 +38,6 @@ class Bugsnag_Error {
     public $config;
     public $code;
 
-    public $userId;
-    public $context;
-
     public static function fromPHPException($config, $exception) {
         $error = new self($config, get_class($exception), $exception->getMessage());
         $error->stacktrace = new Bugsnag_Stacktrace($config, $exception->getFile(), $exception->getLine(), $exception->getTrace());

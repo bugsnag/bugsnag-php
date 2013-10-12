@@ -1,7 +1,7 @@
 <?php
 
 class Bugsnag_Client {
-    public $config;
+    private $config;
     private $notification;
 
     /**
