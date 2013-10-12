@@ -16,17 +16,8 @@ class errorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($errorArray['metaData']["Testing"]["globalArray"], "hi");
     }
 
-    public function testBeforeNotifyMetaData() {
-        $this->config->beforeNotifyFunction = "bugsnag_before_notify";
-        $this->error = Bugsnag_Error::fromNamedError($this->config, "Name", "Message");
-
-        $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['metaData']["Testing"]["callbackFunction"], "blergh");
-    }
-
     public function testMetaDataMerging() {
         $this->config->metaData = array("Testing" => array("globalArray" => "hi"));
-        $this->config->beforeNotifyFunction = "bugsnag_before_notify";
 
         $this->error = Bugsnag_Error::fromNamedError($this->config, "Name", "Message");
         $this->error->setMetaData(array("Testing" => array("localArray" => "yo")));
@@ -34,7 +25,6 @@ class errorTest extends PHPUnit_Framework_TestCase {
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']["Testing"]["globalArray"], "hi");
         $this->assertEquals($errorArray['metaData']["Testing"]["localArray"], "yo");
-        $this->assertEquals($errorArray['metaData']["Testing"]["callbackFunction"], "blergh");
     }
 
     public function testShouldIgnore() {
@@ -58,10 +48,6 @@ class errorTest extends PHPUnit_Framework_TestCase {
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']['Testing']['password'], '[FILTERED]');
     }
-}
-
-function bugsnag_before_notify($error) {
-    $error->setMetaData(array("Testing" => array("callbackFunction" => "blergh")));
 }
 
 ?>

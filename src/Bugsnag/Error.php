@@ -109,24 +109,10 @@ class Bugsnag_Error {
     }
 
     public function toArray() {
-        // Run beforeNotify function
-        if(isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
-            $beforeNotifyReturn = call_user_func($this->config->beforeNotifyFunction, $this);
-        }
-
-        // Skip this error if the beforeNotify function returned FALSE
-        if(isset($beforeNotifyReturn) && $beforeNotifyReturn === FALSE) {
-            return NULL;
-        }
-
-        // Set up the context and userId
-        $this->context = $this->getContext();
-        $this->userId = $this->getUserId();
-
         return array(
-            'userId' => $this->userId,
+            'userId' => $this->getUserId(),
             'releaseStage' => $this->config->releaseStage,
-            'context' => $this->context,
+            'context' => $this->getContext(),
             'exceptions' => array(array(
                 'errorClass' => $this->name,
                 'message' => $this->message,

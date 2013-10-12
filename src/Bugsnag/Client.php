@@ -243,19 +243,6 @@ class Bugsnag_Client {
 
     // Batches up errors into notifications for later sending
     public function notify($error, $metaData=array()) {
-        // Add request metadata to error
-        if(Bugsnag_Request::isRequest()) {
-            $error->setMetaData(Bugsnag_Request::getRequestMetaData());
-        }
-
-        // Add environment info to metadata
-        if(!empty($_ENV)) {
-            $error->setMetaData(array("Environment" => $_ENV));
-        }
-
-        // Add user-specified metaData to error
-        $error->setMetaData($metaData);
-
         // Queue or send the error
         if($this->sendErrorsOnShutdown()) {
             // Create a batch notification unless we already have one
@@ -264,11 +251,11 @@ class Bugsnag_Client {
             }
 
             // Add this error to the notification
-            $this->notification->addError($error);
+            $this->notification->addError($error, $metaData);
         } else {
             // Create and deliver notification immediatelt
             $notif = new Bugsnag_Notification($this->config);
-            $notif->addError($error);
+            $notif->addError($error, $metaData);
             $notif->deliver();
         }
     }
