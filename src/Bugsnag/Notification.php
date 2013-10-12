@@ -15,7 +15,7 @@ class Bugsnag_Notification {
     }
 
     public function addError($error, $passedMetaData=array()) {
-        // Merge global metadata
+        // Add global metadata to error
         $error->setMetaData($this->config->metaData);
 
         // Add request metadata to error
