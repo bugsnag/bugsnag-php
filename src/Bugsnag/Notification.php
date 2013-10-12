@@ -15,23 +15,23 @@ class Bugsnag_Notification {
     }
 
     public function addError($error, $passedMetaData=array()) {
-        // Add global metadata to error
+        // Add global meta-data to error
         $error->setMetaData($this->config->metaData);
 
-        // Add request metadata to error
+        // Add request meta-data to error
         if(Bugsnag_Request::isRequest()) {
             $error->setMetaData(Bugsnag_Request::getRequestMetaData());
         }
 
-        // Add environment info to metadata
+        // Add environment meta-data to error
         if(!empty($_ENV)) {
             $error->setMetaData(array("Environment" => $_ENV));
         }
 
-        // Add user-specified metaData to error
+        // Add user-specified meta-data to error
         $error->setMetaData($passedMetaData);
 
-        // Run beforeNotify function
+        // Run beforeNotify function (can cause more meta-data to be merged)
         if(isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
             $beforeNotifyReturn = call_user_func($this->config->beforeNotifyFunction, $error);
         }
