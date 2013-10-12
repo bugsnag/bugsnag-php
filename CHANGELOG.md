@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.0.1
+-----
+-   Fix minor request meta-data issues introduced in 2.0.0
+
 2.0.0
 -----
 -   Backwards-incompatible rewrite (using non-static access)
