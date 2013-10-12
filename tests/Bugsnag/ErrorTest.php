@@ -9,17 +9,16 @@ class errorTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMetaData() {
-        $this->config->metaData = array("Testing" => array("globalArray" => "hi"));
         $this->error = Bugsnag_Error::fromNamedError($this->config, "Name", "Message");
+        $this->error->setMetaData(array("Testing" => array("globalArray" => "hi")));
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']["Testing"]["globalArray"], "hi");
     }
 
     public function testMetaDataMerging() {
-        $this->config->metaData = array("Testing" => array("globalArray" => "hi"));
-
         $this->error = Bugsnag_Error::fromNamedError($this->config, "Name", "Message");
+        $this->error->setMetaData(array("Testing" => array("globalArray" => "hi")));
         $this->error->setMetaData(array("Testing" => array("localArray" => "yo")));
 
         $errorArray = $this->error->toArray();
