@@ -20,6 +20,8 @@
     },
 
     "autoload": {
-        "files": ["src/Bugsnag/Autoload.php"]
+        "psr-0" : {
+            "Bugsnag_" : "src/"
+        }
     }
 }
