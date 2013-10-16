@@ -1,6 +1,7 @@
 <?php
 
-class Bugsnag_Configuration {
+class Bugsnag_Configuration
+{
     public $apiKey;
     public $autoNotify = true;
     public $useSSL = true;
@@ -20,22 +21,24 @@ class Bugsnag_Configuration {
     public $beforeNotifyFunction;
     public $errorReportingLevel;
 
-    public function getNotifyEndpoint() {
+    public function getNotifyEndpoint()
+    {
         return $this->getProtocol()."://".$this->endpoint;
     }
 
-    public function shouldNotify() {
+    public function shouldNotify()
+    {
         return is_null($this->notifyReleaseStages) || (is_array($this->notifyReleaseStages) && in_array($this->releaseStage, $this->notifyReleaseStages));
     }
 
-    public function setProjectRoot($projectRoot) {
+    public function setProjectRoot($projectRoot)
+    {
         $this->projectRoot = $projectRoot;
         $this->projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
     }
 
-    private function getProtocol() {
+    private function getProtocol()
+    {
         return $this->useSSL ? "https" : "http";
     }
 }
-
-?>

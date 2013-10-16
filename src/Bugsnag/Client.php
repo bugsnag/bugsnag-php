@@ -1,6 +1,7 @@
 <?php
 
-class Bugsnag_Client {
+class Bugsnag_Client
+{
     private $config;
     private $notification;
 
@@ -9,14 +10,16 @@ class Bugsnag_Client {
      *
      * @param String $apiKey your Bugsnag API key
      */
-    public function __construct($apiKey) {
+    public function __construct($apiKey)
+    {
         // Check API key has been passed
-        if(!is_string($apiKey)) {
+        if (!is_string($apiKey)) {
             throw new Exception('Bugsnag Error: Invalid API key');
         }
 
-        if(!function_exists('curl_version')) {
+        if (!function_exists('curl_version')) {
             error_log('Bugsnag Error: Bugsnag requires cURL support to be enabled on your PHP installation');
+
             return -1;
         }
 
@@ -25,7 +28,7 @@ class Bugsnag_Client {
         $this->config->apiKey = $apiKey;
 
         // Attempt to determine a sensible default for projectRoot
-        if(isset($_SERVER) && !empty($_SERVER['DOCUMENT_ROOT'])) {
+        if (isset($_SERVER) && !empty($_SERVER['DOCUMENT_ROOT'])) {
             $this->setProjectRoot($_SERVER['DOCUMENT_ROOT']);
         }
 
@@ -39,7 +42,8 @@ class Bugsnag_Client {
      *
      * @param String $releaseStage the app's current release stage
      */
-    public function setReleaseStage($releaseStage) {
+    public function setReleaseStage($releaseStage)
+    {
         $this->config->releaseStage = $releaseStage;
     }
 
@@ -49,7 +53,8 @@ class Bugsnag_Client {
      *
      * @param Array $notifyReleaseStages array of release stages to notify for
      */
-    public function setNotifyReleaseStages($notifyReleaseStages) {
+    public function setNotifyReleaseStages($notifyReleaseStages)
+    {
         $this->config->notifyReleaseStages = $notifyReleaseStages;
     }
 
@@ -58,7 +63,8 @@ class Bugsnag_Client {
      *
      * @param String $endpoint endpoint URL
      */
-    public function setEndpoint($endpoint) {
+    public function setEndpoint($endpoint)
+    {
         $this->config->endpoint = $endpoint;
     }
 
@@ -67,18 +73,20 @@ class Bugsnag_Client {
      *
      * @param Boolean $useSSL whether to use SSL
      */
-    public function setUseSSL($useSSL) {
+    public function setUseSSL($useSSL)
+    {
         $this->config->useSSL = $useSSL;
     }
 
     /**
-     * Set the absolute path to the root of your application. 
+     * Set the absolute path to the root of your application.
      * We use this to help with error grouping and to highlight "in project"
      * stacktrace lines.
      *
      * @param String $projectRoot the root path for your application
      */
-    public function setProjectRoot($projectRoot) {
+    public function setProjectRoot($projectRoot)
+    {
         $this->config->setProjectRoot($projectRoot);
     }
 
@@ -88,7 +96,8 @@ class Bugsnag_Client {
      *
      * @param String $projectRootRegex regex matching paths belong to your project
      */
-    public function setProjectRootRegex($projectRootRegex) {
+    public function setProjectRootRegex($projectRootRegex)
+    {
         $this->config->projectRootRegex = $projectRootRegex;
     }
 
@@ -96,9 +105,10 @@ class Bugsnag_Client {
      * Set the strings to filter out from metaData arrays before sending then
      * to Bugsnag. Eg. array("password", "credit_card")
      *
-     * @param Array $filters an array of metaData filters 
+     * @param Array $filters an array of metaData filters
      */
-    public function setFilters($filters) {
+    public function setFilters($filters)
+    {
         $this->config->filters = $filters;
     }
 
@@ -107,7 +117,8 @@ class Bugsnag_Client {
      *
      * @param String $userId the current user id
      */
-    public function setUserId($userId) {
+    public function setUserId($userId)
+    {
         $this->config->userId = $userId;
     }
 
@@ -116,7 +127,8 @@ class Bugsnag_Client {
      *
      * @param String $context the current context
      */
-    public function setContext($context) {
+    public function setContext($context)
+    {
         $this->config->context = $context;
     }
 
@@ -132,7 +144,8 @@ class Bugsnag_Client {
      *            )
      *        )
      */
-    public function setMetaData($metaData) {
+    public function setMetaData($metaData)
+    {
         $this->config->metaData = $metaData;
     }
 
@@ -152,7 +165,8 @@ class Bugsnag_Client {
      * $bugsnag->setBeforeNotifyFunction("before_bugsnag_notify");
      *
     */
-    public function setBeforeNotifyFunction($beforeNotifyFunction) {
+    public function setBeforeNotifyFunction($beforeNotifyFunction)
+    {
         $this->config->beforeNotifyFunction = $beforeNotifyFunction;
     }
 
@@ -164,7 +178,8 @@ class Bugsnag_Client {
      * @param Integer $errorReportingLevel the error reporting level integer
      *                exactly as you would pass to PHP's error_reporting
      */
-    public function setErrorReportingLevel($errorReportingLevel) {
+    public function setErrorReportingLevel($errorReportingLevel)
+    {
         $this->config->errorReportingLevel = $errorReportingLevel;
     }
 
@@ -174,7 +189,8 @@ class Bugsnag_Client {
      *
      * @param Boolean $autoNotify whether to auto notify or not
      */
-    public function setAutoNotify($autoNotify) {
+    public function setAutoNotify($autoNotify)
+    {
         $this->config->autoNotify = $autoNotify;
     }
 
@@ -182,9 +198,10 @@ class Bugsnag_Client {
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about
-     * @param Array $metaData optional metaData to send with this error
+     * @param Array     $metaData  optional metaData to send with this error
      */
-    public function notifyException($exception, $metaData=null) {
+    public function notifyException($exception, $metaData=null)
+    {
         $error = Bugsnag_Error::fromPHPException($this->config, $exception);
         $this->notify($error, $metaData);
     }
@@ -192,61 +209,66 @@ class Bugsnag_Client {
     /**
      * Notify Bugsnag of a non-fatal/handled error
      *
-     * @param String $errorName the name of the error, a short (1 word) string
+     * @param String $errorName    the name of the error, a short (1 word) string
      * @param String $errorMessage the error message
-     * @param Array $metaData optional metaData to send with this error
+     * @param Array  $metaData     optional metaData to send with this error
      */
-    public function notifyError($name, $message, $metaData=null) {
+    public function notifyError($name, $message, $metaData=null)
+    {
         $error = Bugsnag_Error::fromNamedError($this->config, $name, $message);
         $this->notify($error, $metaData);
     }
 
     // Exception handler callback, should only be called internally by PHP's set_exception_handler
-    public function exceptionHandler($exception) {
+    public function exceptionHandler($exception)
+    {
         $error = Bugsnag_Error::fromPHPException($this->config, $exception);
 
-        if(!$error->shouldIgnore() && $this->config->autoNotify) {
+        if (!$error->shouldIgnore() && $this->config->autoNotify) {
             $this->notify($error);
         }
     }
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
-    public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array()) {
+    public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array())
+    {
         $error = Bugsnag_Error::fromPHPError($this->config, $errno, $errstr, $errfile, $errline);
 
-        if(!$error->shouldIgnore() && $this->config->autoNotify) {
+        if (!$error->shouldIgnore() && $this->config->autoNotify) {
             $this->notify($error);
         }
     }
 
     // Shutdown handler callback, called when the PHP process has finished running
     // Should only be called internally by PHP's register_shutdown_function
-    public function shutdownHandler() {
+    public function shutdownHandler()
+    {
         // Get last error
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
-        if(!is_null($lastError) && in_array($lastError['type'], Bugsnag_Error::$FATAL_ERRORS)) {
+        if (!is_null($lastError) && in_array($lastError['type'], Bugsnag_Error::$FATAL_ERRORS)) {
             $error = Bugsnag_Error::fromPHPFatalError($this->config, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line']);
 
-            if(!$error->shouldIgnore() && $this->config->autoNotify) {
+            if (!$error->shouldIgnore() && $this->config->autoNotify) {
                 $this->notify($error);
             }
         }
 
         // Flush any buffered errors
-        if($this->notification) {
+        if ($this->notification) {
             $this->notification->deliver();
             $this->notification = null;
         }
     }
 
     // Batches up errors into notifications for later sending
-    public function notify($error, $metaData=array()) {
+    public function notify($error, $metaData=array())
+    {
         // Queue or send the error
-        if($this->sendErrorsOnShutdown()) {
+        if ($this->sendErrorsOnShutdown()) {
             // Create a batch notification unless we already have one
-            if(is_null($this->notification)) {
+            if (is_null($this->notification)) {
                 $this->notification = new Bugsnag_Notification($this->config);
             }
 
@@ -261,9 +283,8 @@ class Bugsnag_Client {
     }
 
     // Should we send errors immediately or on shutdown
-    private static function sendErrorsOnShutdown() {
+    private static function sendErrorsOnShutdown()
+    {
         return Bugsnag_Request::isRequest();
     }
 }
-
-?>

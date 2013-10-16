@@ -1,6 +1,7 @@
 <?php
 
-class Bugsnag_Error {
+class Bugsnag_Error
+{
     private static $ERROR_NAMES = array (
         E_ERROR             => 'PHP Fatal Error',
         E_PARSE             => 'PHP Parse Error',
@@ -38,14 +39,16 @@ class Bugsnag_Error {
     public $config;
     public $code;
 
-    public static function fromPHPException($config, $exception) {
+    public static function fromPHPException($config, $exception)
+    {
         $error = new self($config, get_class($exception), $exception->getMessage());
         $error->stacktrace = new Bugsnag_Stacktrace($config, $exception->getFile(), $exception->getLine(), $exception->getTrace());
 
         return $error;
     }
 
-    public static function fromPHPError($config, $code, $message, $file, $line) {
+    public static function fromPHPError($config, $code, $message, $file, $line)
+    {
         $error = new self($config, self::$ERROR_NAMES[$code], $message);
         $error->stacktrace = new Bugsnag_Stacktrace($config, $file, $line);
         $error->code = $code;
@@ -53,7 +56,8 @@ class Bugsnag_Error {
         return $error;
     }
 
-    public static function fromPHPFatalError($config, $code, $message, $file, $line) {
+    public static function fromPHPFatalError($config, $code, $message, $file, $line)
+    {
         $error = new self($config, self::$ERROR_NAMES[$code], $message);
         $error->stacktrace = new Bugsnag_Stacktrace($config, $file, $line, null, false);
         $error->code = $code;
@@ -61,38 +65,44 @@ class Bugsnag_Error {
         return $error;
     }
 
-    public static function fromNamedError($config, $name, $message) {
+    public static function fromNamedError($config, $name, $message)
+    {
         $error = new self($config, $name, $message);
         $error->stacktrace = new Bugsnag_Stacktrace($config);
 
         return $error;
     }
 
-    private function __construct($config, $name, $message) {
+    private function __construct($config, $name, $message)
+    {
         $this->config = $config;
         $this->name = $name;
         $this->message = $message;
         $this->metaData = array();
     }
 
-    public function setMetaData($metaData) {
-        if(is_array($metaData)) {
+    public function setMetaData($metaData)
+    {
+        if (is_array($metaData)) {
             $this->metaData = array_merge_recursive($this->metaData, $metaData);
         }
     }
 
-    public function getContext() {
+    public function getContext()
+    {
         return $this->config->context ? $this->config->context : Bugsnag_Request::getContext();
     }
 
-    public function getUserId() {
+    public function getUserId()
+    {
         return $this->config->userId ? $this->config->userId : Bugsnag_Request::getUserId();
     }
 
-    public function shouldIgnore() {
+    public function shouldIgnore()
+    {
         // Check if we should ignore errors of this type
-        if(isset($this->code)) {
-            if(isset($this->config->errorReportingLevel)) {
+        if (isset($this->code)) {
+            if (isset($this->config->errorReportingLevel)) {
                 return !($this->config->errorReportingLevel & $this->code);
             } else {
                 return !(error_reporting() & $this->code);
@@ -102,7 +112,8 @@ class Bugsnag_Error {
         return false;
     }
 
-    public function toArray() {
+    public function toArray()
+    {
         return array(
             'userId' => $this->getUserId(),
             'releaseStage' => $this->config->releaseStage,
@@ -116,35 +127,34 @@ class Bugsnag_Error {
         );
     }
 
-    private function applyFilters($metaData) {
-        if(!empty($this->config->filters)) {
+    private function applyFilters($metaData)
+    {
+        if (!empty($this->config->filters)) {
             $cleanMetaData = array();
 
             foreach ($metaData as $key => $value) {
                 $shouldFilter = false;
-                foreach($this->config->filters as $filter) {
-                    if(strpos($key, $filter) !== false) {
+                foreach ($this->config->filters as $filter) {
+                    if (strpos($key, $filter) !== false) {
                         $shouldFilter = true;
                         break;
                     }
                 }
 
-                if($shouldFilter) {
+                if ($shouldFilter) {
                     $cleanMetaData[$key] = '[FILTERED]';
                 } else {
-                    if(is_array($value)) {
+                    if (is_array($value)) {
                         $cleanMetaData[$key] = $this->applyFilters($value);
                     } else {
                         $cleanMetaData[$key] = $value;
                     }
                 }
             }
-            
+
             return $cleanMetaData;
         } else {
             return $metaData;
         }
     }
 }
-
-?>
