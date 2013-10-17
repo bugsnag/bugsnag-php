@@ -72,7 +72,7 @@ class Bugsnag_Client {
     }
 
     /**
-     * Set the absolute path to the root of your application. 
+     * Set the absolute path to the root of your application.
      * We use this to help with error grouping and to highlight "in project"
      * stacktrace lines.
      *
@@ -96,7 +96,7 @@ class Bugsnag_Client {
      * Set the strings to filter out from metaData arrays before sending then
      * to Bugsnag. Eg. array("password", "credit_card")
      *
-     * @param Array $filters an array of metaData filters 
+     * @param Array $filters an array of metaData filters
      */
     public function setFilters($filters) {
         $this->config->filters = $filters;
@@ -134,6 +134,22 @@ class Bugsnag_Client {
      */
     public function setMetaData($metaData) {
         $this->config->metaData = $metaData;
+    }
+
+    /**
+     * Set proxy configuration
+     *
+     * @param Array $proxySettings an array with proxy settings. Eg:
+     *        array(
+     *            'host'     => "bugsnag.com",
+     *            'port'     => 42,
+     *            'user'     => "username"
+     *            'password' => "password123"
+     *            )
+     */
+    public function setProxySettings(Array $proxySettings)
+    {
+        $this->config->proxySettings = $proxySettings;
     }
 
     /**

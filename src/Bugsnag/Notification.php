@@ -84,6 +84,21 @@ class Bugsnag_Notification {
         curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($http, CURLOPT_VERBOSE, false);
 
+        //Proxy settings are present and have to be taken into account
+        if(count($this->config->proxySettings)) {
+            if(isset($this->config->proxySettings['host'])) {
+                curl_setopt($http, CURLOPT_PROXY, $this->config->proxySettings['host']);
+            }
+            if(isset($this->config->proxySettings['port'])) {
+                curl_setopt($http, CURLOPT_PROXYPORT, $this->config->proxySettings['port']);
+            }
+            if(isset($this->config->proxySettings['user'])) {
+                $userPassword = $this->config->proxySettings['user'] . ':';
+                $userPassword .= isset($this->config->proxySettings['password'])? $this->config->proxySettings['password'] : '';
+                curl_setopt($http, CURLOPT_PROXYUSERPWD, $userPassword);
+            }
+        }
+
         $responseBody = curl_exec($http);
         $statusCode = curl_getinfo($http, CURLINFO_HTTP_CODE);
 
