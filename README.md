@@ -288,6 +288,16 @@ application:
 $bugsnag->setProjectRootRegex("(".preg_quote("/app")."|".preg_quote("/libs").")");
 ```
 
+###setProxySettings
+
+If your server is behind a proxy server, you can configure this as well:
+
+```php
+$proxyConfig = array('host' => "bugsnag.com", 'port' => 42, 'user' => "username", 'password' => "password123");
+$bugsnag->setProxySettings($proxyConfig);
+```
+
+Other than the host, none of these settings are mandatory.
 
 PHP Frameworks
 --------------
