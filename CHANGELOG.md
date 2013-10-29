@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.0.2
+-----
+-   Fix bug which caused `setNotifyReleaseStages` being ignored
+
 2.0.1
 -----
 -   Fix minor request meta-data issues introduced in 2.0.0
