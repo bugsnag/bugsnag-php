@@ -15,6 +15,10 @@ class Bugsnag_Notification {
     }
 
     public function addError($error, $passedMetaData=array()) {
+        // Check if this error should be sent to Bugsnag
+        if(!$this->config->shouldNotify()) {
+            return FALSE;
+        }
         // Add global meta-data to error
         $error->setMetaData($this->config->metaData);
 
@@ -63,7 +67,7 @@ class Bugsnag_Notification {
     }
 
     public function deliver() {
-        if(!empty($this->errorQueue)) {
+        if(!empty($this->errorQueue) && $this->config->shouldNotify()) {
             // Post the request to bugsnag
             $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
 
