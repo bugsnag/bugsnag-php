@@ -9,6 +9,9 @@ mobile and desktop applications, helping you to understand and resolve them
 as fast as possible. [Create a free account](https://bugsnag.com) to start 
 capturing errors from your applications.
 
+The Bugsnag Notifier for PHP supports PHP 5.2+ and requires the cURL PHP
+extension to be available.
+
 
 How to Install
 --------------
