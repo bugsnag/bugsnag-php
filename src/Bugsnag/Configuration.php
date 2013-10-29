@@ -10,6 +10,7 @@ class Bugsnag_Configuration
     public $filters = array('password');
     public $projectRoot;
     public $projectRootRegex;
+    public $proxySettings = array();
 
     public $context;
     public $userId;

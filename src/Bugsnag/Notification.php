@@ -18,6 +18,11 @@ class Bugsnag_Notification
 
     public function addError($error, $passedMetaData=array())
     {
+        // Check if this error should be sent to Bugsnag
+        if (!$this->config->shouldNotify()) {
+            return FALSE;
+        }
+
         // Add global meta-data to error
         $error->setMetaData($this->config->metaData);
 
@@ -82,6 +87,7 @@ class Bugsnag_Notification
     {
         $http = curl_init($url);
 
+        // Default curl settings
         curl_setopt($http, CURLOPT_HEADER, false);
         curl_setopt($http, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($http, CURLOPT_POST, true);
@@ -91,6 +97,22 @@ class Bugsnag_Notification
         curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($http, CURLOPT_VERBOSE, false);
 
+        // Apply proxy settings (if present)
+        if (count($this->config->proxySettings)) {
+            if (isset($this->config->proxySettings['host'])) {
+                curl_setopt($http, CURLOPT_PROXY, $this->config->proxySettings['host']);
+            }
+            if (isset($this->config->proxySettings['port'])) {
+                curl_setopt($http, CURLOPT_PROXYPORT, $this->config->proxySettings['port']);
+            }
+            if (isset($this->config->proxySettings['user'])) {
+                $userPassword = $this->config->proxySettings['user'] . ':';
+                $userPassword .= isset($this->config->proxySettings['password'])? $this->config->proxySettings['password'] : '';
+                curl_setopt($http, CURLOPT_PROXYUSERPWD, $userPassword);
+            }
+        }
+
+        // Execute the request and fetch the response
         $responseBody = curl_exec($http);
         $statusCode = curl_getinfo($http, CURLINFO_HTTP_CODE);
 

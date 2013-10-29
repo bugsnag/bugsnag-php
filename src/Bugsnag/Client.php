@@ -150,6 +150,22 @@ class Bugsnag_Client
     }
 
     /**
+     * Set proxy configuration
+     *
+     * @param Array $proxySettings an array with proxy settings. Eg:
+     *        array(
+     *            'host'     => "bugsnag.com",
+     *            'port'     => 42,
+     *            'user'     => "username"
+     *            'password' => "password123"
+     *            )
+     */
+    public function setProxySettings(Array $proxySettings)
+    {
+        $this->config->proxySettings = $proxySettings;
+    }
+
+    /**
      * Set a custom function to call before notifying Bugsnag of an error.
      * You can use this to call your own error handling functions, or to add
      * custom tabs of data to each error on your Bugsnag dashboard.
