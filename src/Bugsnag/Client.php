@@ -211,6 +211,17 @@ class Bugsnag_Client
     }
 
     /**
+     * Sets whether errors should be batched together and send at the end of
+     * each request.
+     *
+     * @param Boolean $batchSending whether to batch together errors
+     */
+    public function setBatchSending($batchSending)
+    {
+        $this->config->batchSending = $batchSending;
+    }
+
+    /**
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about
@@ -299,8 +310,8 @@ class Bugsnag_Client
     }
 
     // Should we send errors immediately or on shutdown
-    private static function sendErrorsOnShutdown()
+    private function sendErrorsOnShutdown()
     {
-        return Bugsnag_Request::isRequest();
+        return $this->config->batchSending && Bugsnag_Request::isRequest();
     }
 }

@@ -4,6 +4,7 @@ class Bugsnag_Configuration
 {
     public $apiKey;
     public $autoNotify = true;
+    public $batchSending = true;
     public $useSSL = true;
     public $endpoint = 'notify.bugsnag.com';
     public $notifyReleaseStages;
