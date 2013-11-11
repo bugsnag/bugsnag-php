@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.0.3
+-----
+-   Add `setBatchSending` function to disable batch sending of errors at the
+    end of each request
+
 2.0.2
 -----
 -   Fix bug which caused `setNotifyReleaseStages` being ignored
