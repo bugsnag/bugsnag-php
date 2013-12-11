@@ -94,13 +94,13 @@ Sending Custom Errors or Non-Fatal Exceptions
 ---------------------------------------------
 
 You can easily tell Bugsnag about non-fatal or caught exceptions by 
-calling `$bugsnag->notifyException`:
+calling `notifyException`:
 
 ```php
 $bugsnag->notifyException(new Exception("Something bad happened"));
 ```
 
-You can also send custom errors to Bugsnag with `Bugsnag.notifyError`:
+You can also send custom errors to Bugsnag with `notifyError`:
 
 ```php
 $bugsnag->notifyError("ErrorType", "Something bad happened here too");
@@ -305,7 +305,12 @@ Other than the host, none of these settings are mandatory.
 PHP Frameworks
 --------------
 
-###CakePHP
+### Laravel
+
+Check out the [bugsnag-laravel](https://github.com/bugsnag/bugsnag-laravel) plugin.
+
+
+### CakePHP
 
 If you are using CakePHP, installation is easy:
 
