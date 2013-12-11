@@ -21,7 +21,7 @@ How to Install
 1.  Install the `bugsnag/bugsnag-php` package:
 
     ```shell
-    $ composer require "bugsnag/bugsnag-php:2.*"
+    $ composer require "bugsnag/bugsnag:2.*"
     ```
 
 ### Using Phar Package
