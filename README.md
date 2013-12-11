@@ -18,18 +18,10 @@ How to Install
 
 ### Using [Composer](http://getcomposer.org/) (Recommended)
 
-1.  Add `bugsnag/bugsnag` to your `composer.json` requirements
-
-    ```json
-    "require": {
-        "bugsnag/bugsnag": "2.*"
-    }
-    ```
-
-2.  Install packages
+1.  Install the `bugsnag/bugsnag-php` package:
 
     ```shell
-    $ composer install
+    $ composer require "bugsnag/bugsnag-php:2.*"
     ```
 
 ### Using Phar Package
