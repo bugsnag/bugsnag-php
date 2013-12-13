@@ -18,11 +18,16 @@ class Bugsnag_Configuration
     public $releaseStage = 'production';
     public $appVersion;
     public $osVersion;
-    public $hostname = php_uname('n');
+    public $hostname;
 
     public $metaData;
     public $beforeNotifyFunction;
     public $errorReportingLevel;
+
+    public function __construct()
+    {
+        $this->hostname = php_uname('n');
+    }
 
     public function getNotifyEndpoint()
     {
