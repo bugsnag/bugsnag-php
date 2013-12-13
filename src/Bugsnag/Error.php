@@ -123,6 +123,7 @@ class Bugsnag_Error
                 'message' => $this->message,
                 'stacktrace' => $this->stacktrace->toArray()
             )),
+            'device' => array('hostname' => $this->config->hostname),
             'metaData' => $this->applyFilters($this->metaData)
         );
     }

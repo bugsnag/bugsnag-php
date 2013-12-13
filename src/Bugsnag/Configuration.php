@@ -18,6 +18,7 @@ class Bugsnag_Configuration
     public $releaseStage = 'production';
     public $appVersion;
     public $osVersion;
+    public $hostname = php_uname('n');
 
     public $metaData;
     public $beforeNotifyFunction;
