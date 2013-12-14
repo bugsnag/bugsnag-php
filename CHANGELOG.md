@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.0.4
+-----
+-   Add hostname collection to help with debugging
+
 2.0.3
 -----
 -   Add `setBatchSending` function to disable batch sending of errors at the
