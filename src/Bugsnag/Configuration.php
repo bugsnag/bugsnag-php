@@ -16,8 +16,6 @@ class Bugsnag_Configuration
     public $context;
     public $userId;
     public $releaseStage = 'production';
-    public $appVersion;
-    public $osVersion;
     public $hostname;
 
     public $metaData;
