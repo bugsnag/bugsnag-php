@@ -13,14 +13,19 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase {
         $this->config->appVersion = '1.2.3';
         $this->config->type = "laravel";
 
-        $this->assertEquals($this->diagnostics->getAppData()['releaseStage'], 'qa1');
-        $this->assertEquals($this->diagnostics->getAppData()['version'], '1.2.3');
-        $this->assertEquals($this->diagnostics->getAppData()['type'], 'laravel');
+        $appData = $this->diagnostics->getAppData();
+
+        $this->assertEquals($appData['releaseStage'], 'qa1');
+        $this->assertEquals($appData['version'], '1.2.3');
+        $this->assertEquals($appData['type'], 'laravel');
     }
 
     public function testDefaultDeviceData() {
         $this->config->hostname = 'web1.example.com';
-        $this->assertEquals($this->diagnostics->getDeviceData()['hostname'], 'web1.example.com');
+
+        $deviceData = $this->diagnostics->getDeviceData();
+
+        $this->assertEquals($deviceData['hostname'], 'web1.example.com');
     }
 
     public function testDefaultContext() {
@@ -30,8 +35,11 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase {
 
     public function testDefaultUser() {
         $this->config->user = array('id' => 123, 'email' => "test@email.com", 'name' => "Bob Hoskins");
-        $this->assertEquals($this->diagnostics->getUser()['id'], 123);
-        $this->assertEquals($this->diagnostics->getUser()['email'], "test@email.com");
-        $this->assertEquals($this->diagnostics->getUser()['name'], "Bob Hoskins");
+
+        $userData = $this->diagnostics->getUser();
+
+        $this->assertEquals($userData['id'], 123);
+        $this->assertEquals($userData['email'], "test@email.com");
+        $this->assertEquals($userData['name'], "Bob Hoskins");
     }
 }
