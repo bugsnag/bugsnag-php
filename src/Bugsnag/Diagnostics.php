@@ -11,11 +11,21 @@ class Bugsnag_Diagnostics
 
     public function getAppData()
     {
-        return array(
-            'version' => $this->config->appVersion,
-            'releaseStage' => $this->config->releaseStage,
-            'type' => $this->config->type
-        );
+        $appData = array();
+
+        if(!is_null($this->config->appVersion)) {
+            $appData['version'] = $this->config->appVersion;
+        }
+
+        if(!is_null($this->config->releaseStage)) {
+            $appData['releaseStage'] = $this->config->releaseStage;
+        }
+
+        if(!is_null($this->config->type)) {
+            $appData['type'] = $this->config->type;
+        }
+
+        return $appData;
     }
 
     public function getDeviceData()
@@ -32,6 +42,13 @@ class Bugsnag_Diagnostics
 
     public function getUser()
     {
-        return $this->config->get('user', array('id' => Bugsnag_Request::getUserId()));
+        $defaultUser = array();
+        $userId = Bugsnag_Request::getUserId();
+
+        if(!is_null($userId)) {
+            $defaultUser['id'] = $userId;
+        }
+
+        return $this->config->get('user', $defaultUser);
     }
 }

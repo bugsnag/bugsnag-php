@@ -91,6 +91,6 @@ class errorTest extends Bugsnag_TestCase {
         $this->error->setSeverity("bunk");
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], NULL);
+        $this->assertEquals($errorArray['severity'], 'error');
     }
 }

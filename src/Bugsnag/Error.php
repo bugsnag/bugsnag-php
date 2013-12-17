@@ -107,13 +107,13 @@ class Bugsnag_Error
         if(array_key_exists($code, self::$ERROR_TYPES)) {
             return self::$ERROR_TYPES[$code]['severity'];
         } else {
-            return NULL;
+            return "error";
         }
     }
 
     public $name;
     public $message;
-    public $severity;
+    public $severity = "error";
     public $stacktrace;
     public $metaData = array();
     public $config;
