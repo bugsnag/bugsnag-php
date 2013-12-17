@@ -53,15 +53,15 @@ Configuration
 1.  Configure Bugsnag with your API key:
 
     ```php
-    $bugsnag = new Bugsnag_Client("YOUR-API-KEY-HERE");
+    $bugsnag = new Bugsnag_Client('YOUR-API-KEY-HERE');
     ```
 
 2.  Enable automatic error and exception notification by attaching Bugsnag's
     error and exception handlers:
 
     ```php
-    set_error_handler(array($bugsnag, "errorHandler"));
-    set_exception_handler(array($bugsnag, "exceptionHandler"));
+    set_error_handler(array($bugsnag, 'errorHandler'));
+    set_exception_handler(array($bugsnag, 'exceptionHandler'));
     ```
 
     If you app or PHP framework already has error handling functions, you can
@@ -76,7 +76,10 @@ It is often useful to send additional meta-data about your app, such as
 information about the currently logged in user, along with any
 error or exceptions, to help debug problems. 
 
-To send custom data, you should define a *before-notify* function, 
+Bugsnag supports sending user information, such as the user's name or email
+address, by calling the [setUser](#setUser) function.
+
+To send other custom data, you should define a *before-notify* function,
 adding an array of "tabs" of custom data to the $metaData parameter.
 For an example, see the [setBeforeNotifyFunction](#setbeforenotifyfunction)
 documentation below.
@@ -89,13 +92,13 @@ You can easily tell Bugsnag about non-fatal or caught exceptions by
 calling `notifyException`:
 
 ```php
-$bugsnag->notifyException(new Exception("Something bad happened"));
+$bugsnag->notifyException(new Exception('Something bad happened'));
 ```
 
 You can also send custom errors to Bugsnag with `notifyError`:
 
 ```php
-$bugsnag->notifyError("ErrorType", "Something bad happened here too");
+$bugsnag->notifyError('ErrorType', 'Something bad happened here too');
 ```
 
 Both of these functions can also be passed an optional `$metaData` parameter,
@@ -103,9 +106,9 @@ which should take the following format:
 
 ```php
 $metaData =  array(
-    "user" => array(
-        "name" => "James",
-        "email" => "james@example.com"
+    'account' => array(
+        'paying' => true,
+        'name' => 'Acme Co'
     )
 );
 ```
@@ -114,33 +117,25 @@ $metaData =  array(
 Additional Configuration
 ------------------------
 
-###setContext
-
-Bugsnag uses the concept of "contexts" to help display and group your
-errors. Contexts represent what was happening in your application at the
-time an error occurs. By default this will be set to the current request
-URL and HTTP method, eg "GET /pages/documentation".
-
-If you would like to set the bugsnag context manually, you can call 
-`setContext`:
-
-```php
-$bugsnag->setContext("Backport Job");
-```
-
-###setUserId
+###setUser
 
 Bugsnag helps you understand how many of your users are affected by each
-error. In order to do this, we send along a userId with every error. 
-By default we will generate a unique ID and send this ID along with every 
-error.
-    
-If you would like to override this `userId`, for example to set it to be a
-username of your currently logged in user, you can call `setUserId`:
+error, and allows you to search for which errors affect a particular user
+using your Bugsnag dashboard. To send useful user-specific information you can
+call `setUser`:
 
 ```php
-$bugsnag->setUserId("leeroy-jenkins");
+$bugsnag->setUser(array(
+    'name' => 'Leeroy Jenkins',
+    'email' => 'leeeeroy@jenkins.com'
+));
 ```
+
+The `name`, `email` and `id` fields are searchable, and everything you send in
+this array will be displayed on your Bugsnag dashboard.
+
+The `id` field is used also used by Bugsnag to determine the number of
+impacted users. By default, we use the IP address of the request as the `id`.
 
 ###setReleaseStage
 
@@ -149,9 +144,9 @@ stages of the application release process (development, production, etc)
 you can set the `releaseStage` that is reported to Bugsnag.
 
 ```php
-$bugsnag->setReleaseStage("development");
+$bugsnag->setReleaseStage('development');
 ```
-    
+
 By default this is set to be "production".
 
 *Note: If you would like errors from stages other than production to be sent
@@ -164,7 +159,7 @@ By default, we will notify Bugsnag of errors that happen in any
 Bugsnag of errors you can call `setNotifyReleaseStages`:
     
 ```php
-$bugsnag->setNotifyReleaseStages(array("development", "production"));
+$bugsnag->setNotifyReleaseStages(array('development', 'production'));
 ```
 
 ###setMetaData
@@ -174,12 +169,39 @@ for example:
 
 ```php
 $bugsnag->setMetaData(array(
-    "user" => array(
-        "name" => "James",
-        "email" => "james@example.com"
+    'account' => array(
+        'paying' => true,
+        'name' => 'Acme Co'
     )
 ));
 ```
+
+###setContext
+
+Bugsnag uses the concept of "contexts" to help display and group your
+errors. Contexts represent what was happening in your application at the
+time an error occurs. By default this will be set to the current request
+URL and HTTP method, eg "GET /pages/documentation".
+
+If you would like to set the bugsnag context manually, you can call 
+`setContext`:
+
+```php
+$bugsnag->setContext('Backport Job');
+```
+
+###setType
+
+You can set the type of application executing the current code by using
+`setType`:
+
+```php
+$bugsnag->setType('resque');
+```
+
+This is usually used to represent if you are running plain PHP code "php", via
+a framework, eg "laravel", or executing through delayed worker code,
+eg "resque". By default this is `NULL`.
 
 ###setFilters
 
@@ -189,7 +211,7 @@ sensitive data such as passwords, and credit card numbers to our
 servers. Any keys which contain these strings will be filtered.
 
 ```php
-$bugsnag->setFilters(array("password", "credit_card"));
+$bugsnag->setFilters(array('password', 'credit_card'));
 ```
 
 By default, this is set to be `array("password")`.
@@ -214,7 +236,7 @@ To add custom tabs of meta-data, simply add to the `$metaData` array
 that is passed as the first parameter to your function, for example:
 
 ```php
-$bugsnag->setBeforeNotifyFunction("before_bugsnag_notify");
+$bugsnag->setBeforeNotifyFunction('before_bugsnag_notify');
 
 function before_bugsnag_notify($error) {
     // Do any custom error handling here
@@ -267,7 +289,7 @@ We mark stacktrace lines as in-project if they come from files inside your
 stacktrace highlighting. You can set this manually by calling `setProjectRoot`:
 
 ```php
-$bugsnag->setProjectRoot("/path/to/your/app");
+$bugsnag->setProjectRoot('/path/to/your/app');
 ```
 
 If your app has files in many different locations, you should consider using
@@ -280,7 +302,7 @@ expression for matching filenames in stacktrace lines that are part of your
 application:
 
 ```php
-$bugsnag->setProjectRootRegex("(".preg_quote("/app")."|".preg_quote("/libs").")");
+$bugsnag->setProjectRootRegex('('.preg_quote('/app').'|'.preg_quote('/libs').')');
 ```
 
 ###setProxySettings
@@ -288,11 +310,25 @@ $bugsnag->setProjectRootRegex("(".preg_quote("/app")."|".preg_quote("/libs").")"
 If your server is behind a proxy server, you can configure this as well:
 
 ```php
-$proxyConfig = array('host' => "bugsnag.com", 'port' => 42, 'user' => "username", 'password' => "password123");
-$bugsnag->setProxySettings($proxyConfig);
+$bugsnag->setProxySettings(array(
+    'host' => 'bugsnag.com',
+    'port' => 42,
+    'user' => 'username',
+    'password' => 'password123'
+));
 ```
 
 Other than the host, none of these settings are mandatory.
+
+###setAppVersion
+
+If you tag your app releases with version numbers, Bugsnag can display these
+on your dashboard if you call `setAppVersion`:
+
+```php
+$bugsnag->setAppVersion('1.2.3');
+```
+
 
 PHP Frameworks
 --------------

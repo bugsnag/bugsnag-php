@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.1.0
+-----
+-   Add `setAppType` for sending app type (script, request, resque, etc)
+-   Add `setUser` for sending structured user data
+-   Automatically send the severity level of each PHP error
+-   Added ability to chain setters (eg $bugsnag->setUser(...)->setReleaseStage(...))
+
 2.0.4
 -----
 -   Add hostname collection to help with debugging
