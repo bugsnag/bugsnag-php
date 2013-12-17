@@ -96,9 +96,18 @@ class Bugsnag_Error
     public static function getName($code)
     {
         if(array_key_exists($code, self::$ERROR_TYPES)) {
-            return self::$ERROR_TYPES[$code]['severity'] == 'fatal';
+            return self::$ERROR_TYPES[$code]['name'];
         } else {
             return "Unknown";
+        }
+    }
+
+    public static function getSeverity($code)
+    {
+        if(array_key_exists($code, self::$ERROR_TYPES)) {
+            return self::$ERROR_TYPES[$code]['severity'];
+        } else {
+            return NULL;
         }
     }
 
@@ -153,6 +162,8 @@ class Bugsnag_Error
     {
         $this->setName(Bugsnag_Error::getName($code));
         $this->setMessage($message);
+        $this->setSeverity(Bugsnag_Error::getSeverity($code));
+
         $this->stacktrace = new Bugsnag_Stacktrace($this->config, $file, $line, NULL, $fatal);
         $this->code = $code;
 

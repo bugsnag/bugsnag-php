@@ -58,4 +58,44 @@ class errorTest extends PHPUnit_Framework_TestCase {
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']['Testing']['password'], '[FILTERED]');
     }
+
+    public function testName() {
+        $this->error = $this->getError();
+        $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Notice');
+
+        $this->error = $this->getError();
+        $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Fatal Error');
+    }
+
+    public function testSeverity() {
+        $this->error = $this->getError();
+        $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['severity'], 'info');
+
+        $this->error = $this->getError();
+        $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['severity'], 'fatal');
+    }
+
+    public function testManualSeverity() {
+        $this->error = $this->getError();
+        $this->error->setSeverity("fatal");
+
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['severity'], 'fatal');
+    }
+
+    public function testInvalidSeverity() {
+        $this->error = $this->getError();
+        $this->error->setSeverity("bunk");
+
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['severity'], NULL);
+    }
 }
