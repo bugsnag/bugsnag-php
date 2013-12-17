@@ -39,5 +39,3 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $this->client->notifyException(new Exception("Something broke"));
     }
 }
-
-?>

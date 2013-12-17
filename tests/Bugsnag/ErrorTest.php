@@ -59,5 +59,3 @@ class errorTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($errorArray['metaData']['Testing']['password'], '[FILTERED]');
     }
 }
-
-?>

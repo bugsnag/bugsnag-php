@@ -42,5 +42,3 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($this->config->shouldNotify(), true);
     }
 }
-
-?>

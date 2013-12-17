@@ -102,5 +102,3 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
 function before_notify_skip_error($error) {
     return $error->name != "SkipMe";
 }
-
-?>
