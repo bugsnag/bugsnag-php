@@ -348,8 +348,7 @@ class Bugsnag_Client
         if (!is_null($lastError) && Bugsnag_Error::isFatal($lastError['type'])) {
             $error = new Bugsnag_Error($this->config, $this->diagnostics);
 
-            $error->setPHPError($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true)
-                  ->setSeverity("fatal");
+            $error->setPHPError($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
 
             if (!$error->shouldIgnore() && $this->config->autoNotify) {
                 $this->notify($error);
