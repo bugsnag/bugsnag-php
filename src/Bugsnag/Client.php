@@ -68,7 +68,7 @@ class Bugsnag_Client
      *
      * @param Array $notifyReleaseStages array of release stages to notify for
      */
-    public function setNotifyReleaseStages($notifyReleaseStages)
+    public function setNotifyReleaseStages(array $notifyReleaseStages)
     {
         $this->config->notifyReleaseStages = $notifyReleaseStages;
         return $this;
@@ -127,7 +127,7 @@ class Bugsnag_Client
      *
      * @param Array $filters an array of metaData filters
      */
-    public function setFilters($filters)
+    public function setFilters(array $filters)
     {
         $this->config->filters = $filters;
         return $this;
@@ -143,7 +143,7 @@ class Bugsnag_Client
      *            'email' => 'bob@hoskins.com'
      *        )
      */
-    public function setUser($user)
+    public function setUser(array $user)
     {
         $this->config->user = $user;
         return $this;
@@ -198,7 +198,7 @@ class Bugsnag_Client
      *            )
      *        )
      */
-    public function setMetaData($metaData)
+    public function setMetaData(array $metaData)
     {
         $this->config->metaData = $metaData;
         return $this;
@@ -215,7 +215,7 @@ class Bugsnag_Client
      *            'password' => "password123"
      *            )
      */
-    public function setProxySettings(Array $proxySettings)
+    public function setProxySettings(array $proxySettings)
     {
         $this->config->proxySettings = $proxySettings;
         return $this;
@@ -288,7 +288,7 @@ class Bugsnag_Client
      * @param Array     $metaData  optional metaData to send with this error
      * @param String    $severity  optional severity of this error (fatal/error/warning/info)
      */
-    public function notifyException($exception, $metaData=null, $severity=null)
+    public function notifyException(Exception $exception, array $metaData=null, $severity=null)
     {
         $error = new Bugsnag_Error($this->config, $this->diagnostics);
         $error->setPHPException($exception)
@@ -305,7 +305,7 @@ class Bugsnag_Client
      * @param Array  $metaData     optional metaData to send with this error
      * @param String $severity     optional severity of this error (fatal/error/warning/info)
      */
-    public function notifyError($name, $message, $metaData=null, $severity=null)
+    public function notifyError($name, $message, array $metaData=null, $severity=null)
     {
         $error = new Bugsnag_Error($this->config, $this->diagnostics);
         $error->setName($name)

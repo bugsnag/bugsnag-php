@@ -5,7 +5,7 @@ class Bugsnag_Stacktrace
     private $frames;
     private $config;
 
-    public function __construct($config, $topFile=null, $topLine=null, $backtrace=null, $generateBacktrace=true)
+    public function __construct(Bugsnag_Configuration $config, $topFile=null, $topLine=null, $backtrace=null, $generateBacktrace=true)
     {
         $this->config = $config;
 

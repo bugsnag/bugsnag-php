@@ -11,7 +11,7 @@ class Bugsnag_Notification
     private $config;
     private $errorQueue = array();
 
-    public function __construct($config)
+    public function __construct(Bugsnag_Configuration $config)
     {
         $this->config = $config;
     }
@@ -24,7 +24,9 @@ class Bugsnag_Notification
         }
 
         // Add global meta-data to error
-        $error->setMetaData($this->config->metaData);
+        if(is_array($this->config->metaData)) {
+            $error->setMetaData($this->config->metaData);
+        }
 
         // Add request meta-data to error
         if (Bugsnag_Request::isRequest()) {

@@ -1,6 +1,8 @@
 <?php
 
-class errorTest extends PHPUnit_Framework_TestCase {
+require_once "Bugsnag_TestCase.php";
+
+class errorTest extends Bugsnag_TestCase {
     protected $config;
     protected $diagnostics;
     protected $error;
@@ -8,16 +10,10 @@ class errorTest extends PHPUnit_Framework_TestCase {
     protected function setUp(){
         $this->config = new Bugsnag_Configuration();
         $this->diagnostics = new Bugsnag_Diagnostics($this->config);
-    }
-
-    protected function getError() {
-        $error = new Bugsnag_Error($this->config, $this->diagnostics);
-        $error->setName("Name")->setMessage("Message");
-        return $error;
+        $this->error = $this->getError();
     }
 
     public function testMetaData() {
-        $this->error = $this->getError();
         $this->error->setMetaData(array("Testing" => array("globalArray" => "hi")));
 
         $errorArray = $this->error->toArray();
@@ -25,7 +21,6 @@ class errorTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMetaDataMerging() {
-        $this->error = $this->getError();
         $this->error->setMetaData(array("Testing" => array("globalArray" => "hi")));
         $this->error->setMetaData(array("Testing" => array("localArray" => "yo")));
 
@@ -37,7 +32,6 @@ class errorTest extends PHPUnit_Framework_TestCase {
     public function testShouldIgnore() {
         $this->config->errorReportingLevel = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED;
 
-        $this->error = $this->getError();
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
 
         $this->assertEquals($this->error->shouldIgnore(), TRUE);
@@ -45,46 +39,48 @@ class errorTest extends PHPUnit_Framework_TestCase {
 
     public function testShouldNotIgnore() {
         $this->config->errorReportingLevel = E_ALL;
-        $this->error = $this->getError();
+
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
 
         $this->assertEquals($this->error->shouldIgnore(), FALSE);
     }
 
     public function testFiltering() {
-        $this->error = $this->getError();
         $this->error->setMetaData(array("Testing" => array("password" => "123456")));
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']['Testing']['password'], '[FILTERED]');
     }
 
-    public function testName() {
-        $this->error = $this->getError();
+    public function testNoticeName() {
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
+
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Notice');
+    }
 
-        $this->error = $this->getError();
+    public function testErrorName() {
         $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
+
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Fatal Error');
     }
 
-    public function testSeverity() {
-        $this->error = $this->getError();
+    public function testNoticeSeverity() {
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
+
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['severity'], 'info');
+    }
 
-        $this->error = $this->getError();
+    public function testErrorSeverity() {
         $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
+
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['severity'], 'fatal');
     }
 
     public function testManualSeverity() {
-        $this->error = $this->getError();
         $this->error->setSeverity("fatal");
 
         $errorArray = $this->error->toArray();
@@ -92,7 +88,6 @@ class errorTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testInvalidSeverity() {
-        $this->error = $this->getError();
         $this->error->setSeverity("bunk");
 
         $errorArray = $this->error->toArray();

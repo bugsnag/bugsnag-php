@@ -1,6 +1,8 @@
 <?php
 
-class NotificationTest extends PHPUnit_Framework_TestCase {
+require_once "Bugsnag_TestCase.php";
+
+class NotificationTest extends Bugsnag_TestCase {
     protected $config;
     protected $diagnostics;
     protected $notification;
@@ -16,12 +18,6 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
                                    ->setMethods(array("postJSON"))
                                    ->setConstructorArgs(array($this->config))
                                    ->getMock();
-    }
-
-    protected function getError($name="Name", $message="Message") {
-        $error = new Bugsnag_Error($this->config, $this->diagnostics);
-        $error->setName($name)->setMessage($message);
-        return $error;
     }
 
     public function testNotification() {

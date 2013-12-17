@@ -120,7 +120,7 @@ class Bugsnag_Error
     public $diagnostics;
     public $code;
 
-    public function __construct($config, $diagnostics)
+    public function __construct(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics)
     {
         $this->config = $config;
         $this->diagnostics = $diagnostics;
@@ -152,7 +152,7 @@ class Bugsnag_Error
         return $this;
     }
 
-    public function setPHPException($exception)
+    public function setPHPException(Exception $exception)
     {
         $this->setName(get_class($exception));
         $this->setMessage($exception->getMessage());
@@ -173,7 +173,7 @@ class Bugsnag_Error
         return $this;
     }
 
-    public function setMetaData($metaData)
+    public function setMetaData(array $metaData)
     {
         if (is_array($metaData)) {
             $this->metaData = array_merge_recursive($this->metaData, $metaData);

@@ -4,7 +4,7 @@ class Bugsnag_Diagnostics
 {
     private $config;
 
-    public function __construct($config)
+    public function __construct(Bugsnag_Configuration $config)
     {
         $this->config = $config;
     }
