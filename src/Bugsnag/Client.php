@@ -269,10 +269,11 @@ class Bugsnag_Client
      * @param Exception $exception the exception to notify Bugsnag about
      * @param Array     $metaData  optional metaData to send with this error
      */
-    public function notifyException($exception, $metaData=null)
+    public function notifyException($exception, $metaData=null, $severity=null)
     {
         $error = new Bugsnag_Error($this->config, $this->diagnostics);
-        $error->setPHPException($exception);
+        $error->setPHPException($exception)
+              ->setSeverity($severity);
 
         $this->notify($error, $metaData);
     }
@@ -284,11 +285,12 @@ class Bugsnag_Client
      * @param String $errorMessage the error message
      * @param Array  $metaData     optional metaData to send with this error
      */
-    public function notifyError($name, $message, $metaData=null)
+    public function notifyError($name, $message, $metaData=null, $severity=null)
     {
         $error = new Bugsnag_Error($this->config, $this->diagnostics);
         $error->setName($name)
-              ->setMessage($message);
+              ->setMessage($message)
+              ->setSeverity($severity);
 
         $this->notify($error, $metaData);
     }

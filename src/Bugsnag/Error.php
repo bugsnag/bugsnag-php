@@ -141,11 +141,14 @@ class Bugsnag_Error
 
     public function setSeverity($severity)
     {
-        if(in_array($severity, Bugsnag_Error::$VALID_SEVERITIES)) {
-            $this->severity = $severity;
-        } else {
-            error_log('Bugsnag Warning: Tried to set error severity to '. $severity .' which is not allowed.');
+        if(!is_null($severity)) {
+            if(in_array($severity, Bugsnag_Error::$VALID_SEVERITIES)) {
+                $this->severity = $severity;
+            } else {
+                error_log('Bugsnag Warning: Tried to set error severity to '. $severity .' which is not allowed.');
+            }
         }
+
         return $this;
     }
 
