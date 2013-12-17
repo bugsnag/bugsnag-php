@@ -2,83 +2,161 @@
 
 class Bugsnag_Error
 {
-    private static $ERROR_NAMES = array (
-        E_ERROR             => 'PHP Fatal Error',
-        E_PARSE             => 'PHP Parse Error',
-        E_COMPILE_ERROR     => 'PHP Compile Error',
-        E_CORE_ERROR        => 'PHP Core Error',
-        E_NOTICE            => 'PHP Notice',
-        E_STRICT            => 'PHP Strict',
-        E_WARNING           => 'PHP Warning',
-        E_CORE_WARNING      => 'PHP Core Warning',
-        E_COMPILE_WARNING   => 'PHP Compile Warning',
-        E_RECOVERABLE_ERROR => 'PHP Recoverable Error',
-        E_USER_ERROR        => 'User Error',
-        E_USER_WARNING      => 'User Warning',
-        E_USER_NOTICE       => 'User Notice',
-
-        // PHP 5.2 compatibility
-        8192                => 'PHP Deprecated',
-        16384               => 'User Deprecated'
+    private static $VALID_SEVERITIES = array(
+        'fatal',
+        'error',
+        'warning',
+        'info'
     );
 
-    public static $FATAL_ERRORS = array(
-        E_ERROR,
-        E_PARSE,
-        E_CORE_ERROR,
-        E_CORE_WARNING,
-        E_COMPILE_ERROR,
-        E_COMPILE_WARNING,
-        E_STRICT
+    private static $ERROR_TYPES = array(
+        E_ERROR => array(
+            'name' => 'PHP Fatal Error',
+            'severity' => 'fatal'
+        ),
+
+        E_WARNING => array(
+            'name' => 'PHP Warning',
+            'severity' => 'warning'
+        ),
+
+        E_PARSE => array(
+            'name' => 'PHP Parse Error',
+            'severity' => 'fatal'
+        ),
+
+        E_NOTICE => array(
+            'name' => 'PHP Notice',
+            'severity' => 'info'
+        ),
+
+        E_CORE_ERROR => array(
+            'name' => 'PHP Core Error',
+            'severity' => 'fatal'
+        ),
+
+        E_CORE_WARNING => array(
+            'name' => 'PHP Core Warning',
+            'severity' => 'warning'
+        ),
+
+        E_COMPILE_ERROR => array(
+            'name' => 'PHP Compile Error',
+            'severity' => 'fatal'
+        ),
+
+        E_COMPILE_WARNING => array(
+            'name' => 'PHP Compile Warning',
+            'severity' => 'warning'
+        ),
+
+        E_USER_ERROR => array(
+            'name' => 'User Error',
+            'severity' => 'error'
+        ),
+
+        E_USER_WARNING => array(
+            'name' => 'User Warning',
+            'severity' => 'warning'
+        ),
+
+        E_USER_NOTICE => array(
+            'name' => 'User Notice',
+            'severity' => 'info'
+        ),
+
+        E_STRICT => array(
+            'name' => 'PHP Strict',
+            'severity' => 'info'
+        ),
+
+        E_RECOVERABLE_ERROR => array(
+            'name' => 'PHP Recoverable Error',
+            'severity' => 'error'
+        ),
+
+        // E_DEPRECATED (Since PHP 5.3.0)
+        8192 => array(
+            'name' => 'PHP Deprecated',
+            'severity' => 'info'
+        ),
+
+        // E_USER_DEPRECATED (Since PHP 5.3.0)
+        16384 => array(
+            'name' => 'User Deprecated',
+            'severity' => 'info'
+        )
     );
+
+    public static function isFatal($code)
+    {
+        return array_key_exists($code, self::$ERROR_TYPES) && self::$ERROR_TYPES[$code]['severity'] == 'fatal';
+    }
+
+    public static function getName($code)
+    {
+        if(array_key_exists($code, self::$ERROR_TYPES)) {
+            return self::$ERROR_TYPES[$code]['severity'] == 'fatal';
+        } else {
+            return "Unknown";
+        }
+    }
 
     public $name;
     public $message;
+    public $severity;
     public $stacktrace;
-    public $metaData;
+    public $metaData = array();
     public $config;
+    public $diagnostics;
     public $code;
 
-    public static function fromPHPException($config, $exception)
-    {
-        $error = new self($config, get_class($exception), $exception->getMessage());
-        $error->stacktrace = new Bugsnag_Stacktrace($config, $exception->getFile(), $exception->getLine(), $exception->getTrace());
-
-        return $error;
-    }
-
-    public static function fromPHPError($config, $code, $message, $file, $line)
-    {
-        $error = new self($config, self::$ERROR_NAMES[$code], $message);
-        $error->stacktrace = new Bugsnag_Stacktrace($config, $file, $line);
-        $error->code = $code;
-
-        return $error;
-    }
-
-    public static function fromPHPFatalError($config, $code, $message, $file, $line)
-    {
-        $error = new self($config, self::$ERROR_NAMES[$code], $message);
-        $error->stacktrace = new Bugsnag_Stacktrace($config, $file, $line, null, false);
-        $error->code = $code;
-
-        return $error;
-    }
-
-    public static function fromNamedError($config, $name, $message)
-    {
-        $error = new self($config, $name, $message);
-        $error->stacktrace = new Bugsnag_Stacktrace($config);
-
-        return $error;
-    }
-
-    private function __construct($config, $name, $message)
+    public function __construct($config, $diagnostics)
     {
         $this->config = $config;
+        $this->diagnostics = $diagnostics;
+        $this->stacktrace = new Bugsnag_Stacktrace($this->config);
+    }
+
+    public function setName($name)
+    {
         $this->name = $name;
+        return $this;
+    }
+
+    public function setMessage($message)
+    {
         $this->message = $message;
-        $this->metaData = array();
+        return $this;
+    }
+
+    public function setSeverity($severity)
+    {
+        if(in_array($severity, Bugsnag_Error::$VALID_SEVERITIES)) {
+            $this->severity = $severity;
+        } else {
+            error_log('Bugsnag Warning: Tried to set error severity to '. $severity .' which is not allowed.');
+        }
+        return $this;
+    }
+
+    public function setPHPException($exception)
+    {
+        $this->setName(get_class($exception));
+        $this->setMessage($exception->getMessage());
+        $this->stacktrace = new Bugsnag_Stacktrace($this->config, $exception->getFile(), $exception->getLine(), $exception->getTrace());
+
+        return $this;
+    }
+
+    public function setPHPError($code, $message, $file, $line, $fatal=false)
+    {
+        $this->setName(Bugsnag_Error::getName($code));
+        $this->setMessage($message);
+        $this->stacktrace = new Bugsnag_Stacktrace($this->config, $file, $line, NULL, $fatal);
+        $this->code = $code;
+
+        return $this;
     }
 
     public function setMetaData($metaData)
@@ -86,16 +164,8 @@ class Bugsnag_Error
         if (is_array($metaData)) {
             $this->metaData = array_merge_recursive($this->metaData, $metaData);
         }
-    }
 
-    public function getContext()
-    {
-        return $this->config->context ? $this->config->context : Bugsnag_Request::getContext();
-    }
-
-    public function getUserId()
-    {
-        return $this->config->userId ? $this->config->userId : Bugsnag_Request::getUserId();
+        return $this;
     }
 
     public function shouldIgnore()
@@ -115,15 +185,16 @@ class Bugsnag_Error
     public function toArray()
     {
         return array(
-            'userId' => $this->getUserId(),
-            'releaseStage' => $this->config->releaseStage,
-            'context' => $this->getContext(),
+            'app' => $this->diagnostics->getAppData(),
+            'device' => $this->diagnostics->getDeviceData(),
+            'user' => $this->diagnostics->getUser(),
+            'context' => $this->diagnostics->getContext(),
+            'severity' => $this->severity,
             'exceptions' => array(array(
                 'errorClass' => $this->name,
                 'message' => $this->message,
                 'stacktrace' => $this->stacktrace->toArray()
             )),
-            'device' => array('hostname' => $this->config->hostname),
             'metaData' => $this->applyFilters($this->metaData)
         );
     }
