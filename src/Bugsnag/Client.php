@@ -48,6 +48,7 @@ class Bugsnag_Client
     public function setReleaseStage($releaseStage)
     {
         $this->config->releaseStage = $releaseStage;
+        return $this;
     }
 
     /**
@@ -58,6 +59,7 @@ class Bugsnag_Client
     public function setAppVersion($appVersion)
     {
         $this->config->appVersion = $appVersion;
+        return $this;
     }
 
     /**
@@ -69,6 +71,7 @@ class Bugsnag_Client
     public function setNotifyReleaseStages($notifyReleaseStages)
     {
         $this->config->notifyReleaseStages = $notifyReleaseStages;
+        return $this;
     }
 
     /**
@@ -79,6 +82,7 @@ class Bugsnag_Client
     public function setEndpoint($endpoint)
     {
         $this->config->endpoint = $endpoint;
+        return $this;
     }
 
     /**
@@ -89,6 +93,7 @@ class Bugsnag_Client
     public function setUseSSL($useSSL)
     {
         $this->config->useSSL = $useSSL;
+        return $this;
     }
 
     /**
@@ -101,6 +106,7 @@ class Bugsnag_Client
     public function setProjectRoot($projectRoot)
     {
         $this->config->setProjectRoot($projectRoot);
+        return $this;
     }
 
     /**
@@ -112,6 +118,7 @@ class Bugsnag_Client
     public function setProjectRootRegex($projectRootRegex)
     {
         $this->config->projectRootRegex = $projectRootRegex;
+        return $this;
     }
 
     /**
@@ -123,6 +130,7 @@ class Bugsnag_Client
     public function setFilters($filters)
     {
         $this->config->filters = $filters;
+        return $this;
     }
 
     /**
@@ -138,6 +146,7 @@ class Bugsnag_Client
     public function setUser($user)
     {
         $this->config->user = $user;
+        return $this;
     }
 
     /**
@@ -150,6 +159,7 @@ class Bugsnag_Client
         }
 
         $this->config->user['id'] = $userId;
+        return $this;
     }
 
     /**
@@ -160,6 +170,7 @@ class Bugsnag_Client
     public function setContext($context)
     {
         $this->config->context = $context;
+        return $this;
     }
 
     /**
@@ -172,6 +183,7 @@ class Bugsnag_Client
     public function setType($type)
     {
         $this->config->type = $type;
+        return $this;
     }
 
     /**
@@ -189,6 +201,7 @@ class Bugsnag_Client
     public function setMetaData($metaData)
     {
         $this->config->metaData = $metaData;
+        return $this;
     }
 
     /**
@@ -205,6 +218,7 @@ class Bugsnag_Client
     public function setProxySettings(Array $proxySettings)
     {
         $this->config->proxySettings = $proxySettings;
+        return $this;
     }
 
     /**
@@ -226,6 +240,7 @@ class Bugsnag_Client
     public function setBeforeNotifyFunction($beforeNotifyFunction)
     {
         $this->config->beforeNotifyFunction = $beforeNotifyFunction;
+        return $this;
     }
 
     /**
@@ -239,6 +254,7 @@ class Bugsnag_Client
     public function setErrorReportingLevel($errorReportingLevel)
     {
         $this->config->errorReportingLevel = $errorReportingLevel;
+        return $this;
     }
 
     /**
@@ -250,6 +266,7 @@ class Bugsnag_Client
     public function setAutoNotify($autoNotify)
     {
         $this->config->autoNotify = $autoNotify;
+        return $this;
     }
 
     /**
@@ -261,6 +278,7 @@ class Bugsnag_Client
     public function setBatchSending($batchSending)
     {
         $this->config->batchSending = $batchSending;
+        return $this;
     }
 
     /**
@@ -268,6 +286,7 @@ class Bugsnag_Client
      *
      * @param Exception $exception the exception to notify Bugsnag about
      * @param Array     $metaData  optional metaData to send with this error
+     * @param String    $severity  optional severity of this error (fatal/error/warning/info)
      */
     public function notifyException($exception, $metaData=null, $severity=null)
     {
@@ -284,6 +303,7 @@ class Bugsnag_Client
      * @param String $errorName    the name of the error, a short (1 word) string
      * @param String $errorMessage the error message
      * @param Array  $metaData     optional metaData to send with this error
+     * @param String $severity     optional severity of this error (fatal/error/warning/info)
      */
     public function notifyError($name, $message, $metaData=null, $severity=null)
     {
