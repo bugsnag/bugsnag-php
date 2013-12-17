@@ -11,12 +11,12 @@ class Bugsnag_Notification
     private $config;
     private $errorQueue = array();
 
-    public function __construct($config)
+    public function __construct(Bugsnag_Configuration $config)
     {
         $this->config = $config;
     }
 
-    public function addError($error, $passedMetaData=array())
+    public function addError($error, $passedMetaData=array(), $passedSeverity=null)
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {

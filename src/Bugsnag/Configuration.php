@@ -14,20 +14,15 @@ class Bugsnag_Configuration
     public $proxySettings = array();
 
     public $context;
-    public $userId;
+    public $type;
+    public $user;
     public $releaseStage = 'production';
     public $appVersion;
-    public $osVersion;
     public $hostname;
 
     public $metaData;
     public $beforeNotifyFunction;
     public $errorReportingLevel;
-
-    public function __construct()
-    {
-        $this->hostname = php_uname('n');
-    }
 
     public function getNotifyEndpoint()
     {
@@ -43,6 +38,17 @@ class Bugsnag_Configuration
     {
         $this->projectRoot = $projectRoot;
         $this->projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
+    }
+
+    public function get($prop, $default=NULL)
+    {
+        $configured = $this->$prop;
+
+        if(is_array($configured) && is_array($default)) {
+            return array_merge($default, $configured);
+        } else {
+            return $configured ? $configured : $default;
+        }
     }
 
     private function getProtocol()

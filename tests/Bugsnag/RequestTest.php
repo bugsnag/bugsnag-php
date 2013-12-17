@@ -29,5 +29,3 @@ class RequestTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(Bugsnag_Request::getRequestIp(), "123.45.67.8");
     }
 }
-
-?>

@@ -7,7 +7,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         // Mock the notify function
         $this->client = $this->getMockBuilder('Bugsnag_Client')
                              ->setMethods(array('notify'))
-                             ->setConstructorArgs(array('6015a72ff14038114c3d12623dfb018f'))
+                             ->setConstructorArgs(array('example-api-key'))
                              ->getMock();
     }
 
@@ -38,6 +38,28 @@ class ClientTest extends PHPUnit_Framework_TestCase {
 
         $this->client->notifyException(new Exception("Something broke"));
     }
-}
 
-?>
+    public function testErrorReportingLevel() {
+        $this->client->expects($this->once())
+                     ->method('notify');
+
+        $this->client->setErrorReportingLevel(E_NOTICE)
+                     ->errorHandler(E_NOTICE, "Something broke", "somefile.php", 123);
+    }
+
+    public function testErrorReportingLevelFails() {
+        $this->client->expects($this->never())
+                     ->method('notify');
+
+        $this->client->setErrorReportingLevel(E_NOTICE)
+                     ->errorHandler(E_WARNING, "Something broke", "somefile.php", 123);
+    }
+
+    public function testErrorReportingWithoutNotice() {
+        $this->client->expects($this->never())
+                     ->method('notify');
+
+        $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE )
+                     ->errorHandler(E_NOTICE, "Something broke", "somefile.php", 123);
+    }
+}

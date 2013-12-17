@@ -1,13 +1,18 @@
 <?php
 
-class NotificationTest extends PHPUnit_Framework_TestCase {
+require_once "Bugsnag_TestCase.php";
+
+class NotificationTest extends Bugsnag_TestCase {
     protected $config;
+    protected $diagnostics;
     protected $notification;
 
     protected function setUp(){
         $this->config = new Bugsnag_Configuration();
         $this->config->apiKey = "6015a72ff14038114c3d12623dfb018f";
         $this->config->beforeNotifyFunction = "before_notify_skip_error";
+
+        $this->diagnostics = new Bugsnag_Diagnostics($this->config);
 
         $this->notification = $this->getMockBuilder('Bugsnag_Notification')
                                    ->setMethods(array("postJSON"))
@@ -29,7 +34,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
                                   $this->anything());
 
         // Add an error to the notification and deliver it
-        $this->notification->addError(Bugsnag_Error::fromNamedError($this->config, "Name", "Message"));
+        $this->notification->addError($this->getError());
         $this->notification->deliver();
     }
 
@@ -37,7 +42,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
         $this->notification->expects($this->never())
                            ->method("postJSON");
 
-        $this->notification->addError(Bugsnag_Error::fromNamedError($this->config, "SkipMe", "Message"));
+        $this->notification->addError($this->getError("SkipMe","Message"));
         $this->notification->deliver();
     }
 
@@ -60,7 +65,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
                                      ->setConstructorArgs(array($config))
                                      ->getMock();
 
-        $this->assertFalse($notification->addError(Bugsnag_Error::fromNamedError($config, "Name", "Message")));
+        $this->assertFalse($notification->addError($this->getError()));
     }
 
     /**
@@ -85,7 +90,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
         $notification->expects($this->never())
                              ->method("postJSON");
 
-        $notification->addError(Bugsnag_Error::fromNamedError($config, "Name", "Message"));
+        $notification->addError($this->getError());
         $notification->deliver();
     }
 }
@@ -93,5 +98,3 @@ class NotificationTest extends PHPUnit_Framework_TestCase {
 function before_notify_skip_error($error) {
     return $error->name != "SkipMe";
 }
-
-?>
