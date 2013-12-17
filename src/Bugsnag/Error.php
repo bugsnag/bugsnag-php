@@ -173,7 +173,7 @@ class Bugsnag_Error
         return $this;
     }
 
-    public function setMetaData(array $metaData)
+    public function setMetaData($metaData)
     {
         if (is_array($metaData)) {
             $this->metaData = array_merge_recursive($this->metaData, $metaData);

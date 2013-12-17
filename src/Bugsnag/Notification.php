@@ -24,9 +24,7 @@ class Bugsnag_Notification
         }
 
         // Add global meta-data to error
-        if(is_array($this->config->metaData)) {
-            $error->setMetaData($this->config->metaData);
-        }
+        $error->setMetaData($this->config->metaData);
 
         // Add request meta-data to error
         if (Bugsnag_Request::isRequest()) {
