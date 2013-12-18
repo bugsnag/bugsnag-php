@@ -290,9 +290,8 @@ class Bugsnag_Client
      */
     public function notifyException(Exception $exception, array $metaData=null, $severity=null)
     {
-        $error = new Bugsnag_Error($this->config, $this->diagnostics);
-        $error->setPHPException($exception)
-              ->setSeverity($severity);
+        $error = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
+        $error->setSeverity($severity);
 
         $this->notify($error, $metaData);
     }
@@ -307,10 +306,8 @@ class Bugsnag_Client
      */
     public function notifyError($name, $message, array $metaData=null, $severity=null)
     {
-        $error = new Bugsnag_Error($this->config, $this->diagnostics);
-        $error->setName($name)
-              ->setMessage($message)
-              ->setSeverity($severity);
+        $error = Bugsnag_Error::fromNamedError($this->config, $this->diagnostics, $name, $message);
+        $error->setSeverity($severity);
 
         $this->notify($error, $metaData);
     }
@@ -318,9 +315,8 @@ class Bugsnag_Client
     // Exception handler callback, should only be called internally by PHP's set_exception_handler
     public function exceptionHandler($exception)
     {
-        $error = new Bugsnag_Error($this->config, $this->diagnostics);
-        $error->setPHPException($exception)
-              ->setSeverity("fatal");
+        $error = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
+        $error->setSeverity("fatal");
 
         if (!$error->shouldIgnore() && $this->config->autoNotify) {
             $this->notify($error);
@@ -330,8 +326,7 @@ class Bugsnag_Client
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array())
     {
-        $error = new Bugsnag_Error($this->config, $this->diagnostics);
-        $error->setPHPError($errno, $errstr, $errfile, $errline);
+        $error = Bugsnag_Error::fromPHPError($this->config, $this->diagnostics, $errno, $errstr, $errfile, $errline);
 
         if (!$error->shouldIgnore() && $this->config->autoNotify) {
             $this->notify($error);
@@ -346,11 +341,9 @@ class Bugsnag_Client
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
-        if (!is_null($lastError) && Bugsnag_Error::isFatal($lastError['type'])) {
-            $error = new Bugsnag_Error($this->config, $this->diagnostics);
-
-            $error->setPHPError($lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true)
-                  ->setSeverity("fatal");
+        if (!is_null($lastError) && Bugsnag_ErrorTypes::isFatal($lastError['type'])) {
+            $error = Bugsnag_Error::fromPHPError($this->config, $this->diagnostics, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
+            $error->setSeverity("fatal");
 
             if (!$error->shouldIgnore() && $this->config->autoNotify) {
                 $this->notify($error);
