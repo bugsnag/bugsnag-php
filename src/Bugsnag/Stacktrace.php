@@ -23,8 +23,8 @@ class Bugsnag_Stacktrace
 
             // If we weren't passed a topFile and topLine, use the values from lastFrame
             if (is_null($topFile) && is_null($topLine)) {
-                $topFile = $lastFrame['file'];
-                $topLine = $lastFrame['line'];
+                $topFile = isset($lastFrame['file']) ? $lastFrame['file'] : null;
+                $topLine = isset($lastFrame['line']) ? $lastFrame['line'] : null;
             }
 
             // PHP backtrace's are misaligned, we need to shift the file/line down a frame
