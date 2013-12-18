@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.1.1
+-----
+-   Fix crash during stacktrace generation for frameworks that have their own
+    `shutdown_handler` method (eg. Laravel)
+
 2.1.0
 -----
 -   Add `setAppType` for sending app type (script, request, resque, etc)
