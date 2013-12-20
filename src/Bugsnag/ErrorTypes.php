@@ -103,4 +103,15 @@ class Bugsnag_ErrorTypes
             return "error";
         }
     }
+
+    public static function getLevelsForSeverity($severity)
+    {
+        $levels = 0;
+        foreach(Bugsnag_ErrorTypes::$ERROR_TYPES as $level => $info) {
+            if($info['severity'] == $severity) {
+                $levels |= $level;
+            }
+        }
+        return $levels;
+    }
 }
