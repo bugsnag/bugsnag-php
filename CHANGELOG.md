@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.1.2
+-   Add `ErrorTypes::getLevelsForSeverity` function to fetch an
+    `error_reporting` bitmask for a particular Bugsnag severity
+
 2.1.1
 -----
 -   Fix crash during stacktrace generation for frameworks that have their own
