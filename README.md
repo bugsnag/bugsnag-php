@@ -368,6 +368,13 @@ If you are using CakePHP, installation is easy:
     ));
     ```
 
+### Symfony2
+
+Check out the third-party [evolution7/Evolution7BugsnagBundle](https://github.com/evolution7/Evolution7BugsnagBundle) or [wrep/bugsnag-php-symfony](https://github.com/wrep/bugsnag-php-symfony) bundles.
+
+### Silverstripe
+
+Check out the third-party [evolution7/silverstripe-bugsnag-logger](https://github.com/evolution7/silverstripe-bugsnag-logger) plugin.
 
 Reporting Bugs or Feature Requests
 ----------------------------------
