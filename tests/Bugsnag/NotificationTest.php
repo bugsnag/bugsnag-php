@@ -1,13 +1,15 @@
 <?php
 
-require_once "Bugsnag_TestCase.php";
+require_once 'Bugsnag_TestCase.php';
 
-class NotificationTest extends Bugsnag_TestCase {
+class NotificationTest extends Bugsnag_TestCase
+{
     protected $config;
     protected $diagnostics;
     protected $notification;
 
-    protected function setUp(){
+    protected function setUp()
+    {
         $this->config = new Bugsnag_Configuration();
         $this->config->apiKey = "6015a72ff14038114c3d12623dfb018f";
         $this->config->beforeNotifyFunction = "before_notify_skip_error";
@@ -20,7 +22,8 @@ class NotificationTest extends Bugsnag_TestCase {
                                    ->getMock();
     }
 
-    public function testNotification() {
+    public function testNotification()
+    {
         // Create a mock notification object
         $this->notification = $this->getMockBuilder('Bugsnag_Notification')
                                    ->setMethods(array("postJSON"))
@@ -38,7 +41,8 @@ class NotificationTest extends Bugsnag_TestCase {
         $this->notification->deliver();
     }
 
-    public function testBeforeNotifySkipsError() {
+    public function testBeforeNotifySkipsError()
+    {
         $this->notification->expects($this->never())
                            ->method("postJSON");
 
@@ -95,6 +99,7 @@ class NotificationTest extends Bugsnag_TestCase {
     }
 }
 
-function before_notify_skip_error($error) {
+function before_notify_skip_error($error)
+{
     return $error->name != "SkipMe";
 }

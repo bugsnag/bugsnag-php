@@ -1,7 +1,9 @@
 <?php
 
-class RequestTest extends PHPUnit_Framework_TestCase {
-    protected function setUp() {
+class RequestTest extends PHPUnit_Framework_TestCase
+{
+    protected function setUp()
+    {
         $_SERVER['REQUEST_METHOD'] = "GET";
         $_SERVER['REQUEST_URI'] = "/blah/blah.php?some=param";
         $_SERVER['REMOTE_ADDR'] = "123.45.67.8";
@@ -13,19 +15,23 @@ class RequestTest extends PHPUnit_Framework_TestCase {
         $_SESSION = array("session" => "sessionval");
     }
 
-    public function testIsRequest() {
+    public function testIsRequest()
+    {
         $this->assertEquals(Bugsnag_Request::isRequest(), TRUE);
     }
 
-    public function testGetContext() {
+    public function testGetContext()
+    {
         $this->assertEquals(Bugsnag_Request::getContext(), "GET /blah/blah.php");
     }
 
-    public function testGetCurrentUrl() {
+    public function testGetCurrentUrl()
+    {
         $this->assertEquals(Bugsnag_Request::getCurrentUrl(), "http://example.com/blah/blah.php?some=param");
     }
 
-    public function testRequestIp() {
+    public function testRequestIp()
+    {
         $this->assertEquals(Bugsnag_Request::getRequestIp(), "123.45.67.8");
     }
 }

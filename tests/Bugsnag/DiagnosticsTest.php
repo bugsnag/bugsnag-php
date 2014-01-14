@@ -1,14 +1,17 @@
 <?php
 
-class DiagnosticsTest extends PHPUnit_Framework_TestCase {
+class DiagnosticsTest extends PHPUnit_Framework_TestCase
+{
     protected $config;
 
-    protected function setUp(){
+    protected function setUp()
+    {
         $this->config = new Bugsnag_Configuration();
         $this->diagnostics = new Bugsnag_Diagnostics($this->config);
     }
 
-    public function testDefaultAppData() {
+    public function testDefaultAppData()
+    {
         $this->config->releaseStage = 'qa1';
         $this->config->appVersion = '1.2.3';
         $this->config->type = "laravel";
@@ -20,7 +23,8 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($appData['type'], 'laravel');
     }
 
-    public function testDefaultDeviceData() {
+    public function testDefaultDeviceData()
+    {
         $this->config->hostname = 'web1.example.com';
 
         $deviceData = $this->diagnostics->getDeviceData();
@@ -28,12 +32,14 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($deviceData['hostname'], 'web1.example.com');
     }
 
-    public function testDefaultContext() {
+    public function testDefaultContext()
+    {
         $this->config->context = 'herp#derp';
         $this->assertEquals($this->diagnostics->getContext(), 'herp#derp');
     }
 
-    public function testDefaultUser() {
+    public function testDefaultUser()
+    {
         $this->config->user = array('id' => 123, 'email' => "test@email.com", 'name' => "Bob Hoskins");
 
         $userData = $this->diagnostics->getUser();

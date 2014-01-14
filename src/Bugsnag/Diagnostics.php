@@ -13,15 +13,15 @@ class Bugsnag_Diagnostics
     {
         $appData = array();
 
-        if(!is_null($this->config->appVersion)) {
+        if (!is_null($this->config->appVersion)) {
             $appData['version'] = $this->config->appVersion;
         }
 
-        if(!is_null($this->config->releaseStage)) {
+        if (!is_null($this->config->releaseStage)) {
             $appData['releaseStage'] = $this->config->releaseStage;
         }
 
-        if(!is_null($this->config->type)) {
+        if (!is_null($this->config->type)) {
             $appData['type'] = $this->config->type;
         }
 
@@ -45,7 +45,7 @@ class Bugsnag_Diagnostics
         $defaultUser = array();
         $userId = Bugsnag_Request::getUserId();
 
-        if(!is_null($userId)) {
+        if (!is_null($userId)) {
             $defaultUser['id'] = $userId;
         }
 

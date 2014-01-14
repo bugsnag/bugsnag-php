@@ -18,7 +18,7 @@ class Bugsnag_Stacktrace
             // Throw away any stackframes that occurred in Bugsnag code
             $lastFrame = null;
             while (!empty($backtrace) && isset($backtrace[0]["class"]) && strpos($backtrace[0]["class"], "Bugsnag_") == 0) {
-              $lastFrame = array_shift($backtrace);
+                $lastFrame = array_shift($backtrace);
             }
 
             // If we weren't passed a topFile and topLine, use the values from lastFrame

@@ -18,7 +18,6 @@ class Bugsnag_Error
     public $diagnostics;
     public $code;
 
-
     // Static error creation methods, to ensure that Error object is always complete
     public static function fromPHPError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $code, $message, $file, $line, $fatal=false)
     {
@@ -46,7 +45,6 @@ class Bugsnag_Error
         return $error;
     }
 
-
     // Private constructor (for use only by the static methods above)
     private function __construct(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics)
     {
@@ -57,19 +55,21 @@ class Bugsnag_Error
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     public function setMessage($message)
     {
         $this->message = $message;
+
         return $this;
     }
 
     public function setSeverity($severity)
     {
-        if(!is_null($severity)) {
-            if(in_array($severity, Bugsnag_Error::$VALID_SEVERITIES)) {
+        if (!is_null($severity)) {
+            if (in_array($severity, Bugsnag_Error::$VALID_SEVERITIES)) {
                 $this->severity = $severity;
             } else {
                 error_log('Bugsnag Warning: Tried to set error severity to '. $severity .' which is not allowed.');

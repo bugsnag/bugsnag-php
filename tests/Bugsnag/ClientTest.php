@@ -1,9 +1,11 @@
 <?php
 
-class ClientTest extends PHPUnit_Framework_TestCase {
+class ClientTest extends PHPUnit_Framework_TestCase
+{
     protected $client;
 
-    protected function setUp(){
+    protected function setUp()
+    {
         // Mock the notify function
         $this->client = $this->getMockBuilder('Bugsnag_Client')
                              ->setMethods(array('notify'))
@@ -11,35 +13,40 @@ class ClientTest extends PHPUnit_Framework_TestCase {
                              ->getMock();
     }
 
-    public function testErrorHandler() {
+    public function testErrorHandler()
+    {
         $this->client->expects($this->once())
                      ->method('notify');
 
         $this->client->errorHandler(E_WARNING, "Something broke", "somefile.php", 123);
     }
 
-    public function testExceptionHandler() {
+    public function testExceptionHandler()
+    {
         $this->client->expects($this->once())
                      ->method('notify');
 
         $this->client->exceptionHandler(new Exception("Something broke"));
     }
 
-    public function testManualErrorNotification() {
+    public function testManualErrorNotification()
+    {
         $this->client->expects($this->once())
                      ->method('notify');
 
         $this->client->notifyError("SomeError", "Some message");
     }
 
-    public function testManualExceptionNotification() {
+    public function testManualExceptionNotification()
+    {
         $this->client->expects($this->once())
                      ->method('notify');
 
         $this->client->notifyException(new Exception("Something broke"));
     }
 
-    public function testErrorReportingLevel() {
+    public function testErrorReportingLevel()
+    {
         $this->client->expects($this->once())
                      ->method('notify');
 
@@ -47,7 +54,8 @@ class ClientTest extends PHPUnit_Framework_TestCase {
                      ->errorHandler(E_NOTICE, "Something broke", "somefile.php", 123);
     }
 
-    public function testErrorReportingLevelFails() {
+    public function testErrorReportingLevelFails()
+    {
         $this->client->expects($this->never())
                      ->method('notify');
 
@@ -55,7 +63,8 @@ class ClientTest extends PHPUnit_Framework_TestCase {
                      ->errorHandler(E_WARNING, "Something broke", "somefile.php", 123);
     }
 
-    public function testErrorReportingWithoutNotice() {
+    public function testErrorReportingWithoutNotice()
+    {
         $this->client->expects($this->never())
                      ->method('notify');
 

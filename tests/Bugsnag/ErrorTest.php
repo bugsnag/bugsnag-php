@@ -1,26 +1,30 @@
 <?php
 
-require_once "Bugsnag_TestCase.php";
+require_once 'Bugsnag_TestCase.php';
 
-class errorTest extends Bugsnag_TestCase {
+class errorTest extends Bugsnag_TestCase
+{
     protected $config;
     protected $diagnostics;
     protected $error;
 
-    protected function setUp(){
+    protected function setUp()
+    {
         $this->config = new Bugsnag_Configuration();
         $this->diagnostics = new Bugsnag_Diagnostics($this->config);
         $this->error = $this->getError();
     }
 
-    public function testMetaData() {
+    public function testMetaData()
+    {
         $this->error->setMetaData(array("Testing" => array("globalArray" => "hi")));
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']["Testing"]["globalArray"], "hi");
     }
 
-    public function testMetaDataMerging() {
+    public function testMetaDataMerging()
+    {
         $this->error->setMetaData(array("Testing" => array("globalArray" => "hi")));
         $this->error->setMetaData(array("Testing" => array("localArray" => "yo")));
 
@@ -29,7 +33,8 @@ class errorTest extends Bugsnag_TestCase {
         $this->assertEquals($errorArray['metaData']["Testing"]["localArray"], "yo");
     }
 
-    public function testShouldIgnore() {
+    public function testShouldIgnore()
+    {
         $this->config->errorReportingLevel = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED;
 
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
@@ -37,7 +42,8 @@ class errorTest extends Bugsnag_TestCase {
         $this->assertEquals($this->error->shouldIgnore(), TRUE);
     }
 
-    public function testShouldNotIgnore() {
+    public function testShouldNotIgnore()
+    {
         $this->config->errorReportingLevel = E_ALL;
 
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
@@ -45,49 +51,56 @@ class errorTest extends Bugsnag_TestCase {
         $this->assertEquals($this->error->shouldIgnore(), FALSE);
     }
 
-    public function testFiltering() {
+    public function testFiltering()
+    {
         $this->error->setMetaData(array("Testing" => array("password" => "123456")));
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']['Testing']['password'], '[FILTERED]');
     }
 
-    public function testNoticeName() {
+    public function testNoticeName()
+    {
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Notice');
     }
 
-    public function testErrorName() {
+    public function testErrorName()
+    {
         $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Fatal Error');
     }
 
-    public function testNoticeSeverity() {
+    public function testNoticeSeverity()
+    {
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['severity'], 'info');
     }
 
-    public function testErrorSeverity() {
+    public function testErrorSeverity()
+    {
         $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['severity'], 'fatal');
     }
 
-    public function testManualSeverity() {
+    public function testManualSeverity()
+    {
         $this->error->setSeverity("fatal");
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['severity'], 'fatal');
     }
 
-    public function testInvalidSeverity() {
+    public function testInvalidSeverity()
+    {
         $this->error->setSeverity("bunk");
 
         $errorArray = $this->error->toArray();

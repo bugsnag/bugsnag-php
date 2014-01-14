@@ -44,7 +44,7 @@ class Bugsnag_Configuration
     {
         $configured = $this->$prop;
 
-        if(is_array($configured) && is_array($default)) {
+        if (is_array($configured) && is_array($default)) {
             return array_merge($default, $configured);
         } else {
             return $configured ? $configured : $default;
