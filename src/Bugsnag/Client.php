@@ -341,7 +341,7 @@ class Bugsnag_Client
     }
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
-    public function errorHandler($errno, $errstr, $errfile='', $errline=0, $errcontext=array())
+    public function errorHandler($errno, $errstr, $errfile='', $errline=0)
     {
         $error = Bugsnag_Error::fromPHPError($this->config, $this->diagnostics, $errno, $errstr, $errfile, $errline);
 

@@ -16,7 +16,7 @@ class Bugsnag_Notification
         $this->config = $config;
     }
 
-    public function addError($error, $passedMetaData=array(), $passedSeverity=null)
+    public function addError($error, $passedMetaData=array())
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {
