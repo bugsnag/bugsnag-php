@@ -337,6 +337,9 @@ PHP Frameworks
 
 Check out the [bugsnag-laravel](https://github.com/bugsnag/bugsnag-laravel) plugin.
 
+### WordPress
+
+Check out the [WordPress Error Monitoring by Bugsnag](http://wordpress.org/plugins/bugsnag/) plugin.
 
 ### CakePHP
 
