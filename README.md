@@ -409,7 +409,7 @@ Contributing
 
 -   [Fork](https://help.github.com/articles/fork-a-repo) the [notifier on github](https://github.com/bugsnag/bugsnag-php)
 -   Commit and push until you are happy with your contribution
--   Run the tests to make sure they all pass: `composer install && ./vendor/bin/phpunit`
+-   Run the tests to make sure they all pass: `composer install && vendor/bin/phpunit`
 -   [Make a pull request](https://help.github.com/articles/using-pull-requests)
 -   Thanks!
 
