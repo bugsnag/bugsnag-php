@@ -376,6 +376,25 @@ Check out the third-party [evolution7/Evolution7BugsnagBundle](https://github.co
 
 Check out the third-party [evolution7/silverstripe-bugsnag-logger](https://github.com/evolution7/silverstripe-bugsnag-logger) plugin.
 
+
+Building a Phar from Source
+---------------------------
+
+-   Install the composer dependencies
+
+    ```shell
+    $ composer install
+    ```
+
+-   Build the phar using `box`
+
+    ```shell
+    $ vendor/bin/box build
+    ```
+
+A new `bugsnag.phar` will be generated in the `build` folder.
+
+
 Reporting Bugs or Feature Requests
 ----------------------------------
 
