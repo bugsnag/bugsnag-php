@@ -1,0 +1,8 @@
+{
+     "directories": ["src/Bugsnag"],
+     "compression": "GZ",
+     "extract": true,
+     "main": "src/Bugsnag/Autoload.php",
+     "output": "build/bugsnag.phar",
+     "stub": true
+}
