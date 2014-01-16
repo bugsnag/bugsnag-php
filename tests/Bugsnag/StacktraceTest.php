@@ -62,7 +62,7 @@ class StacktraceTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $backtrace);
+        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $backtrace, "somefile.php", 123);
         $this->assertEquals(count($stacktrace->toArray()), 2);
     }
 
@@ -92,7 +92,7 @@ class StacktraceTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $backtrace);
+        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $backtrace, "somefile.php", 123);
         $this->assertEquals(count($stacktrace->toArray()), 5);
     }
 }

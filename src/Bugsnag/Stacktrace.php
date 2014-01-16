@@ -2,7 +2,7 @@
 
 class Bugsnag_Stacktrace
 {
-    private $frames;
+    private $frames = array();
     private $config;
 
     public static function generate($config, $topFile=__FILE__, $topLine=__LINE__)
@@ -18,7 +18,7 @@ class Bugsnag_Stacktrace
         return $stacktrace;
     }
 
-    public static function fromBacktrace($config, $backtrace, $topFile=__FILE__, $topLine=__LINE__)
+    public static function fromBacktrace($config, $backtrace, $topFile, $topLine)
     {
         $stacktrace = new Bugsnag_Stacktrace($config);
 
