@@ -105,6 +105,12 @@ class Bugsnag_Error
     public function setPHPError($code, $message, $file, $line, $fatal=false)
     {
         if ($fatal) {
+            // Generating stacktrace for PHP fatal errors is not possible,
+            // since this code executes when the PHP process shuts down, 
+            // rather than at the time of the crash.
+            //
+            // In these situations, we generate a "stacktrace" containing only
+            // the line and file number where the crash occurred.
             $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $file, $line);
         } else {
             $stacktrace = Bugsnag_Stacktrace::generate($this->config, $file, $line);
