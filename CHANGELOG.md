@@ -1,7 +1,13 @@
 Changelog
 =========
 
+2.1.3
+-----
+-   Fix crash during stacktrace generation that happened when a closure was
+    the first stackframe.
+
 2.1.2
+-----
 -   Add `ErrorTypes::getLevelsForSeverity` function to fetch an
     `error_reporting` bitmask for a particular Bugsnag severity
 
