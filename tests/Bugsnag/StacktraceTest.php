@@ -39,31 +39,127 @@ class StacktraceTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Bugsnag_Stacktrace::frameInsideBugsnag($bugsnagFrame), true);
     }
 
-    public function testBugsnagFramesDiscarded()
+    public function testTriggeredErrorStacktrace()
     {
+        $topFile = "/Users/james/src/bugsnag/bugsnag-php/testing.php";
+        $topLine = 17;
         $backtrace = array(
             array(
-                'file' => 'Bugsnag/Client.php',
-                'line' => '123',
-                'class' => 'Bugsnag_Client',
-                'function' => 'example_function'
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Error.php",
+                "line" => 116,
+                "function" => "generate",
+                "class" => "Bugsnag_Stacktrace"
             ),
             array(
-                'file' => 'Bugsnag/Configuration.php',
-                'line' => '20',
-                'class' => 'Bugsnag_Configuration',
-                'function' => 'example_function'
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Error.php",
+                "line" => 25,
+                "function" => "setPHPError",
+                "class" => "Bugsnag_Error"
             ),
             array(
-                'file' => 'anotherfile.php',
-                'line' => '456',
-                'class' => 'MyAppClass',
-                'function' => 'another_function'
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Client.php",
+                "line" => 346,
+                "function" => "fromPHPError",
+                "class" => "Bugsnag_Error"
+            ),
+            array(
+                "function" => "errorHandler",
+                "class" => "Bugsnag_Client"
+            ),
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+                "line" => 17,
+                "function" => "trigger_error"
+            ),
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+                "line" => 13,
+                "function" => "crashy_function"
+            ),
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+                "line" => 20,
+                "function" => "parent_of_crashy_function"
             )
         );
 
-        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $backtrace, "somefile.php", 123);
-        $this->assertEquals(count($stacktrace->toArray()), 2);
+        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $backtrace, $topFile, $topLine)->toArray();
+
+        $this->assertEquals(count($stacktrace), 4);
+
+        $this->assertEquals($stacktrace[0]["method"], "trigger_error");
+        $this->assertEquals($stacktrace[0]["file"], "[internal]");
+        $this->assertEquals($stacktrace[0]["lineNumber"], 0);
+
+        $this->assertEquals($stacktrace[1]["method"], "crashy_function");
+        $this->assertEquals($stacktrace[1]["file"], "/Users/james/src/bugsnag/bugsnag-php/testing.php");
+        $this->assertEquals($stacktrace[1]["lineNumber"], 17);
+
+        $this->assertEquals($stacktrace[2]["method"], "parent_of_crashy_function");
+        $this->assertEquals($stacktrace[2]["file"], "/Users/james/src/bugsnag/bugsnag-php/testing.php");
+        $this->assertEquals($stacktrace[2]["lineNumber"], 13);
+
+        $this->assertEquals($stacktrace[3]["method"], "[main]");
+        $this->assertEquals($stacktrace[3]["file"], "/Users/james/src/bugsnag/bugsnag-php/testing.php");
+        $this->assertEquals($stacktrace[3]["lineNumber"], 20);
+    }
+
+    public function testErrorHandlerStacktrace()
+    {
+        $topFile = "/Users/james/src/bugsnag/bugsnag-php/testing.php";
+        $topLine = 22;
+        $backtrace = array(
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Error.php",
+                "line" => 116,
+                "function" => "generate",
+                "class" => "Bugsnag_Stacktrace"
+            ),
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Error.php",
+                "line" => 25,
+                "function" => "setPHPError",
+                "class" => "Bugsnag_Error"
+            ),
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Client.php",
+                "line" => 346,
+                "function" => "fromPHPError",
+                "class" => "Bugsnag_Error"
+            ),
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+                "line" => 22,
+                "function" => "errorHandler",
+                "class" => "Bugsnag_Client"
+            ),
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+                "line" => 13,
+                "function" => "crashy_function"
+            ),
+            array(
+                "file" => "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+                "line" => 25,
+                "function" => "parent_of_crashy_function"
+            )
+        );
+
+        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $backtrace, $topFile, $topLine)->toArray();
+
+        $this->assertEquals(count($stacktrace), 3);
+
+        $this->assertEquals($stacktrace[0]["method"], "crashy_function");
+        $this->assertEquals($stacktrace[0]["file"], "/Users/james/src/bugsnag/bugsnag-php/testing.php");
+        $this->assertEquals($stacktrace[0]["lineNumber"], 22);
+
+        $this->assertEquals($stacktrace[1]["method"], "parent_of_crashy_function");
+        $this->assertEquals($stacktrace[1]["file"], "/Users/james/src/bugsnag/bugsnag-php/testing.php");
+        $this->assertEquals($stacktrace[1]["lineNumber"], 13);
+
+        $this->assertEquals($stacktrace[2]["method"], "[main]");
+        $this->assertEquals($stacktrace[2]["file"], "/Users/james/src/bugsnag/bugsnag-php/testing.php");
+        $this->assertEquals($stacktrace[2]["lineNumber"], 25);
     }
 
     public function testIncompleteStackframes()

@@ -5,9 +5,9 @@ class Bugsnag_Stacktrace
     private $frames = array();
     private $config;
 
-    public static function generate($config, $topFile=__FILE__, $topLine=__LINE__)
+    public static function generate($config)
     {
-        return self::fromBacktrace($config, debug_backtrace(), $topFile, $topLine);
+        return self::fromBacktrace($config, debug_backtrace(), "[generator]", 0);
     }
 
     public static function fromFrame($config, $file, $line)
@@ -25,8 +25,7 @@ class Bugsnag_Stacktrace
         // PHP backtrace's are misaligned, we need to shift the file/line down a frame
         foreach ($backtrace as $frame) {
             if (!self::frameInsideBugsnag($frame)) {
-                $class = isset($frame['class']) ? $frame['class'] : NULL;
-                $stacktrace->addFrame($topFile, $topLine, $frame['function'], $class);
+                $stacktrace->addFrame($topFile, $topLine, $frame['function'], isset($frame['class']) ? $frame['class'] : NULL);
             }
 
             if (isset($frame['file']) && isset($frame['line'])) {
