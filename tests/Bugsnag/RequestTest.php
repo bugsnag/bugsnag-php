@@ -17,7 +17,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
     public function testIsRequest()
     {
-        $this->assertEquals(Bugsnag_Request::isRequest(), TRUE);
+        $this->assertTrue(Bugsnag_Request::isRequest());
     }
 
     public function testGetContext()

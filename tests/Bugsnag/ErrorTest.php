@@ -39,7 +39,7 @@ class errorTest extends Bugsnag_TestCase
 
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
 
-        $this->assertEquals($this->error->shouldIgnore(), TRUE);
+        $this->assertTrue($this->error->shouldIgnore());
     }
 
     public function testShouldNotIgnore()
@@ -48,7 +48,7 @@ class errorTest extends Bugsnag_TestCase
 
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
 
-        $this->assertEquals($this->error->shouldIgnore(), FALSE);
+        $this->assertfalse($this->error->shouldIgnore());
     }
 
     public function testFiltering()

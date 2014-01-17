@@ -31,8 +31,8 @@ class StacktraceTest extends Bugsnag_TestCase
         $frame = $this->getFixture('frames/non_bugsnag.json');
         $bugsnagFrame = $this->getFixture('frames/bugsnag.json');
 
-        $this->assertEquals(Bugsnag_Stacktrace::frameInsideBugsnag($frame), false);
-        $this->assertEquals(Bugsnag_Stacktrace::frameInsideBugsnag($bugsnagFrame), true);
+        $this->assertFalse(Bugsnag_Stacktrace::frameInsideBugsnag($frame));
+        $this->assertTrue(Bugsnag_Stacktrace::frameInsideBugsnag($bugsnagFrame));
     }
 
     public function testTriggeredErrorStacktrace()
