@@ -7,7 +7,16 @@ class Bugsnag_Stacktrace
 
     public static function generate($config)
     {
-        return self::fromBacktrace($config, debug_backtrace(), "[generator]", 0);
+        // Reduce memory usage by omitting args and objects from backtrace
+        if (version_compare(PHP_VERSION, '5.3.6') >= 0) {
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT);
+        } elseif (version_compare(PHP_VERSION, '5.2.5') >= 0) {
+            $backtrace = debug_backtrace(FALSE);
+        } else {
+            $backtrace = debug_backtrace();
+        }
+
+        return self::fromBacktrace($config, $backtrace, "[generator]", 0);
     }
 
     public static function fromFrame($config, $file, $line)
