@@ -119,7 +119,7 @@ class Bugsnag_Error
         $this->setName(Bugsnag_ErrorTypes::getName($code))
              ->setMessage($message)
              ->setSeverity(Bugsnag_ErrorTypes::getSeverity($code))
-             ->setStacktrace(Bugsnag_Stacktrace::fromFrame($this->config, $file, $line))
+             ->setStacktrace($stacktrace)
              ->setCode($code);
 
         return $this;
