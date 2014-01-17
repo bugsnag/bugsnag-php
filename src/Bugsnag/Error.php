@@ -40,7 +40,7 @@ class Bugsnag_Error
         $error = new Bugsnag_Error($config, $diagnostics);
         $error->setName($name)
               ->setMessage($message)
-              ->generateBacktrace();
+              ->setStacktrace(Bugsnag_Stacktrace::generate($config));
 
         return $error;
     }
@@ -66,6 +66,20 @@ class Bugsnag_Error
         return $this;
     }
 
+    public function setStacktrace($stacktrace)
+    {
+        $this->stacktrace = $stacktrace;
+
+        return $this;
+    }
+
+    public function setCode($code)
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
     public function setSeverity($severity)
     {
         if (!is_null($severity)) {
@@ -81,28 +95,34 @@ class Bugsnag_Error
 
     public function setPHPException(Exception $exception)
     {
-        $this->setName(get_class($exception));
-        $this->setMessage($exception->getMessage());
-        $this->stacktrace = new Bugsnag_Stacktrace($this->config, $exception->getFile(), $exception->getLine(), $exception->getTrace());
+        $this->setName(get_class($exception))
+             ->setMessage($exception->getMessage())
+             ->setStacktrace(Bugsnag_Stacktrace::fromBacktrace($this->config, $exception->getTrace(), $exception->getFile(), $exception->getLine()));
 
         return $this;
     }
 
     public function setPHPError($code, $message, $file, $line, $fatal=false)
     {
-        $this->setName(Bugsnag_ErrorTypes::getName($code));
-        $this->setMessage($message);
-        $this->setSeverity(Bugsnag_ErrorTypes::getSeverity($code));
+        if ($fatal) {
+            // Generating stacktrace for PHP fatal errors is not possible,
+            // since this code executes when the PHP process shuts down,
+            // rather than at the time of the crash.
+            //
+            // In these situations, we generate a "stacktrace" containing only
+            // the line and file number where the crash occurred.
+            $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $file, $line);
+        } else {
+            $stacktrace = Bugsnag_Stacktrace::generate($this->config);
+        }
 
-        $this->stacktrace = new Bugsnag_Stacktrace($this->config, $file, $line, NULL, $fatal);
-        $this->code = $code;
+        $this->setName(Bugsnag_ErrorTypes::getName($code))
+             ->setMessage($message)
+             ->setSeverity(Bugsnag_ErrorTypes::getSeverity($code))
+             ->setStacktrace($stacktrace)
+             ->setCode($code);
 
         return $this;
-    }
-
-    public function generateBacktrace()
-    {
-        $this->stacktrace = new Bugsnag_Stacktrace($this->config);
     }
 
     public function setMetaData($metaData)

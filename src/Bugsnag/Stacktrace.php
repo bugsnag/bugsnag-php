@@ -2,55 +2,56 @@
 
 class Bugsnag_Stacktrace
 {
-    private $frames;
+    private $frames = array();
     private $config;
 
-    public function __construct(Bugsnag_Configuration $config, $topFile=null, $topLine=null, $backtrace=null, $generateBacktrace=true)
+    public static function generate($config)
+    {
+        return self::fromBacktrace($config, debug_backtrace(), "[generator]", 0);
+    }
+
+    public static function fromFrame($config, $file, $line)
+    {
+        $stacktrace = new Bugsnag_Stacktrace($config);
+        $stacktrace->addFrame($file, $line, "[unknown]");
+
+        return $stacktrace;
+    }
+
+    public static function fromBacktrace($config, $backtrace, $topFile, $topLine)
+    {
+        $stacktrace = new Bugsnag_Stacktrace($config);
+
+        // PHP backtrace's are misaligned, we need to shift the file/line down a frame
+        foreach ($backtrace as $frame) {
+            if (!self::frameInsideBugsnag($frame)) {
+                $stacktrace->addFrame($topFile, $topLine, $frame['function'], isset($frame['class']) ? $frame['class'] : NULL);
+            }
+
+            if (isset($frame['file']) && isset($frame['line'])) {
+                $topFile = $frame['file'];
+                $topLine = $frame['line'];
+            } else {
+                $topFile = "[internal]";
+                $topLine = 0;
+            }
+        }
+
+        // Add a final stackframe for the "main" method
+        $stacktrace->addFrame($topFile, $topLine, '[main]');
+
+        return $stacktrace;
+    }
+
+    public static function frameInsideBugsnag($frame)
+    {
+        return isset($frame['class']) && strpos($frame['class'], 'Bugsnag_') === 0;
+    }
+
+
+    public function __construct($config)
     {
         $this->config = $config;
-
-        if ($generateBacktrace) {
-            // Generate a new backtrace unless we were given one
-            if (is_null($backtrace)) {
-                $backtrace = debug_backtrace();
-            }
-
-            // Throw away any stackframes that occurred in Bugsnag code
-            $lastFrame = null;
-            while (!empty($backtrace) && isset($backtrace[0]["class"]) && strpos($backtrace[0]["class"], "Bugsnag_") == 0) {
-                $lastFrame = array_shift($backtrace);
-            }
-
-            // If we weren't passed a topFile and topLine, use the values from lastFrame
-            if (is_null($topFile) && is_null($topLine)) {
-                $topFile = $lastFrame['file'];
-                $topLine = $lastFrame['line'];
-            }
-
-            // PHP backtrace's are misaligned, we need to shift the file/line down a frame
-            foreach ($backtrace as $line) {
-                $this->frames[] = $this->buildFrame($topFile, $topLine, $line['function']);
-
-                if (isset($line['file']) && isset($line['line'])) {
-                    $topFile = $line['file'];
-                    $topLine = $line['line'];
-                } else {
-                    $topFile = "[internal]";
-                    $topLine = 0;
-                }
-            }
-
-            // Add a final stackframe for the "main" method
-            $this->frames[] = $this->buildFrame($topFile, $topLine, '[main]');
-        } else {
-            // In some situations (PHP fatal errors) generating stacktrace
-            // information is not possible, since this code executes when the
-            // PHP process shuts down, rather than at the time of the crash.
-            //
-            // In these situations, we generate a "stacktrace" containing only
-            // the line and file number where the crash occurred.
-            $this->frames[] = $this->buildFrame($topFile, $topLine, '[unknown]');
-        }
     }
 
     public function toArray()
@@ -58,7 +59,7 @@ class Bugsnag_Stacktrace
         return $this->frames;
     }
 
-    private function buildFrame($file, $line, $method)
+    public function addFrame($file, $line, $method, $class=NULL)
     {
         // Check if this frame is inProject
         $inProject = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);
@@ -68,12 +69,18 @@ class Bugsnag_Stacktrace
             $file = preg_replace($this->config->projectRootRegex, '', $file);
         }
 
-        // Construct and return the frame
-        return array(
+        // Construct the frame
+        $frame = array(
             'file' => $file,
             'lineNumber' => $line,
             'method' => $method,
             'inProject' => $inProject
         );
+
+        if (!empty($class)) {
+            $frame['class'] = $class;
+        }
+
+        $this->frames[] = $frame;
     }
 }
