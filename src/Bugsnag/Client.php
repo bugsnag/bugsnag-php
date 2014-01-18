@@ -101,6 +101,18 @@ class Bugsnag_Client
     }
 
     /**
+     * Set the desired timeout for cURL connection when notifying bugsnag
+     *
+     * @param Integer $timeout the desired timeout in seconds
+     */
+    public function setTimeout($timeout)
+    {
+        $this->config->timeout = $timeout;
+
+        return $this;
+    }
+
+    /**
      * Set the absolute path to the root of your application.
      * We use this to help with error grouping and to highlight "in project"
      * stacktrace lines.
