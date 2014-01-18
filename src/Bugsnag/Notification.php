@@ -4,7 +4,7 @@ class Bugsnag_Notification
 {
     private static $NOTIFIER = array(
         'name'      => 'Bugsnag PHP (Official)',
-        'version'   => '2.1.3',
+        'version'   => '2.1.4',
         'url'       => 'https://bugsnag.com'
     );
 

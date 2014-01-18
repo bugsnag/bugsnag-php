@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.1.4
+-----
+-   Make cURL timeout configurable (thanks pauloschilling)
+
 2.1.3
 -----
 -   Fix crash during stacktrace generation that happened when a closure was
