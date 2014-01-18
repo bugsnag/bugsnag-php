@@ -93,7 +93,7 @@ class Bugsnag_Notification
         curl_setopt($http, CURLOPT_POST, true);
         curl_setopt($http, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
         curl_setopt($http, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($http, CURLOPT_CONNECTTIMEOUT, 2);
+        curl_setopt($http, CURLOPT_CONNECTTIMEOUT, $this->config->timeout);
         curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($http, CURLOPT_VERBOSE, false);
 
