@@ -226,6 +226,16 @@ $bugsnag->setUseSSL(TRUE);
 
 By default, this is set to be `TRUE`.
 
+###setTimeout
+
+Define a custom timeout, in seconds, for cURL connection when notifying bugsnag.com.
+
+```php
+$bugsnag->setTimeout(2);
+```
+
+By default, this is set to be `2`.
+
 ###setBeforeNotifyFunction
 
 Set a custom function to call before notifying Bugsnag of an error.
