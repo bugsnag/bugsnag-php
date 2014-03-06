@@ -17,6 +17,7 @@ class Bugsnag_Error
     public $config;
     public $diagnostics;
     public $code;
+    public $previous;
 
     // Static error creation methods, to ensure that Error object is always complete
     public static function fromPHPError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $code, $message, $file, $line, $fatal=false)
@@ -99,6 +100,10 @@ class Bugsnag_Error
              ->setMessage($exception->getMessage())
              ->setStacktrace(Bugsnag_Stacktrace::fromBacktrace($this->config, $exception->getTrace(), $exception->getFile(), $exception->getLine()));
 
+        if (method_exists($exception, 'getPrevious')) {
+            $this->setPrevious($exception->getPrevious());
+        }
+
         return $this;
     }
 
@@ -134,6 +139,15 @@ class Bugsnag_Error
         return $this;
     }
 
+    public function setPrevious($exception)
+    {
+        if ($exception) {
+            $this->previous = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
+        }
+
+        return $this;
+    }
+
     public function shouldIgnore()
     {
         // Check if we should ignore errors of this type
@@ -156,13 +170,26 @@ class Bugsnag_Error
             'user' => $this->diagnostics->getUser(),
             'context' => $this->diagnostics->getContext(),
             'severity' => $this->severity,
-            'exceptions' => array(array(
-                'errorClass' => $this->name,
-                'message' => $this->message,
-                'stacktrace' => $this->stacktrace->toArray()
-            )),
+            'exceptions' => $this->exceptionArray(),
             'metaData' => $this->applyFilters($this->metaData)
         );
+    }
+
+    public function exceptionArray()
+    {
+        if ($this->previous) {
+            $exceptionArray = $this->previous->exceptionArray();
+        } else {
+            $exceptionArray = array();
+        }
+
+        $exceptionArray[] = array(
+            'errorClass' => $this->name,
+            'message' => $this->message,
+            'stacktrace' => $this->stacktrace->toArray()
+        );
+
+        return $exceptionArray;
     }
 
     private function applyFilters($metaData)
