@@ -399,8 +399,13 @@ class Bugsnag_Client
         }
     }
 
-    // Batches up errors into notifications for later sending
-    public function notify($error, $metaData=array())
+    /**
+     * Batches up errors into notifications for later sending
+     *
+     * @param \Bugsnag_Error $error - The error to batch up
+     * @param array $metaData       - Meta data with the error
+     */
+    public function notify(\Bugsnag_Error $error, $metaData = array())
     {
         // Queue or send the error
         if ($this->sendErrorsOnShutdown()) {
