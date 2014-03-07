@@ -338,6 +338,19 @@ class Bugsnag_Client
     }
 
     /**
+     * Sets the notifier to report as to Bugsnag. This should only be
+     * set by other notifier libraries.
+     *
+     * @param Array  $notifier  an array of name, version, url.
+     */
+    public function setNotifier($notifier)
+    {
+        $this->config->notifier = $notifier;
+
+        return $this;
+    }
+
+    /**
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about

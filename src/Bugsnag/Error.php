@@ -17,6 +17,7 @@ class Bugsnag_Error
     public $config;
     public $diagnostics;
     public $code;
+    public $previous;
 
     /**
      * If set by the consuming code this callable will
@@ -80,6 +81,7 @@ class Bugsnag_Error
     public function setStacktrace($stacktrace)
     {
         $this->stacktrace = $stacktrace;
+
         return $this;
     }
 
@@ -114,6 +116,10 @@ class Bugsnag_Error
         $this->setName(get_class($exception))
              ->setMessage($exception->getMessage())
              ->setStacktrace($trace);
+
+        if (method_exists($exception, 'getPrevious')) {
+            $this->setPrevious($exception->getPrevious());
+        }
 
         return $this;
     }
@@ -150,6 +156,15 @@ class Bugsnag_Error
         return $this;
     }
 
+    public function setPrevious($exception)
+    {
+        if ($exception) {
+            $this->previous = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
+        }
+
+        return $this;
+    }
+
     public function shouldIgnore()
     {
         // Check if we should ignore errors of this type
@@ -172,13 +187,26 @@ class Bugsnag_Error
             'user' => $this->diagnostics->getUser(),
             'context' => $this->diagnostics->getContext(),
             'severity' => $this->severity,
-            'exceptions' => array(array(
-                'errorClass' => $this->name,
-                'message' => $this->message,
-                'stacktrace' => $this->getModifiedTrace($this->stacktrace)->toArray()
-            )),
+            'exceptions' => $this->exceptionArray(),
             'metaData' => $this->applyFilters($this->metaData)
         );
+    }
+
+    public function exceptionArray()
+    {
+        if ($this->previous) {
+            $exceptionArray = $this->previous->exceptionArray();
+        } else {
+            $exceptionArray = array();
+        }
+
+        $exceptionArray[] = array(
+            'errorClass' => $this->name,
+            'message' => $this->message,
+            'stacktrace' => $this->getModifiedTrace($this->stacktrace)->toArray()
+        );
+
+        return $exceptionArray;
     }
 
     /**
@@ -209,7 +237,7 @@ class Bugsnag_Error
         }
         return $trace;
     }
-
+    
     private function applyFilters($metaData)
     {
         if (!empty($this->config->filters)) {

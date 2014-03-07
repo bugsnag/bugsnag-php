@@ -50,4 +50,10 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->config->notifyReleaseStages = array("banana");
         $this->assertTrue($this->config->shouldNotify());
     }
+
+    public function testNotifier()
+    {
+        $this->assertEquals($this->config->notifier['name'], "Bugsnag PHP (Official)");
+        $this->assertEquals($this->config->notifier['url'], "https://bugsnag.com");
+    }
 }

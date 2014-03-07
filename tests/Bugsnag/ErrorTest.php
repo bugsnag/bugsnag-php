@@ -6,9 +6,6 @@ class errorTest extends Bugsnag_TestCase
 {
     protected $config;
     protected $diagnostics;
-    /**
-     * @var Bugsnag_Error
-     */
     protected $error;
 
     protected function setUp()
@@ -123,5 +120,19 @@ class errorTest extends Bugsnag_TestCase
         $exceptionData = array_pop($arrayError['exceptions']);
 
         $this->assertEquals($fakeTrace->toArray(), $exceptionData['stacktrace']);
+    }
+
+    public function testPreviousException() {
+        if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
+            $exception = new Exception("secondly", 65533, new Exception("firstly"));
+
+            $error = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
+
+            $errorArray = $error->toArray();
+
+            $this->assertEquals(count($errorArray['exceptions']), 2);
+            $this->assertEquals($errorArray['exceptions'][0]['message'], 'firstly');
+            $this->assertEquals($errorArray['exceptions'][1]['message'], 'secondly');
+        }
     }
 }
