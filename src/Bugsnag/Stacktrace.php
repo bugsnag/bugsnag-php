@@ -90,7 +90,7 @@ class Bugsnag_Stacktrace
             $frame['class'] = $class;
         }
 
-        $this->frames[] = $frame;
+        $this->pushFrame($frame);
     }
 
     /**
@@ -107,4 +107,14 @@ class Bugsnag_Stacktrace
             return null;
         }
     }
+
+    /**
+     * Puts the specified frame back on stack trace.
+     * The opposite of popFrame
+     */
+    public function pushFrame(array $frame)
+    {
+        $this->frames[] = $frame;
+    }
+
 }
