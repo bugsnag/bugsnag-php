@@ -387,7 +387,7 @@ class Bugsnag_Client
     }
 
     // Batches up errors into notifications for later sending
-    public function notify($error, $metaData=array())
+    public function notify($error, $metaData = array())
     {
         // Queue or send the error
         if ($this->sendErrorsOnShutdown()) {
