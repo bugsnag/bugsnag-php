@@ -18,6 +18,16 @@ class Bugsnag_Error
     public $diagnostics;
     public $code;
 
+    /**
+     * If set by the consuming code this callable will
+     * be used to modify the stack trace before it is
+     * sent to bugsnag. This is useful for removing any wrapping
+     * code from the trace.
+     *
+     * @var callable|null
+     */
+    private $stackModifier;
+
     // Static error creation methods, to ensure that Error object is always complete
     public static function fromPHPError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $code, $message, $file, $line, $fatal=false)
     {
@@ -38,9 +48,10 @@ class Bugsnag_Error
     public static function fromNamedError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $name, $message=NULL)
     {
         $error = new Bugsnag_Error($config, $diagnostics);
+        $trace = Bugsnag_Stacktrace::generate($config);
         $error->setName($name)
               ->setMessage($message)
-              ->setStacktrace(Bugsnag_Stacktrace::generate($config));
+              ->setStacktrace($trace);
 
         return $error;
     }
@@ -69,7 +80,6 @@ class Bugsnag_Error
     public function setStacktrace($stacktrace)
     {
         $this->stacktrace = $stacktrace;
-
         return $this;
     }
 
@@ -95,9 +105,15 @@ class Bugsnag_Error
 
     public function setPHPException(Exception $exception)
     {
+        $trace = Bugsnag_Stacktrace::fromBacktrace(
+            $this->config,
+            $exception->getTrace(),
+            $exception->getFile(),
+            $exception->getLine()
+        );
         $this->setName(get_class($exception))
              ->setMessage($exception->getMessage())
-             ->setStacktrace(Bugsnag_Stacktrace::fromBacktrace($this->config, $exception->getTrace(), $exception->getFile(), $exception->getLine()));
+             ->setStacktrace($trace);
 
         return $this;
     }
@@ -159,10 +175,39 @@ class Bugsnag_Error
             'exceptions' => array(array(
                 'errorClass' => $this->name,
                 'message' => $this->message,
-                'stacktrace' => $this->stacktrace->toArray()
+                'stacktrace' => $this->getModifiedTrace($this->stacktrace)->toArray()
             )),
             'metaData' => $this->applyFilters($this->metaData)
         );
+    }
+
+    /**
+     * Allows calling code to set a function that will be passed the
+     * trace before it's sent to bugsnag. The function should return
+     * an appropriately modified stack trace.
+     *
+     * @param callable $function
+     * @throws InvalidArgumentException
+     */
+    public function setStackModifierFunction($function)
+    {
+        if (!is_callable($function)) {
+            throw new \InvalidArgumentException('$callback must be callable');
+        }
+        $this->stackModifier = $function;
+    }
+
+    /**
+     * @param \Bugsnag_Stacktrace $trace
+     * @return \Bugsnag_Stacktrace
+     */
+    private function getModifiedTrace($trace)
+    {
+        $modifyCallable = $this->stackModifier;
+        if (is_callable($modifyCallable)) {
+            $trace = $modifyCallable($trace);
+        }
+        return $trace;
     }
 
     private function applyFilters($metaData)

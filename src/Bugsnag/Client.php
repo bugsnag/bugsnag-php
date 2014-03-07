@@ -6,6 +6,16 @@ class Bugsnag_Client
     private $notification;
 
     /**
+     * If set by the consuming code this callable will
+     * be used to modify the stack trace before it is
+     * sent to bugsnag. This is useful for removing any wrapping
+     * code from the trace.
+     *
+     * @var callable|null
+     */
+    private $stackModifier;
+
+    /**
      * Initialize Bugsnag
      *
      * @param String $apiKey your Bugsnag API key
@@ -270,6 +280,23 @@ class Bugsnag_Client
     }
 
     /**
+     * Allows calling code to set a function that will be passed the
+     * trace before it's sent to bugsnag. The function takes the current
+     * trace as it's only argument and should return
+     * an appropriately modified stack trace.
+     *
+     * @param callable $function
+     * @throws InvalidArgumentException
+     */
+    public function setStackModifierFunction($function)
+    {
+        if (!is_callable($function)) {
+            throw new \InvalidArgumentException('$callback must be callable');
+        }
+        $this->stackModifier = $function;
+    }
+
+    /**
      * Set Bugsnag's error reporting level.
      * If this is not set, we'll use your current PHP error_reporting value
      * from your ini file or error_reporting(...) calls.
@@ -394,6 +421,12 @@ class Bugsnag_Client
      */
     public function notify(\Bugsnag_Error $error, $metaData = array())
     {
+        // The user may have registered a function to manipulate the
+        // stack trace.
+        if ($this->stackModifier) {
+            $error->setStackModifierFunction($this->stackModifier);
+        }
+
         // Queue or send the error
         if ($this->sendErrorsOnShutdown()) {
             // Create a batch notification unless we already have one
