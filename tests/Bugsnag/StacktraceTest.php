@@ -85,4 +85,35 @@ class StacktraceTest extends Bugsnag_TestCase
         $this->assertFrameEquals($stacktrace[3], "call_user_func_array", "[internal]", 0);
         $this->assertFrameEquals($stacktrace[4], "[main]", "Routing/Controller.php", 194);
     }
+
+    public function testPopFrameGetsFrame()
+    {
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, "some_file.php", 123);
+
+        $poppedFrame = $stacktrace->popFrame();
+        $this->assertInternalType("array", $poppedFrame);
+        $this->assertEquals("some_file.php", $poppedFrame['file']);
+        $this->assertEquals(123, $poppedFrame['lineNumber']);
+    }
+
+    public function testPopFrameGetsLastFrame()
+    {
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, "some_file.php", 123);
+        $stacktrace->addFrame("some_other_file.php", 65, "myMethod");
+
+        $poppedFrame = $stacktrace->popFrame();
+        $this->assertInternalType("array", $poppedFrame);
+        $this->assertEquals("some_other_file.php", $poppedFrame['file']);
+        $this->assertEquals(65, $poppedFrame['lineNumber']);
+    }
+
+    public function testPopFrameReturnsNullWhenEmpty()
+    {
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, "some_file.php", 123);
+
+        $poppedFrame = $stacktrace->popFrame();
+        $secondFrame = $stacktrace->popFrame();
+
+        $this->assertNull($secondFrame);
+    }
 }
