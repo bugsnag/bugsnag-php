@@ -261,6 +261,31 @@ function before_bugsnag_notify($error) {
 }
 ```
 
+###setStackModifierFunction
+
+Set a custom function that's called when bugsnag receives a stack trace
+allowing you to modify what bugsnag receives. For example if you wrap bugsnag
+then the last frame in the trace will be your wrapping code which isn't that
+useful.
+
+```php
+$bugsnag->setStackModifierFunction('stackStripper');
+
+function stackStripper(\Bugsnag_Stacktrace $trace) {
+    // Remove the last call in the stack
+    $lastFrame = $trace->popFrame();
+
+    // we only want to remove the last line if it's in
+    // my_wrapper.php so put it back otherwise.
+    if ($lastFrame['file'] !== "my_wrapper.php") {
+        $trace->pushFrame($lastFrame);
+    }
+
+    // finally give the trace back
+    return $trace;
+}
+```
+
 You can also return `FALSE` from your beforeNotifyFunction to stop this error
 from being sent to bugsnag.
 

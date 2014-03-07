@@ -90,6 +90,31 @@ class Bugsnag_Stacktrace
             $frame['class'] = $class;
         }
 
+        $this->pushFrame($frame);
+    }
+
+    /**
+     * Returns the last frame added to the stacktrace and removes it.
+     * If the stack is empty null will be returned.
+     *
+     * @return array|null
+     */
+    public function popFrame()
+    {
+        if (count($this->frames) > 0) {
+            return array_pop($this->frames);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Puts the specified frame back on stack trace.
+     * The opposite of popFrame
+     */
+    public function pushFrame(array $frame)
+    {
         $this->frames[] = $frame;
     }
+
 }

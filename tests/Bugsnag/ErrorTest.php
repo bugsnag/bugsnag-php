@@ -107,6 +107,21 @@ class errorTest extends Bugsnag_TestCase
         $this->assertEquals($errorArray['severity'], 'error');
     }
 
+    public function testStackTraceCanBeModified()
+    {
+        $fakeTrace = new \Bugsnag_Stacktrace($this->config);
+        $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
+        // add a function to replace the real trace with our fake.
+        $this->error->setStackModifierFunction(function (\Bugsnag_Stacktrace $trace) use ($fakeTrace) {
+            return $fakeTrace;
+        });
+
+        $arrayError = $this->error->toArray();
+        $exceptionData = array_pop($arrayError['exceptions']);
+
+        $this->assertEquals($fakeTrace->toArray(), $exceptionData['stacktrace']);
+    }
+
     public function testPreviousException() {
         if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
             $exception = new Exception("secondly", 65533, new Exception("firstly"));
