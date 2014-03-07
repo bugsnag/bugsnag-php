@@ -13,6 +13,11 @@ class Bugsnag_Configuration
     public $projectRoot;
     public $projectRootRegex;
     public $proxySettings = array();
+    public $notifier = array(
+        'name'    => 'Bugsnag PHP (Official)',
+        'version' => '2.1.4',
+        'url'     => 'https://bugsnag.com'
+    );
 
     public $context;
     public $type;

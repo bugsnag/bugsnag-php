@@ -2,12 +2,6 @@
 
 class Bugsnag_Notification
 {
-    private static $NOTIFIER = array(
-        'name'      => 'Bugsnag PHP (Official)',
-        'version'   => '2.1.4',
-        'url'       => 'https://bugsnag.com'
-    );
-
     private $config;
     private $errorQueue = array();
 
@@ -67,7 +61,7 @@ class Bugsnag_Notification
 
         return array(
             'apiKey' => $this->config->apiKey,
-            'notifier' => self::$NOTIFIER,
+            'notifier' => $this->config->notifier,
             'events' => $events
         );
     }
