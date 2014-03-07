@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.2.0
+-----
+-   Support previous exceptions on PHP >= 5.3.0
+-   Allow overriding notifier
+-   Use manual loading in place of custom autoloading
+
 2.1.4
 -----
 -   Make cURL timeout configurable (thanks pauloschilling)
