@@ -402,10 +402,10 @@ class Bugsnag_Client
     /**
      * Batches up errors into notifications for later sending
      *
-     * @param \Bugsnag_Error $error - The error to batch up
-     * @param array $metaData       - Meta data with the error
+     * @param Bugsnag_Error $error the error to batch up
+     * @param array $metaData optional meta data to send with the error
      */
-    public function notify(\Bugsnag_Error $error, $metaData = array())
+    public function notify(Bugsnag_Error $error, $metaData = array())
     {
         // Queue or send the error
         if ($this->sendErrorsOnShutdown()) {
