@@ -7,7 +7,7 @@ class Bugsnag_Configuration
     public $batchSending = true;
     public $useSSL = true;
     public $endpoint = 'notify.bugsnag.com';
-    public $timeout = 2;
+    public $timeout = 10;
     public $notifyReleaseStages;
     public $filters = array('password');
     public $projectRoot;
