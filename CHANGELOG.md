@@ -1,5 +1,8 @@
 Changelog
 =========
+2.2.1
+-----
+-   Log any curl errors to the command line, increase default timeout to 10s
 
 2.2.0
 -----
