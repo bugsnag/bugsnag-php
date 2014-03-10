@@ -239,8 +239,9 @@ By default, this is set to be `2`.
 ###setBeforeNotifyFunction
 
 Set a custom function to call before notifying Bugsnag of an error.
-You can use this to call your own error handling functions, or to add custom
-tabs of data to each error on your Bugsnag dashboard.
+You can use this to call your own error handling functions, to add custom
+tabs of data to each error on your Bugsnag dashboard, or to modify the
+stacktrace.
 
 To add custom tabs of meta-data, simply add to the `$metaData` array
 that is passed as the first parameter to your function, for example:
@@ -248,7 +249,7 @@ that is passed as the first parameter to your function, for example:
 ```php
 $bugsnag->setBeforeNotifyFunction('before_bugsnag_notify');
 
-function before_bugsnag_notify($error) {
+function before_bugsnag_notify(Bugsnag_Error $error) {
     // Do any custom error handling here
 
     // Also add some meta data to each error
@@ -259,6 +260,21 @@ function before_bugsnag_notify($error) {
         )
     ));
 }
+```
+
+If Bugsnag is called by a wrapper library, you can remove stack frames from the
+back-trace. For example:
+
+```php
+function before_bugsnag_notify(Bugsnag_Error $error) {
+
+    $firstFrame = $error->stacktrace->frames[0];
+    if ($firstFrame && $firstFrame['file'] === 'My_Logger.php') {
+        array_splice($error->stacktrace->frames, 0, 1);
+    }
+
+}
+
 ```
 
 You can also return `FALSE` from your beforeNotifyFunction to stop this error
