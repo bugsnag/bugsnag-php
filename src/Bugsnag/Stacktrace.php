@@ -2,7 +2,7 @@
 
 class Bugsnag_Stacktrace
 {
-    public  $frames = array();
+    public $frames = array();
     private $config;
 
     public static function generate($config)

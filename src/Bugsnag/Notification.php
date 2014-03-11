@@ -114,8 +114,7 @@ class Bugsnag_Notification
             error_log('Bugsnag Warning: Couldn\'t notify ('.$responseBody.')');
         }
 
-        if (curl_errno($http))
-        {
+        if (curl_errno($http)) {
             error_log('Bugsnag Warning: Couldn\'t notify (' . curl_error($http).')');
         }
 

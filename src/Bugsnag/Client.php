@@ -314,7 +314,7 @@ class Bugsnag_Client
      * Sets the notifier to report as to Bugsnag. This should only be
      * set by other notifier libraries.
      *
-     * @param Array  $notifier  an array of name, version, url.
+     * @param Array $notifier an array of name, version, url.
      */
     public function setNotifier($notifier)
     {
@@ -402,8 +402,8 @@ class Bugsnag_Client
     /**
      * Batches up errors into notifications for later sending
      *
-     * @param Bugsnag_Error $error the error to batch up
-     * @param array $metaData optional meta data to send with the error
+     * @param Bugsnag_Error $error    the error to batch up
+     * @param array         $metaData optional meta data to send with the error
      */
     public function notify(Bugsnag_Error $error, $metaData = array())
     {

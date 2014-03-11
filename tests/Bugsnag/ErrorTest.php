@@ -107,7 +107,8 @@ class errorTest extends Bugsnag_TestCase
         $this->assertEquals($errorArray['severity'], 'error');
     }
 
-    public function testPreviousException() {
+    public function testPreviousException()
+    {
         if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
             $exception = new Exception("secondly", 65533, new Exception("firstly"));
 
