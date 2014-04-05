@@ -77,9 +77,32 @@ class Bugsnag_Notification
         }
     }
 
+    private function transform($str) {
+        if (mb_detect_encoding($str,'UTF-8',true) == false) {
+            return utf8_encode($str);
+        }
+        return $str;
+    }
+
+    private function utf8($data) {
+        if (is_array($data)) {
+           $newData = array();
+           foreach ($data as $key => $value) {
+              if (is_array($value)) {
+                  $newData[$this->transform($key)] = $this->utf8($value);
+              }
+              else {
+                  $newData[$this->transform($key)] = $this->transform($value);
+              }
+           }
+           return $newData;
+        }
+    }
+
     public function postJSON($url, $data)
     {
         $http = curl_init($url);
+        $data = $this->utf8($data);
 
         // Default curl settings
         curl_setopt($http, CURLOPT_HEADER, false);
