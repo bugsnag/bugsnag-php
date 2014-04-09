@@ -15,7 +15,7 @@ class Bugsnag_Configuration
     public $proxySettings = array();
     public $notifier = array(
         'name'    => 'Bugsnag PHP (Official)',
-        'version' => '2.2.2',
+        'version' => '2.2.3',
         'url'     => 'https://bugsnag.com'
     );
 
