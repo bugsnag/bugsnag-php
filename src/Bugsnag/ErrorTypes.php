@@ -5,7 +5,7 @@ class Bugsnag_ErrorTypes
     private static $ERROR_TYPES = array(
         E_ERROR => array(
             'name' => 'PHP Fatal Error',
-            'severity' => 'fatal'
+            'severity' => 'error'
         ),
 
         E_WARNING => array(
@@ -15,7 +15,7 @@ class Bugsnag_ErrorTypes
 
         E_PARSE => array(
             'name' => 'PHP Parse Error',
-            'severity' => 'fatal'
+            'severity' => 'error'
         ),
 
         E_NOTICE => array(
@@ -25,7 +25,7 @@ class Bugsnag_ErrorTypes
 
         E_CORE_ERROR => array(
             'name' => 'PHP Core Error',
-            'severity' => 'fatal'
+            'severity' => 'error'
         ),
 
         E_CORE_WARNING => array(
@@ -35,7 +35,7 @@ class Bugsnag_ErrorTypes
 
         E_COMPILE_ERROR => array(
             'name' => 'PHP Compile Error',
-            'severity' => 'fatal'
+            'severity' => 'error'
         ),
 
         E_COMPILE_WARNING => array(
