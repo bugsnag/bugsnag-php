@@ -10,7 +10,7 @@ class Bugsnag_Error
 
     public $name;
     public $message;
-    public $severity = "error";
+    public $severity = "warning";
     public $stacktrace;
     public $metaData = array();
     public $config;
