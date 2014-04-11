@@ -3,15 +3,15 @@
 class Bugsnag_Error
 {
     private static $VALID_SEVERITIES = array(
-        'fatal',
         'error',
         'warning',
         'info'
     );
 
     public $name;
+    public $payloadVersion = "2";
     public $message;
-    public $severity = "error";
+    public $severity = "warning";
     public $stacktrace;
     public $metaData = array();
     public $config;
@@ -59,6 +59,7 @@ class Bugsnag_Error
 
         return $this;
     }
+
 
     public function setMessage($message)
     {
@@ -169,6 +170,7 @@ class Bugsnag_Error
             'device' => $this->diagnostics->getDeviceData(),
             'user' => $this->diagnostics->getUser(),
             'context' => $this->diagnostics->getContext(),
+            'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),
             'metaData' => $this->applyFilters($this->metaData)

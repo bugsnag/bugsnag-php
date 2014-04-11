@@ -75,6 +75,14 @@ class errorTest extends Bugsnag_TestCase
         $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Fatal Error');
     }
 
+    public function testErrorPayloadVersion()
+    {
+        $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
+
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['payloadVersion'], '2');
+    }
+
     public function testNoticeSeverity()
     {
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
@@ -88,15 +96,15 @@ class errorTest extends Bugsnag_TestCase
         $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'fatal');
+        $this->assertEquals($errorArray['severity'], 'error');
     }
 
     public function testManualSeverity()
     {
-        $this->error->setSeverity("fatal");
+        $this->error->setSeverity("error");
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'fatal');
+        $this->assertEquals($errorArray['severity'], 'error');
     }
 
     public function testInvalidSeverity()
@@ -104,7 +112,7 @@ class errorTest extends Bugsnag_TestCase
         $this->error->setSeverity("bunk");
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'error');
+        $this->assertEquals($errorArray['severity'], 'warning');
     }
 
     public function testPreviousException()
