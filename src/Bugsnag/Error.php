@@ -3,7 +3,6 @@
 class Bugsnag_Error
 {
     private static $VALID_SEVERITIES = array(
-        'fatal',
         'error',
         'warning',
         'info'
