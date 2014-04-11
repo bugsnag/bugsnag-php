@@ -40,7 +40,6 @@ class Bugsnag_Error
     {
         $error = new Bugsnag_Error($config, $diagnostics);
         $error->setName($name)
-              ->setPayloadVersion($payloadVersion)
               ->setMessage($message)
               ->setStacktrace(Bugsnag_Stacktrace::generate($config));
 
@@ -61,12 +60,6 @@ class Bugsnag_Error
         return $this;
     }
 
-    public function setPayloadVersion($payloadVersion)
-    {
-        $this->payloadVersion = $payloadVersion;
-
-        return $this;
-    }
 
     public function setMessage($message)
     {
@@ -105,7 +98,6 @@ class Bugsnag_Error
     public function setPHPException(Exception $exception)
     {
         $this->setName(get_class($exception))
-             ->setPayloadVersion($payloadVersion)
              ->setMessage($exception->getMessage())
              ->setStacktrace(Bugsnag_Stacktrace::fromBacktrace($this->config, $exception->getTrace(), $exception->getFile(), $exception->getLine()));
 
@@ -131,7 +123,6 @@ class Bugsnag_Error
         }
 
         $this->setName(Bugsnag_ErrorTypes::getName($code))
-             ->setPayloadVersion($payloadVersion)
              ->setMessage($message)
              ->setSeverity(Bugsnag_ErrorTypes::getSeverity($code))
              ->setStacktrace($stacktrace)
@@ -179,6 +170,7 @@ class Bugsnag_Error
             'device' => $this->diagnostics->getDeviceData(),
             'user' => $this->diagnostics->getUser(),
             'context' => $this->diagnostics->getContext(),
+            'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),
             'metaData' => $this->applyFilters($this->metaData)

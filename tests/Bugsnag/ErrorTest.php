@@ -75,6 +75,14 @@ class errorTest extends Bugsnag_TestCase
         $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Fatal Error');
     }
 
+    public function testErrorPayloadVersion()
+    {
+        $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
+
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['payloadVersion'], '2');
+    }
+
     public function testNoticeSeverity()
     {
         $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
