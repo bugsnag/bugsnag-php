@@ -83,7 +83,7 @@ class Bugsnag_ErrorTypes
 
     public static function isFatal($code)
     {
-        return self::getSeverity($code) == 'fatal';
+        return self::getSeverity($code) == 'error';
     }
 
     public static function getName($code)

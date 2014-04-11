@@ -88,15 +88,15 @@ class errorTest extends Bugsnag_TestCase
         $this->error->setPHPError(E_ERROR, "Broken", "file", 123);
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'fatal');
+        $this->assertEquals($errorArray['severity'], 'error');
     }
 
     public function testManualSeverity()
     {
-        $this->error->setSeverity("fatal");
+        $this->error->setSeverity("error");
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'fatal');
+        $this->assertEquals($errorArray['severity'], 'error');
     }
 
     public function testInvalidSeverity()
