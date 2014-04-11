@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.4
+-----
+-   Prepare 'severity' feature for release
+
 2.2.3
 -----
 
