@@ -7,12 +7,10 @@ Changelog
 
 2.2.3
 -----
-
 -   Fix invalid utf-8 errors for people using iso-8859-1 by default.
 
 2.2.2
 -----
-
 -   Make frames public on the stacktrace.
 
 2.2.1
