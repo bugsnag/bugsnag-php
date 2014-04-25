@@ -4,9 +4,9 @@ Bugsnag Notifier for PHP
 The Bugsnag Notifier for PHP gives you instant notification of errors and
 exceptions in your PHP applications.
 
-[Bugsnag](https://bugsnag.com) captures errors in real-time from your web, 
-mobile and desktop applications, helping you to understand and resolve them 
-as fast as possible. [Create a free account](https://bugsnag.com) to start 
+[Bugsnag](https://bugsnag.com) captures errors in real-time from your web,
+mobile and desktop applications, helping you to understand and resolve them
+as fast as possible. [Create a free account](https://bugsnag.com) to start
 capturing errors from your applications.
 
 The Bugsnag Notifier for PHP supports PHP 5.2+ and requires the cURL PHP
@@ -65,16 +65,16 @@ Configuration
     ```
 
     If you app or PHP framework already has error handling functions, you can
-    also call `$bugsnag->errorHandler` and `$bugsnag->exceptionHandler` 
+    also call `$bugsnag->errorHandler` and `$bugsnag->exceptionHandler`
     directly from your existing functions, simply pass all parameters through.
 
 
 Sending Custom Data With Exceptions
 -----------------------------------
 
-It is often useful to send additional meta-data about your app, such as 
+It is often useful to send additional meta-data about your app, such as
 information about the currently logged in user, along with any
-error or exceptions, to help debug problems. 
+error or exceptions, to help debug problems.
 
 Bugsnag supports sending user information, such as the user's name or email
 address, by calling the [setUser](#setUser) function.
@@ -88,7 +88,7 @@ documentation below.
 Sending Custom Errors or Non-Fatal Exceptions
 ---------------------------------------------
 
-You can easily tell Bugsnag about non-fatal or caught exceptions by 
+You can easily tell Bugsnag about non-fatal or caught exceptions by
 calling `notifyException`:
 
 ```php
@@ -112,6 +112,21 @@ $metaData =  array(
     )
 );
 ```
+
+### Severity
+
+You can set the severity of an error in Bugsnag by including the severity option as the fourth parameter when
+notifying bugsnag of the error,
+
+```php
+$bugsnag->notifyError('ErrorType', 'Something bad happened here too', NULL, "error")
+```
+
+Valid severities are `error`, `warning` and `info`.
+
+Severity is displayed in the dashboard and can be used to filter the error list.
+By default all crashes (or unhandled exceptions) are set to `error` and all
+`$bugsnag->notify` calls default to `warning`.
 
 
 Additional Configuration
@@ -155,9 +170,9 @@ to Bugsnag, you'll also have to call `setNotifyReleaseStages`.*
 ###setNotifyReleaseStages
 
 By default, we will notify Bugsnag of errors that happen in any
-`releaseStage` If you would like to change which release stages notify 
+`releaseStage` If you would like to change which release stages notify
 Bugsnag of errors you can call `setNotifyReleaseStages`:
-    
+
 ```php
 $bugsnag->setNotifyReleaseStages(array('development', 'production'));
 ```
@@ -183,7 +198,7 @@ errors. Contexts represent what was happening in your application at the
 time an error occurs. By default this will be set to the current request
 URL and HTTP method, eg "GET /pages/documentation".
 
-If you would like to set the bugsnag context manually, you can call 
+If you would like to set the bugsnag context manually, you can call
 `setContext`:
 
 ```php
@@ -206,8 +221,8 @@ eg "resque". By default this is `NULL`.
 ###setFilters
 
 Sets the strings to filter out from the `metaData` arrays before sending
-them to Bugsnag. Use this if you want to ensure you don't send 
-sensitive data such as passwords, and credit card numbers to our 
+them to Bugsnag. Use this if you want to ensure you don't send
+sensitive data such as passwords, and credit card numbers to our
 servers. Any keys which contain these strings will be filtered.
 
 ```php
@@ -449,5 +464,5 @@ Contributing
 License
 -------
 
-The Bugsnag PHP notifier is free software released under the MIT License. 
+The Bugsnag PHP notifier is free software released under the MIT License.
 See [LICENSE.txt](https://github.com/bugsnag/bugsnag-php/blob/master/LICENSE.txt) for details.
