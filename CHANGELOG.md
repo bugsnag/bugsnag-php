@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.5
+-----
+-   Remove deprecated "fatal" severity state
+
 2.2.4
 -----
 -   Prepare 'severity' feature for release
