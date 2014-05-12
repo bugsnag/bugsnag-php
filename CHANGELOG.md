@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.6
+-----
+-   Fix calling `mb_detect_encoding` on non-objects
+
 2.2.5
 -----
 -   Remove deprecated "fatal" severity state
