@@ -91,7 +91,7 @@ class Bugsnag_Notification
               if (is_array($value)) {
                   $newData[$this->transform($key)] = $this->utf8($value);
               }
-              else {
+              elseif (is_string($value)) {
                   $newData[$this->transform($key)] = $this->transform($value);
               }
            }
