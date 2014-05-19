@@ -140,6 +140,18 @@ class Bugsnag_Client
     }
 
     /**
+     * Configure whether or not to strip out the project root from stacktraces
+     *
+     * @param Boolean $stripProjectRoot whether or not to strip the project root
+     */
+    public function setStripProjectRoot($stripProjectRoot)
+    {
+        $this->config->stripProjectRoot = $stripProjectRoot;
+
+        return $this;
+    }
+
+    /**
      * Set the strings to filter out from metaData arrays before sending then
      * to Bugsnag. Eg. array("password", "credit_card")
      *
