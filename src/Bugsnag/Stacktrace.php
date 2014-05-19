@@ -74,7 +74,7 @@ class Bugsnag_Stacktrace
         $inProject = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);
 
         // Strip out projectRoot from start of file path
-        if ($inProject && $this->config->projectRootRegex !== false) {
+        if ($inProject && $this->config->stripProjectRoot !== false) {
             $file = preg_replace($this->config->projectRootRegex, '', $file);
         }
 
