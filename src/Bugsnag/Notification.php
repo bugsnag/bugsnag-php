@@ -78,6 +78,7 @@ class Bugsnag_Notification
     }
 
     private function transform($str) {
+        $str = (string) $str;
         if (mb_detect_encoding($str,'UTF-8',true) == false) {
             return utf8_encode($str);
         }
