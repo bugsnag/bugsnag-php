@@ -86,16 +86,21 @@ class Bugsnag_Notification
 
     private function utf8($data) {
         if (is_array($data)) {
-           $newData = array();
-           foreach ($data as $key => $value) {
-              if (is_array($value)) {
-                  $newData[$this->transform($key)] = $this->utf8($value);
-              }
-              elseif (is_string($value) || is_scalar($value)) {
-                  $newData[$this->transform($key)] = $this->transform($value);
-              }
-           }
-           return $newData;
+            $newData = array();
+            foreach ($data as $key => $value) {
+                if (is_array($value)) {
+                    $newData[$this->transform($key)] = $this->utf8($value);
+                } else if (is_object($value)) {
+                    if (method_exists($value, '__toString')) {
+                        $newData[$this->transform($key)] = $this->transform((string)$value);
+                    } else {
+                        $newData[$this->transform($key)] = $this->transform(serialize($value));
+                    }
+                } else {
+                    $newData[$this->transform($key)] = $this->transform($value);
+                }
+            }
+            return $newData;
         }
     }
 
