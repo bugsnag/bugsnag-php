@@ -91,7 +91,7 @@ class Bugsnag_Notification
               if (is_array($value)) {
                   $newData[$this->transform($key)] = $this->utf8($value);
               }
-              elseif (is_string($value)) {
+              elseif (is_string($value) || is_scalar($value)) {
                   $newData[$this->transform($key)] = $this->transform($value);
               }
            }
