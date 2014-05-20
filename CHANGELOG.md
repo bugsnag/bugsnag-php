@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.7
+-----
+-   Allow configuration of projectRoot stripping from stacktraces
+
 2.2.6
 -----
 -   Fix calling `mb_detect_encoding` on non-objects
