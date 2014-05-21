@@ -94,7 +94,7 @@ class Bugsnag_Notification
                     if (method_exists($value, '__toString')) {
                         $newData[$this->transform($key)] = $this->transform((string)$value);
                     } else {
-                        $newData[$this->transform($key)] = $this->transform(serialize($value));
+                        $newData[$this->transform($key)] = $this->transform(json_encode($value));
                     }
                 } else {
                     $newData[$this->transform($key)] = $this->transform($value);
