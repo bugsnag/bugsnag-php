@@ -84,18 +84,20 @@ class Bugsnag_Notification
         return $str;
     }
 
-    private function utf8($data) {
+    private function utf8($data)
+    {
         if (is_array($data)) {
-           $newData = array();
-           foreach ($data as $key => $value) {
-              if (is_array($value)) {
-                  $newData[$this->transform($key)] = $this->utf8($value);
-              }
-              elseif (is_string($value) || is_scalar($value)) {
-                  $newData[$this->transform($key)] = $this->transform($value);
-              }
-           }
-           return $newData;
+            $newData = array();
+            foreach ($data as $key => $value) {
+                if (is_array($value)) {
+                    $newData[$this->transform($key)] = $this->utf8($value);
+                } else if (is_object($value)) {
+                    $newData[$this->transform($key)] = $this->transform(json_encode($value));
+                } else {
+                    $newData[$this->transform($key)] = $this->transform($value);
+                }
+            }
+            return $newData;
         }
     }
 
