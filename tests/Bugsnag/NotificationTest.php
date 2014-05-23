@@ -97,6 +97,33 @@ class NotificationTest extends Bugsnag_TestCase
         $notification->addError($this->getError());
         $notification->deliver();
     }
+
+    public function testUTF8()
+    {
+        $notification = $this->getMockBuilder('Bugsnag_Notification')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $method = new ReflectionMethod('Bugsnag_Notification', 'utf8');
+        $method->setAccessible(true);
+
+        // Test simple value, array and object
+        $testObj = new \stdClass();
+        $testObj->test1 = 'test2';
+        $testObj->test2 = 'test3';
+        $this->assertSame(
+            array(
+                'test1' => 'test2',
+                'test3' => array('test1' => 'test2', 'test3' => json_encode($testObj)),
+                'test5' => json_encode($testObj),
+            ),
+            $method->invoke($notification, array(
+                'test1' => 'test2',
+                'test3' => array('test1' => 'test2', 'test3' => $testObj),
+                'test5' => $testObj
+            ))
+        );
+    }
 }
 
 function before_notify_skip_error($error)
