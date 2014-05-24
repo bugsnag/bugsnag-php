@@ -33,6 +33,18 @@ class errorTest extends Bugsnag_TestCase
         $this->assertEquals($errorArray['metaData']["Testing"]["localArray"], "yo");
     }
 
+    public function testComplexMetaData()
+    {
+        ini_set("date.timezone", "America/Los_Angeles");
+
+        $dateTime = new DateTime();
+
+        $this->error->setMetaData(array("Testing" => array("key" => "value", "date" => $dateTime)));
+        $errorArray = $this->error->toArray();
+
+        $this->assertEquals($errorArray['metaData']["Testing"]["date"]["date"], $dateTime->format('Y-m-d H:i:s'));
+    }
+
     public function testShouldIgnore()
     {
         $this->config->errorReportingLevel = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED;
