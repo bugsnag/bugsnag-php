@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.8
+-----
+-   Fix various metadata-encoding bugs
+
 2.2.7
 -----
 -   Allow configuration of projectRoot stripping from stacktraces
