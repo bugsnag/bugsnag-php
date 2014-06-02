@@ -224,7 +224,7 @@ class Bugsnag_Error
             }
 
             return $cleanArray;
-        } else if (is_numeric($obj)) {
+        } else if (is_numeric($obj) || is_bool($obj)) {
             return $obj;
         } else if (is_string($obj)) {
             // UTF8-encode if not already encoded
