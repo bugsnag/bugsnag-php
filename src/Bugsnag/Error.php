@@ -224,8 +224,6 @@ class Bugsnag_Error
             }
 
             return $cleanArray;
-        } else if (is_numeric($obj) || is_bool($obj)) {
-            return $obj;
         } else if (is_string($obj)) {
             // UTF8-encode if not already encoded
             if (!mb_detect_encoding($obj, 'UTF-8', true)) {
@@ -233,9 +231,11 @@ class Bugsnag_Error
             } else {
                 return $obj;
             }
-        } else {
+        } else if (is_object($obj)) {
             // json_encode -> json_decode trick turns an object into an array
             return $this->cleanupObj(json_decode(json_encode($obj), true));
+        } else {
+            return $obj;
         }
     }
 }

@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.9
+-----
+-   Fix boolean metadata handling
+
 2.2.8
 -----
 -   Fix various metadata-encoding bugs
