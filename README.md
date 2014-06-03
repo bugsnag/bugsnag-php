@@ -322,7 +322,7 @@ $bugsnag->setErrorReportingLevel(E_ALL & ~E_NOTICE);
 See PHP's [error reporting documentation](http://php.net/manual/en/errorfunc.configuration.php#ini.error-reporting)
 for allowed values.
 
-<!-- Give docs custom ID for project_root -->
+<!-- Custom ID for linking from alerts -->
 <h3 id=set-project-root>setProjectRoot</h3>
 
 We mark stacktrace lines as in-project if they come from files inside your
