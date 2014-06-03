@@ -323,7 +323,8 @@ See PHP's [error reporting documentation](http://php.net/manual/en/errorfunc.con
 for allowed values.
 
 <!-- Custom anchor for linking from alerts -->
-### setProjectRoot <a name="set-project-root"></a>
+<div id="set-project-root"></div>
+###setProjectRoot
 
 We mark stacktrace lines as in-project if they come from files inside your
 `projectRoot`. By default this value is automatically set to be
