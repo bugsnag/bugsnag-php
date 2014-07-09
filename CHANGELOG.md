@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.2.10
+------
+-   Remove default for `setProjectRoot` since it was sometimes overzealous
+
 2.2.9
 -----
 -   Fix boolean metadata handling
