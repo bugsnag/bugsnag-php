@@ -29,11 +29,6 @@ class Bugsnag_Client
         // Build a Diagnostics object
         $this->diagnostics = new Bugsnag_Diagnostics($this->config);
 
-        // Attempt to determine a sensible default for projectRoot
-        if (isset($_SERVER) && !empty($_SERVER['DOCUMENT_ROOT'])) {
-            $this->setProjectRoot($_SERVER['DOCUMENT_ROOT']);
-        }
-
         // Register a shutdown function to check for fatal errors
         // and flush any buffered errors
         register_shutdown_function(array($this, 'shutdownHandler'));
