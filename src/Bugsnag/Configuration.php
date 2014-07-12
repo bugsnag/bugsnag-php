@@ -12,13 +12,14 @@ class Bugsnag_Configuration
     public $filters = array('password');
     public $projectRoot;
     public $projectRootRegex;
-    public $stripProjectRoot = true;
     public $proxySettings = array();
     public $notifier = array(
         'name'    => 'Bugsnag PHP (Official)',
         'version' => '2.2.10',
         'url'     => 'https://bugsnag.com'
     );
+    public $stripPath;
+    public $stripPathRegex;
 
     public $context;
     public $type;
@@ -45,6 +46,15 @@ class Bugsnag_Configuration
     {
         $this->projectRoot = $projectRoot;
         $this->projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
+        if (is_null($stripPath)) {
+          $stripPath = $projectRoot;
+        }
+    }
+
+    public function setStripPath($stripPath)
+    {
+        $this->stripPath = $stripPath;
+        $this->stripPathRegex = '/'.preg_quote($stripPath, '/')."[\\/]?/i";
     }
 
     public function get($prop, $default=NULL)

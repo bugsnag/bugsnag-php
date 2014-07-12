@@ -122,6 +122,20 @@ class Bugsnag_Client
     }
 
     /**
+     * Set the path that should be stripped from the beginning of
+     * any stacktrace file line. This helps to normalise filenames
+     * for grouping and reduces the noise in stack traces.
+     *
+     * @param String $stripPath the path to strip from filenames
+     */
+    public function setStripPath($stripPath)
+    {
+        $this->config->setStripPath($stripPath);
+
+        return $this;
+    }
+
+    /**
      * Set the a regular expression for matching filenames in stacktrace lines
      * that are part of your application.
      *
@@ -130,18 +144,6 @@ class Bugsnag_Client
     public function setProjectRootRegex($projectRootRegex)
     {
         $this->config->projectRootRegex = $projectRootRegex;
-
-        return $this;
-    }
-
-    /**
-     * Configure whether or not to strip out the project root from stacktraces
-     *
-     * @param Boolean $stripProjectRoot whether or not to strip the project root
-     */
-    public function setStripProjectRoot($stripProjectRoot)
-    {
-        $this->config->stripProjectRoot = $stripProjectRoot;
 
         return $this;
     }
