@@ -85,4 +85,17 @@ class StacktraceTest extends Bugsnag_TestCase
         $this->assertFrameEquals($stacktrace[3], "call_user_func_array", "[internal]", 0);
         $this->assertFrameEquals($stacktrace[4], "[main]", "Routing/Controller.php", 194);
     }
+
+    public function testStrippingPaths()
+    {
+        $fixture = $this->getFixture('backtraces/exception_handler.json');
+        $this->config->setStripPath("/Users/james/src/bugsnag/bugsnag-php/");
+        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
+
+        $this->assertCount(3, $stacktrace);
+
+        $this->assertFrameEquals($stacktrace[0], "crashy_function", "testing.php", 25);
+        $this->assertFrameEquals($stacktrace[1], "parent_of_crashy_function", "testing.php", 13);
+        $this->assertFrameEquals($stacktrace[2], "[main]", "testing.php", 28);
+    }
 }
