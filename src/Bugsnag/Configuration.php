@@ -46,8 +46,8 @@ class Bugsnag_Configuration
     {
         $this->projectRoot = $projectRoot;
         $this->projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
-        if (is_null($stripPath)) {
-          $stripPath = $projectRoot;
+        if (is_null($this->stripPath)) {
+          $this->stripPath = $projectRoot;
         }
     }
 
