@@ -154,6 +154,9 @@ class Bugsnag_Notification
                 'method' => 'POST',
                 'header' => Bugsnag_Notification::$CONTENT_TYPE_HEADER.'\r\n',
                 'content' => $body
+            ),
+            'ssl' => array(
+                'verify_peer' => false,
             )
         ));
 
