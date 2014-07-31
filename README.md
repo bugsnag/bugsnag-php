@@ -9,8 +9,7 @@ mobile and desktop applications, helping you to understand and resolve them
 as fast as possible. [Create a free account](https://bugsnag.com) to start
 capturing errors from your applications.
 
-The Bugsnag Notifier for PHP supports PHP 5.2+ and requires the cURL PHP
-extension to be available.
+The Bugsnag Notifier for PHP supports PHP 5.2+.
 
 
 How to Install
@@ -243,6 +242,8 @@ By default, this is set to be `TRUE`.
 
 ###setTimeout
 
+*Note: Timeout configuration is only possible if the PHP cURL extension is installed.*
+
 Define a custom timeout, in seconds, for cURL connection when notifying bugsnag.com.
 
 ```php
@@ -349,6 +350,8 @@ $bugsnag->setProjectRootRegex('('.preg_quote('/app').'|'.preg_quote('/libs').')'
 ```
 
 ###setProxySettings
+
+*Note: Proxy configuration is only possible if the PHP cURL extension is installed.*
 
 If your server is behind a proxy server, you can configure this as well:
 
