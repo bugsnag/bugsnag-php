@@ -2,12 +2,13 @@
 
 class Bugsnag_Configuration
 {
+    public static $DEFAULT_TIMEOUT = 10;
+
     public $apiKey;
     public $autoNotify = true;
     public $batchSending = true;
     public $useSSL = true;
     public $endpoint = 'notify.bugsnag.com';
-    public $timeout = 10;
     public $notifyReleaseStages;
     public $filters = array('password');
     public $projectRoot;
@@ -31,6 +32,11 @@ class Bugsnag_Configuration
     public $metaData;
     public $beforeNotifyFunction;
     public $errorReportingLevel;
+
+    public function __construct()
+    {
+        $this->timeout = Bugsnag_Configuration::$DEFAULT_TIMEOUT;
+    }
 
     public function getNotifyEndpoint()
     {

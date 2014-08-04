@@ -2,6 +2,8 @@
 
 class Bugsnag_Notification
 {
+    private static $CONTENT_TYPE_HEADER = 'Content-type: application/json';
+
     private $config;
     private $errorQueue = array();
 
@@ -79,14 +81,27 @@ class Bugsnag_Notification
 
     public function postJSON($url, $data)
     {
+        $body = json_encode($data);
+
+        // Prefer cURL if it is installed, otherwise fall back to fopen()
+        // cURL supports both timeouts and proxies
+        if (function_exists('curl_version')) {
+            $this->postWithCurl($url, $body);
+        } else {
+            $this->postWithFopen($url, $body);
+        }
+    }
+
+    private function postWithCurl($url, $body)
+    {
         $http = curl_init($url);
 
         // Default curl settings
         curl_setopt($http, CURLOPT_HEADER, false);
         curl_setopt($http, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($http, CURLOPT_POST, true);
-        curl_setopt($http, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
-        curl_setopt($http, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($http, CURLOPT_HTTPHEADER, array(Bugsnag_Notification::$CONTENT_TYPE_HEADER));
+        curl_setopt($http, CURLOPT_POSTFIELDS, $body);
         curl_setopt($http, CURLOPT_CONNECTTIMEOUT, $this->config->timeout);
         curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($http, CURLOPT_VERBOSE, false);
@@ -119,7 +134,41 @@ class Bugsnag_Notification
         }
 
         curl_close($http);
+    }
 
-        return $statusCode;
+    private function postWithFopen($url, $body)
+    {
+        // Warn about lack of proxy support if we are using fopen()
+        if (count($this->config->proxySettings)) {
+            error_log('Bugsnag Warning: Can\'t use proxy settings unless cURL is installed');
+        }
+
+        // Warn about lack of timeout support if we are using fopen()
+        if ($this->config->timeout != Bugsnag_Configuration::$DEFAULT_TIMEOUT) {
+            error_log('Bugsnag Warning: Can\'t change timeout settings unless cURL is installed');
+        }
+
+        // Create the request context
+        $context = stream_context_create(array(
+            'http' => array(
+                'method' => 'POST',
+                'header' => Bugsnag_Notification::$CONTENT_TYPE_HEADER.'\r\n',
+                'content' => $body
+            ),
+            'ssl' => array(
+                'verify_peer' => false,
+            )
+        ));
+
+        // Execute the request and fetch the response
+        if ($stream = fopen($url, 'rb', false, $context)) {
+            $response = stream_get_contents($stream);
+
+            if (!$response) {
+                error_log('Bugsnag Warning: Couldn\'t notify (no response)');
+            }
+        } else {
+            error_log('Bugsnag Warning: Couldn\'t notify (fopen failed)');
+        }
     }
 }
