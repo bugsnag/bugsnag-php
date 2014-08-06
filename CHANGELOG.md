@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.3.0
+-----
+-   Remove cURL requirement, fallback to using fopen() if cURL not available
+
 2.2.10
 ------
 -   Remove default for `setProjectRoot` since it was sometimes overzealous
