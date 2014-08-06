@@ -438,10 +438,11 @@ Building a Phar from Source
     $ composer install
     ```
 
--   Build the phar using `box`
+-   Build the phar using `pharbuilder.php`.
+    Note: you may need to set `phar.readonly = Off` in your `php.ini`.
 
     ```shell
-    $ vendor/bin/box build
+    php pharbuilder.php
     ```
 
 A new `bugsnag.phar` will be generated in the `build` folder.
