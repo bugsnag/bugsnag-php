@@ -417,17 +417,20 @@ If you are using CakePHP, installation is easy:
     ));
     ```
 
+### Magento
+
+Check out the [Magento Notifier module](https://github.com/bugsnag/bugsnag-magento) by Bugsnag.
+
 ### Symfony2
 
 Check out the third-party [evolution7/Evolution7BugsnagBundle](https://github.com/evolution7/Evolution7BugsnagBundle) or [wrep/bugsnag-php-symfony](https://github.com/wrep/bugsnag-php-symfony) bundles.
 
 ### Monolog
-Checkout the 3rd party log handler for monolog: [meadsteve/MonoSnag/](https://github.com/meadsteve/MonoSnag/)
+Check out the 3rd party log handler for monolog: [meadsteve/MonoSnag/](https://github.com/meadsteve/MonoSnag/)
 
 ### Silverstripe
 
 Check out the third-party [evolution7/silverstripe-bugsnag-logger](https://github.com/evolution7/silverstripe-bugsnag-logger) plugin.
-
 
 Building a Phar from Source
 ---------------------------
