@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.3.1
+-----
+-   Warn if neither curl or fopen are available
+
 2.3.0
 -----
 -   Remove cURL requirement, fallback to using fopen() if cURL not available
