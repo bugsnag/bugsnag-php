@@ -89,7 +89,7 @@ class Bugsnag_Silex
                 "session" => $session,
                 "cookies" => self::$request->cookies->all(),
                 "host" => array(
-                    "hostanme" => self::$request->getHttpHost()
+                    "hostname" => self::$request->getHttpHost()
                 )
             ));
         };
