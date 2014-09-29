@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.4.0
+-----
+-   Don't send $_ENV by default
+
 2.3.1
 -----
 -   Warn if neither curl or fopen are available
