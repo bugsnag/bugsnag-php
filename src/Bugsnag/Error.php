@@ -196,7 +196,7 @@ class Bugsnag_Error
 
     private function cleanupObj($obj)
     {
-        if (empty($obj)) {
+        if (is_null($obj)) {
             return NULL;
         }
 
