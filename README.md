@@ -375,6 +375,16 @@ on your dashboard if you call `setAppVersion`:
 $bugsnag->setAppVersion('1.2.3');
 ```
 
+###setSendEnvironment
+
+Bugsnag can transmit your `$_ENV` environment to help diagnose issues. This can
+contain private/sensitive information, so we do not transmit this by default. To
+send your environment, you can call `setSendEnvironment`:
+
+```php
+$bugsnag->setSendEnvironment(true);
+```
+
 
 PHP Frameworks
 --------------

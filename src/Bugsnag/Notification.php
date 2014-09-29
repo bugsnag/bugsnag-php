@@ -28,7 +28,7 @@ class Bugsnag_Notification
         }
 
         // Add environment meta-data to error
-        if (!empty($_ENV)) {
+        if ($this->config->sendEnvironment && !empty($_ENV)) {
             $error->setMetaData(array("Environment" => $_ENV));
         }
 

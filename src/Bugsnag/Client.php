@@ -328,6 +328,18 @@ class Bugsnag_Client
     }
 
     /**
+     * Sets whether Bugsnag should send $_ENV with each error.
+     *
+     * @param Boolean $sendEnvironment whether to send the environment
+     */
+    public function setSendEnvironment($sendEnvironment)
+    {
+        $this->config->sendEnvironment = $sendEnvironment;
+
+        return $this;
+    }
+
+    /**
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about

@@ -97,6 +97,21 @@ class NotificationTest extends Bugsnag_TestCase
         $notification->addError($this->getError());
         $notification->deliver();
     }
+
+    public function testNoEnvironmentByDefault()
+    {
+        $notification = new Bugsnag_Notification($this->config);
+        $notification->addError($this->getError());
+        $this->assertNull($notification->toArray()["events"][0]["metaData"]);
+    }
+
+    public function testEnvironmentPresentWhenRequested()
+    {
+        $this->config->sendEnvironment = true;
+        $notification = new Bugsnag_Notification($this->config);
+        $notification->addError($this->getError());
+        $this->assertArrayHasKey("Environment", $notification->toArray()["events"][0]["metaData"]);
+    }
 }
 
 function before_notify_skip_error($error)
