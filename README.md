@@ -163,8 +163,8 @@ $bugsnag->setReleaseStage('development');
 
 By default this is set to be "production".
 
-*Note: If you would like errors from stages other than production to be sent
-to Bugsnag, you'll also have to call `setNotifyReleaseStages`.*
+> Note: If you would like errors from stages other than production to be sent
+to Bugsnag, you'll also have to call `setNotifyReleaseStages`.
 
 ###setNotifyReleaseStages
 
@@ -242,7 +242,7 @@ By default, this is set to be `TRUE`.
 
 ###setTimeout
 
-*Note: Timeout configuration is only possible if the PHP cURL extension is installed.*
+> Note: Timeout configuration is only possible if the PHP cURL extension is installed.
 
 Define a custom timeout, in seconds, for cURL connection when notifying bugsnag.com.
 
@@ -351,7 +351,7 @@ $bugsnag->setProjectRootRegex('('.preg_quote('/app').'|'.preg_quote('/libs').')'
 
 ###setProxySettings
 
-*Note: Proxy configuration is only possible if the PHP cURL extension is installed.*
+> Note: Proxy configuration is only possible if the PHP cURL extension is installed.
 
 If your server is behind a proxy server, you can configure this as well:
 
@@ -448,8 +448,7 @@ Building a Phar from Source
     $ composer install
     ```
 
--   Build the phar using `pharbuilder.php`.
-    Note: you may need to set `phar.readonly = Off` in your `php.ini`.
+-   Build the phar using `pharbuilder.php`. You may need to set `phar.readonly = Off` in your `php.ini`.
 
     ```shell
     php pharbuilder.php
