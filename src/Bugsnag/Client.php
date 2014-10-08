@@ -433,7 +433,7 @@ class Bugsnag_Client
             // Add this error to the notification
             $this->notification->addError($error, $metaData);
         } else {
-            // Create and deliver notification immediatelt
+            // Create and deliver notification immediately
             $notif = new Bugsnag_Notification($this->config);
             $notif->addError($error, $metaData);
             $notif->deliver();
