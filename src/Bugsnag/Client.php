@@ -200,6 +200,18 @@ class Bugsnag_Client
     }
 
     /**
+     * Set a groupingHash to group the errors at Bugsnag.com
+     *
+     * @param String $groupingHash the current context
+     */
+    public function setGroupingHash($groupingHash)
+    {
+        $this->config->groupingHash = $groupingHash;
+
+        return $this;
+    }
+
+    /**
      * Set the type of application executing the code. This is usually used to
      * represent if you are running plain PHP code "php", via a framework,
      * eg "laravel", or executing through delayed worker code, eg "resque".

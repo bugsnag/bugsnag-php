@@ -60,6 +60,15 @@ class Bugsnag_Request
         }
     }
 
+    public static function getGroupingHash()
+    {
+        if (self::isRequest() && isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER["REQUEST_URI"])) {
+            return $_SERVER['REQUEST_METHOD'] . ' ' . strtok($_SERVER["REQUEST_URI"], '?');
+        } else {
+            return null;
+        }
+    }
+
     public static function getUserId()
     {
         if (self::isRequest()) {

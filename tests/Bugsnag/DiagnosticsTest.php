@@ -38,6 +38,12 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->diagnostics->getContext(), 'herp#derp');
     }
 
+    public function testDefaultGroupingHash()
+    {
+        $this->config->groupingHash = 'herp#derp';
+        $this->assertEquals($this->diagnostics->getGroupingHash(), 'herp#derp');
+    }
+    
     public function testDefaultUser()
     {
         $this->config->user = array('id' => 123, 'email' => "test@email.com", 'name' => "Bob Hoskins");
