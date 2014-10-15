@@ -170,6 +170,7 @@ class Bugsnag_Error
             'device' => $this->diagnostics->getDeviceData(),
             'user' => $this->diagnostics->getUser(),
             'context' => $this->diagnostics->getContext(),
+            'groupingHash' => $this->diagnostics->getGroupingHash(),
             'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),

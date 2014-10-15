@@ -24,6 +24,7 @@ class Bugsnag_Configuration
     public $stripPathRegex;
 
     public $context;
+    public $groupingHash;
     public $type;
     public $user;
     public $releaseStage = 'production';

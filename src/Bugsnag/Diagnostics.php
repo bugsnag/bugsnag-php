@@ -40,6 +40,11 @@ class Bugsnag_Diagnostics
         return $this->config->get('context', Bugsnag_Request::getContext());
     }
 
+    public function getGroupingHash()
+    {
+        return $this->config->get('groupingHash', Bugsnag_Request::getGroupingHash());
+    }
+    
     public function getUser()
     {
         $defaultUser = array();

@@ -25,6 +25,11 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(Bugsnag_Request::getContext(), "GET /blah/blah.php");
     }
 
+    public function testGetGroupingHash()
+    {
+        $this->assertEquals(Bugsnag_Request::getGroupingHash(), "GET /blah/blah.php");
+    }
+    
     public function testGetCurrentUrl()
     {
         $this->assertEquals(Bugsnag_Request::getCurrentUrl(), "http://example.com/blah/blah.php?some=param");
