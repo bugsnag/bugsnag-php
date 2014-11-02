@@ -438,6 +438,9 @@ Checkout the 3rd party log handler for monolog: [meadsteve/MonoSnag/](https://gi
 
 Check out the third-party [evolution7/silverstripe-bugsnag-logger](https://github.com/evolution7/silverstripe-bugsnag-logger) plugin.
 
+### Zend Framework 2
+
+Check out the third-party [nickurt/bugsnag-php](https://github.com/nickurt/zf-bugsnag) plugin.
 
 Building a Phar from Source
 ---------------------------
