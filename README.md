@@ -399,33 +399,7 @@ Check out the [WordPress Error Monitoring by Bugsnag](http://wordpress.org/plugi
 
 ### CakePHP
 
-If you are using CakePHP, installation is easy:
-
-1.  Follow the [Bugsnag installation instructions](#how-to-install) above
-
-2.  Edit `App/Config/core.php`:
-
-    ```php
-    // Require Bugsnag
-    require_once("path/to/bugsnag.php");
-
-    // Initialize Bugsnag
-    $bugsnag->register("YOUR-API-KEY-HERE");
-
-    // Change the default error handler to be Bugsnag
-    Configure::write('Error', array(
-        'handler' => array($bugsnag, 'errorHandler'),
-        'level' => E_ALL & ~E_DEPRECATED,
-        'trace' => true
-    ));
-
-    // Change the default exception handler to be Bugsnag
-    Configure::write('Exception', array(
-        'handler' => array($bugsnag, 'exceptionHandler'),
-        'renderer' => 'ExceptionRenderer',
-        'log' => true
-    ));
-    ```
+Check out the third-party [Label305/bugsnag-cakephp](https://github.com/Label305/bugsnag-cakephp) plugin.
 
 ### Symfony2
 
