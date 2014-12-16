@@ -225,7 +225,7 @@ class Bugsnag_Error
             return $cleanArray;
         } elseif (is_string($obj)) {
             // UTF8-encode if not already encoded
-            if (!mb_detect_encoding($obj, 'UTF-8', true)) {
+            if (function_exists('mb_detect_encoding') && !mb_detect_encoding($obj, 'UTF-8', true)) {
                 return utf8_encode($obj);
             } else {
                 return $obj;
