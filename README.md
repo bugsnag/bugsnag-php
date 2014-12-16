@@ -163,8 +163,8 @@ $bugsnag->setReleaseStage('development');
 
 By default this is set to be "production".
 
-*Note: If you would like errors from stages other than production to be sent
-to Bugsnag, you'll also have to call `setNotifyReleaseStages`.*
+> Note: If you would like errors from stages other than production to be sent
+to Bugsnag, you'll also have to call `setNotifyReleaseStages`.
 
 ###setNotifyReleaseStages
 
@@ -230,19 +230,20 @@ $bugsnag->setFilters(array('password', 'credit_card'));
 
 By default, this is set to be `array("password")`.
 
-###setUseSSL
+###setEndpoint
 
-Enforces all communication with bugsnag.com be made via ssl.
+Set the endpoint to send error reports to. By default we'll send reports to
+the standard `https://notify.bugsnag.com` endpoint, but you can override this
+if you are using [Bugsnag Enterprise](https://bugsnag.com/enterprise), to
+point to your own Bugsnag endpoint:
 
 ```php
-$bugsnag->setUseSSL(TRUE);
+$bugsnag->setEndpoint("http://bugsnag.internal.example.com");
 ```
-
-By default, this is set to be `TRUE`.
 
 ###setTimeout
 
-*Note: Timeout configuration is only possible if the PHP cURL extension is installed.*
+> Note: Timeout configuration is only possible if the PHP cURL extension is installed.
 
 Define a custom timeout, in seconds, for cURL connection when notifying bugsnag.com.
 
@@ -351,7 +352,7 @@ $bugsnag->setProjectRootRegex('('.preg_quote('/app').'|'.preg_quote('/libs').')'
 
 ###setProxySettings
 
-*Note: Proxy configuration is only possible if the PHP cURL extension is installed.*
+> Note: Proxy configuration is only possible if the PHP cURL extension is installed.
 
 If your server is behind a proxy server, you can configure this as well:
 
@@ -375,6 +376,16 @@ on your dashboard if you call `setAppVersion`:
 $bugsnag->setAppVersion('1.2.3');
 ```
 
+###setSendEnvironment
+
+Bugsnag can transmit your `$_ENV` environment to help diagnose issues. This can
+contain private/sensitive information, so we do not transmit this by default. To
+send your environment, you can call `setSendEnvironment`:
+
+```php
+$bugsnag->setSendEnvironment(true);
+```
+
 
 PHP Frameworks
 --------------
@@ -389,33 +400,7 @@ Check out the [WordPress Error Monitoring by Bugsnag](http://wordpress.org/plugi
 
 ### CakePHP
 
-If you are using CakePHP, installation is easy:
-
-1.  Follow the [Bugsnag installation instructions](#how-to-install) above
-
-2.  Edit `App/Config/core.php`:
-
-    ```php
-    // Require Bugsnag
-    require_once("path/to/bugsnag.php");
-
-    // Initialize Bugsnag
-    $bugsnag->register("YOUR-API-KEY-HERE");
-
-    // Change the default error handler to be Bugsnag
-    Configure::write('Error', array(
-        'handler' => array($bugsnag, 'errorHandler'),
-        'level' => E_ALL & ~E_DEPRECATED,
-        'trace' => true
-    ));
-
-    // Change the default exception handler to be Bugsnag
-    Configure::write('Exception', array(
-        'handler' => array($bugsnag, 'exceptionHandler'),
-        'renderer' => 'ExceptionRenderer',
-        'log' => true
-    ));
-    ```
+Check out the third-party [Label305/bugsnag-cakephp](https://github.com/Label305/bugsnag-cakephp) plugin.
 
 ### Magento
 
@@ -432,6 +417,11 @@ Check out the 3rd party log handler for monolog: [meadsteve/MonoSnag/](https://g
 
 Check out the third-party [evolution7/silverstripe-bugsnag-logger](https://github.com/evolution7/silverstripe-bugsnag-logger) plugin.
 
+### Zend Framework 2
+
+Check out the third-party [nickurt/bugsnag-php](https://github.com/nickurt/zf-bugsnag) plugin.
+
+
 Building a Phar from Source
 ---------------------------
 
@@ -441,8 +431,7 @@ Building a Phar from Source
     $ composer install
     ```
 
--   Build the phar using `pharbuilder.php`.
-    Note: you may need to set `phar.readonly = Off` in your `php.ini`.
+-   Build the phar using `pharbuilder.php`. You may need to set `phar.readonly = Off` in your `php.ini`.
 
     ```shell
     php pharbuilder.php

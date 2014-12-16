@@ -46,7 +46,7 @@ class NotificationTest extends Bugsnag_TestCase
         $this->notification->expects($this->never())
                            ->method("postJSON");
 
-        $this->notification->addError($this->getError("SkipMe","Message"));
+        $this->notification->addError($this->getError("SkipMe", "Message"));
         $this->notification->deliver();
     }
 
@@ -96,6 +96,27 @@ class NotificationTest extends Bugsnag_TestCase
 
         $notification->addError($this->getError());
         $notification->deliver();
+    }
+
+    public function testNoEnvironmentByDefault()
+    {
+        $_ENV["SOMETHING"] = "blah";
+
+        $notification = new Bugsnag_Notification($this->config);
+        $notification->addError($this->getError());
+        $notificationArray = $notification->toArray();
+        $this->assertArrayNotHasKey("Environment", $notificationArray["events"][0]["metaData"]);
+    }
+
+    public function testEnvironmentPresentWhenRequested()
+    {
+        $_ENV["SOMETHING"] = "blah";
+
+        $this->config->sendEnvironment = true;
+        $notification = new Bugsnag_Notification($this->config);
+        $notification->addError($this->getError());
+        $notificationArray = $notification->toArray();
+        $this->assertEquals($notificationArray["events"][0]["metaData"]["Environment"]["SOMETHING"], "blah");
     }
 }
 
