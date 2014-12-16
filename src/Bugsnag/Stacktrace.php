@@ -72,6 +72,13 @@ class Bugsnag_Stacktrace
 
     public function addFrame($file, $line, $method, $class = null)
     {
+        // Account for special "filenames" in eval'd code
+        $matches = array();
+        if (preg_match("/^(.*?)\((\d+)\) : (?:eval\(\)'d code|runtime-created function)$/", $file, $matches)) {
+            $file = $matches[1];
+            $line = $matches[2];
+        }
+
         // Construct the frame
         $frame = array(
             'lineNumber' => $line,
