@@ -57,7 +57,6 @@ class Bugsnag_Stacktrace
         return isset($frame['class']) && strpos($frame['class'], 'Bugsnag_') === 0;
     }
 
-
     public function __construct($config)
     {
         $this->config = $config;
@@ -68,7 +67,7 @@ class Bugsnag_Stacktrace
         return $this->frames;
     }
 
-    public function addFrame($file, $line, $method, $class=null)
+    public function addFrame($file, $line, $method, $class = null)
     {
         // Check if this frame is inProject
         $inProject = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);
@@ -83,7 +82,7 @@ class Bugsnag_Stacktrace
             'file' => $file,
             'lineNumber' => $line,
             'method' => $method,
-            'inProject' => $inProject
+            'inProject' => $inProject,
         );
 
         if (!empty($class)) {

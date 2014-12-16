@@ -19,7 +19,7 @@ class Bugsnag_Configuration
     public $notifier = array(
         'name'    => 'Bugsnag PHP (Official)',
         'version' => '2.4.0',
-        'url'     => 'https://bugsnag.com'
+        'url'     => 'https://bugsnag.com',
     );
     public $sendEnvironment = false;
     public $stripPath;
@@ -72,7 +72,7 @@ class Bugsnag_Configuration
         $this->stripPathRegex = '/'.preg_quote($stripPath, '/')."[\\/]?/i";
     }
 
-    public function get($prop, $default=null)
+    public function get($prop, $default = null)
     {
         $configured = $this->$prop;
 

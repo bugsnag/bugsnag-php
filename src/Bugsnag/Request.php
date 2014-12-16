@@ -54,9 +54,9 @@ class Bugsnag_Request
     public static function getContext()
     {
         if (self::isRequest() && isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER["REQUEST_URI"])) {
-            return $_SERVER['REQUEST_METHOD'] . ' ' . strtok($_SERVER["REQUEST_URI"], '?');
+            return $_SERVER['REQUEST_METHOD'].' '.strtok($_SERVER["REQUEST_URI"], '?');
         } else {
-            return null;
+            return;
         }
     }
 
@@ -65,7 +65,7 @@ class Bugsnag_Request
         if (self::isRequest()) {
             return self::getRequestIp();
         } else {
-            return null;
+            return;
         }
     }
 

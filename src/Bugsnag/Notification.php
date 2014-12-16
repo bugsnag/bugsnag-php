@@ -12,7 +12,7 @@ class Bugsnag_Notification
         $this->config = $config;
     }
 
-    public function addError($error, $passedMetaData=array())
+    public function addError($error, $passedMetaData = array())
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {
@@ -64,7 +64,7 @@ class Bugsnag_Notification
         return array(
             'apiKey' => $this->config->apiKey,
             'notifier' => $this->config->notifier,
-            'events' => $events
+            'events' => $events,
         );
     }
 
@@ -117,8 +117,8 @@ class Bugsnag_Notification
                 curl_setopt($http, CURLOPT_PROXYPORT, $this->config->proxySettings['port']);
             }
             if (isset($this->config->proxySettings['user'])) {
-                $userPassword = $this->config->proxySettings['user'] . ':';
-                $userPassword .= isset($this->config->proxySettings['password'])? $this->config->proxySettings['password'] : '';
+                $userPassword = $this->config->proxySettings['user'].':';
+                $userPassword .= isset($this->config->proxySettings['password']) ? $this->config->proxySettings['password'] : '';
                 curl_setopt($http, CURLOPT_PROXYUSERPWD, $userPassword);
             }
         }
@@ -132,7 +132,7 @@ class Bugsnag_Notification
         }
 
         if (curl_errno($http)) {
-            error_log('Bugsnag Warning: Couldn\'t notify (' . curl_error($http).')');
+            error_log('Bugsnag Warning: Couldn\'t notify ('.curl_error($http).')');
         }
 
         curl_close($http);
@@ -155,11 +155,11 @@ class Bugsnag_Notification
             'http' => array(
                 'method' => 'POST',
                 'header' => Bugsnag_Notification::$CONTENT_TYPE_HEADER.'\r\n',
-                'content' => $body
+                'content' => $body,
             ),
             'ssl' => array(
                 'verify_peer' => false,
-            )
+            ),
         ));
 
         // Execute the request and fetch the response

@@ -347,7 +347,7 @@ class Bugsnag_Client
      * @param Array     $metaData  optional metaData to send with this error
      * @param String    $severity  optional severity of this error (fatal/error/warning/info)
      */
-    public function notifyException(Exception $exception, array $metaData=null, $severity=null)
+    public function notifyException(Exception $exception, array $metaData = null, $severity = null)
     {
         $error = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
         $error->setSeverity($severity);
@@ -363,7 +363,7 @@ class Bugsnag_Client
      * @param Array  $metaData     optional metaData to send with this error
      * @param String $severity     optional severity of this error (fatal/error/warning/info)
      */
-    public function notifyError($name, $message, array $metaData=null, $severity=null)
+    public function notifyError($name, $message, array $metaData = null, $severity = null)
     {
         $error = Bugsnag_Error::fromNamedError($this->config, $this->diagnostics, $name, $message);
         $error->setSeverity($severity);
@@ -383,7 +383,7 @@ class Bugsnag_Client
     }
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
-    public function errorHandler($errno, $errstr, $errfile='', $errline=0)
+    public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
         $error = Bugsnag_Error::fromPHPError($this->config, $this->diagnostics, $errno, $errstr, $errfile, $errline);
 
