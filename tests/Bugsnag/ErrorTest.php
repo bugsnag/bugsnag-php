@@ -129,4 +129,18 @@ class ErrorTest extends Bugsnag_TestCase
             $this->assertEquals($errorArray['exceptions'][1]['message'], 'secondly');
         }
     }
+    
+    public function testErrorGroupingHash()
+    {
+        $this->error->setGroupingHash('herp#derp');
+
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['groupingHash'], 'herp#derp');
+    }
+    
+    public function testErrorGroupingHashNotSet()
+    {
+        $errorArray = $this->error->toArray();
+        $this->assertArrayNotHasKey('groupingHash', $errorArray);
+    }
 }

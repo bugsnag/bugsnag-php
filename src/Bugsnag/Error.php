@@ -18,6 +18,7 @@ class Bugsnag_Error
     public $diagnostics;
     public $code;
     public $previous;
+    public $groupingHash;
 
     // Static error creation methods, to ensure that Error object is always complete
     public static function fromPHPError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $code, $message, $file, $line, $fatal = false)
@@ -67,6 +68,13 @@ class Bugsnag_Error
         return $this;
     }
 
+    public function setGroupingHash($groupingHash)
+    {
+        $this->groupingHash = $groupingHash;
+
+        return $this;
+    }
+    
     public function setStacktrace($stacktrace)
     {
         $this->stacktrace = $stacktrace;
@@ -164,7 +172,7 @@ class Bugsnag_Error
 
     public function toArray()
     {
-        return array(
+        $errorArray = array(
             'app' => $this->diagnostics->getAppData(),
             'device' => $this->diagnostics->getDeviceData(),
             'user' => $this->diagnostics->getUser(),
@@ -174,6 +182,12 @@ class Bugsnag_Error
             'exceptions' => $this->exceptionArray(),
             'metaData' => $this->cleanupObj($this->metaData),
         );
+        
+        if (isset($this->groupingHash)) {
+        	$errorArray['groupingHash'] = $this->groupingHash;
+        }
+        
+        return $errorArray;
     }
 
     public function exceptionArray()
