@@ -230,15 +230,16 @@ $bugsnag->setFilters(array('password', 'credit_card'));
 
 By default, this is set to be `array("password")`.
 
-###setUseSSL
+###setEndpoint
 
-Enforces all communication with bugsnag.com be made via ssl.
+Set the endpoint to send error reports to. By default we'll send reports to
+the standard `https://notify.bugsnag.com` endpoint, but you can override this
+if you are using [Bugsnag Enterprise](https://bugsnag.com/enterprise), to
+point to your own Bugsnag endpoint:
 
 ```php
-$bugsnag->setUseSSL(TRUE);
+$bugsnag->setEndpoint("http://bugsnag.internal.example.com");
 ```
-
-By default, this is set to be `TRUE`.
 
 ###setTimeout
 

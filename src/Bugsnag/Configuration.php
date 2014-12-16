@@ -3,12 +3,14 @@
 class Bugsnag_Configuration
 {
     public static $DEFAULT_TIMEOUT = 10;
+    public static $DEFAULT_ENDPOINT = 'https://notify.bugsnag.com';
+    public static $DEFAULT_NON_SSL_ENDPOINT = 'http://notify.bugsnag.com';
 
     public $apiKey;
     public $autoNotify = true;
     public $batchSending = true;
     public $useSSL = true;
-    public $endpoint = 'notify.bugsnag.com';
+    public $endpoint;
     public $notifyReleaseStages;
     public $filters = array('password');
     public $projectRoot;
@@ -41,7 +43,13 @@ class Bugsnag_Configuration
 
     public function getNotifyEndpoint()
     {
-        return $this->getProtocol()."://".$this->endpoint;
+        if (is_null($this->endpoint)) {
+            return $this->useSSL ? Bugsnag_Configuration::$DEFAULT_ENDPOINT : Bugsnag_Configuration::$DEFAULT_NON_SSL_ENDPOINT;
+        } else if (preg_match('/^(http:\/\/|https:\/\/)/', $this->endpoint)) {
+            return $this->endpoint;
+        } else {
+            return ($this->useSSL ? "https" : "http")."://".$this->endpoint;
+        }
     }
 
     public function shouldNotify()
@@ -73,10 +81,5 @@ class Bugsnag_Configuration
         } else {
             return $configured ? $configured : $default;
         }
-    }
-
-    private function getProtocol()
-    {
-        return $this->useSSL ? "https" : "http";
     }
 }
