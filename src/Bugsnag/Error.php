@@ -5,7 +5,7 @@ class Bugsnag_Error
     private static $VALID_SEVERITIES = array(
         'error',
         'warning',
-        'info'
+        'info',
     );
 
     public $name;
@@ -20,7 +20,7 @@ class Bugsnag_Error
     public $previous;
 
     // Static error creation methods, to ensure that Error object is always complete
-    public static function fromPHPError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $code, $message, $file, $line, $fatal=false)
+    public static function fromPHPError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $code, $message, $file, $line, $fatal = false)
     {
         $error = new Bugsnag_Error($config, $diagnostics);
         $error->setPHPError($code, $message, $file, $line, $fatal);
@@ -36,7 +36,7 @@ class Bugsnag_Error
         return $error;
     }
 
-    public static function fromNamedError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $name, $message=NULL)
+    public static function fromNamedError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $name, $message = null)
     {
         $error = new Bugsnag_Error($config, $diagnostics);
         $error->setName($name)
@@ -59,7 +59,6 @@ class Bugsnag_Error
 
         return $this;
     }
-
 
     public function setMessage($message)
     {
@@ -88,7 +87,7 @@ class Bugsnag_Error
             if (in_array($severity, Bugsnag_Error::$VALID_SEVERITIES)) {
                 $this->severity = $severity;
             } else {
-                error_log('Bugsnag Warning: Tried to set error severity to '. $severity .' which is not allowed.');
+                error_log('Bugsnag Warning: Tried to set error severity to '.$severity.' which is not allowed.');
             }
         }
 
@@ -108,7 +107,7 @@ class Bugsnag_Error
         return $this;
     }
 
-    public function setPHPError($code, $message, $file, $line, $fatal=false)
+    public function setPHPError($code, $message, $file, $line, $fatal = false)
     {
         if ($fatal) {
             // Generating stacktrace for PHP fatal errors is not possible,
@@ -173,7 +172,7 @@ class Bugsnag_Error
             'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),
-            'metaData' => $this->cleanupObj($this->metaData)
+            'metaData' => $this->cleanupObj($this->metaData),
         );
     }
 
@@ -188,7 +187,7 @@ class Bugsnag_Error
         $exceptionArray[] = array(
             'errorClass' => $this->name,
             'message' => $this->message,
-            'stacktrace' => $this->stacktrace->toArray()
+            'stacktrace' => $this->stacktrace->toArray(),
         );
 
         return $exceptionArray;
@@ -197,7 +196,7 @@ class Bugsnag_Error
     private function cleanupObj($obj)
     {
         if (is_null($obj)) {
-            return NULL;
+            return;
         }
 
         if (is_array($obj)) {
@@ -224,14 +223,14 @@ class Bugsnag_Error
             }
 
             return $cleanArray;
-        } else if (is_string($obj)) {
+        } elseif (is_string($obj)) {
             // UTF8-encode if not already encoded
             if (!mb_detect_encoding($obj, 'UTF-8', true)) {
                 return utf8_encode($obj);
             } else {
                 return $obj;
             }
-        } else if (is_object($obj)) {
+        } elseif (is_object($obj)) {
             // json_encode -> json_decode trick turns an object into an array
             return $this->cleanupObj(json_decode(json_encode($obj), true));
         } else {

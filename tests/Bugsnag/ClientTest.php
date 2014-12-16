@@ -68,7 +68,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->never())
                      ->method('notify');
 
-        $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE )
+        $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE)
                      ->errorHandler(E_NOTICE, "Something broke", "somefile.php", 123);
     }
 }

@@ -2,7 +2,7 @@
 
 require_once 'Bugsnag_TestCase.php';
 
-class errorTest extends Bugsnag_TestCase
+class ErrorTest extends Bugsnag_TestCase
 {
     protected $config;
     protected $diagnostics;

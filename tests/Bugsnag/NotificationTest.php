@@ -46,7 +46,7 @@ class NotificationTest extends Bugsnag_TestCase
         $this->notification->expects($this->never())
                            ->method("postJSON");
 
-        $this->notification->addError($this->getError("SkipMe","Message"));
+        $this->notification->addError($this->getError("SkipMe", "Message"));
         $this->notification->deliver();
     }
 
