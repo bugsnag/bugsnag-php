@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.5.0
+-----
+-   Collect and send snippets of source code to Bugsnag for easier debugging
+-   Update `setEndpoint` to accept full URLs
+-   Add support for `Error#setGroupingHash` to customize error grouping in
+    `setBeforeNotify` functions
+
 2.4.0
 -----
 -   Don't send $_ENV by default
