@@ -106,28 +106,32 @@ class Bugsnag_Stacktrace
             return NULL;
         }
 
-        // Get the number of lines in the file
-        $file = new SplFileObject($path);
-        $file->seek(PHP_INT_MAX);
-        $totalLines = $file->key() + 1;
+        try {
+            // Get the number of lines in the file
+            $file = new SplFileObject($path);
+            $file->seek(PHP_INT_MAX);
+            $totalLines = $file->key() + 1;
 
-        // Work out which lines we should fetch
-        $start = max($line - floor($numLines / 2), 1);
-        $end = $start + ($numLines - 1);
-        if ($end > $totalLines) {
-            $end = $totalLines;
-            $start = max($end - ($numLines - 1), 1);
+            // Work out which lines we should fetch
+            $start = max($line - floor($numLines / 2), 1);
+            $end = $start + ($numLines - 1);
+            if ($end > $totalLines) {
+                $end = $totalLines;
+                $start = max($end - ($numLines - 1), 1);
+            }
+
+            // Get the code for this range
+            $code = array();
+
+            $file->seek($start - 1);
+            while ($file->key() < $end) {
+                $code[$file->key() + 1] = rtrim(substr($file->current(), 0, Bugsnag_Stacktrace::$MAX_LINE_LENGTH));
+                $file->next();
+            }
+
+            return $code;
+        } catch (RuntimeException $ex) {
+            return null;
         }
-
-        // Get the code for this range
-        $code = array();
-
-        $file->seek($start - 1);
-        while ($file->key() < $end) {
-            $code[$file->key() + 1] = rtrim(substr($file->current(), 0, Bugsnag_Stacktrace::$MAX_LINE_LENGTH));
-            $file->next();
-        }
-
-        return $code;
     }
 }
