@@ -402,12 +402,16 @@ Check out the [WordPress Error Monitoring by Bugsnag](http://wordpress.org/plugi
 
 Check out the third-party [Label305/bugsnag-cakephp](https://github.com/Label305/bugsnag-cakephp) plugin.
 
+### Magento
+
+Check out the official [Bugsnag Magento Extension](http://www.magentocommerce.com/magento-connect/bugsnag-notifier.html).
+
 ### Symfony2
 
 Check out the third-party [evolution7/Evolution7BugsnagBundle](https://github.com/evolution7/Evolution7BugsnagBundle) or [wrep/bugsnag-php-symfony](https://github.com/wrep/bugsnag-php-symfony) bundles.
 
 ### Monolog
-Checkout the 3rd party log handler for monolog: [meadsteve/MonoSnag/](https://github.com/meadsteve/MonoSnag/)
+Check out the 3rd party log handler for monolog: [meadsteve/MonoSnag/](https://github.com/meadsteve/MonoSnag/)
 
 ### Silverstripe
 
@@ -416,6 +420,7 @@ Check out the third-party [evolution7/silverstripe-bugsnag-logger](https://githu
 ### Zend Framework 2
 
 Check out the third-party [nickurt/bugsnag-php](https://github.com/nickurt/zf-bugsnag) plugin.
+
 
 Building a Phar from Source
 ---------------------------
