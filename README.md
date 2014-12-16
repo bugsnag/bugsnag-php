@@ -419,7 +419,7 @@ If you are using CakePHP, installation is easy:
 
 ### Magento
 
-Check out the [Magento Notifier module](https://github.com/bugsnag/bugsnag-magento) by Bugsnag.
+Check out the official [Bugsnag Magento Extension](http://www.magentocommerce.com/magento-connect/bugsnag-notifier.html).
 
 ### Symfony2
 
