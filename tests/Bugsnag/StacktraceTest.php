@@ -5,10 +5,12 @@ require_once 'Bugsnag_TestCase.php';
 class StacktraceTest extends Bugsnag_TestCase
 {
     protected $config;
+    protected $diagnostics;
 
     protected function setUp()
     {
         $this->config = new Bugsnag_Configuration();
+        $this->diagnostics = new Bugsnag_Diagnostics($this->config);
     }
 
     protected function assertFrameEquals($frame, $method, $file, $line)
@@ -16,6 +18,11 @@ class StacktraceTest extends Bugsnag_TestCase
         $this->assertEquals($frame["method"], $method);
         $this->assertEquals($frame["file"], $file);
         $this->assertEquals($frame["lineNumber"], $line);
+    }
+
+    protected function assertCodeEquals($expected, $actual)
+    {
+        $this->assertEquals(rtrim(substr($expected, 0, 200)), $actual);
     }
 
     public function testFromFrame()
@@ -28,8 +35,8 @@ class StacktraceTest extends Bugsnag_TestCase
 
     public function testFrameInsideBugsnag()
     {
-        $frame = $this->getFixture('frames/non_bugsnag.json');
-        $bugsnagFrame = $this->getFixture('frames/bugsnag.json');
+        $frame = $this->getJsonFixture('frames/non_bugsnag.json');
+        $bugsnagFrame = $this->getJsonFixture('frames/bugsnag.json');
 
         $this->assertFalse(Bugsnag_Stacktrace::frameInsideBugsnag($frame));
         $this->assertTrue(Bugsnag_Stacktrace::frameInsideBugsnag($bugsnagFrame));
@@ -37,7 +44,7 @@ class StacktraceTest extends Bugsnag_TestCase
 
     public function testTriggeredErrorStacktrace()
     {
-        $fixture = $this->getFixture('backtraces/trigger_error.json');
+        $fixture = $this->getJsonFixture('backtraces/trigger_error.json');
         $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
 
         $this->assertCount(4, $stacktrace);
@@ -50,7 +57,7 @@ class StacktraceTest extends Bugsnag_TestCase
 
     public function testErrorHandlerStacktrace()
     {
-        $fixture = $this->getFixture('backtraces/error_handler.json');
+        $fixture = $this->getJsonFixture('backtraces/error_handler.json');
         $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
 
         $this->assertCount(3, $stacktrace);
@@ -62,7 +69,7 @@ class StacktraceTest extends Bugsnag_TestCase
 
     public function testExceptionHandlerStacktrace()
     {
-        $fixture = $this->getFixture('backtraces/exception_handler.json');
+        $fixture = $this->getJsonFixture('backtraces/exception_handler.json');
         $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
 
         $this->assertCount(3, $stacktrace);
@@ -74,7 +81,7 @@ class StacktraceTest extends Bugsnag_TestCase
 
     public function testAnonymousFunctionStackframes()
     {
-        $fixture = $this->getFixture('backtraces/anonymous_frame.json');
+        $fixture = $this->getJsonFixture('backtraces/anonymous_frame.json');
         $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], "somefile.php", 123)->toArray();
 
         $this->assertCount(5, $stacktrace);
@@ -88,7 +95,7 @@ class StacktraceTest extends Bugsnag_TestCase
 
     public function testStrippingPaths()
     {
-        $fixture = $this->getFixture('backtraces/exception_handler.json');
+        $fixture = $this->getJsonFixture('backtraces/exception_handler.json');
         $this->config->setStripPath("/Users/james/src/bugsnag/bugsnag-php/");
         $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
 
@@ -97,5 +104,73 @@ class StacktraceTest extends Bugsnag_TestCase
         $this->assertFrameEquals($stacktrace[0], "crashy_function", "testing.php", 25);
         $this->assertFrameEquals($stacktrace[1], "parent_of_crashy_function", "testing.php", 13);
         $this->assertFrameEquals($stacktrace[2], "[main]", "testing.php", 28);
+    }
+
+    public function testCode()
+    {
+        $fileContents = explode("\n", $this->getFixture('code/File.php'));
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $this->getFixturePath('code/File.php'), 12)->toArray();
+        $this->assertCount(1, $stacktrace);
+
+        $topFrame = $stacktrace[0];
+        $this->assertCount(7, $topFrame["code"]);
+
+        for ($i=9; $i<=15; $i++) {
+            $this->assertCodeEquals($fileContents[$i - 1], $topFrame["code"][$i]);
+        }
+    }
+
+    public function testCodeShortFile()
+    {
+        $fileContents = explode("\n", $this->getFixture('code/ShortFile.php'));
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $this->getFixturePath('code/ShortFile.php'), 1)->toArray();
+        $this->assertCount(1, $stacktrace);
+
+        $topFrame = $stacktrace[0];
+        $this->assertCount(3, $topFrame["code"]);
+
+        for ($i=1; $i<=2; $i++) {
+            $this->assertCodeEquals($fileContents[$i - 1], $topFrame["code"][$i]);
+        }
+    }
+
+    public function testCodeEndOfFile()
+    {
+        $fileContents = explode("\n", $this->getFixture('code/File.php'));
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $this->getFixturePath('code/File.php'), 22)->toArray();
+        $this->assertCount(1, $stacktrace);
+
+        $topFrame = $stacktrace[0];
+        $this->assertCount(7, $topFrame["code"]);
+
+        for ($i=16; $i<=22; $i++) {
+            $this->assertCodeEquals($fileContents[$i - 1], $topFrame["code"][$i]);
+        }
+    }
+
+    public function testCodeStartOfFile()
+    {
+        $fileContents = explode("\n", $this->getFixture('code/File.php'));
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $this->getFixturePath('code/File.php'), 1)->toArray();
+        $this->assertCount(1, $stacktrace);
+
+        $topFrame = $stacktrace[0];
+        $this->assertCount(7, $topFrame["code"]);
+
+        for ($i=1; $i<=7; $i++) {
+            $this->assertCodeEquals($fileContents[$i - 1], $topFrame["code"][$i]);
+        }
+    }
+
+    public function testCodeDisabled()
+    {
+        $config = new Bugsnag_Configuration();
+        $config->sendCode = false;
+
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($config, $this->getFixturePath('code/File.php'), 1)->toArray();
+        $this->assertCount(1, $stacktrace);
+
+        $topFrame = $stacktrace[0];
+        $this->assertArrayNotHasKey('code', $topFrame);
     }
 }

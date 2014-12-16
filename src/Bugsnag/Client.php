@@ -341,6 +341,19 @@ class Bugsnag_Client
     }
 
     /**
+     * Should we send a small snippet of the code that crashed to help you
+     * diagnose even faster from within your dashboard.
+     *
+     * @param Boolean $setSendCode whether to send code to Bugsnag
+     */
+    public function setSendCode($sendCode)
+    {
+        $this->config->sendCode = $sendCode;
+
+        return $this;
+    }
+
+    /**
      * Notify Bugsnag of a non-fatal/handled exception
      *
      * @param Exception $exception the exception to notify Bugsnag about
