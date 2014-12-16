@@ -22,6 +22,7 @@ class Bugsnag_Configuration
         'url'     => 'https://bugsnag.com',
     );
     public $sendEnvironment = false;
+    public $sendCode = true;
     public $stripPath;
     public $stripPathRegex;
 

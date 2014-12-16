@@ -386,6 +386,16 @@ send your environment, you can call `setSendEnvironment`:
 $bugsnag->setSendEnvironment(true);
 ```
 
+###setSendCode
+
+Bugsnag automatically sends a small snippet of the code that crashed to help
+you diagnose even faster from within your dashboard. If you don't want to send
+this snippet, you can call `setSendCode`:
+
+```php
+$bugsnag->setSendCode(false);
+```
+
 
 PHP Frameworks
 --------------

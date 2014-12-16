@@ -2,6 +2,9 @@
 
 class Bugsnag_Stacktrace
 {
+    private static $DEFAULT_NUM_LINES = 7;
+    private static $MAX_LINE_LENGTH = 200;
+
     public $frames = array();
     private $config;
 
@@ -69,26 +72,62 @@ class Bugsnag_Stacktrace
 
     public function addFrame($file, $line, $method, $class = null)
     {
-        // Check if this frame is inProject
-        $inProject = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);
-
-        // Strip out projectRoot from start of file path
-        if (!is_null($this->config->stripPathRegex)) {
-            $file = preg_replace($this->config->stripPathRegex, '', $file);
-        }
-
         // Construct the frame
         $frame = array(
-            'file' => $file,
             'lineNumber' => $line,
             'method' => $method,
-            'inProject' => $inProject,
         );
+
+        // Attach some lines of code for context
+        if($this->config->sendCode) {
+            $frame['code'] = $this->getCode($file, $line, Bugsnag_Stacktrace::$DEFAULT_NUM_LINES);
+        }
+
+        // Check if this frame is inProject
+        $frame['inProject'] = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);
+
+        // Strip out projectRoot from start of file path
+        if (is_null($this->config->stripPathRegex)) {
+            $frame['file'] = $file;
+        } else {
+            $frame['file'] = preg_replace($this->config->stripPathRegex, '', $file);
+        }
 
         if (!empty($class)) {
             $frame['class'] = $class;
         }
 
         $this->frames[] = $frame;
+    }
+
+    public function getCode($path, $line, $numLines)
+    {
+        if (empty($path) || empty($line) || !file_exists($path)) {
+            return NULL;
+        }
+
+        // Get the number of lines in the file
+        $file = new SplFileObject($path);
+        $file->seek(PHP_INT_MAX);
+        $totalLines = $file->key() + 1;
+
+        // Work out which lines we should fetch
+        $start = max($line - floor($numLines / 2), 1);
+        $end = $start + ($numLines - 1);
+        if ($end > $totalLines) {
+            $end = $totalLines;
+            $start = max($end - ($numLines - 1), 1);
+        }
+
+        // Get the code for this range
+        $code = array();
+
+        $file->seek($start - 1);
+        while ($file->key() < $end) {
+            $code[$file->key() + 1] = rtrim(substr($file->current(), 0, Bugsnag_Stacktrace::$MAX_LINE_LENGTH));
+            $file->next();
+        }
+
+        return $code;
     }
 }
