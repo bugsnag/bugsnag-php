@@ -45,7 +45,7 @@ class Bugsnag_Configuration
     {
         if (is_null($this->endpoint)) {
             return $this->useSSL ? Bugsnag_Configuration::$DEFAULT_ENDPOINT : Bugsnag_Configuration::$DEFAULT_NON_SSL_ENDPOINT;
-        } else if (preg_match('/^(http:\/\/|https:\/\/)/', $this->endpoint)) {
+        } elseif (preg_match('/^(http:\/\/|https:\/\/)/', $this->endpoint)) {
             return $this->endpoint;
         } else {
             return ($this->useSSL ? "https" : "http")."://".$this->endpoint;
@@ -62,7 +62,7 @@ class Bugsnag_Configuration
         $this->projectRoot = $projectRoot;
         $this->projectRootRegex = '/'.preg_quote($projectRoot, '/')."[\\/]?/i";
         if (is_null($this->stripPath)) {
-          $this->setStripPath($projectRoot);
+            $this->setStripPath($projectRoot);
         }
     }
 
@@ -72,7 +72,7 @@ class Bugsnag_Configuration
         $this->stripPathRegex = '/'.preg_quote($stripPath, '/')."[\\/]?/i";
     }
 
-    public function get($prop, $default=NULL)
+    public function get($prop, $default=null)
     {
         $configured = $this->$prop;
 

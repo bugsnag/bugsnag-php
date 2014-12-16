@@ -36,7 +36,7 @@ class Bugsnag_Error
         return $error;
     }
 
-    public static function fromNamedError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $name, $message=NULL)
+    public static function fromNamedError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $name, $message=null)
     {
         $error = new Bugsnag_Error($config, $diagnostics);
         $error->setName($name)
@@ -197,7 +197,7 @@ class Bugsnag_Error
     private function cleanupObj($obj)
     {
         if (is_null($obj)) {
-            return NULL;
+            return null;
         }
 
         if (is_array($obj)) {
@@ -224,14 +224,14 @@ class Bugsnag_Error
             }
 
             return $cleanArray;
-        } else if (is_string($obj)) {
+        } elseif (is_string($obj)) {
             // UTF8-encode if not already encoded
             if (!mb_detect_encoding($obj, 'UTF-8', true)) {
                 return utf8_encode($obj);
             } else {
                 return $obj;
             }
-        } else if (is_object($obj)) {
+        } elseif (is_object($obj)) {
             // json_encode -> json_decode trick turns an object into an array
             return $this->cleanupObj(json_decode(json_encode($obj), true));
         } else {

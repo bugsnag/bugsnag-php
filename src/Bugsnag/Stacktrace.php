@@ -11,7 +11,7 @@ class Bugsnag_Stacktrace
         if (version_compare(PHP_VERSION, '5.3.6') >= 0) {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT);
         } elseif (version_compare(PHP_VERSION, '5.2.5') >= 0) {
-            $backtrace = debug_backtrace(FALSE);
+            $backtrace = debug_backtrace(false);
         } else {
             $backtrace = debug_backtrace();
         }
@@ -34,7 +34,7 @@ class Bugsnag_Stacktrace
         // PHP backtrace's are misaligned, we need to shift the file/line down a frame
         foreach ($backtrace as $frame) {
             if (!self::frameInsideBugsnag($frame)) {
-                $stacktrace->addFrame($topFile, $topLine, $frame['function'], isset($frame['class']) ? $frame['class'] : NULL);
+                $stacktrace->addFrame($topFile, $topLine, $frame['function'], isset($frame['class']) ? $frame['class'] : null);
             }
 
             if (isset($frame['file']) && isset($frame['line'])) {
@@ -68,7 +68,7 @@ class Bugsnag_Stacktrace
         return $this->frames;
     }
 
-    public function addFrame($file, $line, $method, $class=NULL)
+    public function addFrame($file, $line, $method, $class=null)
     {
         // Check if this frame is inProject
         $inProject = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);

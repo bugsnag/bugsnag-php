@@ -16,7 +16,7 @@ class Bugsnag_Notification
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {
-            return FALSE;
+            return false;
         }
 
         // Add global meta-data to error
@@ -41,12 +41,12 @@ class Bugsnag_Notification
         }
 
         // Skip this error if the beforeNotify function returned FALSE
-        if (!isset($beforeNotifyReturn) || $beforeNotifyReturn !== FALSE) {
+        if (!isset($beforeNotifyReturn) || $beforeNotifyReturn !== false) {
             $this->errorQueue[] = $error;
 
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 
