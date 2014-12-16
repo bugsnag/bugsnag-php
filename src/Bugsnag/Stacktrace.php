@@ -100,7 +100,7 @@ class Bugsnag_Stacktrace
         $this->frames[] = $frame;
     }
 
-    public function getCode($path, $line, $numLines)
+    private function getCode($path, $line, $numLines)
     {
         if (empty($path) || empty($line) || !file_exists($path)) {
             return NULL;
