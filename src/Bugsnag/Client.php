@@ -82,6 +82,7 @@ class Bugsnag_Client
      * Set whether or not to use SSL when notifying bugsnag
      *
      * @param Boolean $useSSL whether to use SSL
+     * @deprecated you can now pass full URLs to setEndpoint
      */
     public function setUseSSL($useSSL)
     {
