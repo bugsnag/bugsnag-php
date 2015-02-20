@@ -53,6 +53,18 @@ class Bugsnag_Client
         return $this;
     }
 
+     /**
+     * Set the host name
+     *
+     * @param String $hostname the host name
+     */
+    public function setHostname($hostname)
+    {
+        $this->config->hostname = $hostname;
+
+        return $this;
+    }
+
     /**
      * Set which release stages should be allowed to notify Bugsnag
      * eg array("production", "development")
