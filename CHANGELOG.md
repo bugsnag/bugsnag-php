@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.5.2
+-----
+-   Add support for setHostname
+
 2.5.1
 -----
 -   Extract file and line numbers better for crashes in eval'd code
