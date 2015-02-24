@@ -31,11 +31,9 @@ class Bugsnag_Request
             $requestData['request']['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
         }
 
-        if (function_exists("getallheaders")) {
-            $headers = getallheaders();
-            if (!empty($headers)) {
-                $requestData['request']['headers'] = $headers;
-            }
+        $headers = self::getRequestHeaders();
+        if (!empty($headers)) {
+            $requestData['request']['headers'] = $headers;
         }
 
         // Session Tab
@@ -79,5 +77,22 @@ class Bugsnag_Request
     public static function getRequestIp()
     {
         return isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+    }
+
+    public static function getRequestHeaders()
+    {
+        if (function_exists('getallheaders')) {
+            return getallheaders();
+        }
+
+        $headers = array();
+
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+
+        return $headers;
     }
 }
