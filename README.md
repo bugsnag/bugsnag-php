@@ -396,6 +396,13 @@ this snippet, you can call `setSendCode`:
 $bugsnag->setSendCode(false);
 ```
 
+###setGroupingHash
+
+Sets the grouping hash of the error report. All errors with the same grouping hash are grouped together. This is an advanced usage of the library and mis-using it will cause your errors not to group properly in your dashboard.
+
+```php
+$error->setGroupingHash($exception->message . $exception->class);
+```
 
 PHP Frameworks
 --------------
