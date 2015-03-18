@@ -37,7 +37,12 @@ class Bugsnag_Stacktrace
         // PHP backtrace's are misaligned, we need to shift the file/line down a frame
         foreach ($backtrace as $frame) {
             if (!self::frameInsideBugsnag($frame)) {
-                $stacktrace->addFrame($topFile, $topLine, $frame['function'], isset($frame['class']) ? $frame['class'] : null);
+                $stacktrace->addFrame(
+                    $topFile,
+                    $topLine,
+                    isset($frame['function']) ? $frame['function'] : null,
+                    isset($frame['class']) ? $frame['class'] : null
+                );
             }
 
             if (isset($frame['file']) && isset($frame['line'])) {
