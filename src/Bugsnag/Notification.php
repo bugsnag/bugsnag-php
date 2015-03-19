@@ -108,6 +108,11 @@ class Bugsnag_Notification
         curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($http, CURLOPT_VERBOSE, false);
 
+        if (!empty($this->config->curlOptions)) {
+            foreach ($this->config->curlOptions as $option => $value)  {
+                curl_setopt($http, $option, $value);
+            }
+        }
         // Apply proxy settings (if present)
         if (count($this->config->proxySettings)) {
             if (isset($this->config->proxySettings['host'])) {

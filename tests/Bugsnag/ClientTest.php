@@ -71,4 +71,12 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE)
                      ->errorHandler(E_NOTICE, "Something broke", "somefile.php", 123);
     }
+
+    /**
+     * @expectedException PHPUnit_Framework_Error
+     */
+    public function testSetInvalidCurlOptions()
+    {
+        $return = $this->client->setCurlOptions("option");
+    }
 }
