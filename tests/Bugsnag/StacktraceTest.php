@@ -93,6 +93,22 @@ class StacktraceTest extends Bugsnag_TestCase
         $this->assertFrameEquals($stacktrace[4], "[main]", "Routing/Controller.php", 194);
     }
 
+    public function testXdebugErrorStackframes()
+    {
+        $fixture = $this->getJsonFixture('backtraces/xdebug_error.json');
+        $stacktrace = Bugsnag_Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
+
+        $this->assertCount(7, $stacktrace);
+
+        $this->assertFrameEquals($stacktrace[0], null, "somefile.php", 123);
+        $this->assertFrameEquals($stacktrace[1], "evaluatePath", "/View/Engines/PhpEngine.php", 39);
+        $this->assertFrameEquals($stacktrace[2], "get", "View/Engines/CompilerEngine.php", 57);
+        $this->assertFrameEquals($stacktrace[3], "getContents", "View/View.php", 136);
+        $this->assertFrameEquals($stacktrace[4], "renderContents", "View/View.php", 104);
+        $this->assertFrameEquals($stacktrace[5], "render", "View/View.php", 78);
+        $this->assertFrameEquals($stacktrace[6], "[main]", "storage/views/f2df2d6b49591efeb36fc46e6dc25e0e", 5);
+    }
+
     public function testEvaledStackframes()
     {
         $evalFrame = $this->getJsonFixture('frames/eval.json');
