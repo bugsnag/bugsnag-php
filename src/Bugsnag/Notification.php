@@ -107,6 +107,7 @@ class Bugsnag_Notification
         curl_setopt($http, CURLOPT_CONNECTTIMEOUT, $this->config->timeout);
         curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($http, CURLOPT_VERBOSE, false);
+        curl_setopt($http, CURL_IPRESOLVE_V4, true);
 
         // Apply proxy settings (if present)
         if (count($this->config->proxySettings)) {
