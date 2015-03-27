@@ -37,6 +37,8 @@ class Bugsnag_Configuration
     public $beforeNotifyFunction;
     public $errorReportingLevel;
 
+    public $curlOptions = array();
+
     public function __construct()
     {
         $this->timeout = Bugsnag_Configuration::$DEFAULT_TIMEOUT;

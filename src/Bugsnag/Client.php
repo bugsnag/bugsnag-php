@@ -264,6 +264,21 @@ class Bugsnag_Client
     }
 
     /**
+     * Set custom curl options
+     *
+     * @param Array $curlOptions an array with curl options. Eg:
+     *        array(
+     *            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
+     *            )
+     */
+    public function setCurlOptions(array $curlOptions)
+    {
+        $this->config->curlOptions = $curlOptions;
+
+        return $this;
+    }
+
+    /**
      * Set a custom function to call before notifying Bugsnag of an error.
      * You can use this to call your own error handling functions, or to add
      * custom tabs of data to each error on your Bugsnag dashboard.
