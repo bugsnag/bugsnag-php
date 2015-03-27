@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.5.3
+-----
+- Add support for custom curl options
+
 2.5.2
 -----
 -   Add support for setHostname
