@@ -11,7 +11,7 @@ class Bugsnag_Request
     {
         $requestData = array();
 
-        $methodsWithPayload = array('PUT','DELETE');
+        $methodsWithPayload = array('PUT');
 
         // Request Tab
         $requestData['request'] = array();
@@ -29,21 +29,7 @@ class Bugsnag_Request
             }
 
             if (isset($_SERVER['REQUEST_METHOD']) && in_array(strtoupper($_SERVER['REQUEST_METHOD']), $methodsWithPayload)) {
-
-                $requestString = file_get_contents('php://input');
-
-                // try json first
-                $json = json_decode($requestString);
-
-                if($json)
-                {
-                    $params = $json;
-                }
-                else
-                {
-                    parse_str(file_get_contents('php://input'),$params);
-                }
-
+                parse_str(file_get_contents('php://input'),$params);
                 if(isset($requestData['request']['params']))
                 {
                     $requestData['request']['params'] = array_merge($requestData['request']['params'],$params);
@@ -52,7 +38,6 @@ class Bugsnag_Request
                 {
                     $requestData['request']['params'] = $params;
                 }
-
             }
         }
 
