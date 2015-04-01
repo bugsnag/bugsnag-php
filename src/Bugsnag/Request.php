@@ -29,7 +29,21 @@ class Bugsnag_Request
             }
 
             if (isset($_SERVER['REQUEST_METHOD']) && in_array(strtoupper($_SERVER['REQUEST_METHOD']), $methodsWithPayload)) {
-                parse_str(file_get_contents('php://input'),$params);
+
+                $requestString = file_get_contents('php://input');
+
+                // try json first
+                $json = json_decode($requestString);
+
+                if($json)
+                {
+                    $params = $json;
+                }
+                else
+                {
+                    parse_str(file_get_contents('php://input'),$params);
+                }
+
                 if(isset($requestData['request']['params']))
                 {
                     $requestData['request']['params'] = array_merge($requestData['request']['params'],$params);
