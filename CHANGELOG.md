@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.5.4
+-----
+- Fix HHVM support for release 2.5.3
+
 2.5.3
 -----
 - Add support for custom curl options
