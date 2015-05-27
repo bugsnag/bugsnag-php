@@ -86,9 +86,9 @@ class StacktraceTest extends Bugsnag_TestCase
 
         $this->assertCount(5, $stacktrace);
 
-        $this->assertFrameEquals($stacktrace[0], "__callStatic", "somefile.php", 123);
-        $this->assertFrameEquals($stacktrace[1], "notifyError", "controllers/ExampleController.php", 12);
-        $this->assertFrameEquals($stacktrace[2], "index", "controllers/ExampleController.php", 12);
+        $this->assertFrameEquals($stacktrace[0], "Illuminate\\Support\\Facades\\Facade::__callStatic", "somefile.php", 123);
+        $this->assertFrameEquals($stacktrace[1], "Bugsnag\\BugsnagLaravel\\BugsnagFacade::notifyError", "controllers/ExampleController.php", 12);
+        $this->assertFrameEquals($stacktrace[2], "ExampleController::index", "controllers/ExampleController.php", 12);
         $this->assertFrameEquals($stacktrace[3], "call_user_func_array", "[internal]", 0);
         $this->assertFrameEquals($stacktrace[4], "[main]", "Routing/Controller.php", 194);
     }
@@ -101,11 +101,11 @@ class StacktraceTest extends Bugsnag_TestCase
         $this->assertCount(7, $stacktrace);
 
         $this->assertFrameEquals($stacktrace[0], null, "somefile.php", 123);
-        $this->assertFrameEquals($stacktrace[1], "evaluatePath", "/View/Engines/PhpEngine.php", 39);
-        $this->assertFrameEquals($stacktrace[2], "get", "View/Engines/CompilerEngine.php", 57);
-        $this->assertFrameEquals($stacktrace[3], "getContents", "View/View.php", 136);
-        $this->assertFrameEquals($stacktrace[4], "renderContents", "View/View.php", 104);
-        $this->assertFrameEquals($stacktrace[5], "render", "View/View.php", 78);
+        $this->assertFrameEquals($stacktrace[1], "Illuminate\\View\\Engines\\PhpEngine::evaluatePath", "/View/Engines/PhpEngine.php", 39);
+        $this->assertFrameEquals($stacktrace[2], "Illuminate\\View\\Engines\\CompilerEngine::get", "View/Engines/CompilerEngine.php", 57);
+        $this->assertFrameEquals($stacktrace[3], "Illuminate\\View\\View::getContents", "View/View.php", 136);
+        $this->assertFrameEquals($stacktrace[4], "Illuminate\\View\\View::renderContents", "View/View.php", 104);
+        $this->assertFrameEquals($stacktrace[5], "Illuminate\\View\\View::render", "View/View.php", 78);
         $this->assertFrameEquals($stacktrace[6], "[main]", "storage/views/f2df2d6b49591efeb36fc46e6dc25e0e", 5);
     }
 
