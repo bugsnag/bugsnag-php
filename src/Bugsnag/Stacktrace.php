@@ -87,7 +87,7 @@ class Bugsnag_Stacktrace
         // Construct the frame
         $frame = array(
             'lineNumber' => $line,
-            'method' => $method,
+            'method' => $class ? "$class::$method" : $method,
         );
 
         // Attach some lines of code for context
@@ -103,10 +103,6 @@ class Bugsnag_Stacktrace
             $frame['file'] = $file;
         } else {
             $frame['file'] = preg_replace($this->config->stripPathRegex, '', $file);
-        }
-
-        if (!empty($class)) {
-            $frame['class'] = $class;
         }
 
         $this->frames[] = $frame;
