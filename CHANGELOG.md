@@ -1,13 +1,17 @@
 Changelog
 =========
 
+2.5.5
+-----
+-   Ensure no unnecessary code is executed when errors should be skipped
+
 2.5.4
 -----
-- Fix HHVM support for release 2.5.3
+-   Fix HHVM support for release 2.5.3
 
 2.5.3
 -----
-- Add support for custom curl options
+-   Add support for custom curl options
 
 2.5.2
 -----
