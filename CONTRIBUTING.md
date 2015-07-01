@@ -26,11 +26,15 @@ Releasing
 2. Update the CHANGELOG.md, and README if appropriate.
 3. Build a new phar package
 
+    ```
     composer install
     php pharbuilder.php
+    ```
 
 4. Commit, tag push
 
-    git commit -am v1.x.x
-    git tag v1.x.x
-    git push origin master v1.x.x
+    ```
+    git commit -am v2.x.x
+    git tag v2.x.x
+    git push origin master && git push --tags
+    ```
