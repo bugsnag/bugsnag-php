@@ -60,6 +60,17 @@ class Bugsnag_Configuration
         return is_null($this->notifyReleaseStages) || (is_array($this->notifyReleaseStages) && in_array($this->releaseStage, $this->notifyReleaseStages));
     }
 
+    public function shouldIgnoreErrorCode($code)
+    {
+        if (isset($this->errorReportingLevel)) {
+            return !($this->errorReportingLevel & $code);
+        } else {
+            return !(error_reporting() & $code);
+        }
+
+        return false;
+    }
+
     public function setProjectRoot($projectRoot)
     {
         $this->projectRoot = $projectRoot;

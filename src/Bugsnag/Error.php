@@ -16,7 +16,6 @@ class Bugsnag_Error
     public $metaData = array();
     public $config;
     public $diagnostics;
-    public $code;
     public $previous;
     public $groupingHash;
 
@@ -74,17 +73,10 @@ class Bugsnag_Error
 
         return $this;
     }
-    
+
     public function setStacktrace($stacktrace)
     {
         $this->stacktrace = $stacktrace;
-
-        return $this;
-    }
-
-    public function setCode($code)
-    {
-        $this->code = $code;
 
         return $this;
     }
@@ -132,8 +124,7 @@ class Bugsnag_Error
         $this->setName(Bugsnag_ErrorTypes::getName($code))
              ->setMessage($message)
              ->setSeverity(Bugsnag_ErrorTypes::getSeverity($code))
-             ->setStacktrace($stacktrace)
-             ->setCode($code);
+             ->setStacktrace($stacktrace);
 
         return $this;
     }
@@ -156,20 +147,6 @@ class Bugsnag_Error
         return $this;
     }
 
-    public function shouldIgnore()
-    {
-        // Check if we should ignore errors of this type
-        if (isset($this->code)) {
-            if (isset($this->config->errorReportingLevel)) {
-                return !($this->config->errorReportingLevel & $this->code);
-            } else {
-                return !(error_reporting() & $this->code);
-            }
-        }
-
-        return false;
-    }
-
     public function toArray()
     {
         $errorArray = array(
@@ -182,11 +159,11 @@ class Bugsnag_Error
             'exceptions' => $this->exceptionArray(),
             'metaData' => $this->cleanupObj($this->metaData),
         );
-        
+
         if (isset($this->groupingHash)) {
         	$errorArray['groupingHash'] = $this->groupingHash;
         }
-        
+
         return $errorArray;
     }
 
