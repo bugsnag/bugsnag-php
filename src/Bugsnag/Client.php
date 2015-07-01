@@ -414,22 +414,24 @@ class Bugsnag_Client
     // Exception handler callback, should only be called internally by PHP's set_exception_handler
     public function exceptionHandler($exception)
     {
+        if(!$this->config->autoNotify) {
+            return;
+        }
+
         $error = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
         $error->setSeverity("error");
-
-        if (!$error->shouldIgnore() && $this->config->autoNotify) {
-            $this->notify($error);
-        }
+        $this->notify($error);
     }
 
     // Exception handler callback, should only be called internally by PHP's set_error_handler
     public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
-        $error = Bugsnag_Error::fromPHPError($this->config, $this->diagnostics, $errno, $errstr, $errfile, $errline);
-
-        if (!$error->shouldIgnore() && $this->config->autoNotify) {
-            $this->notify($error);
+        if(!$this->config->autoNotify || $this->config->shouldIgnoreErrorCode($errno)) {
+            return;
         }
+
+        $error = Bugsnag_Error::fromPHPError($this->config, $this->diagnostics, $errno, $errstr, $errfile, $errline);
+        $this->notify($error);
     }
 
     // Shutdown handler callback, called when the PHP process has finished running
@@ -440,13 +442,10 @@ class Bugsnag_Client
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
-        if (!is_null($lastError) && Bugsnag_ErrorTypes::isFatal($lastError['type'])) {
+        if (!is_null($lastError) && Bugsnag_ErrorTypes::isFatal($lastError['type']) && $this->config->autoNotify && !$this->config->shouldIgnoreErrorCode($lastError['type'])) {
             $error = Bugsnag_Error::fromPHPError($this->config, $this->diagnostics, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
             $error->setSeverity("error");
-
-            if (!$error->shouldIgnore() && $this->config->autoNotify) {
-                $this->notify($error);
-            }
+            $this->notify($error);
         }
 
         // Flush any buffered errors

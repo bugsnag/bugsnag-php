@@ -56,4 +56,18 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->config->notifier['name'], "Bugsnag PHP (Official)");
         $this->assertEquals($this->config->notifier['url'], "https://bugsnag.com");
     }
+
+    public function testShouldIgnore()
+    {
+        $this->config->errorReportingLevel = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED;
+
+        $this->assertTrue($this->config->shouldIgnoreErrorCode(E_NOTICE));
+    }
+
+    public function testShouldNotIgnore()
+    {
+        $this->config->errorReportingLevel = E_ALL;
+
+        $this->assertfalse($this->config->shouldIgnoreErrorCode(E_NOTICE));
+    }
 }
