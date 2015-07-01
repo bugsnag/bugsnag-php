@@ -33,24 +33,6 @@ class ErrorTest extends Bugsnag_TestCase
         $this->assertEquals($errorArray['metaData']["Testing"]["localArray"], "yo");
     }
 
-    public function testShouldIgnore()
-    {
-        $this->config->errorReportingLevel = E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED;
-
-        $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
-
-        $this->assertTrue($this->error->shouldIgnore());
-    }
-
-    public function testShouldNotIgnore()
-    {
-        $this->config->errorReportingLevel = E_ALL;
-
-        $this->error->setPHPError(E_NOTICE, "Broken", "file", 123);
-
-        $this->assertfalse($this->error->shouldIgnore());
-    }
-
     public function testFiltering()
     {
         $this->error->setMetaData(array("Testing" => array("password" => "123456")));
@@ -129,7 +111,7 @@ class ErrorTest extends Bugsnag_TestCase
             $this->assertEquals($errorArray['exceptions'][1]['message'], 'secondly');
         }
     }
-    
+
     public function testErrorGroupingHash()
     {
         $this->error->setGroupingHash('herp#derp');
@@ -137,7 +119,7 @@ class ErrorTest extends Bugsnag_TestCase
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['groupingHash'], 'herp#derp');
     }
-    
+
     public function testErrorGroupingHashNotSet()
     {
         $errorArray = $this->error->toArray();
