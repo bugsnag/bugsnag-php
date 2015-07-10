@@ -4,8 +4,11 @@ require_once 'Bugsnag_TestCase.php';
 
 class ErrorTest extends Bugsnag_TestCase
 {
+    /** @var Bugsnag_Configuration */
     protected $config;
+    /** @var Bugsnag_Diagnostics */
     protected $diagnostics;
+    /** @var Bugsnag_Error */
     protected $error;
 
     protected function setUp()

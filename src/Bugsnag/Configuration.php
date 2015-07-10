@@ -67,8 +67,6 @@ class Bugsnag_Configuration
         } else {
             return !(error_reporting() & $code);
         }
-
-        return false;
     }
 
     public function setProjectRoot($projectRoot)

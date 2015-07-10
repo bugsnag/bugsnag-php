@@ -12,10 +12,12 @@ class Bugsnag_Error
     public $payloadVersion = "2";
     public $message;
     public $severity = "warning";
+    /** @var Bugsnag_Stacktrace */
     public $stacktrace;
     public $metaData = array();
     public $config;
     public $diagnostics;
+    /** @var Bugsnag_Error|null */
     public $previous;
     public $groupingHash;
 
@@ -74,7 +76,7 @@ class Bugsnag_Error
         return $this;
     }
 
-    public function setStacktrace($stacktrace)
+    public function setStacktrace(Bugsnag_Stacktrace $stacktrace)
     {
         $this->stacktrace = $stacktrace;
 
@@ -187,7 +189,7 @@ class Bugsnag_Error
     private function cleanupObj($obj)
     {
         if (is_null($obj)) {
-            return;
+            return null;
         }
 
         if (is_array($obj)) {

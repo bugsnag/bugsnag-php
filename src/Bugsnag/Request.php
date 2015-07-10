@@ -54,7 +54,7 @@ class Bugsnag_Request
         if (self::isRequest() && isset($_SERVER['REQUEST_METHOD']) && isset($_SERVER["REQUEST_URI"])) {
             return $_SERVER['REQUEST_METHOD'].' '.strtok($_SERVER["REQUEST_URI"], '?');
         } else {
-            return;
+            return null;
         }
     }
 
@@ -63,7 +63,7 @@ class Bugsnag_Request
         if (self::isRequest()) {
             return self::getRequestIp();
         } else {
-            return;
+            return null;
         }
     }
 

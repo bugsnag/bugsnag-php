@@ -5,6 +5,7 @@ class Bugsnag_Notification
     private static $CONTENT_TYPE_HEADER = 'Content-type: application/json';
 
     private $config;
+    /** @var Bugsnag_Error[] */
     private $errorQueue = array();
 
     public function __construct(Bugsnag_Configuration $config)
@@ -12,7 +13,7 @@ class Bugsnag_Notification
         $this->config = $config;
     }
 
-    public function addError($error, $passedMetaData = array())
+    public function addError(Bugsnag_Error $error, $passedMetaData = array())
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {
