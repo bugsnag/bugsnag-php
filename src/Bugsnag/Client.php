@@ -395,6 +395,32 @@ class Bugsnag_Client
     }
 
     /**
+     * Sets whether Bugsnag should send $_COOKIE with each error.
+     *
+     * @param Boolean $sendCookies whether to send the environment
+     * @return $this
+     */
+    public function setSendCookies($sendCookies)
+    {
+        $this->config->sendCookies = $sendCookies;
+
+        return $this;
+    }
+
+    /**
+     * Sets whether Bugsnag should send $_SESSION with each error.
+     *
+     * @param Boolean $sendSession whether to send the environment
+     * @return $this
+     */
+    public function setSendSession($sendSession)
+    {
+        $this->config->sendSession = $sendSession;
+
+        return $this;
+    }
+
+    /**
      * Should we send a small snippet of the code that crashed to help you
      * diagnose even faster from within your dashboard.
      *

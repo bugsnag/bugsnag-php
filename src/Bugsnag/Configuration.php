@@ -22,6 +22,8 @@ class Bugsnag_Configuration
         'url'     => 'https://bugsnag.com',
     );
     public $sendEnvironment = false;
+    public $sendCookies = true;
+    public $sendSession = true;
     public $sendCode = true;
     public $stripPath;
     public $stripPathRegex;

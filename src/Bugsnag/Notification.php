@@ -28,6 +28,16 @@ class Bugsnag_Notification
             $error->setMetaData(Bugsnag_Request::getRequestMetaData());
         }
 
+        // Session Tab
+        if ($this->config->sendSession && !empty($_SESSION)) {
+            $error->setMetaData(array('session' => $_SESSION));
+        }
+
+        // Cookies Tab
+        if ($this->config->sendCookies && !empty($_COOKIE)) {
+            $error->setMetaData(array('cookies' => $_COOKIE));
+        }
+
         // Add environment meta-data to error
         if ($this->config->sendEnvironment && !empty($_ENV)) {
             $error->setMetaData(array("Environment" => $_ENV));
