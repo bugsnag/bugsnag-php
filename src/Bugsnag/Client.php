@@ -3,12 +3,14 @@
 class Bugsnag_Client
 {
     private $config;
+    /** @var Bugsnag_Notification|null */
     private $notification;
 
     /**
      * Initialize Bugsnag
      *
      * @param String $apiKey your Bugsnag API key
+     * @throws Exception
      */
     public function __construct($apiKey)
     {
@@ -33,6 +35,7 @@ class Bugsnag_Client
      * Set your release stage, eg "production" or "development"
      *
      * @param String $releaseStage the app's current release stage
+     * @return $this
      */
     public function setReleaseStage($releaseStage)
     {
@@ -45,6 +48,7 @@ class Bugsnag_Client
      * Set your app's semantic version, eg "1.2.3"
      *
      * @param String $appVersion the app's version
+     * @return $this
      */
     public function setAppVersion($appVersion)
     {
@@ -53,10 +57,11 @@ class Bugsnag_Client
         return $this;
     }
 
-     /**
+    /**
      * Set the host name
      *
      * @param String $hostname the host name
+     * @return $this
      */
     public function setHostname($hostname)
     {
@@ -70,6 +75,7 @@ class Bugsnag_Client
      * eg array("production", "development")
      *
      * @param Array $notifyReleaseStages array of release stages to notify for
+     * @return $this
      */
     public function setNotifyReleaseStages(array $notifyReleaseStages)
     {
@@ -82,6 +88,7 @@ class Bugsnag_Client
      * Set which Bugsnag endpoint to send errors to.
      *
      * @param String $endpoint endpoint URL
+     * @return $this
      */
     public function setEndpoint($endpoint)
     {
@@ -95,6 +102,7 @@ class Bugsnag_Client
      *
      * @param Boolean $useSSL whether to use SSL
      * @deprecated you can now pass full URLs to setEndpoint
+     * @return $this
      */
     public function setUseSSL($useSSL)
     {
@@ -107,6 +115,7 @@ class Bugsnag_Client
      * Set the desired timeout for cURL connection when notifying bugsnag
      *
      * @param Integer $timeout the desired timeout in seconds
+     * @return $this
      */
     public function setTimeout($timeout)
     {
@@ -121,6 +130,7 @@ class Bugsnag_Client
      * stacktrace lines.
      *
      * @param String $projectRoot the root path for your application
+     * @return $this
      */
     public function setProjectRoot($projectRoot)
     {
@@ -135,6 +145,7 @@ class Bugsnag_Client
      * for grouping and reduces the noise in stack traces.
      *
      * @param String $stripPath the path to strip from filenames
+     * @return $this
      */
     public function setStripPath($stripPath)
     {
@@ -148,6 +159,7 @@ class Bugsnag_Client
      * that are part of your application.
      *
      * @param String $projectRootRegex regex matching paths belong to your project
+     * @return $this
      */
     public function setProjectRootRegex($projectRootRegex)
     {
@@ -161,6 +173,7 @@ class Bugsnag_Client
      * to Bugsnag. Eg. array("password", "credit_card")
      *
      * @param Array $filters an array of metaData filters
+     * @return $this
      */
     public function setFilters(array $filters)
     {
@@ -178,6 +191,7 @@ class Bugsnag_Client
      *            'name' => 'Bob Hoskins',
      *            'email' => 'bob@hoskins.com'
      *        )
+     * @return $this
      */
     public function setUser(array $user)
     {
@@ -188,6 +202,8 @@ class Bugsnag_Client
 
     /**
      * @deprecated deprecated since version 2.1
+     * @param $userId
+     * @return $this
      */
     public function setUserId($userId)
     {
@@ -204,6 +220,7 @@ class Bugsnag_Client
      * Set a context representing the current type of request, or location in code.
      *
      * @param String $context the current context
+     * @return $this
      */
     public function setContext($context)
     {
@@ -218,6 +235,7 @@ class Bugsnag_Client
      * eg "laravel", or executing through delayed worker code, eg "resque".
      *
      * @param String $type the current type
+     * @return $this
      */
     public function setType($type)
     {
@@ -237,6 +255,7 @@ class Bugsnag_Client
      *                "email" => "james@example.com"
      *            )
      *        )
+     * @return $this
      */
     public function setMetaData(array $metaData)
     {
@@ -255,6 +274,7 @@ class Bugsnag_Client
      *            'user'     => "username"
      *            'password' => "password123"
      *            )
+     * @return $this
      */
     public function setProxySettings(array $proxySettings)
     {
@@ -270,6 +290,7 @@ class Bugsnag_Client
      *        array(
      *            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
      *            )
+     * @return $this
      */
     public function setCurlOptions(array $curlOptions)
     {
@@ -292,8 +313,9 @@ class Bugsnag_Client
      *     ));
      * }
      * $bugsnag->setBeforeNotifyFunction("before_bugsnag_notify");
-     *
-    */
+     * @param callable $beforeNotifyFunction
+     * @return $this
+     */
     public function setBeforeNotifyFunction($beforeNotifyFunction)
     {
         $this->config->beforeNotifyFunction = $beforeNotifyFunction;
@@ -308,6 +330,7 @@ class Bugsnag_Client
      *
      * @param Integer $errorReportingLevel the error reporting level integer
      *                exactly as you would pass to PHP's error_reporting
+     * @return $this
      */
     public function setErrorReportingLevel($errorReportingLevel)
     {
@@ -321,6 +344,7 @@ class Bugsnag_Client
      * exceptions and errors.
      *
      * @param Boolean $autoNotify whether to auto notify or not
+     * @return $this
      */
     public function setAutoNotify($autoNotify)
     {
@@ -334,6 +358,7 @@ class Bugsnag_Client
      * each request.
      *
      * @param Boolean $batchSending whether to batch together errors
+     * @return $this
      */
     public function setBatchSending($batchSending)
     {
@@ -347,6 +372,7 @@ class Bugsnag_Client
      * set by other notifier libraries.
      *
      * @param Array $notifier an array of name, version, url.
+     * @return $this
      */
     public function setNotifier($notifier)
     {
@@ -359,6 +385,7 @@ class Bugsnag_Client
      * Sets whether Bugsnag should send $_ENV with each error.
      *
      * @param Boolean $sendEnvironment whether to send the environment
+     * @return $this
      */
     public function setSendEnvironment($sendEnvironment)
     {
@@ -368,10 +395,37 @@ class Bugsnag_Client
     }
 
     /**
+     * Sets whether Bugsnag should send $_COOKIE with each error.
+     *
+     * @param Boolean $sendCookies whether to send the environment
+     * @return $this
+     */
+    public function setSendCookies($sendCookies)
+    {
+        $this->config->sendCookies = $sendCookies;
+
+        return $this;
+    }
+
+    /**
+     * Sets whether Bugsnag should send $_SESSION with each error.
+     *
+     * @param Boolean $sendSession whether to send the environment
+     * @return $this
+     */
+    public function setSendSession($sendSession)
+    {
+        $this->config->sendSession = $sendSession;
+
+        return $this;
+    }
+
+    /**
      * Should we send a small snippet of the code that crashed to help you
      * diagnose even faster from within your dashboard.
      *
-     * @param Boolean $setSendCode whether to send code to Bugsnag
+     * @param Boolean $sendCode whether to send code to Bugsnag
+     * @return $this
      */
     public function setSendCode($sendCode)
     {
@@ -398,8 +452,8 @@ class Bugsnag_Client
     /**
      * Notify Bugsnag of a non-fatal/handled error
      *
-     * @param String $errorName    the name of the error, a short (1 word) string
-     * @param String $errorMessage the error message
+     * @param String $name         the name of the error, a short (1 word) string
+     * @param String $message      the error message
      * @param Array  $metaData     optional metaData to send with this error
      * @param String $severity     optional severity of this error (fatal/error/warning/info)
      */

@@ -22,6 +22,8 @@ class Bugsnag_Configuration
         'url'     => 'https://bugsnag.com',
     );
     public $sendEnvironment = false;
+    public $sendCookies = true;
+    public $sendSession = true;
     public $sendCode = true;
     public $stripPath;
     public $stripPathRegex;
@@ -67,8 +69,6 @@ class Bugsnag_Configuration
         } else {
             return !(error_reporting() & $code);
         }
-
-        return false;
     }
 
     public function setProjectRoot($projectRoot)
