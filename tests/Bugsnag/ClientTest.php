@@ -14,6 +14,54 @@ class ClientTest extends PHPUnit_Framework_TestCase
                              ->getMock();
     }
 
+    public function testConstructThrowsWhenConfigHasNoApiKey()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        new Bugsnag_Client(new Bugsnag_Configuration());
+    }
+
+    public function testConstructThrowsWhenConfigNotStringNorConfig()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        new Bugsnag_Client([]);
+    }
+
+    public function testConstructThrowsWhenDiagnosticsIsSetWithoutConfig()
+    {
+        $this->setExpectedException('InvalidArgumentException');
+        new Bugsnag_Client('api-key', new Bugsnag_Diagnostics(new Bugsnag_Configuration()));
+    }
+
+    public function testConstructWithApiKey()
+    {
+        $client = new Bugsnag_Client('api-key');
+        $config = $this->getNotAccessibleProperty($client, 'config');
+        $this->assertEquals('api-key', $config->apiKey);
+        $this->assertNotNull($this->getNotAccessibleProperty($client, 'diagnostics'));
+    }
+
+    public function testConstructWithConfigurationInstance()
+    {
+        $config = new Bugsnag_Configuration();
+        $config->apiKey = 'api-key';
+        $client = new Bugsnag_Client($config);
+        $clientConfig = $this->getNotAccessibleProperty($client, 'config');
+        $this->assertEquals($config, $clientConfig);
+        $this->assertNotNull($this->getNotAccessibleProperty($client, 'diagnostics'));
+    }
+
+    public function testConstructWithConfigurationInstanceAndDiagnostics()
+    {
+        $config = new Bugsnag_Configuration();
+        $config->apiKey = 'api-key';
+        $diagnostics = new Bugsnag_Diagnostics($config);
+        $client = new Bugsnag_Client($config, $diagnostics);
+        $clientConfig = $this->getNotAccessibleProperty($client, 'config');
+        $clientDiagnostics = $this->getNotAccessibleProperty($client, 'diagnostics');
+        $this->assertEquals($config, $clientConfig);
+        $this->assertEquals($clientDiagnostics, $diagnostics);
+    }
+
     public function testErrorHandler()
     {
         $this->client->expects($this->once())
@@ -79,5 +127,18 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testSetInvalidCurlOptions()
     {
         $this->client->setCurlOptions("option");
+    }
+
+    /**
+     * @param object $object
+     * @param string $propertyName
+     * @return mixed
+     */
+    protected function getNotAccessibleProperty($object, $propertyName)
+    {
+        $class = new \ReflectionClass($object);
+        $property = $class->getProperty($propertyName);
+        $property->setAccessible(true);
+        return $property->getValue($object);
     }
 }

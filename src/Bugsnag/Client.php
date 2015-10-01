@@ -3,28 +3,39 @@
 class Bugsnag_Client
 {
     private $config;
+    private $diagnostics;
     /** @var Bugsnag_Notification|null */
     private $notification;
 
     /**
      * Initialize Bugsnag
      *
-     * @param String $apiKey your Bugsnag API key
+     * @param String|Bugsnag_Configuration $config your Bugsnag API key or an instance of Bugsnag_Configuration containing the API key
+     * @param Bugsnag_Diagnostics $diagnostics optional instance of Bugsnag_Diagnostics
      * @throws Exception
      */
-    public function __construct($apiKey)
+    public function __construct($config, $diagnostics = null)
     {
-        // Check API key has been passed
-        if (!is_string($apiKey)) {
-            throw new Exception('Bugsnag Error: Invalid API key');
+        if (is_string($config)) {
+            $this->config = new Bugsnag_Configuration();
+            $this->config->apiKey = $config;
+        } else if ($config instanceof Bugsnag_Configuration) {
+            if (!is_string($config->apiKey)) {
+                throw new InvalidArgumentException('Bugsnag Error: Invalid API key');
+            }
+            $this->config = $config;
+        } else {
+            throw new InvalidArgumentException('Bugsnag Error: config argument must either be a string containing valid API key or an instance of Bugsnag_Configuration');
         }
 
-        // Create a configuration object
-        $this->config = new Bugsnag_Configuration();
-        $this->config->apiKey = $apiKey;
-
-        // Build a Diagnostics object
-        $this->diagnostics = new Bugsnag_Diagnostics($this->config);
+        if ($diagnostics) {
+            if (!($config instanceof Bugsnag_Configuration)) {
+                throw new InvalidArgumentException('Bugsnag Error: If diagnostics argument is set then config argument must be an instance of Bugsnag_Configuration');
+            }
+            $this->diagnostics = $diagnostics;
+        } else {
+            $this->diagnostics = new Bugsnag_Diagnostics($this->config);
+        }
 
         // Register a shutdown function to check for fatal errors
         // and flush any buffered errors
