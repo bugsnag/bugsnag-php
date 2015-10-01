@@ -34,6 +34,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testConstructWithApiKey()
     {
+        if (PHP_VERSION_ID < 50300) {
+            $this->markTestSkipped('ReflectionProperty::setAccessible() is not available on PHP ' . PHP_VERSION);
+        }
+
         $client = new Bugsnag_Client('api-key');
         $config = $this->getNotAccessibleProperty($client, 'config');
         $this->assertEquals('api-key', $config->apiKey);
@@ -42,6 +46,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testConstructWithConfigurationInstance()
     {
+        if (PHP_VERSION_ID < 50300) {
+            $this->markTestSkipped('ReflectionProperty::setAccessible() is not available on PHP ' . PHP_VERSION);
+        }
+
         $config = new Bugsnag_Configuration();
         $config->apiKey = 'api-key';
         $client = new Bugsnag_Client($config);
@@ -52,6 +60,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testConstructWithConfigurationInstanceAndDiagnostics()
     {
+        if (PHP_VERSION_ID < 50300) {
+            $this->markTestSkipped('ReflectionProperty::setAccessible() is not available on PHP ' . PHP_VERSION);
+        }
+
         $config = new Bugsnag_Configuration();
         $config->apiKey = 'api-key';
         $diagnostics = new Bugsnag_Diagnostics($config);
