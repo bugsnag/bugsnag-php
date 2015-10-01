@@ -23,7 +23,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testConstructThrowsWhenConfigNotStringNorConfig()
     {
         $this->setExpectedException('InvalidArgumentException');
-        new Bugsnag_Client([]);
+        new Bugsnag_Client(array());
     }
 
     public function testConstructThrowsWhenDiagnosticsIsSetWithoutConfig()
