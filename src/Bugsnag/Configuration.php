@@ -41,6 +41,8 @@ class Bugsnag_Configuration
 
     public $curlOptions = array();
 
+    public $debug = false;
+
     public function __construct()
     {
         $this->timeout = Bugsnag_Configuration::$DEFAULT_TIMEOUT;
