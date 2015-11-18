@@ -98,6 +98,19 @@ class Bugsnag_Client
     }
 
     /**
+     * Enable debug mode to help diagnose problems.
+     *
+     * @param Boolean $debug whether to enable debug mode
+     * @return $this
+     */
+    public function setDebug($debug)
+    {
+        $this->config->debug = $debug;
+
+        return $this;
+    }
+
+    /**
      * Set whether or not to use SSL when notifying bugsnag
      *
      * @param Boolean $useSSL whether to use SSL

@@ -150,6 +150,11 @@ class Bugsnag_Notification
 
         if ($statusCode > 200) {
             error_log('Bugsnag Warning: Couldn\'t notify ('.$responseBody.')');
+
+            if($this->config->debug) {
+                error_log('Bugsnag Debug: Attempted to post to URL - "'.$url.'"');
+                error_log('Bugsnag Debug: Attempted to post payload - "'.$body.'"');
+            }
         }
 
         if (curl_errno($http)) {
