@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.5.6
+-----
+-   Added a debug flag to help diagnose notification problems
+
 2.5.5
 -----
 -   Ensure no unnecessary code is executed when errors should be skipped
