@@ -1,4 +1,4 @@
-Bugsnag Notifier for PHP ![build status](https://travis-ci.org/bugsnag/bugsnag-php.svg?branch=master)
+Bugsnag Notifier for PHP <img src="https://travis-ci.org/bugsnag/bugsnag-php.svg?branch=master" alt="build status" class="build-status">
 ========================
 
 The Bugsnag Notifier for PHP gives you instant notification of errors and
