@@ -30,10 +30,10 @@ class Bugsnag_Error
         return $error;
     }
 
-    public static function fromPHPException(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, Exception $exception)
+    public static function fromPHPThrowable(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, Throwable $throwable)
     {
         $error = new Bugsnag_Error($config, $diagnostics);
-        $error->setPHPException($exception);
+        $error->setPHPException($throwable);
 
         return $error;
     }
@@ -143,7 +143,7 @@ class Bugsnag_Error
     public function setPrevious($exception)
     {
         if ($exception) {
-            $this->previous = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
+            $this->previous = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
         }
 
         return $this;
