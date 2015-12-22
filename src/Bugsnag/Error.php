@@ -30,7 +30,7 @@ class Bugsnag_Error
         return $error;
     }
 
-    public static function fromPHPThrowable(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, Throwable $throwable)
+    public static function fromPHPThrowable(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $throwable)
     {
         $error = new Bugsnag_Error($config, $diagnostics);
         $error->setPHPException($throwable);
