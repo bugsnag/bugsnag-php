@@ -454,7 +454,7 @@ class Bugsnag_Client
      * @param Array     $metaData  optional metaData to send with this error
      * @param String    $severity  optional severity of this error (fatal/error/warning/info)
      */
-    public function notifyException(Throwable $throwable, array $metaData = null, $severity = null)
+    public function notifyException($throwable, array $metaData = null, $severity = null)
     {
         $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $throwable);
         $error->setSeverity($severity);
