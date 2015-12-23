@@ -180,10 +180,10 @@ class Bugsnag_Error
         $exceptionArray[] = array(
             'errorClass' => $this->name,
             'message' => $this->message,
-            'stacktrace' => $this->cleanupObj($this->stacktrace->toArray()),
+            'stacktrace' => $this->stacktrace->toArray(),
         );
 
-        return $exceptionArray;
+        return $this->cleanupObj($exceptionArray);
     }
 
     private function cleanupObj($obj)
