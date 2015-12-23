@@ -448,9 +448,9 @@ class Bugsnag_Client
     }
 
     /**
-     * Notify Bugsnag of a non-fatal/handled exception
+     * Notify Bugsnag of a non-fatal/handled throwable
      *
-     * @param Exception $exception the exception to notify Bugsnag about
+     * @param Throwable $throwable the throwable to notify Bugsnag about
      * @param Array     $metaData  optional metaData to send with this error
      * @param String    $severity  optional severity of this error (fatal/error/warning/info)
      */
