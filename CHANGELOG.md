@@ -10,6 +10,11 @@ Changelog
   | [Chris Stone](https://github.com/cmstone)
   | [#106](https://github.com/bugsnag/bugsnag-php/pull/106)
 
+* Fix errors which arise from from error payloads not encoded using UTF-8
+  | [GaetanNaulin](https://github.com/GaetanNaulin)
+  | [#104](https://github.com/bugsnag/bugsnag-php/pull/104)
+  | [#105](https://github.com/bugsnag/bugsnag-php/pull/105)
+
 2.5.6
 -----
 -   Added a debug flag to help diagnose notification problems
