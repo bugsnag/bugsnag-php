@@ -105,7 +105,7 @@ class ErrorTest extends Bugsnag_TestCase
         if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
             $exception = new Exception("secondly", 65533, new Exception("firstly"));
 
-            $error = Bugsnag_Error::fromPHPException($this->config, $this->diagnostics, $exception);
+            $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
 
             $errorArray = $error->toArray();
 

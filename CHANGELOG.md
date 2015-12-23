@@ -1,6 +1,15 @@
 Changelog
 =========
 
+2.6.0
+-----
+
+### Enhancements
+
+* Add support for PHP 7's Throwable
+  | [Chris Stone](https://github.com/cmstone)
+  | [#106](https://github.com/bugsnag/bugsnag-php/pull/106)
+
 2.5.6
 -----
 -   Added a debug flag to help diagnose notification problems
