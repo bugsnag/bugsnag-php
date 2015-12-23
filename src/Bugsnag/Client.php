@@ -456,10 +456,12 @@ class Bugsnag_Client
      */
     public function notifyException($throwable, array $metaData = null, $severity = null)
     {
-        $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $throwable);
-        $error->setSeverity($severity);
+        if (is_subclass_of($throwable, 'Throwable') || is_subclass_of($throwable, 'Exception') || get_class($throwable) == 'Exception') {
+            $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $throwable);
+            $error->setSeverity($severity);
 
-        $this->notify($error, $metaData);
+            $this->notify($error, $metaData);
+        }
     }
 
     /**
