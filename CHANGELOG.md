@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.6.0
+2.6.0 (23 Dec 2015)
 -----
 
 ### Enhancements
