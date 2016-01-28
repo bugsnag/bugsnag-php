@@ -14,19 +14,19 @@ Changelog
   [Michael Curry](https://github.com/michaelcurry)
   [#109](https://github.com/bugsnag/bugsnag-php/pull/109)
 
-2.6.0 (23 Dec 2015)
+2.6.0 (2015-12-23)
 -----
 
 ### Enhancements
 
 * Add support for PHP 7's Throwable
-  | [Chris Stone](https://github.com/cmstone)
-  | [#106](https://github.com/bugsnag/bugsnag-php/pull/106)
+  [Chris Stone](https://github.com/cmstone)
+  [#106](https://github.com/bugsnag/bugsnag-php/pull/106)
 
 * Fix errors which arise from from error payloads not encoded using UTF-8
-  | [GaetanNaulin](https://github.com/GaetanNaulin)
-  | [#104](https://github.com/bugsnag/bugsnag-php/pull/104)
-  | [#105](https://github.com/bugsnag/bugsnag-php/pull/105)
+  [GaetanNaulin](https://github.com/GaetanNaulin)
+  [#104](https://github.com/bugsnag/bugsnag-php/pull/104)
+  [#105](https://github.com/bugsnag/bugsnag-php/pull/105)
 
 2.5.6
 -----
