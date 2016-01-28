@@ -10,6 +10,10 @@ Changelog
   [Petr Bugyík](https://github.com/o5)
   [#110](https://github.com/bugsnag/bugsnag-php/pull/110)
 
+* Fix error which occurs when `$_SERVER['SERVER_PORT']` is unset
+  [Michael Curry](https://github.com/michaelcurry)
+  [#109](https://github.com/bugsnag/bugsnag-php/pull/109)
+
 2.6.0 (23 Dec 2015)
 -----
 
