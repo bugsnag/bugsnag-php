@@ -92,6 +92,7 @@ class Bugsnag_Notification
 
     public function postJSON($url, $data)
     {
+        $data = $this->utf8($data);
         $body = json_encode($data);
 
         // Prefer cURL if it is installed, otherwise fall back to fopen()
@@ -197,6 +198,26 @@ class Bugsnag_Notification
             }
         } else {
             error_log('Bugsnag Warning: Couldn\'t notify (fopen failed)');
+        }
+    }
+
+    private function utf8($data)
+    {
+        if (is_array($data)) {
+            $cleanArray = array();
+            foreach ($data as $key => $value) {
+                $cleanArray[$key] = $this->utf8($value);
+            }
+            return $cleanArray;
+        } elseif (is_string($data)) {
+            // UTF8-encode if not already encoded
+            if (function_exists('mb_detect_encoding') && !mb_detect_encoding($data, 'UTF-8', true)) {
+                return utf8_encode($data);
+            } else {
+                return $data;
+            }
+        } else {
+            return $data;
         }
     }
 }
