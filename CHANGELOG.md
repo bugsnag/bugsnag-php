@@ -1,6 +1,24 @@
 Changelog
 =========
 
+## 2.7.0 (2016-03-09)
+
+### Enhancements
+
+* Support `timeout` settings outside of cURL
+  [Ivan Shalganov](https://github.com/bzick)
+  [#111](https://github.com/bugsnag/bugsnag-php/pull/111)
+
+* Support PUT request payloads
+  [forgadenny](https://github.com/forgandenny)
+  [#83](https://github.com/bugsnag/bugsnag-php/pull/83)
+
+### Bug Fixes
+
+* Remove exception code filtering
+  [Duncan Hewett](https://github.com/duncanhewett)
+  [#113](https://github.com/bugsnag/bugsnag-php/pull/113)
+
 2.6.1 (2016-01-28)
 -----
 
