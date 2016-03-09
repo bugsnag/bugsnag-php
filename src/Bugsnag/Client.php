@@ -480,6 +480,41 @@ class Bugsnag_Client
         $this->notify($error, $metaData);
     }
 
+    /**
+     * Notify Bugsnag of a regular PHP error. This is useful when Bugsnag is not
+     * the "main" error handler and errors are delegated by someone else.
+     *
+     * @param Int $code                 error code
+     * @param String $message           error message
+     * @param String $file              file path where the error occurred
+     * @param Int $line                 error line
+     * @param bool $fatal               whether the error is recoverable or not
+     * @param array|null $metadata      optional metaData to send with this error
+     * @param null $severity            optional severity of this error (fatal/error/warning/info)
+     */
+    public function notifyPHPError(
+        $code,
+        $message,
+        $file,
+        $line,
+        $fatal = false,
+        array $metadata = null,
+        $severity = null
+    ) {
+        $error = Bugsnag_Error::fromPHPError(
+            $this->config,
+            $this->diagnostics,
+            $code,
+            $message,
+            $file,
+            $line,
+            $fatal
+        );
+        $error->setSeverity($severity);
+
+        $this->notify($error, $metadata);
+    }
+
     // Exception handler callback, should only be called internally by PHP's set_exception_handler
     public function exceptionHandler($throwable)
     {

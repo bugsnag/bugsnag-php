@@ -50,6 +50,14 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->client->notifyError("SomeError", "Some message");
     }
 
+    public function testManualPHPErrorNotification()
+    {
+        $this->client->expects($this->once())
+            ->method('notify');
+
+        $this->client->notifyPHPError(1, "Some Message", __FILE__, 10, false);
+    }
+
     public function testManualExceptionNotification()
     {
         $this->client->expects($this->once())
