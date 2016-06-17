@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 2.7.2 (2016-06-17)
+
+### Bug Fixes
+
+* Fix filtering in the dashboard by IP address
+  [William Starling](https://github.com/foygl)
+  [#123](https://github.com/bugsnag/bugsnag-php/pull/123)
+
 ## 2.7.1 (2016-06-02)
 
 ### Bug Fixes
