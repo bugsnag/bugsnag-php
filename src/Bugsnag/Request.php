@@ -41,7 +41,7 @@ class Bugsnag_Request
             }
         }
 
-        $requestData['request']['ip'] = self::getRequestIp();
+        $requestData['request']['clientIp'] = self::getRequestIp();
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $requestData['request']['userAgent'] = $_SERVER['HTTP_USER_AGENT'];
         }
