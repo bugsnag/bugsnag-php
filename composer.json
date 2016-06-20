@@ -23,5 +23,10 @@
         "psr-0" : {
             "Bugsnag_" : "src/"
         }
-    }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.7-dev"
+        }
+    },
 }
