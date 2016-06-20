@@ -57,14 +57,22 @@ class Bugsnag_Error
 
     public function setName($name)
     {
-        $this->name = $name;
+        if (is_scalar($name) || method_exists($name, '__toString')) {
+            $this->name = (string) $name;
+        } else {
+            throw new InvalidArgumentException('Name must be a string.');
+        }
 
         return $this;
     }
 
     public function setMessage($message)
     {
-        $this->message = $message;
+        if (is_scalar($message) || method_exists($message, '__toString')) {
+            $this->message = (string) $message;
+        } else {
+            throw new InvalidArgumentException('Message must be a string.');
+        }
 
         return $this;
     }
