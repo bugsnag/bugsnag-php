@@ -1,5 +1,6 @@
 disabled:
   - short_array_syntax
+  - phpdoc_align
 
 enabled:
   - long_array_syntax
