@@ -9,4 +9,4 @@
 /CONTRIBUTING.md export-ignore
 /CHANGELOG.md export-ignore
 /README.md export-ignore
-/pharbuilder.php
+/pharbuilder.php export-ignore
