@@ -160,4 +160,18 @@ class ErrorTest extends Bugsnag_TestCase
     {
         $this->error->setMessage(new stdClass());
     }
+
+    public function testGoodSetName()
+    {
+        $this->error->setName(123);
+        
+        $this->assertSame('123', $this->error->name);
+    }
+
+    public function testGoodSetMessage()
+    {
+        $this->error->setMessage('foo bar baz');
+        
+        $this->assertSame('foo bar baz', $this->error->message);
+    }
 }
