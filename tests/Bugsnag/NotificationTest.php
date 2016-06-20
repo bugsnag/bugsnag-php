@@ -14,13 +14,13 @@ class NotificationTest extends Bugsnag_TestCase
     protected function setUp()
     {
         $this->config = new Bugsnag_Configuration();
-        $this->config->apiKey = "6015a72ff14038114c3d12623dfb018f";
-        $this->config->beforeNotifyFunction = "before_notify_skip_error";
+        $this->config->apiKey = '6015a72ff14038114c3d12623dfb018f';
+        $this->config->beforeNotifyFunction = 'before_notify_skip_error';
 
         $this->diagnostics = new Bugsnag_Diagnostics($this->config);
 
         $this->notification = $this->getMockBuilder('Bugsnag_Notification')
-                                   ->setMethods(array("postJSON"))
+                                   ->setMethods(array('postJSON'))
                                    ->setConstructorArgs(array($this->config))
                                    ->getMock();
     }
@@ -29,14 +29,14 @@ class NotificationTest extends Bugsnag_TestCase
     {
         // Create a mock notification object
         $this->notification = $this->getMockBuilder('Bugsnag_Notification')
-                                   ->setMethods(array("postJSON"))
+                                   ->setMethods(array('postJSON'))
                                    ->setConstructorArgs(array($this->config))
                                    ->getMock();
 
         // Expect postJSON to be called
         $this->notification->expects($this->once())
-                           ->method("postJSON")
-                           ->with($this->equalTo("https://notify.bugsnag.com"),
+                           ->method('postJSON')
+                           ->with($this->equalTo('https://notify.bugsnag.com'),
                                   $this->anything());
 
         // Add an error to the notification and deliver it
@@ -47,21 +47,21 @@ class NotificationTest extends Bugsnag_TestCase
     public function testBeforeNotifySkipsError()
     {
         $this->notification->expects($this->never())
-                           ->method("postJSON");
+                           ->method('postJSON');
 
-        $this->notification->addError($this->getError("SkipMe", "Message"));
+        $this->notification->addError($this->getError('SkipMe', 'Message'));
         $this->notification->deliver();
     }
 
     /**
-     * Test for ensuring that the addError method calls shouldNotify
+     * Test for ensuring that the addError method calls shouldNotify.
      *
      * If shouldNotify returns false, the error should not be added
      */
     public function testAddErrorChecksShouldNotifyFalse()
     {
         $config = $this->getMockBuilder('Bugsnag_Configuration')
-                                     ->setMethods(array("shouldNotify"))
+                                     ->setMethods(array('shouldNotify'))
                                      ->getMock();
         $config->expects($this->once())
                 ->method('shouldNotify')
@@ -69,7 +69,7 @@ class NotificationTest extends Bugsnag_TestCase
 
         /** @var Bugsnag_Notification $notification */
         $notification = $this->getMockBuilder('Bugsnag_Notification')
-                                     ->setMethods(array("postJSON"))
+                                     ->setMethods(array('postJSON'))
                                      ->setConstructorArgs(array($config))
                                      ->getMock();
 
@@ -77,14 +77,14 @@ class NotificationTest extends Bugsnag_TestCase
     }
 
     /**
-     * Test for ensuring that the deliver method calls shouldNotify
+     * Test for ensuring that the deliver method calls shouldNotify.
      *
      * If shouldNotify returns false, the error should not be sent
      */
     public function testDeliverChecksShouldNotify()
     {
         $config = $this->getMockBuilder('Bugsnag_Configuration')
-                                     ->setMethods(array("shouldNotify"))
+                                     ->setMethods(array('shouldNotify'))
                                      ->getMock();
         $config->expects($this->once())
                 ->method('shouldNotify')
@@ -92,12 +92,12 @@ class NotificationTest extends Bugsnag_TestCase
 
         /** @var Bugsnag_Notification|PHPUnit_Framework_MockObject_MockObject $notification */
         $notification = $this->getMockBuilder('Bugsnag_Notification')
-                                     ->setMethods(array("postJSON"))
+                                     ->setMethods(array('postJSON'))
                                      ->setConstructorArgs(array($config))
                                      ->getMock();
 
         $notification->expects($this->never())
-                             ->method("postJSON");
+                             ->method('postJSON');
 
         $notification->addError($this->getError());
         $notification->deliver();
@@ -105,27 +105,27 @@ class NotificationTest extends Bugsnag_TestCase
 
     public function testNoEnvironmentByDefault()
     {
-        $_ENV["SOMETHING"] = "blah";
+        $_ENV['SOMETHING'] = 'blah';
 
         $notification = new Bugsnag_Notification($this->config);
         $notification->addError($this->getError());
         $notificationArray = $notification->toArray();
-        $this->assertArrayNotHasKey("Environment", $notificationArray["events"][0]["metaData"]);
+        $this->assertArrayNotHasKey('Environment', $notificationArray['events'][0]['metaData']);
     }
 
     public function testEnvironmentPresentWhenRequested()
     {
-        $_ENV["SOMETHING"] = "blah";
+        $_ENV['SOMETHING'] = 'blah';
 
         $this->config->sendEnvironment = true;
         $notification = new Bugsnag_Notification($this->config);
         $notification->addError($this->getError());
         $notificationArray = $notification->toArray();
-        $this->assertEquals($notificationArray["events"][0]["metaData"]["Environment"]["SOMETHING"], "blah");
+        $this->assertEquals($notificationArray['events'][0]['metaData']['Environment']['SOMETHING'], 'blah');
     }
 }
 
 function before_notify_skip_error($error)
 {
-    return $error->name != "SkipMe";
+    return $error->name != 'SkipMe';
 }

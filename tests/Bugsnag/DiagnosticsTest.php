@@ -17,7 +17,7 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
     {
         $this->config->releaseStage = 'qa1';
         $this->config->appVersion = '1.2.3';
-        $this->config->type = "laravel";
+        $this->config->type = 'laravel';
 
         $appData = $this->diagnostics->getAppData();
 
@@ -43,12 +43,12 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
 
     public function testDefaultUser()
     {
-        $this->config->user = array('id' => 123, 'email' => "test@email.com", 'name' => "Bob Hoskins");
+        $this->config->user = array('id' => 123, 'email' => 'test@email.com', 'name' => 'Bob Hoskins');
 
         $userData = $this->diagnostics->getUser();
 
         $this->assertEquals($userData['id'], 123);
-        $this->assertEquals($userData['email'], "test@email.com");
-        $this->assertEquals($userData['name'], "Bob Hoskins");
+        $this->assertEquals($userData['email'], 'test@email.com');
+        $this->assertEquals($userData['name'], 'Bob Hoskins');
     }
 }
