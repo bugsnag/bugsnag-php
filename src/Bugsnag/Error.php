@@ -9,9 +9,9 @@ class Bugsnag_Error
     );
 
     public $name;
-    public $payloadVersion = "2";
+    public $payloadVersion = '2';
     public $message;
-    public $severity = "warning";
+    public $severity = 'warning';
     /** @var Bugsnag_Stacktrace */
     public $stacktrace;
     public $metaData = array();
@@ -24,7 +24,7 @@ class Bugsnag_Error
     // Static error creation methods, to ensure that Error object is always complete
     public static function fromPHPError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $code, $message, $file, $line, $fatal = false)
     {
-        $error = new Bugsnag_Error($config, $diagnostics);
+        $error = new self($config, $diagnostics);
         $error->setPHPError($code, $message, $file, $line, $fatal);
 
         return $error;
@@ -32,7 +32,7 @@ class Bugsnag_Error
 
     public static function fromPHPThrowable(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $throwable)
     {
-        $error = new Bugsnag_Error($config, $diagnostics);
+        $error = new self($config, $diagnostics);
         $error->setPHPException($throwable);
 
         return $error;
@@ -40,7 +40,7 @@ class Bugsnag_Error
 
     public static function fromNamedError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $name, $message = null)
     {
-        $error = new Bugsnag_Error($config, $diagnostics);
+        $error = new self($config, $diagnostics);
         $error->setName($name)
               ->setMessage($message)
               ->setStacktrace(Bugsnag_Stacktrace::generate($config));
@@ -86,7 +86,7 @@ class Bugsnag_Error
     public function setSeverity($severity)
     {
         if (!is_null($severity)) {
-            if (in_array($severity, Bugsnag_Error::$VALID_SEVERITIES)) {
+            if (in_array($severity, self::$VALID_SEVERITIES)) {
                 $this->severity = $severity;
             } else {
                 error_log('Bugsnag Warning: Tried to set error severity to '.$severity.' which is not allowed.');
@@ -101,11 +101,13 @@ class Bugsnag_Error
         if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
             if (!$exception instanceof \Throwable) {
                 error_log('Bugsnag Warning: Exception must implement interface \Throwable.');
+
                 return;
             }
         } else {
             if (!$exception instanceof \Exception) {
                 error_log('Bugsnag Warning: Exception must be instance of \Exception.');
+
                 return;
             }
         }
@@ -155,7 +157,7 @@ class Bugsnag_Error
     public function setPrevious($exception)
     {
         if ($exception) {
-            $this->previous = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
+            $this->previous = self::fromPHPThrowable($this->config, $this->diagnostics, $exception);
         }
 
         return $this;
@@ -175,7 +177,7 @@ class Bugsnag_Error
         );
 
         if (isset($this->groupingHash)) {
-        	$errorArray['groupingHash'] = $this->groupingHash;
+            $errorArray['groupingHash'] = $this->groupingHash;
         }
 
         return $errorArray;
@@ -201,7 +203,7 @@ class Bugsnag_Error
     private function cleanupObj($obj, $isMetaData)
     {
         if (is_null($obj)) {
-            return null;
+            return;
         }
 
         if (is_array($obj)) {

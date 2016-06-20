@@ -7,8 +7,8 @@ if (!defined('PHP_VERSION_ID')) {
 }
 
 if (PHP_VERSION_ID < 50207) {
-    define('PHP_MAJOR_VERSION',   $version[0]);
-    define('PHP_MINOR_VERSION',   $version[1]);
+    define('PHP_MAJOR_VERSION', $version[0]);
+    define('PHP_MINOR_VERSION', $version[1]);
     define('PHP_RELEASE_VERSION', $version[2]);
 }
 
@@ -31,7 +31,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())
                      ->method('notify');
 
-        $this->client->errorHandler(E_WARNING, "Something broke", "somefile.php", 123);
+        $this->client->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
     public function testExceptionHandler()
@@ -39,7 +39,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())
                      ->method('notify');
 
-        $this->client->exceptionHandler(new Exception("Something broke"));
+        $this->client->exceptionHandler(new Exception('Something broke'));
     }
 
     public function testManualErrorNotification()
@@ -47,7 +47,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())
                      ->method('notify');
 
-        $this->client->notifyError("SomeError", "Some message");
+        $this->client->notifyError('SomeError', 'Some message');
     }
 
     public function testManualExceptionNotification()
@@ -55,7 +55,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())
                      ->method('notify');
 
-        $this->client->notifyException(new Exception("Something broke"));
+        $this->client->notifyException(new Exception('Something broke'));
     }
 
     public function testErrorReportingLevel()
@@ -64,7 +64,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
                      ->method('notify');
 
         $this->client->setErrorReportingLevel(E_NOTICE)
-                     ->errorHandler(E_NOTICE, "Something broke", "somefile.php", 123);
+                     ->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
     }
 
     public function testErrorReportingLevelFails()
@@ -73,7 +73,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
                      ->method('notify');
 
         $this->client->setErrorReportingLevel(E_NOTICE)
-                     ->errorHandler(E_WARNING, "Something broke", "somefile.php", 123);
+                     ->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
     public function testErrorReportingWithoutNotice()
@@ -82,16 +82,16 @@ class ClientTest extends PHPUnit_Framework_TestCase
                      ->method('notify');
 
         $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE)
-                     ->errorHandler(E_NOTICE, "Something broke", "somefile.php", 123);
+                     ->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
     }
 
     public function testSetInvalidCurlOptions()
     {
-		if (PHP_MAJOR_VERSION >= 7) {
+        if (PHP_MAJOR_VERSION >= 7) {
             $this->setExpectedException('TypeError');
         } else {
             $this->setExpectedException('PHPUnit_Framework_Error');
         }
-        $this->client->setCurlOptions("option");
+        $this->client->setCurlOptions('option');
     }
 }
