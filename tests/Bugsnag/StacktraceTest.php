@@ -172,13 +172,13 @@ class StacktraceTest extends Bugsnag_TestCase
     public function testCodeEndOfFile()
     {
         $fileContents = explode("\n", $this->getFixture('code/File.php'));
-        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $this->getFixturePath('code/File.php'), 22)->toArray();
+        $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $this->getFixturePath('code/File.php'), 20)->toArray();
         $this->assertCount(1, $stacktrace);
 
         $topFrame = $stacktrace[0];
         $this->assertCount(7, $topFrame['code']);
 
-        for ($i = 16; $i <= 22; $i++) {
+        for ($i = 16; $i <= 20; $i++) {
             $this->assertCodeEquals($fileContents[$i - 1], $topFrame['code'][$i]);
         }
     }
