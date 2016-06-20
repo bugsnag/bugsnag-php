@@ -144,15 +144,15 @@ class ErrorTest extends Bugsnag_TestCase
         $exception = version_compare(PHP_VERSION, '7.0.0', '>=') ? new \Error() : new Exception();
         $this->error->setPHPException($exception);
     }
-    
+
     /**
      * @expectedException InvalidArgumentException
      */
     public function testBadSetName()
     {
-        $this->error->setName([]);
+        $this->error->setName(array());
     }
-    
+
     /**
      * @expectedException InvalidArgumentException
      */
