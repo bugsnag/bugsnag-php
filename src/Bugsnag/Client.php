@@ -475,15 +475,15 @@ class Bugsnag_Client
     /**
      * Notify Bugsnag of a non-fatal/handled throwable.
      *
-     * @param Throwable $throwable the throwable to notify Bugsnag about
-     * @param array     $metaData  optional metaData to send with this error
-     * @param string    $severity  optional severity of this error (fatal/error/warning/info)
+     * @param \Throwable $throwable the throwable to notify Bugsnag about
+     * @param array      $metaData  optional metaData to send with this error
+     * @param string     $severity  optional severity of this error (fatal/error/warning/info)
      *
      * @return void
      */
     public function notifyException($throwable, array $metaData = null, $severity = null)
     {
-        if (is_subclass_of($throwable, 'Throwable') || is_subclass_of($throwable, 'Exception') || get_class($throwable) == 'Exception') {
+        if ($throwable instanceof Throwable || $throwable instanceof Exception) {
             $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $throwable);
             $error->setSeverity($severity);
 
@@ -514,7 +514,7 @@ class Bugsnag_Client
      *
      * Should only be called internally by PHP's set_exception_handler.
      *
-     * @param Throwable $throwable the exception was was thrown
+     * @param \Throwable $throwable the exception was was thrown
      *
      * @return void
      */
