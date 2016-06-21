@@ -120,7 +120,6 @@ class Error
             }
         } else {
             if (!$exception instanceof Exception) {
-
                 error_log('Bugsnag Warning: The exception must be an Exception.');
 
                 return;
