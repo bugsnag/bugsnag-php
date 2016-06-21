@@ -16,6 +16,11 @@ Changelog
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#159](https://github.com/bugsnag/bugsnag-php/pull/159)
 
+* Restore support for PHP 5.2
+  [#148](https://github.com/bugsnag/bugsnag-php/pull/148)
+
+* Enforce integer type on stack frame line numbers
+
 ## 2.7.3 (2016-06-20)
 
 * Improve performance when using cURL
