@@ -141,7 +141,7 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testSetPHPException()
     {
-        $exception = version_compare(PHP_VERSION, '7.0.0', '>=') ? new \Error() : new Exception();
+        $exception = version_compare(PHP_VERSION, '7.0.0', '>=') ? new Error() : new Exception();
         $this->error->setPHPException($exception);
     }
 
