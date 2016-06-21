@@ -69,7 +69,7 @@ class Bugsnag_Error
     public function setMessage($message)
     {
         if (is_scalar($message) || method_exists($message, '__toString')) {
-            $this->message = (string) $message;
+            $this->message = $message ? (string) $message : null;
         } else {
             throw new InvalidArgumentException('Message must be a string.');
         }
