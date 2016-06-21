@@ -17,14 +17,14 @@ class StacktraceTest extends Bugsnag_TestCase
 
     protected function assertFrameEquals($frame, $method, $file, $line)
     {
-        $this->assertEquals($frame['method'], $method);
-        $this->assertEquals($frame['file'], $file);
-        $this->assertEquals($frame['lineNumber'], $line);
+        $this->assertSame($frame['method'], $method);
+        $this->assertSame($frame['file'], $file);
+        $this->assertSame($frame['lineNumber'], $line);
     }
 
     protected function assertCodeEquals($expected, $actual)
     {
-        $this->assertEquals(rtrim(substr($expected, 0, 200)), $actual);
+        $this->assertSame(rtrim(substr($expected, 0, 200)), $actual);
     }
 
     public function testFromFrame()
@@ -118,15 +118,15 @@ class StacktraceTest extends Bugsnag_TestCase
         $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $evalFrame['file'], $evalFrame['line'])->toArray();
         $topFrame = $stacktrace[0];
 
-        $this->assertEquals($topFrame['file'], 'path/some/file.php');
-        $this->assertEquals($topFrame['lineNumber'], 123);
+        $this->assertSame($topFrame['file'], 'path/some/file.php');
+        $this->assertSame($topFrame['lineNumber'], 123);
 
         $evalFrame = $this->getJsonFixture('frames/runtime_created.json');
         $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $evalFrame['file'], $evalFrame['line'])->toArray();
         $topFrame = $stacktrace[0];
 
-        $this->assertEquals($topFrame['file'], 'path/some/file.php');
-        $this->assertEquals($topFrame['lineNumber'], 123);
+        $this->assertSame($topFrame['file'], 'path/some/file.php');
+        $this->assertSame($topFrame['lineNumber'], 123);
     }
 
     public function testStrippingPaths()

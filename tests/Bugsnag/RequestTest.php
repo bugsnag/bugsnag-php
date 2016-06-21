@@ -22,16 +22,16 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
     public function testGetContext()
     {
-        $this->assertEquals(Bugsnag_Request::getContext(), 'GET /blah/blah.php');
+        $this->assertSame(Bugsnag_Request::getContext(), 'GET /blah/blah.php');
     }
 
     public function testGetCurrentUrl()
     {
-        $this->assertEquals(Bugsnag_Request::getCurrentUrl(), 'http://example.com/blah/blah.php?some=param');
+        $this->assertSame(Bugsnag_Request::getCurrentUrl(), 'http://example.com/blah/blah.php?some=param');
     }
 
     public function testRequestIp()
     {
-        $this->assertEquals(Bugsnag_Request::getRequestIp(), '123.45.67.8');
+        $this->assertSame(Bugsnag_Request::getRequestIp(), '123.45.67.8');
     }
 }

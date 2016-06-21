@@ -23,7 +23,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setMetaData(array('Testing' => array('globalArray' => 'hi')));
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['metaData']['Testing']['globalArray'], 'hi');
+        $this->assertSame($errorArray['metaData']['Testing']['globalArray'], 'hi');
     }
 
     public function testMetaDataMerging()
@@ -32,8 +32,8 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setMetaData(array('Testing' => array('localArray' => 'yo')));
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['metaData']['Testing']['globalArray'], 'hi');
-        $this->assertEquals($errorArray['metaData']['Testing']['localArray'], 'yo');
+        $this->assertSame($errorArray['metaData']['Testing']['globalArray'], 'hi');
+        $this->assertSame($errorArray['metaData']['Testing']['localArray'], 'yo');
     }
 
     public function testFiltering()
@@ -41,7 +41,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setMetaData(array('Testing' => array('password' => '123456')));
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['metaData']['Testing']['password'], '[FILTERED]');
+        $this->assertSame($errorArray['metaData']['Testing']['password'], '[FILTERED]');
     }
 
     public function testExceptionsNotFiltered()
@@ -59,7 +59,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setPHPError(E_NOTICE, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Notice');
+        $this->assertSame($errorArray['exceptions'][0]['errorClass'], 'PHP Notice');
     }
 
     public function testErrorName()
@@ -67,7 +67,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setPHPError(E_ERROR, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['exceptions'][0]['errorClass'], 'PHP Fatal Error');
+        $this->assertSame($errorArray['exceptions'][0]['errorClass'], 'PHP Fatal Error');
     }
 
     public function testErrorPayloadVersion()
@@ -75,7 +75,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setPHPError(E_ERROR, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['payloadVersion'], '2');
+        $this->assertSame($errorArray['payloadVersion'], '2');
     }
 
     public function testNoticeSeverity()
@@ -83,7 +83,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setPHPError(E_NOTICE, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'info');
+        $this->assertSame($errorArray['severity'], 'info');
     }
 
     public function testErrorSeverity()
@@ -91,7 +91,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setPHPError(E_ERROR, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'error');
+        $this->assertSame($errorArray['severity'], 'error');
     }
 
     public function testManualSeverity()
@@ -99,7 +99,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setSeverity('error');
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'error');
+        $this->assertSame($errorArray['severity'], 'error');
     }
 
     public function testInvalidSeverity()
@@ -107,7 +107,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setSeverity('bunk');
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'warning');
+        $this->assertSame($errorArray['severity'], 'warning');
     }
 
     public function testPreviousException()
@@ -119,9 +119,9 @@ class ErrorTest extends Bugsnag_TestCase
 
             $errorArray = $error->toArray();
 
-            $this->assertEquals(count($errorArray['exceptions']), 2);
-            $this->assertEquals($errorArray['exceptions'][0]['message'], 'firstly');
-            $this->assertEquals($errorArray['exceptions'][1]['message'], 'secondly');
+            $this->assertCount(2, $errorArray['exceptions']);
+            $this->assertSame($errorArray['exceptions'][0]['message'], 'firstly');
+            $this->assertSame($errorArray['exceptions'][1]['message'], 'secondly');
         }
     }
 
@@ -130,7 +130,7 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setGroupingHash('herp#derp');
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['groupingHash'], 'herp#derp');
+        $this->assertSame($errorArray['groupingHash'], 'herp#derp');
     }
 
     public function testErrorGroupingHashNotSet()
