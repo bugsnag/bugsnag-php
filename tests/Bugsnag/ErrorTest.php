@@ -120,17 +120,19 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testPreviousException()
     {
-        if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
-            $exception = new Exception('secondly', 65533, new Exception('firstly'));
-
-            $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
-
-            $errorArray = $error->toArray();
-
-            $this->assertCount(2, $errorArray['exceptions']);
-            $this->assertSame($errorArray['exceptions'][0]['message'], 'firstly');
-            $this->assertSame($errorArray['exceptions'][1]['message'], 'secondly');
+        if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+            $this->markTestSkipped('Previous exceptions are supported only by PHP 5.3+');
         }
+
+        $exception = new Exception('secondly', 65533, new Exception('firstly'));
+
+        $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
+
+        $errorArray = $error->toArray();
+
+        $this->assertCount(2, $errorArray['exceptions']);
+        $this->assertSame($errorArray['exceptions'][0]['message'], 'firstly');
+        $this->assertSame($errorArray['exceptions'][1]['message'], 'secondly');
     }
 
     public function testErrorGroupingHash()
