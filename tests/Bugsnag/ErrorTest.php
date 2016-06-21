@@ -181,6 +181,13 @@ class ErrorTest extends Bugsnag_TestCase
         $this->assertSame('foo bar baz', $this->error->message);
     }
 
+    public function testEmptySetMessage()
+    {
+        $this->error->setMessage('');
+
+        $this->assertSame('', $this->error->message);
+    }
+
     public function testNullSetMessage()
     {
         $this->error->setMessage(null);
