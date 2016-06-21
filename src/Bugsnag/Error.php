@@ -108,7 +108,7 @@ class Bugsnag_Error
 
     public function setPHPException($exception)
     {
-        if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
+        if (interface_exists(Throwable::class)) {
             if (!$exception instanceof Throwable) {
                 error_log('Bugsnag Warning: The exception must implement Throwable.');
 

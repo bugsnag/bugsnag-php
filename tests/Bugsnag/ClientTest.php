@@ -1,16 +1,6 @@
 <?php
 
-if (!defined('PHP_VERSION_ID')) {
-    $version = explode('.', PHP_VERSION);
-
-    define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
-}
-
-if (PHP_VERSION_ID < 50207) {
-    define('PHP_MAJOR_VERSION', $version[0]);
-    define('PHP_MINOR_VERSION', $version[1]);
-    define('PHP_RELEASE_VERSION', $version[2]);
-}
+use PHPUnit_Framework_Error as PHPUnitError;
 
 class ClientTest extends PHPUnit_Framework_TestCase
 {
@@ -87,10 +77,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testSetInvalidCurlOptions()
     {
-        if (PHP_MAJOR_VERSION >= 7) {
-            $this->setExpectedException('TypeError');
+        if (class_exists(TypeError::class)) {
+            $this->setExpectedException(TypeError::class);
         } else {
-            $this->setExpectedException('PHPUnit_Framework_Error');
+            $this->setExpectedException(PHPUnitError::class);
         }
         $this->client->setCurlOptions('option');
     }
