@@ -118,22 +118,6 @@ class Bugsnag_Client
     }
 
     /**
-     * Set whether or not to use SSL when notifying bugsnag.
-     *
-     * @param bool $useSSL whether to use SSL
-     *
-     * @deprecated you can now pass full URLs to setEndpoint
-     *
-     * @return $this
-     */
-    public function setUseSSL($useSSL)
-    {
-        $this->config->useSSL = $useSSL;
-
-        return $this;
-    }
-
-    /**
      * Set the desired timeout for cURL connection when notifying bugsnag.
      *
      * @param int $timeout the desired timeout in seconds
@@ -224,24 +208,6 @@ class Bugsnag_Client
     public function setUser(array $user)
     {
         $this->config->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * @deprecated deprecated since version 2.1
-     *
-     * @param $userId
-     *
-     * @return $this
-     */
-    public function setUserId($userId)
-    {
-        if (!is_array($this->config->user)) {
-            $this->config->user = [];
-        }
-
-        $this->config->user['id'] = $userId;
 
         return $this;
     }
