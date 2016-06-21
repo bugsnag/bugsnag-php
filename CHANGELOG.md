@@ -1,6 +1,26 @@
 Changelog
 =========
 
+## 2.8.0 (2016-06-21)
+
+## Enhancements
+
+* Add ability to optionally merge metadata with existing properties, otherwise
+  overwrite them
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#162](https://github.com/bugsnag/bugsnag-php/pull/162)
+
+## Bug Fixes
+
+* Fix regression where an empty throwable message was cast to an empty string
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#159](https://github.com/bugsnag/bugsnag-php/pull/159)
+
+* Restore support for PHP 5.2
+  [#148](https://github.com/bugsnag/bugsnag-php/pull/148)
+
+* Enforce integer type on stack frame line numbers
+
 ## 2.7.3 (2016-06-20)
 
 * Improve performance when using cURL
