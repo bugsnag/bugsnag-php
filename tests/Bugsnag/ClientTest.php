@@ -94,4 +94,27 @@ class ClientTest extends PHPUnit_Framework_TestCase
         }
         $this->client->setCurlOptions('option');
     }
+
+    public function testGetConfig()
+    {
+        $this->assertInstanceOf('Bugsnag_Configuration', $this->client->getConfig());
+    }
+
+    public function testSetMetaData()
+    {
+        $this->client->setMetaData(array('Testing' => array('globalArray' => 'hi')));
+
+        $metaData = $this->client->getConfig('metaData');
+        $this->assertEquals($metaData['Testing']['globalArray'], 'hi');
+    }
+
+    public function testMetaDataMerging()
+    {
+        $this->client->setMetaData(array('Testing' => array('globalArray' => 'hi')));
+        $this->client->setMetaData(array('Testing' => array('localArray' => 'yo')));
+
+        $metaData = $this->client->getConfig('metaData');
+        $this->assertEquals($metaData['Testing']['globalArray'], 'hi');
+        $this->assertEquals($metaData['Testing']['localArray'], 'yo');
+    }
 }
