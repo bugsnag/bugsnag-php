@@ -96,7 +96,7 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testRecoverableErrorSeverity()
     {
-        $this->error->setPHPError(E_RECOVERABLE_ERROR, "Broken", "file", 123);
+        $this->error->setPHPError(E_RECOVERABLE_ERROR, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['severity'], 'error');
