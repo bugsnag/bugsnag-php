@@ -19,7 +19,7 @@ class NotificationTest extends AbstractTestCase
     {
         $this->config = new Configuration();
         $this->config->apiKey = '6015a72ff14038114c3d12623dfb018f';
-        $this->config->beforeNotifyFunction = 'before_notify_skip_error';
+        $this->config->beforeNotifyFunction = 'Bugsnag\Tests\before_notify_skip_error';
 
         $this->diagnostics = new Diagnostics($this->config);
 

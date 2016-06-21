@@ -90,13 +90,12 @@ class StacktraceTest extends AbstractTestCase
         $fixture = $this->getJsonFixture('backtraces/anonymous_frame.json');
         $stacktrace = Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], 'somefile.php', 123)->toArray();
 
-        $this->assertCount(5, $stacktrace);
+        $this->assertCount(4, $stacktrace);
 
         $this->assertFrameEquals($stacktrace[0], 'Illuminate\\Support\\Facades\\Facade::__callStatic', 'somefile.php', 123);
-        $this->assertFrameEquals($stacktrace[1], 'Bugsnag\\BugsnagLaravel\\BugsnagFacade::notifyError', 'controllers/ExampleController.php', 12);
-        $this->assertFrameEquals($stacktrace[2], 'ExampleController::index', 'controllers/ExampleController.php', 12);
-        $this->assertFrameEquals($stacktrace[3], 'call_user_func_array', '[internal]', 0);
-        $this->assertFrameEquals($stacktrace[4], '[main]', 'Routing/Controller.php', 194);
+        $this->assertFrameEquals($stacktrace[1], 'ExampleController::index', 'controllers/ExampleController.php', 12);
+        $this->assertFrameEquals($stacktrace[2], 'call_user_func_array', '[internal]', 0);
+        $this->assertFrameEquals($stacktrace[3], '[main]', 'Routing/Controller.php', 194);
     }
 
     public function testXdebugErrorStackframes()
