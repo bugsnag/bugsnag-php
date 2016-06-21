@@ -226,8 +226,7 @@ class Bugsnag_Client
     }
 
     /**
-     * Set information about the current user of your app, including
-     * id, name and email.
+     * Set information about the current user of your app, including id, name and email.
      *
      * @param array $user an array of user information. Eg:
      *        array(
