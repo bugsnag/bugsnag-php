@@ -1,15 +1,11 @@
 <?php
 
-<<<<<<< 9e0dd24040bfaf0641d3bed9d259877c5c7db396:tests/Bugsnag/ClientTest.php
-use Bugsnag\Client;
-=======
 namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use PHPUnit_Framework_TestCase as TestCase;
->>>>>>> PSR-4 refactor:tests/ClientTest.php
 
-class ClientTest extends estCase
+class ClientTest extends TestCase
 {
     /** @var \PHPUnit_Framework_MockObject_MockObject|\Bugsnag\Client */
     protected $client;

@@ -449,7 +449,7 @@ class Client
      */
     public function notifyException($throwable, array $metaData = null, $severity = null)
     {
-        if ($throwable, 'Throwable') || is_subclass_of($throwable, 'Exception') || get_class($throwable) == 'Exception') {
+        if (is_subclass_of($throwable, 'Throwable') || is_subclass_of($throwable, 'Exception') || get_class($throwable) == 'Exception') {
             $error = Error::fromPHPThrowable($this->config, $this->diagnostics, $throwable);
             $error->setSeverity($severity);
 
