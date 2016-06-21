@@ -1,6 +1,8 @@
 <?php
 
-class Bugsnag_Configuration
+namespace Bugsnag;
+
+class Configuration
 {
     public static $DEFAULT_TIMEOUT = 10;
     public static $DEFAULT_ENDPOINT = 'https://notify.bugsnag.com';

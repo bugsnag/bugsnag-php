@@ -6,25 +6,25 @@
             "file": "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Error.php",
             "line": 116,
             "function": "generate",
-            "class": "Bugsnag_Stacktrace"
+            "class": "Bugsnag\\Stacktrace"
         },
         {
             "file": "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Error.php",
             "line": 25,
             "function": "setPHPError",
-            "class": "Bugsnag_Error"
+            "class": "Bugsnag\\Error"
         },
         {
             "file": "/Users/james/src/bugsnag/bugsnag-php/src/Bugsnag/Client.php",
             "line": 346,
             "function": "fromPHPError",
-            "class": "Bugsnag_Error"
+            "class": "Bugsnag\\Error"
         },
         {
             "file": "/Users/james/src/bugsnag/bugsnag-php/testing.php",
             "line": 22,
             "function": "errorHandler",
-            "class": "Bugsnag_Client"
+            "class": "Bugsnag\\Client"
         },
         {
             "file": "/Users/james/src/bugsnag/bugsnag-php/testing.php",
