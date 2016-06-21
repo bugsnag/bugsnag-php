@@ -94,6 +94,14 @@ class ErrorTest extends Bugsnag_TestCase
         $this->assertSame($errorArray['severity'], 'error');
     }
 
+    public function testRecoverableErrorSeverity()
+    {
+        $this->error->setPHPError(E_RECOVERABLE_ERROR, 'Broken', 'file', 123);
+
+        $errorArray = $this->error->toArray();
+        $this->assertEquals($errorArray['severity'], 'error');
+    }
+
     public function testManualSeverity()
     {
         $this->error->setSeverity('error');
@@ -179,5 +187,19 @@ class ErrorTest extends Bugsnag_TestCase
         $this->error->setMessage('foo bar baz');
 
         $this->assertSame('foo bar baz', $this->error->message);
+    }
+
+    public function testEmptySetMessage()
+    {
+        $this->error->setMessage('');
+
+        $this->assertSame('', $this->error->message);
+    }
+
+    public function testNullSetMessage()
+    {
+        $this->error->setMessage(null);
+
+        $this->assertSame(null, $this->error->message);
     }
 }
