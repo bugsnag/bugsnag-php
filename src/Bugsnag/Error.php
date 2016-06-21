@@ -107,14 +107,14 @@ class Bugsnag_Error
     public function setPHPException($exception)
     {
         if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
-            if (!$exception instanceof \Throwable) {
-                error_log('Bugsnag Warning: Exception must implement interface \Throwable.');
+            if (!$exception instanceof Throwable) {
+                error_log('Bugsnag Warning: The exception must implement Throwable.');
 
                 return;
             }
         } else {
-            if (!$exception instanceof \Exception) {
-                error_log('Bugsnag Warning: Exception must be instance of \Exception.');
+            if (!$exception instanceof Exception) {
+                error_log('Bugsnag Warning: The exception must be an Exception.');
 
                 return;
             }
