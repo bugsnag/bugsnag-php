@@ -11,8 +11,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $_SERVER['HTTP_HOST'] = 'example.com';
         $_SERVER['HTTP_USER_AGENT'] = 'Example Browser 1.2.3';
 
-        $_COOKIE = array('cookie' => 'cookieval');
-        $_SESSION = array('session' => 'sessionval');
+        $_COOKIE = ['cookie' => 'cookieval'];
+        $_SESSION = ['session' => 'sessionval'];
     }
 
     public function testIsRequest()

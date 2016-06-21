@@ -6,14 +6,14 @@ class Bugsnag_Notification
 
     private $config;
     /** @var Bugsnag_Error[] */
-    private $errorQueue = array();
+    private $errorQueue = [];
 
     public function __construct(Bugsnag_Configuration $config)
     {
         $this->config = $config;
     }
 
-    public function addError(Bugsnag_Error $error, $passedMetaData = array())
+    public function addError(Bugsnag_Error $error, $passedMetaData = [])
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {
@@ -30,17 +30,17 @@ class Bugsnag_Notification
 
         // Session Tab
         if ($this->config->sendSession && !empty($_SESSION)) {
-            $error->setMetaData(array('session' => $_SESSION));
+            $error->setMetaData(['session' => $_SESSION]);
         }
 
         // Cookies Tab
         if ($this->config->sendCookies && !empty($_COOKIE)) {
-            $error->setMetaData(array('cookies' => $_COOKIE));
+            $error->setMetaData(['cookies' => $_COOKIE]);
         }
 
         // Add environment meta-data to error
         if ($this->config->sendEnvironment && !empty($_ENV)) {
-            $error->setMetaData(array('Environment' => $_ENV));
+            $error->setMetaData(['Environment' => $_ENV]);
         }
 
         // Add user-specified meta-data to error
@@ -63,7 +63,7 @@ class Bugsnag_Notification
 
     public function toArray()
     {
-        $events = array();
+        $events = [];
         foreach ($this->errorQueue as $error) {
             $errorArray = $error->toArray();
 
@@ -72,11 +72,11 @@ class Bugsnag_Notification
             }
         }
 
-        return array(
+        return [
             'apiKey' => $this->config->apiKey,
             'notifier' => $this->config->notifier,
             'events' => $events,
-        );
+        ];
     }
 
     public function deliver()
@@ -86,7 +86,7 @@ class Bugsnag_Notification
             $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
 
             // Clear the error queue
-            $this->errorQueue = array();
+            $this->errorQueue = [];
         }
     }
 
@@ -113,7 +113,7 @@ class Bugsnag_Notification
         curl_setopt($http, CURLOPT_HEADER, false);
         curl_setopt($http, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($http, CURLOPT_POST, true);
-        curl_setopt($http, CURLOPT_HTTPHEADER, array(self::$CONTENT_TYPE_HEADER, 'Expect:'));
+        curl_setopt($http, CURLOPT_HTTPHEADER, [self::$CONTENT_TYPE_HEADER, 'Expect:']);
         curl_setopt($http, CURLOPT_POSTFIELDS, $body);
         curl_setopt($http, CURLOPT_CONNECTTIMEOUT, $this->config->timeout);
         curl_setopt($http, CURLOPT_SSL_VERIFYPEER, false);
@@ -172,17 +172,17 @@ class Bugsnag_Notification
         }
 
         // Create the request context
-        $context = stream_context_create(array(
-            'http' => array(
+        $context = stream_context_create([
+            'http' => [
                 'method' => 'POST',
                 'header' => self::$CONTENT_TYPE_HEADER.'\r\n',
                 'content' => $body,
                 'timeout' => $this->config->timeout,
-            ),
-            'ssl' => array(
+            ],
+            'ssl' => [
                 'verify_peer' => false,
-            ),
-        ));
+            ],
+        ]);
 
         // Execute the request and fetch the response
         if ($stream = fopen($url, 'rb', false, $context)) {

@@ -3,4 +3,4 @@
 require_once '../../build/bugsnag.phar';
 
 $bugsnag = new Bugsnag_Client('YOUR-API-KEY-HERE');
-$bugsnag->notifyError('Broken', 'Something broke', array('tab' => array('paying' => true, 'object' => (object) array('key' => 'value'), 'null' => null, 'string' => 'test', 'int' => 4)));
+$bugsnag->notifyError('Broken', 'Something broke', ['tab' => ['paying' => true, 'object' => (object) ['key' => 'value'], 'null' => null, 'string' => 'test', 'int' => 4]]);
