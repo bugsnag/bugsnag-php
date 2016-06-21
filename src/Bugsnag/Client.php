@@ -307,12 +307,13 @@ class Bugsnag_Client
      *                "email" => "james@example.com"
      *            )
      *        )
+     * @param bool $merge optionally merge the meta data
      *
      * @return $this
      */
-    public function setMetaData(array $metaData)
+    public function setMetaData(array $metaData, $merge = false)
     {
-        $this->config->metaData = $metaData;
+        $this->config->metaData = $merge ? $metaData : array_merge_recursive($this->config->metaData, $metaData);
 
         return $this;
     }
