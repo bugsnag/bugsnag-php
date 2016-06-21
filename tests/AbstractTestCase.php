@@ -1,15 +1,20 @@
 <?php
 
-abstract class Bugsnag_TestCase extends PHPUnit_Framework_TestCase
+namespace Bugsnag\Tests;
+
+use Bugsnag\Error;
+use PHPUnit_Framework_TestCase as TestCase;
+
+abstract class AbstractTestCase extends TestCase
 {
-    /** @var Bugsnag_Configuration */
+    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var Bugsnag_Diagnostics */
+    /** @var \Bugsnag\Diagnostics */
     protected $diagnostics;
 
     protected function getError($name = 'Name', $message = 'Message')
     {
-        return Bugsnag_Error::fromNamedError($this->config, $this->diagnostics, $name, $message);
+        return Error::fromNamedError($this->config, $this->diagnostics, $name, $message);
     }
 
     protected function getFixturePath($file)

@@ -1,20 +1,24 @@
 <?php
 
-require_once 'Bugsnag_TestCase.php';
+namespace Bugsnag\Tests;
 
-class ErrorTest extends Bugsnag_TestCase
+use Bugsnag\Configuration;
+use Bugsnag\Diagnostics;
+use Bugsnag\Error;
+
+class ErrorTest extends AbstractTestCase
 {
-    /** @var Bugsnag_Configuration */
+    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var Bugsnag_Diagnostics */
+    /** @var \Bugsnag\Diagnostics */
     protected $diagnostics;
-    /** @var Bugsnag_Error */
+    /** @var \Bugsnag\Error */
     protected $error;
 
     protected function setUp()
     {
-        $this->config = new Bugsnag_Configuration();
-        $this->diagnostics = new Bugsnag_Diagnostics($this->config);
+        $this->config = new Configuration();
+        $this->diagnostics = new Diagnostics($this->config);
         $this->error = $this->getError();
     }
 
@@ -115,7 +119,7 @@ class ErrorTest extends Bugsnag_TestCase
         if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
             $exception = new Exception('secondly', 65533, new Exception('firstly'));
 
-            $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
+            $error = Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
 
             $errorArray = $error->toArray();
 

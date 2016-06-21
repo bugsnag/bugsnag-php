@@ -1,26 +1,19 @@
 <?php
 
-if (!defined('PHP_VERSION_ID')) {
-    $version = explode('.', PHP_VERSION);
+namespace Bugsnag\Tests;
 
-    define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
-}
+use Bugsnag\Client;
+use PHPUnit_Framework_TestCase as TestCase;
 
-if (PHP_VERSION_ID < 50207) {
-    define('PHP_MAJOR_VERSION', $version[0]);
-    define('PHP_MINOR_VERSION', $version[1]);
-    define('PHP_RELEASE_VERSION', $version[2]);
-}
-
-class ClientTest extends PHPUnit_Framework_TestCase
+class ClientTest extends estCase
 {
-    /** @var PHPUnit_Framework_MockObject_MockObject|Bugsnag_Client */
+    /** @var \PHPUnit_Framework_MockObject_MockObject|\Bugsnag\Client */
     protected $client;
 
     protected function setUp()
     {
         // Mock the notify function
-        $this->client = $this->getMockBuilder('Bugsnag_Client')
+        $this->client = $this->getMockBuilder(Client::class)
                              ->setMethods(['notify'])
                              ->setConstructorArgs(['example-api-key'])
                              ->getMock();
