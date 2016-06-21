@@ -1,25 +1,29 @@
 <?php
 
-require_once 'Bugsnag_TestCase.php';
+namespace Bugsnag\Tests;
 
-class NotificationTest extends Bugsnag_TestCase
+use Bugsnag\Configuration;
+use Bugsnag\Diagnostics;
+use Bugsnag\Notification;
+
+class NotificationTest extends AbstractTestCase
 {
-    /** @var Bugsnag_Configuration */
-    protected $config;
-    /** @var Bugsnag_Diagnostics */
+    /** @var \Bugsnag\Configuration */
+    protected\ $config;
+    /** @var Bugsnag\Diagnostics */
     protected $diagnostics;
-    /** @var Bugsnag_Notification|PHPUnit_Framework_MockObject_MockObject */
+    /** @var \Bugsnag\Notification|\PHPUnit_Framework_MockObject_MockObject */
     protected $notification;
 
     protected function setUp()
     {
-        $this->config = new Bugsnag_Configuration();
+        $this->config = new Configuration();
         $this->config->apiKey = '6015a72ff14038114c3d12623dfb018f';
         $this->config->beforeNotifyFunction = 'before_notify_skip_error';
 
-        $this->diagnostics = new Bugsnag_Diagnostics($this->config);
+        $this->diagnostics = new Diagnostics($this->config);
 
-        $this->notification = $this->getMockBuilder('Bugsnag_Notification')
+        $this->notification = $this->getMockBuilder(Notification::class)
                                    ->setMethods(['postJSON'])
                                    ->setConstructorArgs([$this->config])
                                    ->getMock();
@@ -28,7 +32,7 @@ class NotificationTest extends Bugsnag_TestCase
     public function testNotification()
     {
         // Create a mock notification object
-        $this->notification = $this->getMockBuilder('Bugsnag_Notification')
+        $this->notification = $this->getMockBuilder(Notification::class)
                                    ->setMethods(['postJSON'])
                                    ->setConstructorArgs([$this->config])
                                    ->getMock();
@@ -60,15 +64,15 @@ class NotificationTest extends Bugsnag_TestCase
      */
     public function testAddErrorChecksShouldNotifyFalse()
     {
-        $config = $this->getMockBuilder('Bugsnag_Configuration')
+        $config = $this->getMockBuilder(Configuration::class)
                                      ->setMethods(['shouldNotify'])
                                      ->getMock();
         $config->expects($this->once())
                 ->method('shouldNotify')
                 ->will($this->returnValue(false));
 
-        /** @var Bugsnag_Notification $notification */
-        $notification = $this->getMockBuilder('Bugsnag_Notification')
+        /** @var \Bugsnag\Notification $notification */
+        $notification = $this->getMockBuilder(Notification::class)
                                      ->setMethods(['postJSON'])
                                      ->setConstructorArgs([$config])
                                      ->getMock();
@@ -83,15 +87,15 @@ class NotificationTest extends Bugsnag_TestCase
      */
     public function testDeliverChecksShouldNotify()
     {
-        $config = $this->getMockBuilder('Bugsnag_Configuration')
+        $config = $this->getMockBuilder(Configuration::class)
                                      ->setMethods(['shouldNotify'])
                                      ->getMock();
         $config->expects($this->once())
                 ->method('shouldNotify')
                 ->will($this->returnValue(false));
 
-        /** @var Bugsnag_Notification|PHPUnit_Framework_MockObject_MockObject $notification */
-        $notification = $this->getMockBuilder('Bugsnag_Notification')
+        /** @var \Bugsnag\Notification|\PHPUnit_Framework_MockObject_MockObject $notification */
+        $notification = $this->getMockBuilder(Notification::class)
                                      ->setMethods(['postJSON'])
                                      ->setConstructorArgs([$config])
                                      ->getMock();
@@ -107,7 +111,7 @@ class NotificationTest extends Bugsnag_TestCase
     {
         $_ENV['SOMETHING'] = 'blah';
 
-        $notification = new Bugsnag_Notification($this->config);
+        $notification = new Notification($this->config);
         $notification->addError($this->getError());
         $notificationArray = $notification->toArray();
         $this->assertArrayNotHasKey('Environment', $notificationArray['events'][0]['metaData']);
@@ -118,7 +122,7 @@ class NotificationTest extends Bugsnag_TestCase
         $_ENV['SOMETHING'] = 'blah';
 
         $this->config->sendEnvironment = true;
-        $notification = new Bugsnag_Notification($this->config);
+        $notification = new Notification($this->config);
         $notification->addError($this->getError());
         $notificationArray = $notification->toArray();
         $this->assertEquals($notificationArray['events'][0]['metaData']['Environment']['SOMETHING'], 'blah');

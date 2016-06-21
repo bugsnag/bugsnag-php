@@ -1,16 +1,23 @@
 <?php
 
+<<<<<<< 9e0dd24040bfaf0641d3bed9d259877c5c7db396:tests/Bugsnag/ClientTest.php
 use Bugsnag\Client;
+=======
+namespace Bugsnag\Tests;
 
-class ClientTest extends PHPUnit_Framework_TestCase
+use Bugsnag\Client;
+use PHPUnit_Framework_TestCase as TestCase;
+>>>>>>> PSR-4 refactor:tests/ClientTest.php
+
+class ClientTest extends estCase
 {
-    /** @var PHPUnit_Framework_MockObject_MockObject|Bugsnag_Client */
+    /** @var \PHPUnit_Framework_MockObject_MockObject|\Bugsnag\Client */
     protected $client;
 
     protected function setUp()
     {
         // Mock the notify function
-        $this->client = $this->getMockBuilder('Bugsnag_Client')
+        $this->client = $this->getMockBuilder(Client::class)
                              ->setMethods(['notify'])
                              ->setConstructorArgs(['example-api-key'])
                              ->getMock();

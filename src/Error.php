@@ -1,6 +1,8 @@
 <?php
 
-class Bugsnag_Error
+namespace Bugsnag;
+
+class Error
 {
     private static $VALID_SEVERITIES = [
         'error',
@@ -12,17 +14,17 @@ class Bugsnag_Error
     public $payloadVersion = '2';
     public $message;
     public $severity = 'warning';
-    /** @var Bugsnag_Stacktrace */
+    /** @var \Bugsnag\Stacktrace */
     public $stacktrace;
     public $metaData = [];
     public $config;
     public $diagnostics;
-    /** @var Bugsnag_Error|null */
+    /** @var \Bugsnag\Error|null */
     public $previous;
     public $groupingHash;
 
     // Static error creation methods, to ensure that Error object is always complete
-    public static function fromPHPError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $code, $message, $file, $line, $fatal = false)
+    public static function fromPHPError(Configuration $config, Diagnostics $diagnostics, $code, $message, $file, $line, $fatal = false)
     {
         $error = new self($config, $diagnostics);
         $error->setPHPError($code, $message, $file, $line, $fatal);
@@ -38,18 +40,18 @@ class Bugsnag_Error
         return $error;
     }
 
-    public static function fromNamedError(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $name, $message = null)
+    public static function fromNamedError(Configuration $config, Diagnostics $diagnostics, $name, $message = null)
     {
         $error = new self($config, $diagnostics);
         $error->setName($name)
               ->setMessage($message)
-              ->setStacktrace(Bugsnag_Stacktrace::generate($config));
+              ->setStacktrace(Stacktrace::generate($config));
 
         return $error;
     }
 
     // Private constructor (for use only by the static methods above)
-    private function __construct(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics)
+    private function __construct(Configuration $config, Diagnostics $diagnostics)
     {
         $this->config = $config;
         $this->diagnostics = $diagnostics;
@@ -84,7 +86,7 @@ class Bugsnag_Error
         return $this;
     }
 
-    public function setStacktrace(Bugsnag_Stacktrace $stacktrace)
+    public function setStacktrace(Stacktrace $stacktrace)
     {
         $this->stacktrace = $stacktrace;
 
@@ -122,7 +124,7 @@ class Bugsnag_Error
 
         $this->setName(get_class($exception))
              ->setMessage($exception->getMessage())
-             ->setStacktrace(Bugsnag_Stacktrace::fromBacktrace($this->config, $exception->getTrace(), $exception->getFile(), $exception->getLine()));
+             ->setStacktrace(Stacktrace::fromBacktrace($this->config, $exception->getTrace(), $exception->getFile(), $exception->getLine()));
 
         if (method_exists($exception, 'getPrevious')) {
             $this->setPrevious($exception->getPrevious());
@@ -140,14 +142,14 @@ class Bugsnag_Error
             //
             // In these situations, we generate a "stacktrace" containing only
             // the line and file number where the crash occurred.
-            $stacktrace = Bugsnag_Stacktrace::fromFrame($this->config, $file, $line);
+            $stacktrace = Stacktrace::fromFrame($this->config, $file, $line);
         } else {
-            $stacktrace = Bugsnag_Stacktrace::generate($this->config);
+            $stacktrace = Stacktrace::generate($this->config);
         }
 
-        $this->setName(Bugsnag_ErrorTypes::getName($code))
+        $this->setName(ErrorTypes::getName($code))
              ->setMessage($message)
-             ->setSeverity(Bugsnag_ErrorTypes::getSeverity($code))
+             ->setSeverity(ErrorTypes::getSeverity($code))
              ->setStacktrace($stacktrace);
 
         return $this;
