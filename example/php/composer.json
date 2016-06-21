@@ -1,5 +1,5 @@
 {
     "require": {
-        "bugsnag/bugsnag": "^2.7"
+        "bugsnag/bugsnag": "^3.0"
     }
 }
