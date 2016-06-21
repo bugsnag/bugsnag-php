@@ -120,7 +120,6 @@ class Client
         return $this;
     }
 
-
     /**
      * Set the desired timeout for cURL connection when notifying bugsnag.
      *
