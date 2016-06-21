@@ -19,7 +19,7 @@ abstract class AbstractTestCase extends TestCase
 
     protected function getFixturePath($file)
     {
-        return realpath(dirname(__FILE__).'/../fixtures/'.$file);
+        return realpath(__DIR__.'/fixtures/'.$file);
     }
 
     protected function getFixture($file)

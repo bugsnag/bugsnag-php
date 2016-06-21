@@ -150,7 +150,7 @@ class ErrorTest extends AbstractTestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testBadSetName()
     {
@@ -158,7 +158,7 @@ class ErrorTest extends AbstractTestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      */
     public function testBadSetMessage()
     {

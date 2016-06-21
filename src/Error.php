@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use InvalidArgumentException;
+
 class Error
 {
     private static $VALID_SEVERITIES = [

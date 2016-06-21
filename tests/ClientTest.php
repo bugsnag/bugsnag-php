@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
+use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ClientTest extends TestCase
