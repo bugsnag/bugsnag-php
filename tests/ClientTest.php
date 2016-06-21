@@ -5,7 +5,6 @@ namespace Bugsnag\Tests;
 use Bugsnag\Client;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
-use SplFileObject;
 
 class ClientTest extends TestCase
 {
