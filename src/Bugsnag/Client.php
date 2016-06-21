@@ -313,7 +313,7 @@ class Bugsnag_Client
      */
     public function setMetaData(array $metaData, $merge = false)
     {
-        $this->config->metaData = $merge ? $metaData : array_merge_recursive($this->config->metaData, $metaData);
+        $this->config->metaData = $merge ? $metaData : array_merge_recursive((array) $this->config->metaData, $metaData);
 
         return $this;
     }
