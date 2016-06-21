@@ -21,9 +21,9 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
 
         $appData = $this->diagnostics->getAppData();
 
-        $this->assertEquals($appData['releaseStage'], 'qa1');
-        $this->assertEquals($appData['version'], '1.2.3');
-        $this->assertEquals($appData['type'], 'laravel');
+        $this->assertSame($appData['releaseStage'], 'qa1');
+        $this->assertSame($appData['version'], '1.2.3');
+        $this->assertSame($appData['type'], 'laravel');
     }
 
     public function testDefaultDeviceData()
@@ -32,13 +32,13 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
 
         $deviceData = $this->diagnostics->getDeviceData();
 
-        $this->assertEquals($deviceData['hostname'], 'web1.example.com');
+        $this->assertSame($deviceData['hostname'], 'web1.example.com');
     }
 
     public function testDefaultContext()
     {
         $this->config->context = 'herp#derp';
-        $this->assertEquals($this->diagnostics->getContext(), 'herp#derp');
+        $this->assertSame($this->diagnostics->getContext(), 'herp#derp');
     }
 
     public function testDefaultUser()
@@ -47,8 +47,8 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
 
         $userData = $this->diagnostics->getUser();
 
-        $this->assertEquals($userData['id'], 123);
-        $this->assertEquals($userData['email'], 'test@email.com');
-        $this->assertEquals($userData['name'], 'Bob Hoskins');
+        $this->assertSame($userData['id'], 123);
+        $this->assertSame($userData['email'], 'test@email.com');
+        $this->assertSame($userData['name'], 'Bob Hoskins');
     }
 }

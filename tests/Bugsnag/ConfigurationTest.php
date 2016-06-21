@@ -12,20 +12,20 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testDefaultEndpoint()
     {
-        $this->assertEquals($this->config->getNotifyEndpoint(), 'https://notify.bugsnag.com');
+        $this->assertSame($this->config->getNotifyEndpoint(), 'https://notify.bugsnag.com');
     }
 
     public function testNonSSLEndpoint()
     {
         $this->config->useSSL = false;
-        $this->assertEquals($this->config->getNotifyEndpoint(), 'http://notify.bugsnag.com');
+        $this->assertSame($this->config->getNotifyEndpoint(), 'http://notify.bugsnag.com');
     }
 
     public function testCustomEndpoint()
     {
         $this->config->useSSL = false;
         $this->config->endpoint = 'localhost';
-        $this->assertEquals($this->config->getNotifyEndpoint(), 'http://localhost');
+        $this->assertSame($this->config->getNotifyEndpoint(), 'http://localhost');
     }
 
     public function testDefaultReleaseStageShouldNotify()
@@ -54,8 +54,8 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testNotifier()
     {
-        $this->assertEquals($this->config->notifier['name'], 'Bugsnag PHP (Official)');
-        $this->assertEquals($this->config->notifier['url'], 'https://bugsnag.com');
+        $this->assertSame($this->config->notifier['name'], 'Bugsnag PHP (Official)');
+        $this->assertSame($this->config->notifier['url'], 'https://bugsnag.com');
     }
 
     public function testShouldIgnore()
