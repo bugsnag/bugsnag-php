@@ -1,19 +1,21 @@
 <?php
 
-class Bugsnag_Notification
+namespace Bugsnag;
+
+class Notification
 {
     private static $CONTENT_TYPE_HEADER = 'Content-type: application/json';
 
     private $config;
-    /** @var Bugsnag_Error[] */
+    /** @var \Bugsnag\Error[] */
     private $errorQueue = [];
 
-    public function __construct(Bugsnag_Configuration $config)
+    public function __construct(Configuration $config)
     {
         $this->config = $config;
     }
 
-    public function addError(Bugsnag_Error $error, $passedMetaData = [])
+    public function addError(Error $error, $passedMetaData = [])
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {
@@ -24,8 +26,8 @@ class Bugsnag_Notification
         $error->setMetaData($this->config->metaData);
 
         // Add request meta-data to error
-        if (Bugsnag_Request::isRequest()) {
-            $error->setMetaData(Bugsnag_Request::getRequestMetaData());
+        if (Request::isRequest()) {
+            $error->setMetaData(Request::getRequestMetaData());
         }
 
         // Session Tab

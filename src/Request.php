@@ -1,6 +1,8 @@
 <?php
 
-class Bugsnag_Request
+namespace Bugsnag;
+
+class Request
 {
     public static function isRequest()
     {

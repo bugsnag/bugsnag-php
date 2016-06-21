@@ -1,16 +1,22 @@
 <?php
 
-class DiagnosticsTest extends PHPUnit_Framework_TestCase
+namespace Bugsnag\Tests;
+
+use Bugsnag\Configuration;
+use Bugsnag\Diagnostics;
+use PHPUnit_Framework_TestCase as TestCase;
+
+class DiagnosticsTest extends TestCase
 {
-    /** @var Bugsnag_Configuration */
+    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var Bugsnag_Diagnostics */
+    /** @var \Bugsnag\Diagnostics */
     protected $diagnostics;
 
     protected function setUp()
     {
-        $this->config = new Bugsnag_Configuration();
-        $this->diagnostics = new Bugsnag_Diagnostics($this->config);
+        $this->config = new Configuration();
+        $this->diagnostics = new Diagnostics($this->config);
     }
 
     public function testDefaultAppData()

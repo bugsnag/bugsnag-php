@@ -10,18 +10,20 @@
         "email": "notifiers@bugsnag.com",
         "homepage": "https://bugsnag.com"
     }],
-
     "require": {
         "php": ">=5.5.9"
     },
-
     "require-dev": {
         "phpunit/phpunit": "~4.8|~5.0"
     },
-
     "autoload": {
-        "psr-0" : {
-            "Bugsnag_" : "src/"
+        "psr-4" : {
+            "Bugsnag\\" : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4" : {
+            "Bugsnag\\Tests\\" : "tests/"
         }
     },
     "extra": {
