@@ -6,8 +6,8 @@ use Bugsnag\Configuration;
 use Bugsnag\Diagnostics;
 use Bugsnag\Error;
 use Exception;
-use stdClass;
 use ParseError;
+use stdClass;
 
 class ErrorTest extends AbstractTestCase
 {
