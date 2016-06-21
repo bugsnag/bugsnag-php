@@ -5,8 +5,8 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use Bugsnag\Diagnostics;
 use Bugsnag\Error;
-use InvalidArgumentException;
 use Exception;
+use InvalidArgumentException;
 use ParseError;
 use stdClass;
 
