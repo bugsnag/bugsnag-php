@@ -20,8 +20,8 @@ class NotificationTest extends Bugsnag_TestCase
         $this->diagnostics = new Bugsnag_Diagnostics($this->config);
 
         $this->notification = $this->getMockBuilder('Bugsnag_Notification')
-                                   ->setMethods(array('postJSON'))
-                                   ->setConstructorArgs(array($this->config))
+                                   ->setMethods(['postJSON'])
+                                   ->setConstructorArgs([$this->config])
                                    ->getMock();
     }
 
@@ -29,8 +29,8 @@ class NotificationTest extends Bugsnag_TestCase
     {
         // Create a mock notification object
         $this->notification = $this->getMockBuilder('Bugsnag_Notification')
-                                   ->setMethods(array('postJSON'))
-                                   ->setConstructorArgs(array($this->config))
+                                   ->setMethods(['postJSON'])
+                                   ->setConstructorArgs([$this->config])
                                    ->getMock();
 
         // Expect postJSON to be called
@@ -61,7 +61,7 @@ class NotificationTest extends Bugsnag_TestCase
     public function testAddErrorChecksShouldNotifyFalse()
     {
         $config = $this->getMockBuilder('Bugsnag_Configuration')
-                                     ->setMethods(array('shouldNotify'))
+                                     ->setMethods(['shouldNotify'])
                                      ->getMock();
         $config->expects($this->once())
                 ->method('shouldNotify')
@@ -69,8 +69,8 @@ class NotificationTest extends Bugsnag_TestCase
 
         /** @var Bugsnag_Notification $notification */
         $notification = $this->getMockBuilder('Bugsnag_Notification')
-                                     ->setMethods(array('postJSON'))
-                                     ->setConstructorArgs(array($config))
+                                     ->setMethods(['postJSON'])
+                                     ->setConstructorArgs([$config])
                                      ->getMock();
 
         $this->assertFalse($notification->addError($this->getError()));
@@ -84,7 +84,7 @@ class NotificationTest extends Bugsnag_TestCase
     public function testDeliverChecksShouldNotify()
     {
         $config = $this->getMockBuilder('Bugsnag_Configuration')
-                                     ->setMethods(array('shouldNotify'))
+                                     ->setMethods(['shouldNotify'])
                                      ->getMock();
         $config->expects($this->once())
                 ->method('shouldNotify')
@@ -92,8 +92,8 @@ class NotificationTest extends Bugsnag_TestCase
 
         /** @var Bugsnag_Notification|PHPUnit_Framework_MockObject_MockObject $notification */
         $notification = $this->getMockBuilder('Bugsnag_Notification')
-                                     ->setMethods(array('postJSON'))
-                                     ->setConstructorArgs(array($config))
+                                     ->setMethods(['postJSON'])
+                                     ->setConstructorArgs([$config])
                                      ->getMock();
 
         $notification->expects($this->never())

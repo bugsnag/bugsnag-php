@@ -2,11 +2,11 @@
 
 class Bugsnag_Error
 {
-    private static $VALID_SEVERITIES = array(
+    private static $VALID_SEVERITIES = [
         'error',
         'warning',
         'info',
-    );
+    ];
 
     public $name;
     public $payloadVersion = '2';
@@ -14,7 +14,7 @@ class Bugsnag_Error
     public $severity = 'warning';
     /** @var Bugsnag_Stacktrace */
     public $stacktrace;
-    public $metaData = array();
+    public $metaData = [];
     public $config;
     public $diagnostics;
     /** @var Bugsnag_Error|null */
@@ -173,7 +173,7 @@ class Bugsnag_Error
 
     public function toArray()
     {
-        $errorArray = array(
+        $errorArray = [
             'app' => $this->diagnostics->getAppData(),
             'device' => $this->diagnostics->getDeviceData(),
             'user' => $this->diagnostics->getUser(),
@@ -182,7 +182,7 @@ class Bugsnag_Error
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),
             'metaData' => $this->cleanupObj($this->metaData, true),
-        );
+        ];
 
         if (isset($this->groupingHash)) {
             $errorArray['groupingHash'] = $this->groupingHash;
@@ -196,14 +196,14 @@ class Bugsnag_Error
         if ($this->previous) {
             $exceptionArray = $this->previous->exceptionArray();
         } else {
-            $exceptionArray = array();
+            $exceptionArray = [];
         }
 
-        $exceptionArray[] = array(
+        $exceptionArray[] = [
             'errorClass' => $this->name,
             'message' => $this->message,
             'stacktrace' => $this->stacktrace->toArray(),
-        );
+        ];
 
         return $this->cleanupObj($exceptionArray, false);
     }
@@ -215,7 +215,7 @@ class Bugsnag_Error
         }
 
         if (is_array($obj)) {
-            $cleanArray = array();
+            $cleanArray = [];
             foreach ($obj as $key => $value) {
                 // Check if this key should be filtered
                 $shouldFilter = false;

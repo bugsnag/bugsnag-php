@@ -12,15 +12,15 @@ class Bugsnag_Configuration
     public $useSSL = true;
     public $endpoint;
     public $notifyReleaseStages;
-    public $filters = array('password');
+    public $filters = ['password'];
     public $projectRoot;
     public $projectRootRegex;
-    public $proxySettings = array();
-    public $notifier = array(
+    public $proxySettings = [];
+    public $notifier = [
         'name' => 'Bugsnag PHP (Official)',
         'version' => '3.0.0',
         'url' => 'https://bugsnag.com',
-    );
+    ];
     public $sendEnvironment = false;
     public $sendCookies = true;
     public $sendSession = true;
@@ -39,7 +39,7 @@ class Bugsnag_Configuration
     public $beforeNotifyFunction;
     public $errorReportingLevel;
 
-    public $curlOptions = array();
+    public $curlOptions = [];
 
     public $debug = false;
 

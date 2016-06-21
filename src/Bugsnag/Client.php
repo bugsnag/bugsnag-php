@@ -29,7 +29,7 @@ class Bugsnag_Client
 
         // Register a shutdown function to check for fatal errors
         // and flush any buffered errors
-        register_shutdown_function(array($this, 'shutdownHandler'));
+        register_shutdown_function([$this, 'shutdownHandler']);
     }
 
     /**
@@ -238,7 +238,7 @@ class Bugsnag_Client
     public function setUserId($userId)
     {
         if (!is_array($this->config->user)) {
-            $this->config->user = array();
+            $this->config->user = [];
         }
 
         $this->config->user['id'] = $userId;
@@ -562,7 +562,7 @@ class Bugsnag_Client
      * @param Bugsnag_Error $error    the error to batch up
      * @param array         $metaData optional meta data to send with the error
      */
-    public function notify(Bugsnag_Error $error, $metaData = array())
+    public function notify(Bugsnag_Error $error, $metaData = [])
     {
         // Queue or send the error
         if ($this->sendErrorsOnShutdown()) {

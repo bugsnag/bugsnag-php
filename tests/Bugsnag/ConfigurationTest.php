@@ -41,14 +41,14 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testCustomNotifyReleaseStagesShouldNotify()
     {
-        $this->config->notifyReleaseStages = array('banana');
+        $this->config->notifyReleaseStages = ['banana'];
         $this->assertFalse($this->config->shouldNotify());
     }
 
     public function testBothCustomShouldNotify()
     {
         $this->config->releaseStage = 'banana';
-        $this->config->notifyReleaseStages = array('banana');
+        $this->config->notifyReleaseStages = ['banana'];
         $this->assertTrue($this->config->shouldNotify());
     }
 

@@ -43,7 +43,7 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
 
     public function testDefaultUser()
     {
-        $this->config->user = array('id' => 123, 'email' => 'test@email.com', 'name' => 'Bob Hoskins');
+        $this->config->user = ['id' => 123, 'email' => 'test@email.com', 'name' => 'Bob Hoskins'];
 
         $userData = $this->diagnostics->getUser();
 

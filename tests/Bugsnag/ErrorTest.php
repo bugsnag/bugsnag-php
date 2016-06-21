@@ -20,7 +20,7 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testMetaData()
     {
-        $this->error->setMetaData(array('Testing' => array('globalArray' => 'hi')));
+        $this->error->setMetaData(['Testing' => ['globalArray' => 'hi']]);
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']['Testing']['globalArray'], 'hi');
@@ -28,8 +28,8 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testMetaDataMerging()
     {
-        $this->error->setMetaData(array('Testing' => array('globalArray' => 'hi')));
-        $this->error->setMetaData(array('Testing' => array('localArray' => 'yo')));
+        $this->error->setMetaData(['Testing' => ['globalArray' => 'hi']]);
+        $this->error->setMetaData(['Testing' => ['localArray' => 'yo']]);
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']['Testing']['globalArray'], 'hi');
@@ -38,7 +38,7 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testFiltering()
     {
-        $this->error->setMetaData(array('Testing' => array('password' => '123456')));
+        $this->error->setMetaData(['Testing' => ['password' => '123456']]);
 
         $errorArray = $this->error->toArray();
         $this->assertEquals($errorArray['metaData']['Testing']['password'], '[FILTERED]');
@@ -46,7 +46,7 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testExceptionsNotFiltered()
     {
-        $this->config->filters = array('code');
+        $this->config->filters = ['code'];
         $this->error->setPHPError(E_NOTICE, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();
@@ -150,7 +150,7 @@ class ErrorTest extends Bugsnag_TestCase
      */
     public function testBadSetName()
     {
-        $this->error->setName(array());
+        $this->error->setName([]);
     }
 
     /**
