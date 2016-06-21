@@ -9,8 +9,8 @@ use Bugsnag\Notification;
 class NotificationTest extends AbstractTestCase
 {
     /** @var \Bugsnag\Configuration */
-    protected\ $config;
-    /** @var Bugsnag\Diagnostics */
+    protected $config;
+    /** @var \Bugsnag\Diagnostics */
     protected $diagnostics;
     /** @var \Bugsnag\Notification|\PHPUnit_Framework_MockObject_MockObject */
     protected $notification;

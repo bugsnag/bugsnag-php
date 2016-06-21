@@ -3,8 +3,9 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class ClientTest extends estCase
+class ClientTest extends TestCase
 {
     /** @var \PHPUnit_Framework_MockObject_MockObject|\Bugsnag\Client */
     protected $client;
