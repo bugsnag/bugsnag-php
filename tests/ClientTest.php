@@ -1,16 +1,22 @@
 <?php
 
-use PHPUnit_Framework_Error as PHPUnitError;
+namespace Bugsnag\Tests;
 
-class ClientTest extends PHPUnit_Framework_TestCase
+use Bugsnag\Client;
+use Exception;
+use PHPUnit_Framework_Error as PHPUnitError;
+use PHPUnit_Framework_TestCase as TestCase;
+use TypeError;
+
+class ClientTest extends TestCase
 {
-    /** @var PHPUnit_Framework_MockObject_MockObject|Bugsnag_Client */
+    /** @var \PHPUnit_Framework_MockObject_MockObject|\Bugsnag\Client */
     protected $client;
 
     protected function setUp()
     {
         // Mock the notify function
-        $this->client = $this->getMockBuilder('Bugsnag_Client')
+        $this->client = $this->getMockBuilder(Client::class)
                              ->setMethods(['notify'])
                              ->setConstructorArgs(['example-api-key'])
                              ->getMock();

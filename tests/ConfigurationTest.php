@@ -1,13 +1,18 @@
 <?php
 
-class ConfigurationTest extends PHPUnit_Framework_TestCase
+namespace Bugsnag\Tests;
+
+use Bugsnag\Configuration;
+use PHPUnit_Framework_TestCase as TestCase;
+
+class ConfigurationTest extends TestCase
 {
-    /** @var Bugsnag_Configuration */
+    /** @var \Bugsnag\Configuration */
     protected $config;
 
     protected function setUp()
     {
-        $this->config = new Bugsnag_Configuration();
+        $this->config = new Configuration();
     }
 
     public function testDefaultEndpoint()

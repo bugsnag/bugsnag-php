@@ -1,6 +1,11 @@
 <?php
 
-class RequestTest extends PHPUnit_Framework_TestCase
+namespace Bugsnag\Tests;
+
+use Bugsnag\Request;
+use PHPUnit_Framework_TestCase as TestCase;
+
+class RequestTest extends TestCase
 {
     protected function setUp()
     {
@@ -17,21 +22,21 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
     public function testIsRequest()
     {
-        $this->assertTrue(Bugsnag_Request::isRequest());
+        $this->assertTrue(Request::isRequest());
     }
 
     public function testGetContext()
     {
-        $this->assertSame(Bugsnag_Request::getContext(), 'GET /blah/blah.php');
+        $this->assertSame(Request::getContext(), 'GET /blah/blah.php');
     }
 
     public function testGetCurrentUrl()
     {
-        $this->assertSame(Bugsnag_Request::getCurrentUrl(), 'http://example.com/blah/blah.php?some=param');
+        $this->assertSame(Request::getCurrentUrl(), 'http://example.com/blah/blah.php?some=param');
     }
 
     public function testRequestIp()
     {
-        $this->assertSame(Bugsnag_Request::getRequestIp(), '123.45.67.8');
+        $this->assertSame(Request::getRequestIp(), '123.45.67.8');
     }
 }

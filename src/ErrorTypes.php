@@ -1,6 +1,8 @@
 <?php
 
-class Bugsnag_ErrorTypes
+namespace Bugsnag;
+
+class ErrorTypes
 {
     private static $ERROR_TYPES = [
         E_ERROR => [
@@ -68,14 +70,12 @@ class Bugsnag_ErrorTypes
             'severity' => 'error',
         ],
 
-        // E_DEPRECATED (Since PHP 5.3.0)
-        8192 => [
+        E_DEPRECATED => [
             'name' => 'PHP Deprecated',
             'severity' => 'info',
         ],
 
-        // E_USER_DEPRECATED (Since PHP 5.3.0)
-        16384 => [
+        E_USER_DEPRECATED => [
             'name' => 'User Deprecated',
             'severity' => 'info',
         ],

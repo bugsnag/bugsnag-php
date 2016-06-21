@@ -1,10 +1,12 @@
 <?php
 
-class Bugsnag_Diagnostics
+namespace Bugsnag;
+
+class Diagnostics
 {
     private $config;
 
-    public function __construct(Bugsnag_Configuration $config)
+    public function __construct(Configuration $config)
     {
         $this->config = $config;
     }
@@ -37,13 +39,13 @@ class Bugsnag_Diagnostics
 
     public function getContext()
     {
-        return $this->config->get('context', Bugsnag_Request::getContext());
+        return $this->config->get('context', Request::getContext());
     }
 
     public function getUser()
     {
         $defaultUser = [];
-        $userId = Bugsnag_Request::getUserId();
+        $userId = Request::getUserId();
 
         if (!is_null($userId)) {
             $defaultUser['id'] = $userId;
