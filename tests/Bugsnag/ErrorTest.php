@@ -120,17 +120,15 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testPreviousException()
     {
-        if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
-            $exception = new Exception('secondly', 65533, new Exception('firstly'));
+        $exception = new Exception('secondly', 65533, new Exception('firstly'));
 
-            $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
+        $error = Bugsnag_Error::fromPHPThrowable($this->config, $this->diagnostics, $exception);
 
-            $errorArray = $error->toArray();
+        $errorArray = $error->toArray();
 
-            $this->assertCount(2, $errorArray['exceptions']);
-            $this->assertSame($errorArray['exceptions'][0]['message'], 'firstly');
-            $this->assertSame($errorArray['exceptions'][1]['message'], 'secondly');
-        }
+        $this->assertCount(2, $errorArray['exceptions']);
+        $this->assertSame($errorArray['exceptions'][0]['message'], 'firstly');
+        $this->assertSame($errorArray['exceptions'][1]['message'], 'secondly');
     }
 
     public function testErrorGroupingHash()
@@ -154,7 +152,7 @@ class ErrorTest extends Bugsnag_TestCase
 
     public function testSetPHPAnotherException()
     {
-        $exception = version_compare(PHP_VERSION, '7.0.0', '>=') ? new ParseError() : new InvalidArgumentException();
+        $exception = class_exists(ParseError::class) ? new ParseError() : new InvalidArgumentException();
 
         $this->assertSame($this->error, $this->error->setPHPException($exception));
     }
