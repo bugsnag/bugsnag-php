@@ -1,9 +1,5 @@
 {
     "require": {
-<<<<<<< 9e0dd24040bfaf0641d3bed9d259877c5c7db396
-        "bugsnag/bugsnag": "^2.7"
-=======
         "bugsnag/bugsnag": "^3.0"
->>>>>>> PSR-4 refactor
     }
 }
