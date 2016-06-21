@@ -1,6 +1,10 @@
 <?php
 
-class Bugsnag_Stacktrace
+namespace Bugsnag;
+
+use SplFileObject;
+
+class Stacktrace
 {
     private static $DEFAULT_NUM_LINES = 7;
     private static $MAX_LINE_LENGTH = 200;
@@ -62,7 +66,7 @@ class Bugsnag_Stacktrace
 
     public static function frameInsideBugsnag($frame)
     {
-        return isset($frame['class']) && strpos($frame['class'], 'Bugsnag_') === 0;
+        return isset($frame['class']) && strpos($frame['class'], 'Bugsnag\\') === 0;
     }
 
     public function __construct($config)
