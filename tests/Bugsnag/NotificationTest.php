@@ -121,7 +121,7 @@ class NotificationTest extends Bugsnag_TestCase
         $notification = new Bugsnag_Notification($this->config);
         $notification->addError($this->getError());
         $notificationArray = $notification->toArray();
-        $this->assertEquals($notificationArray['events'][0]['metaData']['Environment']['SOMETHING'], 'blah');
+        $this->assertSame($notificationArray['events'][0]['metaData']['Environment']['SOMETHING'], 'blah');
     }
 }
 

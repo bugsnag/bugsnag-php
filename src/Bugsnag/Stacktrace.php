@@ -86,7 +86,7 @@ class Bugsnag_Stacktrace
 
         // Construct the frame
         $frame = array(
-            'lineNumber' => $line,
+            'lineNumber' => (int) $line,
             'method' => $class ? "$class::$method" : $method,
         );
 
