@@ -45,6 +45,22 @@ class Bugsnag_Client
     }
 
     /**
+     * Returns client config object or a single property
+     * if provided
+     *
+     * @param string|null $prop
+     * @return mixed
+     */
+    public function getConfig($prop = null)
+    {
+        if ($prop) {
+            return $this->config->get($prop);
+        }
+
+        return $this->config;
+    }
+
+    /**
      * Set your release stage, eg "production" or "development".
      *
      * @param string $releaseStage the app's current release stage
@@ -312,7 +328,7 @@ class Bugsnag_Client
      */
     public function setMetaData(array $metaData)
     {
-        $this->config->metaData = $metaData;
+        $this->config->metaData = array_merge_recursive($this->config->metaData, $metaData);
 
         return $this;
     }

@@ -35,7 +35,7 @@ class Bugsnag_Configuration
     public $appVersion;
     public $hostname;
 
-    public $metaData;
+    public $metaData = array();
     public $beforeNotifyFunction;
     public $errorReportingLevel;
 
