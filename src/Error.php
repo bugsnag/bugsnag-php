@@ -32,7 +32,7 @@ class Error
         return $error;
     }
 
-    public static function fromPHPThrowable(Configuration $config,Diagnostics $diagnostics, $throwable)
+    public static function fromPHPThrowable(Configuration $config, Diagnostics $diagnostics, $throwable)
     {
         $error = new self($config, $diagnostics);
         $error->setPHPException($throwable);
