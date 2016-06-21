@@ -1,10 +1,19 @@
-sudo: false
 language: php
+
 php:
-- 7.0
-- 5.6
-- 5.5
-- 5.4
-- 5.3
-- 5.2
-- hhvm
+  - 5.2
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - hhvm
+
+sudo: false
+
+install:
+  - if [ "$TRAVIS_PHP_VERSION" != "5.2" ]; then travis_retry composer install --no-interaction --prefer-source; fi
+
+script:
+  - if [ "$TRAVIS_PHP_VERSION" == "5.2" ]; then phpunit; fi
+  - if [ "$TRAVIS_PHP_VERSION" != "5.2" ]; then vendor/bin/phpunit; fi
