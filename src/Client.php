@@ -3,7 +3,6 @@
 namespace Bugsnag;
 
 use Exception;
-use InvalidArgumentException;
 use Throwable;
 
 class Client
