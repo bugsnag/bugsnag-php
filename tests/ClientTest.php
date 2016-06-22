@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
+use Bugsnag\Configuration;
 use Exception;
 use PHPUnit_Framework_Error as PHPUnitError;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -18,7 +19,7 @@ class ClientTest extends TestCase
         // Mock the notify function
         $this->client = $this->getMockBuilder(Client::class)
                              ->setMethods(['notify'])
-                             ->setConstructorArgs(['example-api-key'])
+                             ->setConstructorArgs([new Confiugration('example-api-key')])
                              ->getMock();
     }
 
