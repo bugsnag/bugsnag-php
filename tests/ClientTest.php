@@ -5,6 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Exception;
+use GuzzleHttp\Psr7\Uri;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ClientTest extends TestCase
@@ -78,5 +79,10 @@ class ClientTest extends TestCase
 
         $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE)
                      ->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
+    }
+
+    public function testBaseUri()
+    {
+        $this->assertEquals(new Uri('https://notify.bugsnag.com'), $this->client->getGuzzle()->getConfig('base_uri'));
     }
 }
