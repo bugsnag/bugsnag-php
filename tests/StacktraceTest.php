@@ -15,7 +15,7 @@ class StacktraceTest extends AbstractTestCase
 
     protected function setUp()
     {
-        $this->config = new Configuration();
+        $this->config = new Configuration('key');
         $this->diagnostics = new Diagnostics($this->config);
     }
 
@@ -204,7 +204,7 @@ class StacktraceTest extends AbstractTestCase
 
     public function testCodeDisabled()
     {
-        $config = new Configuration();
+        $config = new Configuration('key');
         $config->sendCode = false;
 
         $stacktrace = Stacktrace::fromFrame($config, $this->getFixturePath('code/File.php'), 1)->toArray();

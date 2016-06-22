@@ -15,7 +15,7 @@ class DiagnosticsTest extends TestCase
 
     protected function setUp()
     {
-        $this->config = new Configuration();
+        $this->config = new Configuration('example-key');
         $this->diagnostics = new Diagnostics($this->config);
     }
 
