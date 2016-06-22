@@ -3,7 +3,6 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
-use Bugsnag\Configuration;
 use Exception;
 use PHPUnit_Framework_Error as PHPUnitError;
 use PHPUnit_Framework_TestCase as TestCase;
