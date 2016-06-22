@@ -5,6 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use Bugsnag\Diagnostics;
 use Bugsnag\Notification;
+use GuzzleHttp\Client;
 
 class NotificationTest extends AbstractTestCase
 {
@@ -12,6 +13,8 @@ class NotificationTest extends AbstractTestCase
     protected $config;
     /** @var \Bugsnag\Diagnostics */
     protected $diagnostics;
+    /** @var \GuzzleHttp\Client */
+    protected $guzzle;
     /** @var \Bugsnag\Notification|\PHPUnit_Framework_MockObject_MockObject */
     protected $notification;
 
@@ -22,25 +25,19 @@ class NotificationTest extends AbstractTestCase
 
         $this->diagnostics = new Diagnostics($this->config);
 
-        $this->notification = $this->getMockBuilder(Notification::class)
-                                   ->setMethods(['postJSON'])
-                                   ->setConstructorArgs([$this->config])
-                                   ->getMock();
+        $this->guzzle = $this->getMockBuilder(Client::class)
+                             ->setMethods(['request'])
+                             ->getMock();
+
+        $this->notification = new Notification($this->config, $this->guzzle);
     }
 
     public function testNotification()
     {
-        // Create a mock notification object
-        $this->notification = $this->getMockBuilder(Notification::class)
-                                   ->setMethods(['postJSON'])
-                                   ->setConstructorArgs([$this->config])
-                                   ->getMock();
-
-        // Expect postJSON to be called
-        $this->notification->expects($this->once())
-                           ->method('postJSON')
-                           ->with($this->equalTo('https://notify.bugsnag.com'),
-                                  $this->anything());
+        // Expect request to be called
+        $this->guzzle->expects($this->once())
+                     ->method('request')
+                     ->with($this->equalTo('POST'), $this->equalTo('/'), $this->anything());
 
         // Add an error to the notification and deliver it
         $this->notification->addError($this->getError());
@@ -49,8 +46,7 @@ class NotificationTest extends AbstractTestCase
 
     public function testBeforeNotifySkipsError()
     {
-        $this->notification->expects($this->never())
-                           ->method('postJSON');
+        $this->guzzle->expects($this->never())->method('request');
 
         $this->notification->addError($this->getError('SkipMe', 'Message'));
         $this->notification->deliver();
@@ -59,23 +55,20 @@ class NotificationTest extends AbstractTestCase
     /**
      * Test for ensuring that the addError method calls shouldNotify.
      *
-     * If shouldNotify returns false, the error should not be added
+     * If shouldNotify returns false, the error should not be added.
      */
     public function testAddErrorChecksShouldNotifyFalse()
     {
         $config = $this->getMockBuilder(Configuration::class)
-                                     ->setMethods(['shouldNotify'])
-                                     ->setConstructorArgs(['key'])
-                                     ->getMock();
-        $config->expects($this->once())
-                ->method('shouldNotify')
-                ->will($this->returnValue(false));
+                       ->setMethods(['shouldNotify'])
+                       ->setConstructorArgs(['key'])
+                       ->getMock();
 
-        /** @var \Bugsnag\Notification $notification */
-        $notification = $this->getMockBuilder(Notification::class)
-                                     ->setMethods(['postJSON'])
-                                     ->setConstructorArgs([$config])
-                                     ->getMock();
+        $config->expects($this->once())
+               ->method('shouldNotify')
+               ->will($this->returnValue(false));
+
+        $notification = new Notification($config, $this->guzzle);
 
         $this->assertFalse($notification->addError($this->getError()));
     }
@@ -83,26 +76,22 @@ class NotificationTest extends AbstractTestCase
     /**
      * Test for ensuring that the deliver method calls shouldNotify.
      *
-     * If shouldNotify returns false, the error should not be sent
+     * If shouldNotify returns false, the error should not be sent.
      */
     public function testDeliverChecksShouldNotify()
     {
         $config = $this->getMockBuilder(Configuration::class)
-                                     ->setMethods(['shouldNotify'])
-                                     ->setConstructorArgs(['key'])
-                                     ->getMock();
+                       ->setMethods(['shouldNotify'])
+                       ->setConstructorArgs(['key'])
+                       ->getMock();
+
         $config->expects($this->once())
-                ->method('shouldNotify')
-                ->will($this->returnValue(false));
+               ->method('shouldNotify')
+               ->will($this->returnValue(false));
 
-        /** @var \Bugsnag\Notification|\PHPUnit_Framework_MockObject_MockObject $notification */
-        $notification = $this->getMockBuilder(Notification::class)
-                                     ->setMethods(['postJSON'])
-                                     ->setConstructorArgs([$config])
-                                     ->getMock();
+        $notification = new Notification($config, $this->guzzle);
 
-        $notification->expects($this->never())
-                             ->method('postJSON');
+        $this->guzzle->expects($this->never())->method('request');
 
         $notification->addError($this->getError());
         $notification->deliver();
@@ -112,7 +101,7 @@ class NotificationTest extends AbstractTestCase
     {
         $_ENV['SOMETHING'] = 'blah';
 
-        $notification = new Notification($this->config);
+        $notification = new Notification($this->config, $this->guzzle);
         $notification->addError($this->getError());
         $notificationArray = $notification->toArray();
         $this->assertArrayNotHasKey('Environment', $notificationArray['events'][0]['metaData']);
@@ -123,7 +112,7 @@ class NotificationTest extends AbstractTestCase
         $_ENV['SOMETHING'] = 'blah';
 
         $this->config->sendEnvironment = true;
-        $notification = new Notification($this->config);
+        $notification = new Notification($this->config, $this->guzzle);
         $notification->addError($this->getError());
         $notificationArray = $notification->toArray();
         $this->assertSame($notificationArray['events'][0]['metaData']['Environment']['SOMETHING'], 'blah');

@@ -5,9 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Exception;
-use PHPUnit_Framework_Error as PHPUnitError;
 use PHPUnit_Framework_TestCase as TestCase;
-use TypeError;
 
 class ClientTest extends TestCase
 {
@@ -80,15 +78,5 @@ class ClientTest extends TestCase
 
         $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE)
                      ->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
-    }
-
-    public function testSetInvalidCurlOptions()
-    {
-        if (class_exists(TypeError::class)) {
-            $this->setExpectedException(TypeError::class);
-        } else {
-            $this->setExpectedException(PHPUnitError::class);
-        }
-        $this->client->setCurlOptions('option');
     }
 }

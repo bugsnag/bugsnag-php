@@ -23,17 +23,6 @@ class ConfigurationTest extends TestCase
         new Configuration([]);
     }
 
-    public function testDefaultEndpoint()
-    {
-        $this->assertSame($this->config->getNotifyEndpoint(), 'https://notify.bugsnag.com');
-    }
-
-    public function testCustomEndpoint()
-    {
-        $this->config->endpoint = 'http://localhost';
-        $this->assertSame($this->config->getNotifyEndpoint(), 'http://localhost');
-    }
-
     public function testDefaultReleaseStageShouldNotify()
     {
         $this->assertTrue($this->config->shouldNotify());
