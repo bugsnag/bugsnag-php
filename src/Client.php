@@ -25,25 +25,16 @@ class Client
     /**
      * Create a new client instance.
      *
-     * @param string $apiKey your Bugsnag API key
-     *
-     * @throws \InvalidArgumentException
+     * @param \Bugsnag\Configuration    $config
+     * @param \Bugsnag\Diagnostics|null $diagnostics
      *
      * @return void
      */
-    public function __construct($apiKey)
+    public function __construct(Configuration $config, Diagnostics $diagnostics = null)
     {
-        // Check API key has been passed
-        if (!is_string($apiKey)) {
-            throw new InvalidArgumentException('Bugsnag Error: Invalid API key');
-        }
+        $this->config = $config;
 
-        // Create a configuration object
-        $this->config = new Configuration();
-        $this->config->apiKey = $apiKey;
-
-        // Build a Diagnostics object
-        $this->diagnostics = new Diagnostics($this->config);
+        $this->diagnostics = $diagnostics ?: new Diagnostics($this->config);
 
         // Register a shutdown function to check for fatal errors
         // and flush any buffered errors
