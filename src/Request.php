@@ -21,6 +21,12 @@ class Request
      */
     public static function getRequestMetaData()
     {
+        static $requestData;
+
+        if ($requestData !== null) {
+            return $requestData;
+        }
+
         $requestData = [];
 
         $methodsWithPayload = ['PUT'];
