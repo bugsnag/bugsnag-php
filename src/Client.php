@@ -199,7 +199,7 @@ class Client
     /**
      * Set the strings to filter out from metaData arrays before sending then.
      *
-     * Eg. array("password", "credit_card").
+     * Eg. ["password", "credit_card"].
      *
      * @param array $filters an array of metaData filters
      *
@@ -216,10 +216,10 @@ class Client
      * Set information about the current user of your app, including id, name and email.
      *
      * @param array $user an array of user information. Eg:
-     *        array(
+     *        [
      *            'name' => 'Bob Hoskins',
      *            'email' => 'bob@hoskins.com'
-     *        )
+     *        ]
      *
      * @return $this
      */
@@ -269,12 +269,12 @@ class Client
      * Bugsnag dashboard.
      *
      * @param array $metaData an array of arrays of custom data. Eg:
-     *        array(
-     *            "user" => array(
+     *        [
+     *            "user" => [
      *                "name" => "James",
      *                "email" => "james@example.com"
-     *            )
-     *        )
+     *            ]
+     *        ]
      * @param bool $merge optionally merge the meta data
      *
      * @return $this
@@ -294,12 +294,12 @@ class Client
      * Set proxy configuration.
      *
      * @param array $proxySettings an array with proxy settings. Eg:
-     *        array(
+     *        [
      *            'host'     => "bugsnag.com",
      *            'port'     => 42,
      *            'user'     => "username"
      *            'password' => "password123"
-     *        )
+     *        ]
      *
      * @return $this
      */
@@ -314,9 +314,9 @@ class Client
      * Set custom curl options.
      *
      * @param array $curlOptions an array with curl options. Eg:
-     *        array(
+     *        [
      *            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
-     *        )
+     *        ]
      *
      * @return $this
      */
@@ -335,11 +335,11 @@ class Client
      *
      * // Adding meta-data example
      * function before_bugsnag_notify($error) {
-     *     $error->addMetaData(array(
-     *         "user" => array(
-     *             "name" => "James"
-     *         )
-     *     ));
+     *     $error->addMetaData([
+     *         'user' => [
+     *             'name' => 'James'
+     *         ]
+     *     ]);
      * }
      * $bugsnag->setBeforeNotifyFunction("before_bugsnag_notify");
      *
