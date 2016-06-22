@@ -188,20 +188,6 @@ class Error
     }
 
     /**
-     * Set the PHP exception.
-     *
-     * @param Throwable $exception the throwable instance
-     *
-     * @return $this
-     *
-     * @deprecated since version 2.9. Use setPHPThrowable instead.
-     */
-    public function setPHPException($exception)
-    {
-        return $this->setPHPThrowable($exception);
-    }
-
-    /**
      * Set the PHP throwable.
      *
      * @param Throwable $exception the throwable instance
