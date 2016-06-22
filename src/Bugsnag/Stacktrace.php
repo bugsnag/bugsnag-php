@@ -103,7 +103,7 @@ class Bugsnag_Stacktrace
      *
      * @param Bugsnag_Configuration $config the configuration instance
      *
-     * @return self
+     * @return void
      */
     public function __construct($config)
     {
