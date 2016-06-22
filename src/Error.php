@@ -60,7 +60,7 @@ class Error
     public static function fromPHPThrowable(Configuration $config, Diagnostics $diagnostics, $throwable)
     {
         $error = new self($config, $diagnostics);
-        $error->setPHPException($throwable);
+        $error->setPHPThrowable($throwable);
 
         return $error;
     }
@@ -193,8 +193,22 @@ class Error
      * @param Throwable $exception the throwable instance
      *
      * @return $this
+     *
+     * @deprecated since version 2.9. Use setPHPThrowable instead.
      */
     public function setPHPException($exception)
+    {
+        return $this->setPHPThrowable($exception);
+    }
+
+    /**
+     * Set the PHP throwable.
+     *
+     * @param Throwable $exception the throwable instance
+     *
+     * @return $this
+     */
+    public function setPHPThrowable($exception)
     {
         if (interface_exists(Throwable::class)) {
             if (!$exception instanceof Throwable) {

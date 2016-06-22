@@ -106,9 +106,9 @@ class Configuration
     }
 
     /**
-     * Set the stip path.
+     * Set the strip path.
      *
-     * @param string $stripPath the absolute split path
+     * @param string $stripPath the absolute strip path
      *
      * @return void
      */
