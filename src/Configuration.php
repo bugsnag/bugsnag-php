@@ -43,21 +43,43 @@ class Configuration
 
     public $debug = false;
 
+    /**
+     * Create a new config instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->timeout = self::$DEFAULT_TIMEOUT;
     }
 
+    /**
+     * Get the notify endpoint.
+     *
+     * @return string
+     */
     public function getNotifyEndpoint()
     {
         return $this->endpoint ?: self::$DEFAULT_ENDPOINT;
     }
 
+    /**
+     * Should we notify?
+     *
+     * @return bool
+     */
     public function shouldNotify()
     {
         return is_null($this->notifyReleaseStages) || (is_array($this->notifyReleaseStages) && in_array($this->releaseStage, $this->notifyReleaseStages));
     }
 
+    /**
+     * Should we ignore the given error code?
+     *
+     * @param int $code the error code
+     *
+     * @return bool
+     */
     public function shouldIgnoreErrorCode($code)
     {
         if (isset($this->errorReportingLevel)) {
@@ -67,6 +89,13 @@ class Configuration
         }
     }
 
+    /**
+     * Set the project root.
+     *
+     * @param string $projectRoot the project root path
+     *
+     * @return void
+     */
     public function setProjectRoot($projectRoot)
     {
         $this->projectRoot = $projectRoot;
@@ -76,12 +105,27 @@ class Configuration
         }
     }
 
+    /**
+     * Set the stip path.
+     *
+     * @param string $stripPath the absolute split path
+     *
+     * @return void
+     */
     public function setStripPath($stripPath)
     {
         $this->stripPath = $stripPath;
         $this->stripPathRegex = '/'.preg_quote($stripPath, '/').'[\\/]?/i';
     }
 
+    /**
+     * Get the given configuration.
+     *
+     * @param string $prop    the property to get
+     * @param mixed  $default the value to fallback to
+     *
+     * @return mixed
+     */
     public function get($prop, $default = null)
     {
         $configured = $this->$prop;

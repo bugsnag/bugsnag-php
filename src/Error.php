@@ -27,7 +27,19 @@ class Error
     public $previous;
     public $groupingHash;
 
-    // Static error creation methods, to ensure that Error object is always complete
+    /**
+     * Create a new error from a PHP error.
+     *
+     * @param \Bugsnag\Configuration $config      the config instance
+     * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
+     * @param int                    $code        the error code
+     * @param string                 $message     the error message
+     * @param string                 $file        the error file
+     * @param int                    $line        the error line
+     * @param bool                   $fatal       if the error was fatal
+     *
+     * @return self
+     */
     public static function fromPHPError(Configuration $config, Diagnostics $diagnostics, $code, $message, $file, $line, $fatal = false)
     {
         $error = new self($config, $diagnostics);
@@ -36,6 +48,15 @@ class Error
         return $error;
     }
 
+    /**
+     * Create a new error from a PHP throwable.
+     *
+     * @param \Bugsnag\Configuration $config      the config instance
+     * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
+     * @param \Throwable             $throwable   te he throwable instance
+     *
+     * @return self
+     */
     public static function fromPHPThrowable(Configuration $config, Diagnostics $diagnostics, $throwable)
     {
         $error = new self($config, $diagnostics);
@@ -44,6 +65,16 @@ class Error
         return $error;
     }
 
+    /**
+     * Create a new error from a named error.
+     *
+     * @param \Bugsnag\Configuration $config      the config instance
+     * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
+     * @param string                $name        the error name
+     * @param string|null           $message     the error message
+     *
+     * @return self
+     */
     public static function fromNamedError(Configuration $config, Diagnostics $diagnostics, $name, $message = null)
     {
         $error = new self($config, $diagnostics);
@@ -54,13 +85,29 @@ class Error
         return $error;
     }
 
-    // Private constructor (for use only by the static methods above)
+    /**
+     * Create a new error instance.
+     *
+     * This is only for for use only by the static methods above.
+     *
+     * @param \Bugsnag\Configuration $config      the config instance
+     * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
+     *
+     * @return void
+     */
     private function __construct(Configuration $config, Diagnostics $diagnostics)
     {
         $this->config = $config;
         $this->diagnostics = $diagnostics;
     }
 
+    /**
+     * Set the error name.
+     *
+     * @param string $name the error name
+     *
+     * @return $this
+     */
     public function setName($name)
     {
         if (is_scalar($name) || method_exists($name, '__toString')) {
@@ -72,6 +119,13 @@ class Error
         return $this;
     }
 
+    /**
+     * Set the error message.
+     *
+     * @param string|null $message the error message
+     *
+     * @return $this
+     */
     public function setMessage($message)
     {
         if ($message === null) {
@@ -85,6 +139,13 @@ class Error
         return $this;
     }
 
+    /**
+     * Set the grouping hash.
+     *
+     * @param string $groupingHash the grouping hash
+     *
+     * @return $this
+     */
     public function setGroupingHash($groupingHash)
     {
         $this->groupingHash = $groupingHash;
@@ -92,6 +153,13 @@ class Error
         return $this;
     }
 
+    /**
+     * Set the bugsnag stacktrace.
+     *
+     * @param \Bugsnag\Stacktrace $stacktrace the stacktrace instance
+     *
+     * @return $this
+     */
     public function setStacktrace(Stacktrace $stacktrace)
     {
         $this->stacktrace = $stacktrace;
@@ -99,6 +167,13 @@ class Error
         return $this;
     }
 
+    /**
+     * Set the error severity.
+     *
+     * @param int|null $severity the error severity
+     *
+     * @return $this
+     */
     public function setSeverity($severity)
     {
         if (!is_null($severity)) {
@@ -112,19 +187,26 @@ class Error
         return $this;
     }
 
+    /**
+     * Set the PHP exception.
+     *
+     * @param Throwable $exception the throwable instance
+     *
+     * @return $this
+     */
     public function setPHPException($exception)
     {
         if (interface_exists(Throwable::class)) {
             if (!$exception instanceof Throwable) {
                 error_log('Bugsnag Warning: The exception must implement Throwable.');
 
-                return;
+                return $this;
             }
         } else {
             if (!$exception instanceof Exception) {
                 error_log('Bugsnag Warning: The exception must be an Exception.');
 
-                return;
+                return $this;
             }
         }
 
@@ -139,6 +221,17 @@ class Error
         return $this;
     }
 
+    /**
+     * Set the PHP error.
+     *
+     * @param int    $code     the error code
+     * @param string $message  the error message
+     * @param string $file     the error file
+     * @param int    $line     the error line
+     * @param bool   $fatal    if the error was fatal
+     *
+     * @return $this
+     */
     public function setPHPError($code, $message, $file, $line, $fatal = false)
     {
         if ($fatal) {
@@ -161,6 +254,13 @@ class Error
         return $this;
     }
 
+    /**
+     * Set the error meta data.
+     *
+     * @param array $metaData the error meta data
+     *
+     * @return $this
+     */
     public function setMetaData($metaData)
     {
         if (is_array($metaData)) {
@@ -170,6 +270,13 @@ class Error
         return $this;
     }
 
+    /**
+     * Set the previous throwable.
+     *
+     * @param \Throwable $exception the previous throwable
+     *
+     * @return $this
+     */
     public function setPrevious($exception)
     {
         if ($exception) {
@@ -179,6 +286,11 @@ class Error
         return $this;
     }
 
+    /**
+     * Get the array representation.
+     *
+     * @return array
+     */
     public function toArray()
     {
         $errorArray = [
@@ -199,6 +311,11 @@ class Error
         return $errorArray;
     }
 
+    /**
+     * Get the exception array.
+     *
+     * @return array
+     */
     public function exceptionArray()
     {
         if ($this->previous) {
@@ -216,6 +333,14 @@ class Error
         return $this->cleanupObj($exceptionArray, false);
     }
 
+    /**
+     * Cleanup the given object.
+     *
+     * @param mixed $obj        the data to cleanup
+     * @param bool  $isMetaData if it is meta data
+     *
+     * @return array|null
+     */
     private function cleanupObj($obj, $isMetaData)
     {
         if (is_null($obj)) {

@@ -6,11 +6,23 @@ class Diagnostics
 {
     private $config;
 
+    /**
+     * Create a new diagnostics instance.
+     *
+     * @param \Bugsnag\Configuration $config
+     *
+     * @return void
+     */
     public function __construct(Configuration $config)
     {
         $this->config = $config;
     }
 
+    /**
+     * Get the application information.
+     *
+     * @return array
+     */
     public function getAppData()
     {
         $appData = [];
@@ -30,6 +42,11 @@ class Diagnostics
         return $appData;
     }
 
+    /**
+     * Get the device information.
+     *
+     * @return array
+     */
     public function getDeviceData()
     {
         return [
@@ -37,11 +54,21 @@ class Diagnostics
         ];
     }
 
+    /**
+     * Get the error context.
+     *
+     * @return array
+     */
     public function getContext()
     {
         return $this->config->get('context', Request::getContext());
     }
 
+    /**
+     * Get the current user.
+     *
+     * @return array
+     */
     public function getUser()
     {
         $defaultUser = [];

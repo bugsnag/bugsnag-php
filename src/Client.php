@@ -10,19 +10,19 @@ class Client
     /**
      * The config instance.
      *
-     * @var Bugsnag_Configuration
+     * @var \Bugsnag\Configuration
      */
     private $config;
 
     /**
      * The notification instance.
      *
-     * @var Bugsnag_Notification|null
+     * @var \Bugsnag\Notification|null
      */
     private $notification;
 
     /**
-     * Initialize Bugsnag.
+     * Create a new client instance.
      *
      * @param string $apiKey your Bugsnag API key
      *
