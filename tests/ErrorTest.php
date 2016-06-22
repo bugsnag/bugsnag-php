@@ -153,11 +153,6 @@ class ErrorTest extends AbstractTestCase
         $this->assertArrayNotHasKey('groupingHash', $errorArray);
     }
 
-    public function testSetPHPException()
-    {
-        $this->assertSame($this->error, $this->error->setPHPException(new Exception()));
-    }
-
     public function testSetPHPThrowable()
     {
         $this->assertSame($this->error, $this->error->setPHPThrowable(new Exception()));
