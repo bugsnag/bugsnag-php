@@ -15,6 +15,13 @@ class Client
     private $config;
 
     /**
+     * The diagnostics instance.
+     *
+     * @var \Bugsnag\Diagnostics
+     */
+    private $diagnostics;
+
+    /**
      * The notification instance.
      *
      * @var \Bugsnag\Notification|null

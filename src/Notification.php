@@ -6,16 +6,41 @@ class Notification
 {
     private static $CONTENT_TYPE_HEADER = 'Content-type: application/json';
 
+    /**
+     * The config instance.
+     *
+     * @var \Bugsnag\Configuration
+     */
     private $config;
-    /** @var \Bugsnag\Error[] */
-    private $errorQueue = [];
 
+    /**
+     * The queue of errors to send to Bugsnag.
+     *
+     * @var \Bugsnag\Error[]
+     */
+    private $errorQueue = array();
+
+    /**
+     * Create a new notification instance.
+     *
+     * @param \Bugsnag\Configuration $config the configuration instance
+     *
+     * @return void
+     */
     public function __construct(Configuration $config)
     {
         $this->config = $config;
     }
 
-    public function addError(Error $error, $passedMetaData = [])
+    /**
+     * Add an error to the queue.
+     *
+     * @param \Bugsnag\Error $config         the bugsnag error instance
+     * @param array          $passedMetaData the associated meta data
+     *
+     * @return bool
+     */
+    public function addError(Error $error, $passedMetaData = array())
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {
@@ -63,6 +88,11 @@ class Notification
         }
     }
 
+    /**
+     * Get the array representation.
+     *
+     * @return array
+     */
     public function toArray()
     {
         $events = [];
@@ -81,6 +111,11 @@ class Notification
         ];
     }
 
+    /**
+     * Deliver everything on the queue to Bugsnag.
+     *
+     * @return array
+     */
     public function deliver()
     {
         if (!empty($this->errorQueue)) {
@@ -92,6 +127,14 @@ class Notification
         }
     }
 
+    /**
+     * Post the given data to Bugsnag in json form.
+     *
+     * @param string $url  the url to hit
+     * @param array  $data the data send
+     *
+     * @return array
+     */
     public function postJSON($url, $data)
     {
         $body = json_encode($data);
@@ -107,6 +150,14 @@ class Notification
         }
     }
 
+    /**
+     * Post the given info to Bugsnag using cURL.
+     *
+     * @param string $url  the url to hit
+     * @param string $body the request body
+     *
+     * @return array
+     */
     private function postWithCurl($url, $body)
     {
         $http = curl_init($url);
@@ -166,6 +217,14 @@ class Notification
         curl_close($http);
     }
 
+    /**
+     * Post the given info to Bugsnag using fopen.
+     *
+     * @param string $url  the url to hit
+     * @param string $body the request body
+     *
+     * @return array
+     */
     private function postWithFopen($url, $body)
     {
         // Warn about lack of proxy support if we are using fopen()

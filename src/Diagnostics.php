@@ -4,12 +4,17 @@ namespace Bugsnag;
 
 class Diagnostics
 {
+    /**
+     * The config instance.
+     *
+     * @var \Bugsnag\Configuration
+     */
     private $config;
 
     /**
      * Create a new diagnostics instance.
      *
-     * @param \Bugsnag\Configuration $config
+     * @param \Bugsnag\Configuration $config the configuration instance
      *
      * @return void
      */
