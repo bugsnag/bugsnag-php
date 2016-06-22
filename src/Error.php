@@ -106,7 +106,7 @@ class Error
      *
      * @param string $name the error name
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
@@ -126,7 +126,7 @@ class Error
      *
      * @param string|null $message the error message
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
