@@ -5,9 +5,8 @@ namespace Bugsnag\Tests;
 use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Exception;
-use PHPUnit_Framework_Error as PHPUnitError;
+use GuzzleHttp\Psr7\Uri;
 use PHPUnit_Framework_TestCase as TestCase;
-use TypeError;
 
 class ClientTest extends TestCase
 {
@@ -82,13 +81,8 @@ class ClientTest extends TestCase
                      ->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
     }
 
-    public function testSetInvalidCurlOptions()
+    public function testBaseUri()
     {
-        if (class_exists(TypeError::class)) {
-            $this->setExpectedException(TypeError::class);
-        } else {
-            $this->setExpectedException(PHPUnitError::class);
-        }
-        $this->client->setCurlOptions('option');
+        $this->assertEquals(new Uri('https://notify.bugsnag.com'), $this->client->getGuzzle()->getConfig('base_uri'));
     }
 }
