@@ -81,14 +81,4 @@ class ClientTest extends TestCase
         $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE)
                      ->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
     }
-
-    public function testSetInvalidCurlOptions()
-    {
-        if (class_exists(TypeError::class)) {
-            $this->setExpectedException(TypeError::class);
-        } else {
-            $this->setExpectedException(PHPUnitError::class);
-        }
-        $this->client->setCurlOptions('option');
-    }
 }

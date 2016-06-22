@@ -3,10 +3,14 @@
 namespace Bugsnag;
 
 use Exception;
+use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\ClientInterface;
 use Throwable;
 
 class Client
 {
+    const ENDPOINT = 'https://notify.bugsnag.com';
+
     /**
      * The config instance.
      *
@@ -22,6 +26,13 @@ class Client
     private $diagnostics;
 
     /**
+     * The guzzle client instance.
+     *
+     * @var \Guzzle\ClientInterface
+     */
+    private $guzzle;
+
+    /**
      * The notification instance.
      *
      * @var \Bugsnag\Notification|null
@@ -31,20 +42,53 @@ class Client
     /**
      * Create a new client instance.
      *
-     * @param \Bugsnag\Configuration    $config
-     * @param \Bugsnag\Diagnostics|null $diagnostics
+     * @param \Bugsnag\Configuration       $config
+     * @param \Bugsnag\Diagnostics|null    $diagnostics
+     * @param \Guzzle\ClientInterface|null $guzzle
      *
      * @return void
      */
-    public function __construct(Configuration $config, Diagnostics $diagnostics = null)
+    public function __construct(Configuration $config, Diagnostics $diagnostics = null, ClientInterface $guzzle = null)
     {
         $this->config = $config;
 
         $this->diagnostics = $diagnostics ?: new Diagnostics($this->config);
 
+        $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => self::ENDPOINT]);
+
         // Register a shutdown function to check for fatal errors
         // and flush any buffered errors
         register_shutdown_function([$this, 'shutdownHandler']);
+    }
+
+    /**
+     * Get the config instance.
+     *
+     * @return \Bugsnag\Configuration
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * Get the config instance.
+     *
+     * @return \Bugsnag\Diagnostics
+     */
+    public function getDiagnostics()
+    {
+        return $this->diagnostics;
+    }
+
+    /**
+     * Get the config instance.
+     *
+     * @return \Guzzle\ClientInterface
+     */
+    public function getGuzzle()
+    {
+        return $this->guzzle;
     }
 
     /**
@@ -101,48 +145,6 @@ class Client
     public function setNotifyReleaseStages(array $notifyReleaseStages)
     {
         $this->config->notifyReleaseStages = $notifyReleaseStages;
-
-        return $this;
-    }
-
-    /**
-     * Set which Bugsnag endpoint to send errors to.
-     *
-     * @param string $endpoint endpoint URL
-     *
-     * @return $this
-     */
-    public function setEndpoint($endpoint)
-    {
-        $this->config->endpoint = $endpoint;
-
-        return $this;
-    }
-
-    /**
-     * Enable debug mode to help diagnose problems.
-     *
-     * @param bool $debug whether to enable debug mode
-     *
-     * @return $this
-     */
-    public function setDebug($debug)
-    {
-        $this->config->debug = $debug;
-
-        return $this;
-    }
-
-    /**
-     * Set the desired timeout for cURL connection when notifying bugsnag.
-     *
-     * @param int $timeout the desired timeout in seconds
-     *
-     * @return $this
-     */
-    public function setTimeout($timeout)
-    {
-        $this->config->timeout = $timeout;
 
         return $this;
     }
@@ -286,43 +288,6 @@ class Client
         } else {
             $this->config->metaData = $metaData;
         }
-
-        return $this;
-    }
-
-    /**
-     * Set proxy configuration.
-     *
-     * @param array $proxySettings an array with proxy settings. Eg:
-     *        [
-     *            'host'     => 'bugsnag.com',
-     *            'port'     => 42,
-     *            'user'     => 'username'
-     *            'password' => 'password123'
-     *        ]
-     *
-     * @return $this
-     */
-    public function setProxySettings(array $proxySettings)
-    {
-        $this->config->proxySettings = $proxySettings;
-
-        return $this;
-    }
-
-    /**
-     * Set custom curl options.
-     *
-     * @param array $curlOptions an array with curl options. Eg:
-     *        [
-     *            CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4
-     *        ]
-     *
-     * @return $this
-     */
-    public function setCurlOptions(array $curlOptions)
-    {
-        $this->config->curlOptions = $curlOptions;
 
         return $this;
     }

@@ -6,18 +6,13 @@ use InvalidArgumentException;
 
 class Configuration
 {
-    public static $DEFAULT_TIMEOUT = 10;
-    public static $DEFAULT_ENDPOINT = 'https://notify.bugsnag.com';
-
     public $apiKey;
     public $autoNotify = true;
     public $batchSending = true;
-    public $endpoint;
     public $notifyReleaseStages;
     public $filters = ['password'];
     public $projectRoot;
     public $projectRootRegex;
-    public $proxySettings = [];
     public $notifier = [
         'name' => 'Bugsnag PHP (Official)',
         'version' => '3.0.0',
@@ -41,38 +36,22 @@ class Configuration
     public $beforeNotifyFunction;
     public $errorReportingLevel;
 
-    public $curlOptions = [];
-
-    public $debug = false;
-
     /**
      * Create a new config instance.
      *
      * @param string   $apiKey  your bugsnag api key
-     * @param int|null $timeout the optional timeout
      *
      * @throws \InvalidArgumentException
      *
      * @return void
      */
-    public function __construct($apiKey, $timeout = null)
+    public function __construct($apiKey)
     {
         if (!is_string($apiKey)) {
             throw new InvalidArgumentException('Bugsnag Error: Invalid API key');
         }
 
         $this->apiKey = $apiKey;
-        $this->timeout = $timeout ?: self::$DEFAULT_TIMEOUT;
-    }
-
-    /**
-     * Get the notify endpoint.
-     *
-     * @return string
-     */
-    public function getNotifyEndpoint()
-    {
-        return $this->endpoint ?: self::$DEFAULT_ENDPOINT;
     }
 
     /**
