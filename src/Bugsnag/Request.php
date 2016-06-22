@@ -19,6 +19,12 @@ class Bugsnag_Request
      */
     public static function getRequestMetaData()
     {
+        static $requestData;
+
+        if ($requestData !== null) {
+            return $requestData;
+        }
+
         $requestData = array();
 
         $methodsWithPayload = array('PUT');
