@@ -4,7 +4,7 @@ class Bugsnag_Diagnostics
 {
     private $config;
 
-    /** 
+    /**
      * Create a new diagnostics instance.
      *
      * @param Bugsnag_Configuration $config
@@ -16,7 +16,7 @@ class Bugsnag_Diagnostics
         $this->config = $config;
     }
 
-    /** 
+    /**
      * Get the application information.
      *
      * @return array
@@ -40,7 +40,7 @@ class Bugsnag_Diagnostics
         return $appData;
     }
 
-    /** 
+    /**
      * Get the device information.
      *
      * @return array
@@ -52,7 +52,7 @@ class Bugsnag_Diagnostics
         );
     }
 
-    /** 
+    /**
      * Get the error context.
      *
      * @return array
@@ -62,7 +62,7 @@ class Bugsnag_Diagnostics
         return $this->config->get('context', Bugsnag_Request::getContext());
     }
 
-    /** 
+    /**
      * Get the current user.
      *
      * @return array

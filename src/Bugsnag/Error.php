@@ -21,7 +21,7 @@ class Bugsnag_Error
     public $previous;
     public $groupingHash;
 
-    /** 
+    /**
      * Create a new error from a PHP error.
      *
      * @param Bugsnag_Configuration $config      the config instance
@@ -42,7 +42,7 @@ class Bugsnag_Error
         return $error;
     }
 
-    /** 
+    /**
      * Create a new error from a PHP throwable.
      *
      * @param Bugsnag_Configuration $config      the config instance
@@ -59,7 +59,7 @@ class Bugsnag_Error
         return $error;
     }
 
-    /** 
+    /**
      * Create a new error from a named error.
      *
      * @param Bugsnag_Configuration $config      the config instance
@@ -79,7 +79,7 @@ class Bugsnag_Error
         return $error;
     }
 
-    /** 
+    /**
      * Create a new error instance.
      *
      * This is only for for use only by the static methods above.
@@ -96,7 +96,7 @@ class Bugsnag_Error
     }
 
     /**
-     * Set the error name
+     * Set the error name.
      *
      * @param string $name the error name
      *

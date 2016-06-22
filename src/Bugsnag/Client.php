@@ -16,7 +16,7 @@ class Bugsnag_Client
      */
     private $notification;
 
-    /** 
+    /**
      * Create a new client instance.
      *
      * @param string $apiKey your Bugsnag API key
