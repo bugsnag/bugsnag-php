@@ -54,7 +54,7 @@ class Bugsnag_Error
     public static function fromPHPThrowable(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $throwable)
     {
         $error = new self($config, $diagnostics);
-        $error->setPHPException($throwable);
+        $error->setPHPThrowable($throwable);
 
         return $error;
     }
@@ -187,8 +187,22 @@ class Bugsnag_Error
      * @param Throwable $exception the throwable instance
      *
      * @return $this
+     *
+     * @deprecated since version 2.9. Use setPHPThrowable instead.
      */
     public function setPHPException($exception)
+    {
+        return $this->setPHPThrowable($exception);
+    }
+
+    /**
+     * Set the PHP throwable.
+     *
+     * @param Throwable $exception the throwable instance
+     *
+     * @return $this
+     */
+    public function setPHPThrowable($exception)
     {
         if (version_compare(PHP_VERSION, '7.0.0', '>=')) {
             if (!$exception instanceof Throwable) {
