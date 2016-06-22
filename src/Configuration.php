@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use InvalidArgumentException;
+
 class Configuration
 {
     public static $DEFAULT_TIMEOUT = 10;
