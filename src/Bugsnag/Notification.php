@@ -112,17 +112,19 @@ class Bugsnag_Notification
     /**
      * Deliver everything on the queue to Bugsnag.
      *
-     * @return array
+     * @return void
      */
     public function deliver()
     {
-        if (!empty($this->errorQueue)) {
-            // Post the request to bugsnag
-            $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
-
-            // Clear the error queue
-            $this->errorQueue = array();
+        if (empty($this->errorQueue)) {
+            return;
         }
+
+        // Post the request to bugsnag
+        $this->postJSON($this->config->getNotifyEndpoint(), $this->toArray());
+
+        // Clear the error queue
+        $this->errorQueue = array();
     }
 
     /**
@@ -131,7 +133,7 @@ class Bugsnag_Notification
      * @param string $url  the url to hit
      * @param array  $data the data send
      *
-     * @return array
+     * @return void
      */
     public function postJSON($url, $data)
     {
@@ -154,7 +156,7 @@ class Bugsnag_Notification
      * @param string $url  the url to hit
      * @param string $body the request body
      *
-     * @return array
+     * @return void
      */
     private function postWithCurl($url, $body)
     {
@@ -221,7 +223,7 @@ class Bugsnag_Notification
      * @param string $url  the url to hit
      * @param string $body the request body
      *
-     * @return array
+     * @return void
      */
     private function postWithFopen($url, $body)
     {
