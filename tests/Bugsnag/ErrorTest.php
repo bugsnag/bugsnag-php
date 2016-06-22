@@ -154,11 +154,16 @@ class ErrorTest extends Bugsnag_TestCase
         $this->assertSame($this->error, $this->error->setPHPException(new Exception()));
     }
 
-    public function testSetPHPAnotherException()
+    public function testSetPHPThrowable()
+    {
+        $this->assertSame($this->error, $this->error->setPHPThrowable(new Exception()));
+    }
+
+    public function testSetPHPAnotherThrowable()
     {
         $exception = version_compare(PHP_VERSION, '7.0.0', '>=') ? new ParseError() : new InvalidArgumentException();
 
-        $this->assertSame($this->error, $this->error->setPHPException($exception));
+        $this->assertSame($this->error, $this->error->setPHPThrowable($exception));
     }
 
     /**
