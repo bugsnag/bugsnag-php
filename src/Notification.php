@@ -18,7 +18,7 @@ class Notification
      *
      * @var \Bugsnag\Error[]
      */
-    private $errorQueue = array();
+    private $errorQueue = [];
 
     /**
      * Create a new notification instance.
@@ -40,7 +40,7 @@ class Notification
      *
      * @return bool
      */
-    public function addError(Error $error, $passedMetaData = array())
+    public function addError(Error $error, $passedMetaData = [])
     {
         // Check if this error should be sent to Bugsnag
         if (!$this->config->shouldNotify()) {
