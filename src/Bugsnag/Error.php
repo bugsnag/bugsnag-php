@@ -54,7 +54,7 @@ class Bugsnag_Error
     public static function fromPHPThrowable(Bugsnag_Configuration $config, Bugsnag_Diagnostics $diagnostics, $throwable)
     {
         $error = new self($config, $diagnostics);
-        $error->setPHPException($throwable);
+        $error->setPHPThrowable($throwable);
 
         return $error;
     }
