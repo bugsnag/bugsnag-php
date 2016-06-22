@@ -20,7 +20,7 @@ class Stacktrace
      *
      * @return self
      */
-    public static function generate($config)
+    public static function generate(Configuration $config)
     {
         // Reduce memory usage by omitting args and objects from backtrace
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT);
@@ -37,7 +37,7 @@ class Stacktrace
      *
      * @return self
      */
-    public static function fromFrame($config, $file, $line)
+    public static function fromFrame(Configuration $config, $file, $line)
     {
         $stacktrace = new self($config);
         $stacktrace->addFrame($file, $line, '[unknown]');
@@ -55,7 +55,7 @@ class Stacktrace
      *
      * @return self
      */
-    public static function fromBacktrace($config, $backtrace, $topFile, $topLine)
+    public static function fromBacktrace(Configuration $config, array $backtrace, $topFile, $topLine)
     {
         $stacktrace = new self($config);
 
@@ -92,7 +92,7 @@ class Stacktrace
      *
      * @return bool
      */
-    public static function frameInsideBugsnag($frame)
+    public static function frameInsideBugsnag(array $frame)
     {
         return isset($frame['class']) && strpos($frame['class'], 'Bugsnag\\') === 0 && substr_count($frame['class'], '\\') === 1;
     }
@@ -104,7 +104,7 @@ class Stacktrace
      *
      * @return void
      */
-    public function __construct($config)
+    public function __construct(Configuration $config)
     {
         $this->config = $config;
     }
