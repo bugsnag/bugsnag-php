@@ -10,6 +10,13 @@ class Bugsnag_Client
     private $config;
 
     /**
+     * The diagnostics instance.
+     *
+     * @var Bugsnag_Diagnostics
+     */
+    private $diagnostics;
+
+    /**
      * The notification instance.
      *
      * @var Bugsnag_Notification|null
