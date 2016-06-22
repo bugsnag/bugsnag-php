@@ -128,7 +128,7 @@ class Bugsnag_Stacktrace
      * @param string      $method the method called
      * @param string|null $class the associated class
      *
-     * @return array
+     * @return void
      */
     public function addFrame($file, $line, $method, $class = null)
     {
