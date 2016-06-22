@@ -106,6 +106,8 @@ class Error
      *
      * @param string $name the error name
      *
+     * @throws InvalidArgumentException
+     *
      * @return $this
      */
     public function setName($name)
@@ -123,6 +125,8 @@ class Error
      * Set the error message.
      *
      * @param string|null $message the error message
+     *
+     * @throws InvalidArgumentException
      *
      * @return $this
      */
