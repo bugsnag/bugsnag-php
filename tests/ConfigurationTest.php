@@ -12,7 +12,15 @@ class ConfigurationTest extends TestCase
 
     protected function setUp()
     {
-        $this->config = new Configuration();
+        $this->config = new Configuration('API-KEY');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDoesNotAcceptBadApiKey()
+    {
+        new Configuration([]);
     }
 
     public function testDefaultEndpoint()

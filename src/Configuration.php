@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use InvalidArgumentException;
+
 class Configuration
 {
     public static $DEFAULT_TIMEOUT = 10;
@@ -46,11 +48,21 @@ class Configuration
     /**
      * Create a new config instance.
      *
+     * @param string   $apiKey  your bugsnag api key
+     * @param int|null $timeout the optional timeout
+     *
+     * @throws \InvalidArgumentException
+     *
      * @return void
      */
-    public function __construct()
+    public function __construct($apiKey, $timeout = null)
     {
-        $this->timeout = self::$DEFAULT_TIMEOUT;
+        if (!is_string($apiKey)) {
+            throw new InvalidArgumentException('Bugsnag Error: Invalid API key');
+        }
+
+        $this->apiKey = $apiKey;
+        $this->timeout = $timeout ?: self::$DEFAULT_TIMEOUT;
     }
 
     /**

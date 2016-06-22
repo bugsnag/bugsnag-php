@@ -17,8 +17,7 @@ class NotificationTest extends AbstractTestCase
 
     protected function setUp()
     {
-        $this->config = new Configuration();
-        $this->config->apiKey = '6015a72ff14038114c3d12623dfb018f';
+        $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
         $this->config->beforeNotifyFunction = 'Bugsnag\Tests\before_notify_skip_error';
 
         $this->diagnostics = new Diagnostics($this->config);
@@ -66,6 +65,7 @@ class NotificationTest extends AbstractTestCase
     {
         $config = $this->getMockBuilder(Configuration::class)
                                      ->setMethods(['shouldNotify'])
+                                     ->setConstructorArgs(['key'])
                                      ->getMock();
         $config->expects($this->once())
                 ->method('shouldNotify')
@@ -89,6 +89,7 @@ class NotificationTest extends AbstractTestCase
     {
         $config = $this->getMockBuilder(Configuration::class)
                                      ->setMethods(['shouldNotify'])
+                                     ->setConstructorArgs(['key'])
                                      ->getMock();
         $config->expects($this->once())
                 ->method('shouldNotify')
