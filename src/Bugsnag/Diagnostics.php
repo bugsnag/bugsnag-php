@@ -2,12 +2,17 @@
 
 class Bugsnag_Diagnostics
 {
+    /**
+     * The config instance.
+     *
+     * @var Bugsnag_Configuration
+     */
     private $config;
 
     /**
      * Create a new diagnostics instance.
      *
-     * @param Bugsnag_Configuration $config
+     * @param Bugsnag_Configuration $config the configuration instance
      *
      * @return void
      */
