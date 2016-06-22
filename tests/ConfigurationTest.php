@@ -20,16 +20,9 @@ class ConfigurationTest extends TestCase
         $this->assertSame($this->config->getNotifyEndpoint(), 'https://notify.bugsnag.com');
     }
 
-    public function testNonSSLEndpoint()
-    {
-        $this->config->useSSL = false;
-        $this->assertSame($this->config->getNotifyEndpoint(), 'http://notify.bugsnag.com');
-    }
-
     public function testCustomEndpoint()
     {
-        $this->config->useSSL = false;
-        $this->config->endpoint = 'localhost';
+        $this->config->endpoint = 'http://localhost';
         $this->assertSame($this->config->getNotifyEndpoint(), 'http://localhost');
     }
 
