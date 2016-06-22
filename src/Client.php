@@ -92,7 +92,7 @@ class Client
     /**
      * Set which release stages should be allowed to notify Bugsnag.
      *
-     * Eg ["production", "development"].
+     * Eg ['production', 'development'].
      *
      * @param array $notifyReleaseStages array of release stages to notify for
      *
@@ -199,7 +199,7 @@ class Client
     /**
      * Set the strings to filter out from metaData arrays before sending then.
      *
-     * Eg. ["password", "credit_card"].
+     * Eg. ['password', 'credit_card'].
      *
      * @param array $filters an array of metaData filters
      *
@@ -270,9 +270,9 @@ class Client
      *
      * @param array $metaData an array of arrays of custom data. Eg:
      *        [
-     *            "user" => [
-     *                "name" => "James",
-     *                "email" => "james@example.com"
+     *            'user' => [
+     *                'name' => 'James',
+     *                'email' => 'james@example.com'
      *            ]
      *        ]
      * @param bool $merge optionally merge the meta data
@@ -295,10 +295,10 @@ class Client
      *
      * @param array $proxySettings an array with proxy settings. Eg:
      *        [
-     *            'host'     => "bugsnag.com",
+     *            'host'     => 'bugsnag.com',
      *            'port'     => 42,
-     *            'user'     => "username"
-     *            'password' => "password123"
+     *            'user'     => 'username'
+     *            'password' => 'password123'
      *        ]
      *
      * @return $this
@@ -341,7 +341,7 @@ class Client
      *         ]
      *     ]);
      * }
-     * $bugsnag->setBeforeNotifyFunction("before_bugsnag_notify");
+     * $bugsnag->setBeforeNotifyFunction('before_bugsnag_notify');
      *
      * @param callable $beforeNotifyFunction
      *
