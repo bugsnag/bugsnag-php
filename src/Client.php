@@ -3,6 +3,7 @@
 namespace Bugsnag;
 
 use Exception;
+use InvalidArgumentException;
 use Throwable;
 
 class Client
@@ -26,7 +27,7 @@ class Client
      *
      * @param string $apiKey your Bugsnag API key
      *
-     * @throws Exception
+     * @throws \InvalidArgumentException
      *
      * @return void
      */
@@ -34,7 +35,7 @@ class Client
     {
         // Check API key has been passed
         if (!is_string($apiKey)) {
-            throw new Exception('Bugsnag Error: Invalid API key');
+            throw new InvalidArgumentException('Bugsnag Error: Invalid API key');
         }
 
         // Create a configuration object
