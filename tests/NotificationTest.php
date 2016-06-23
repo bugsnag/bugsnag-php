@@ -25,7 +25,7 @@ class NotificationTest extends AbstractTestCase
     {
         $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
         $this->config->beforeNotifyFunction = 'Bugsnag\Tests\before_notify_skip_error';
-        $this->config->user = array('id' => 'foo');
+        $this->config->user = ['id' => 'foo'];
         $this->resolver = new BasicResolver();
         $this->diagnostics = new Diagnostics($this->config, $this->resolver);
 
@@ -54,7 +54,7 @@ class NotificationTest extends AbstractTestCase
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[2]['json']['apiKey']);
         $this->assertInternalType('array', $params[2]['json']['notifier']);
         $this->assertInternalType('array', $params[2]['json']['events']);
-        $this->assertSame(array('id' => 'foo'), $params[2]['json']['events'][0]['user']);
+        $this->assertSame(['id' => 'foo'], $params[2]['json']['events'][0]['user']);
     }
 
     public function testBeforeNotifySkipsError()
