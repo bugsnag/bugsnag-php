@@ -11,14 +11,14 @@ class Diagnostics
      *
      * @var \Bugsnag\Configuration
      */
-    private $config;
+    protected $config;
 
     /**
      * The request resolver instance.
      *
      * @var \Bugsnag\Request\ResolverInterface
      */
-    private $resolver;
+    protected $resolver;
 
     /**
      * Create a new diagnostics instance.

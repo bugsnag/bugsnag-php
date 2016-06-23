@@ -4,7 +4,7 @@ namespace Bugsnag;
 
 class ErrorTypes
 {
-    private static $ERROR_TYPES = [
+    protected static $ERROR_TYPES = [
         E_ERROR => [
             'name' => 'PHP Fatal Error',
             'severity' => 'error',
@@ -90,7 +90,7 @@ class ErrorTypes
      */
     public static function isFatal($code)
     {
-        return self::getSeverity($code) == 'error';
+        return static::getSeverity($code) == 'error';
     }
 
     /**
@@ -102,8 +102,8 @@ class ErrorTypes
      */
     public static function getName($code)
     {
-        if (array_key_exists($code, self::$ERROR_TYPES)) {
-            return self::$ERROR_TYPES[$code]['name'];
+        if (array_key_exists($code, static::$ERROR_TYPES)) {
+            return static::$ERROR_TYPES[$code]['name'];
         } else {
             return 'Unknown';
         }
@@ -118,8 +118,8 @@ class ErrorTypes
      */
     public static function getSeverity($code)
     {
-        if (array_key_exists($code, self::$ERROR_TYPES)) {
-            return self::$ERROR_TYPES[$code]['severity'];
+        if (array_key_exists($code, static::$ERROR_TYPES)) {
+            return static::$ERROR_TYPES[$code]['severity'];
         } else {
             return 'error';
         }
@@ -135,7 +135,7 @@ class ErrorTypes
     public static function getLevelsForSeverity($severity)
     {
         $levels = 0;
-        foreach (self::$ERROR_TYPES as $level => $info) {
+        foreach (static::$ERROR_TYPES as $level => $info) {
             if ($info['severity'] == $severity) {
                 $levels |= $level;
             }
