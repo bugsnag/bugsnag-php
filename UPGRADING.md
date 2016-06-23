@@ -4,7 +4,7 @@ Upgrading
 
 ## 2.x to 3.x
 
-**Our PHP library has gone through some major improvements, and there are some small changes you'll need to make to get onto the new version.**
+*Our PHP library has gone through some major improvements, and there are some small changes you'll need to make to get onto the new version.*
 
 #### PHP 5.5.9+
 
