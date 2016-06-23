@@ -172,7 +172,7 @@ class Notification
         } catch (RuntimeException $e) {
             if (count($data['events']) > 1) {
                 $event = array_shift($data['events']);
-                $this->postJSON($url, array_merge($data, array('events' => array($event))));
+                $this->postJSON($url, array_merge($data, ['events' => [$event]]));
                 $this->postJSON($url, $data);
             } else {
                 error_log('Bugsnag Warning: '.$e->getMessage());
