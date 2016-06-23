@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Request\BasicResolver;
+use Bugsnag\Request\ResolverInterface;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
@@ -17,6 +19,13 @@ class Client
      * @var \Bugsnag\Configuration
      */
     private $config;
+
+    /**
+     * The request resolver instance.
+     *
+     * @var \Bugsnag\Request\ResolverInterface
+     */
+    private $resolver;
 
     /**
      * The diagnostics instance.
@@ -42,18 +51,17 @@ class Client
     /**
      * Create a new client instance.
      *
-     * @param \Bugsnag\Configuration           $config
-     * @param \Bugsnag\Diagnostics|null        $diagnostics
-     * @param \GuzzleHttp\ClientInterface|null $guzzle
+     * @param \Bugsnag\Configuration                  $config
+     * @param \Bugsnag\Request\ResolverInterface|null $resolver
+     * @param \GuzzleHttp\ClientInterface|null        $guzzle
      *
      * @return void
      */
-    public function __construct(Configuration $config, Diagnostics $diagnostics = null, ClientInterface $guzzle = null)
+    public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
     {
         $this->config = $config;
-
-        $this->diagnostics = $diagnostics ?: new Diagnostics($this->config);
-
+        $this->resolver = $resolver ?: new BasicResolver();
+        $this->diagnostics = new Diagnostics($this->config, $this->resolver);
         $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => self::ENDPOINT]);
 
         // Register a shutdown function to check for fatal errors
@@ -72,7 +80,17 @@ class Client
     }
 
     /**
-     * Get the config instance.
+     * Get the request resolver instance.
+     *
+     * @return \Bugsnag\Request\ResolverInterface
+     */
+    public function getResolver()
+    {
+        return $this->resolver;
+    }
+
+    /**
+     * Get the diagnostics instance.
      *
      * @return \Bugsnag\Diagnostics
      */
@@ -396,7 +414,7 @@ class Client
     }
 
     /**
-     * Sets whether Bugsnag should send $_COOKIE with each error.
+     * Sets whether Bugsnag should send cookie data with each error.
      *
      * @param bool $sendCookies whether to send the environment
      *
@@ -410,7 +428,7 @@ class Client
     }
 
     /**
-     * Sets whether Bugsnag should send $_SESSION with each error.
+     * Sets whether Bugsnag should send session data with each error.
      *
      * @param bool $sendSession whether to send the environment
      *
@@ -584,6 +602,6 @@ class Client
      */
     private function sendErrorsOnShutdown()
     {
-        return $this->config->batchSending && Request::isRequest();
+        return $this->config->batchSending && $this->resolver->resolve()->isRequest();
     }
 }
