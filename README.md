@@ -26,7 +26,7 @@ The Bugsnag error reporter for PHP gives you instant notification of errors and 
     * [Laravel](http://docs.bugsnag.com/platforms/php/laravel/configuration-options)
     * [Lumen](http://docs.bugsnag.com/platforms/php/lumen/configuration-options)
     * [Other PHP apps](http://docs.bugsnag.com/platforms/php/other/configuration-options)
-* [Search open and closed issues](https://github.com/bugsnag/bugsnag-rphp/issues?utf8=✓&q=is%3Aissue) for similar problems
+* [Search open and closed issues](https://github.com/bugsnag/bugsnag-php/issues?utf8=✓&q=is%3Aissue) for similar problems
 * [Report a bug or request a feature](https://github.com/bugsnag/bugsnag-php/issues/new)
 
 
