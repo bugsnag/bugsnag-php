@@ -137,8 +137,25 @@ class Bugsnag_Notification
      */
     public function postJSON($url, $data)
     {
-        $body = json_encode($data);
+        // Try to send the whole lot, or without the meta data for the first
+        // event. If failed, try to send the first event, and then the rest of
+        // them, revursively. Decrease by a constant and concquer if you like.
+        // Note that the base case is satisfied as soon as the payload is small
+        // enought to send, or when it's simply discarded.
+        try {
+            $body = self::encode($data);
+        } catch (RuntimeException $e) {
+            if (count($data['events']) > 1) {
+                $event = array_shift($data['events']);
+                $this->postJSON($url, array_merge($data, ['events' => [$event]]));
+                $this->postJSON($url, $data);
+            }
 
+            error_log('Bugsnag Warning: '.$e->getMessage());
+
+            return;
+        }
+        
         // Prefer cURL if it is installed, otherwise fall back to fopen()
         // cURL supports both timeouts and proxies
         if (function_exists('curl_version')) {
@@ -148,6 +165,46 @@ class Bugsnag_Notification
         } else {
             error_log('Bugsnag Warning: Couldn\'t notify (neither cURL or allow_url_fopen are available on your PHP installation)');
         }
+    }
+
+    /**
+     * Json encode the given data.
+     *
+     * We will also strip out the meta data if it's too large.
+     *
+     * @param array $data the data to encode
+     *
+     * @throws RuntimeException
+     *
+     * @return string
+     */
+    private function encode(array $data)
+    {
+        $body = json_encode($data);
+
+        if (self::length($body) > 500000) {
+            unset($data['events'][0]['metaData']);
+        }
+
+        $body = json_encode($data);
+
+        if (self::length($body) > 500000) {
+            throw new RuntimeException('Payload too large');
+        }
+
+        return $body;
+    }
+
+    /**
+     * Get the length of the given string in bytes.
+     *
+     * @param string $str the string to get the length of
+     *
+     * @return int
+     */
+    private function length($str)
+    {
+        return function_exists('mb_strlen') ? mb_strlen($str, '8bit') : strlen($str);
     }
 
     /**
