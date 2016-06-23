@@ -2,6 +2,7 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Request\ResolverInterface;
 use Exception;
 use GuzzleHttp\ClientInterface;
 
@@ -13,6 +14,13 @@ class Notification
      * @var \Bugsnag\Configuration
      */
     private $config;
+
+    /**
+     * The request resolver instance.
+     *
+     * @var \Bugsnag\Request\ResolverInterface
+     */
+    private $resolver;
 
     /**
      * The guzzle client instance.
@@ -31,14 +39,16 @@ class Notification
     /**
      * Create a new notification instance.
      *
-     * @param \Bugsnag\Configuration      $config the configuration instance
-     * @param \GuzzleHttp\ClientInterface $guzzle the guzzle client instance
+     * @param \Bugsnag\Configuration             $config   the configuration instance
+     * @param \Bugsnag\Request\ResolverInterface $resolver the request resolver instance
+     * @param \GuzzleHttp\ClientInterface        $guzzle   the guzzle client instance
      *
      * @return void
      */
-    public function __construct(Configuration $config, ClientInterface $guzzle)
+    public function __construct(Configuration $config, ResolverInterface $resolver, ClientInterface $guzzle)
     {
         $this->config = $config;
+        $this->resolver = $resolver;
         $this->guzzle = $guzzle;
     }
 
@@ -60,23 +70,25 @@ class Notification
         // Add global meta-data to error
         $error->setMetaData($this->config->metaData);
 
+        $request = $this->resolver->resolve();
+
         // Add request meta-data to error
-        if (Request::isRequest()) {
-            $error->setMetaData(Request::getRequestMetaData());
+        if ($request->isRequest()) {
+            $error->setMetaData($request->getMetaData());
         }
 
         // Session Tab
-        if ($this->config->sendSession && !empty($_SESSION)) {
-            $error->setMetaData(['session' => $_SESSION]);
+        if ($this->config->sendSession && $request->getSessionData()) {
+            $error->setMetaData(['session' => $request->getSessionData()]);
         }
 
         // Cookies Tab
-        if ($this->config->sendCookies && !empty($_COOKIE)) {
-            $error->setMetaData(['cookies' => $_COOKIE]);
+        if ($this->config->sendCookies && $request->getCookieData()) {
+            $error->setMetaData(['cookies' => $request->getCookieData()]);
         }
 
         // Add environment meta-data to error
-        if ($this->config->sendEnvironment && !empty($_ENV)) {
+        if ($this->config->sendEnvironment && $_ENV) {
             $error->setMetaData(['Environment' => $_ENV]);
         }
 

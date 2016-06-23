@@ -5,6 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use Bugsnag\Diagnostics;
 use Bugsnag\Error;
+use Bugsnag\Request\BasicResolver;
 use Exception;
 use InvalidArgumentException;
 use ParseError;
@@ -14,6 +15,8 @@ class ErrorTest extends AbstractTestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
+    /** @var \Bugsnag\Request\ResolverInterface */
+    protected $resolver;
     /** @var \Bugsnag\Diagnostics */
     protected $diagnostics;
     /** @var \Bugsnag\Error */
@@ -22,7 +25,8 @@ class ErrorTest extends AbstractTestCase
     protected function setUp()
     {
         $this->config = new Configuration('example-key');
-        $this->diagnostics = new Diagnostics($this->config);
+        $this->resolver = new BasicResolver();
+        $this->diagnostics = new Diagnostics($this->config, $this->resolver);
         $this->error = $this->getError();
     }
 

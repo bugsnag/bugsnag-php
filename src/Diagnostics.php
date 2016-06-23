@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Request\ResolverInterface;
+
 class Diagnostics
 {
     /**
@@ -12,15 +14,24 @@ class Diagnostics
     private $config;
 
     /**
+     * The request resolver instance.
+     *
+     * @var \Bugsnag\Request\ResolverInterface
+     */
+    private $resolver;
+
+    /**
      * Create a new diagnostics instance.
      *
-     * @param \Bugsnag\Configuration $config the configuration instance
+     * @param \Bugsnag\Configuration             $config   the configuration instance
+     * @param \Bugsnag\Request\ResolverInterface $resolver the request resolver instance
      *
      * @return void
      */
-    public function __construct(Configuration $config)
+    public function __construct(Configuration $config, ResolverInterface $resolver)
     {
         $this->config = $config;
+        $this->resolver = $resolver;
     }
 
     /**
@@ -66,7 +77,7 @@ class Diagnostics
      */
     public function getContext()
     {
-        return $this->config->get('context', Request::getContext());
+        return $this->config->get('context', $this->resolver->resolve()->getContext());
     }
 
     /**
@@ -77,7 +88,7 @@ class Diagnostics
     public function getUser()
     {
         $defaultUser = [];
-        $userId = Request::getUserId();
+        $userId = $this->resolver->resolve()->getUserId();
 
         if (!is_null($userId)) {
             $defaultUser['id'] = $userId;
