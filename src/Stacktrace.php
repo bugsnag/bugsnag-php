@@ -7,11 +7,22 @@ use SplFileObject;
 
 class Stacktrace
 {
-    private static $DEFAULT_NUM_LINES = 7;
-    private static $MAX_LINE_LENGTH = 200;
+    const NUM_LINES = 7;
+    const MAX_LENGTH = 200;
 
-    public $frames = [];
+    /**
+     * The config instance.
+     *
+     * @var \Bugsnag\Configuration
+     */
     private $config;
+
+    /**
+     * The array of frames.
+     *
+     * @var array
+     */
+    private $frames = [];
 
     /**
      * Generate a new stacktrace using the given config.
@@ -146,7 +157,7 @@ class Stacktrace
 
         // Attach some lines of code for context
         if ($this->config->sendCode) {
-            $frame['code'] = $this->getCode($file, $line, self::$DEFAULT_NUM_LINES);
+            $frame['code'] = $this->getCode($file, $line, self::NUM_LINES);
         }
 
         // Check if this frame is inProject
@@ -196,7 +207,7 @@ class Stacktrace
 
             $file->seek($start - 1);
             while ($file->key() < $end) {
-                $code[$file->key() + 1] = rtrim(substr($file->current(), 0, self::$MAX_LINE_LENGTH));
+                $code[$file->key() + 1] = rtrim(substr($file->current(), 0, self::MAX_LENGTH));
                 $file->next();
             }
 
