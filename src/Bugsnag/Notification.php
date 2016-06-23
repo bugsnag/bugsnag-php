@@ -143,7 +143,7 @@ class Bugsnag_Notification
         // Note that the base case is satisfied as soon as the payload is small
         // enought to send, or when it's simply discarded.
         try {
-            $body = self::encode($data);
+            $body = $this->encode($data);
         } catch (RuntimeException $e) {
             if (count($data['events']) > 1) {
                 $event = array_shift($data['events']);
@@ -182,13 +182,13 @@ class Bugsnag_Notification
     {
         $body = json_encode($data);
 
-        if (self::length($body) > 500000) {
+        if ($this->length($body) > 500000) {
             unset($data['events'][0]['metaData']);
         }
 
         $body = json_encode($data);
 
-        if (self::length($body) > 500000) {
+        if ($this->length($body) > 500000) {
             throw new RuntimeException('Payload too large');
         }
 
