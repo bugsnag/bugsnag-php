@@ -8,7 +8,7 @@ use Throwable;
 
 class Error
 {
-    private static $VALID_SEVERITIES = [
+    protected static $VALID_SEVERITIES = [
         'error',
         'warning',
         'info',
@@ -38,11 +38,11 @@ class Error
      * @param int                    $line        the error line
      * @param bool                   $fatal       if the error was fatal
      *
-     * @return self
+     * @return static
      */
     public static function fromPHPError(Configuration $config, Diagnostics $diagnostics, $code, $message, $file, $line, $fatal = false)
     {
-        $error = new self($config, $diagnostics);
+        $error = new static($config, $diagnostics);
         $error->setPHPError($code, $message, $file, $line, $fatal);
 
         return $error;
@@ -55,11 +55,11 @@ class Error
      * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
      * @param \Throwable             $throwable   te he throwable instance
      *
-     * @return self
+     * @return static
      */
     public static function fromPHPThrowable(Configuration $config, Diagnostics $diagnostics, $throwable)
     {
-        $error = new self($config, $diagnostics);
+        $error = new static($config, $diagnostics);
         $error->setPHPThrowable($throwable);
 
         return $error;
@@ -73,11 +73,11 @@ class Error
      * @param string                $name        the error name
      * @param string|null           $message     the error message
      *
-     * @return self
+     * @return static
      */
     public static function fromNamedError(Configuration $config, Diagnostics $diagnostics, $name, $message = null)
     {
-        $error = new self($config, $diagnostics);
+        $error = new static($config, $diagnostics);
         $error->setName($name)
               ->setMessage($message)
               ->setStacktrace(Stacktrace::generate($config));
@@ -95,7 +95,7 @@ class Error
      *
      * @return void
      */
-    private function __construct(Configuration $config, Diagnostics $diagnostics)
+    protected function __construct(Configuration $config, Diagnostics $diagnostics)
     {
         $this->config = $config;
         $this->diagnostics = $diagnostics;
@@ -181,7 +181,7 @@ class Error
     public function setSeverity($severity)
     {
         if (!is_null($severity)) {
-            if (in_array($severity, self::$VALID_SEVERITIES)) {
+            if (in_array($severity, static::$VALID_SEVERITIES)) {
                 $this->severity = $severity;
             } else {
                 error_log('Bugsnag Warning: Tried to set error severity to '.$severity.' which is not allowed.');
@@ -284,7 +284,7 @@ class Error
     public function setPrevious($exception)
     {
         if ($exception) {
-            $this->previous = self::fromPHPThrowable($this->config, $this->diagnostics, $exception);
+            $this->previous = static::fromPHPThrowable($this->config, $this->diagnostics, $exception);
         }
 
         return $this;
@@ -345,7 +345,7 @@ class Error
      *
      * @return array|null
      */
-    private function cleanupObj($obj, $isMetaData)
+    protected function cleanupObj($obj, $isMetaData)
     {
         if (is_null($obj)) {
             return;

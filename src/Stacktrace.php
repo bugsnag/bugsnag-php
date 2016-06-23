@@ -15,28 +15,28 @@ class Stacktrace
      *
      * @var \Bugsnag\Configuration
      */
-    private $config;
+    protected $config;
 
     /**
      * The array of frames.
      *
      * @var array
      */
-    private $frames = [];
+    protected $frames = [];
 
     /**
      * Generate a new stacktrace using the given config.
      *
      * @param \Bugsnag\Configuration $config the configuration instance
      *
-     * @return self
+     * @return static
      */
     public static function generate(Configuration $config)
     {
         // Reduce memory usage by omitting args and objects from backtrace
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
-        return self::fromBacktrace($config, $backtrace, '[generator]', 0);
+        return static::fromBacktrace($config, $backtrace, '[generator]', 0);
     }
 
     /**
@@ -46,11 +46,11 @@ class Stacktrace
      * @param string                 $file   the associated file
      * @param int                    $line   the line number
      *
-     * @return self
+     * @return static
      */
     public static function fromFrame(Configuration $config, $file, $line)
     {
-        $stacktrace = new self($config);
+        $stacktrace = new static($config);
         $stacktrace->addFrame($file, $line, '[unknown]');
 
         return $stacktrace;
@@ -64,15 +64,15 @@ class Stacktrace
      * @param int                    $topFile   the top file to use
      * @param int                    $topLine   the top line to use
      *
-     * @return self
+     * @return static
      */
     public static function fromBacktrace(Configuration $config, array $backtrace, $topFile, $topLine)
     {
-        $stacktrace = new self($config);
+        $stacktrace = new static($config);
 
         // PHP backtrace's are misaligned, we need to shift the file/line down a frame
         foreach ($backtrace as $frame) {
-            if (!self::frameInsideBugsnag($frame)) {
+            if (!static::frameInsideBugsnag($frame)) {
                 $stacktrace->addFrame(
                     $topFile,
                     $topLine,
@@ -157,7 +157,7 @@ class Stacktrace
 
         // Attach some lines of code for context
         if ($this->config->sendCode) {
-            $frame['code'] = $this->getCode($file, $line, self::NUM_LINES);
+            $frame['code'] = $this->getCode($file, $line, static::NUM_LINES);
         }
 
         // Check if this frame is inProject
@@ -182,7 +182,7 @@ class Stacktrace
      *
      * @return string[]|null
      */
-    private function getCode($path, $line, $numLines)
+    protected function getCode($path, $line, $numLines)
     {
         if (empty($path) || empty($line) || !file_exists($path)) {
             return;
@@ -207,7 +207,7 @@ class Stacktrace
 
             $file->seek($start - 1);
             while ($file->key() < $end) {
-                $code[$file->key() + 1] = rtrim(substr($file->current(), 0, self::MAX_LENGTH));
+                $code[$file->key() + 1] = rtrim(substr($file->current(), 0, static::MAX_LENGTH));
                 $file->next();
             }
 

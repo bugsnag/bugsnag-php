@@ -13,28 +13,28 @@ class Notification
      *
      * @var \Bugsnag\Configuration
      */
-    private $config;
+    protected $config;
 
     /**
      * The request resolver instance.
      *
      * @var \Bugsnag\Request\ResolverInterface
      */
-    private $resolver;
+    protected $resolver;
 
     /**
      * The guzzle client instance.
      *
      * @var \GuzzleHttp\ClientInterface
      */
-    private $guzzle;
+    protected $guzzle;
 
     /**
      * The queue of errors to send to Bugsnag.
      *
      * @var \Bugsnag\Error[]
      */
-    private $errorQueue = [];
+    protected $errorQueue = [];
 
     /**
      * Create a new notification instance.

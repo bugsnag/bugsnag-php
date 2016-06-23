@@ -18,35 +18,35 @@ class Client
      *
      * @var \Bugsnag\Configuration
      */
-    private $config;
+    protected $config;
 
     /**
      * The request resolver instance.
      *
      * @var \Bugsnag\Request\ResolverInterface
      */
-    private $resolver;
+    protected $resolver;
 
     /**
      * The diagnostics instance.
      *
      * @var \Bugsnag\Diagnostics
      */
-    private $diagnostics;
+    protected $diagnostics;
 
     /**
      * The guzzle client instance.
      *
      * @var \GuzzleHttp\ClientInterface
      */
-    private $guzzle;
+    protected $guzzle;
 
     /**
      * The notification instance.
      *
      * @var \Bugsnag\Notification|null
      */
-    private $notification;
+    protected $notification;
 
     /**
      * Create a new client instance.
@@ -62,7 +62,7 @@ class Client
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
         $this->diagnostics = new Diagnostics($this->config, $this->resolver);
-        $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => self::ENDPOINT]);
+        $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]);
 
         // Register a shutdown function to check for fatal errors
         // and flush any buffered errors
@@ -600,7 +600,7 @@ class Client
      *
      * @return bool
      */
-    private function sendErrorsOnShutdown()
+    protected function sendErrorsOnShutdown()
     {
         return $this->config->batchSending && $this->resolver->resolve()->isRequest();
     }
