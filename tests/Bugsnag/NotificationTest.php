@@ -15,6 +15,7 @@ class NotificationTest extends Bugsnag_TestCase
     {
         $this->config = new Bugsnag_Configuration();
         $this->config->apiKey = '6015a72ff14038114c3d12623dfb018f';
+        $this->config->user = array('id' => 'foo');
         $this->config->beforeNotifyFunction = 'before_notify_skip_error';
 
         $this->diagnostics = new Bugsnag_Diagnostics($this->config);
@@ -34,14 +35,22 @@ class NotificationTest extends Bugsnag_TestCase
                                    ->getMock();
 
         // Expect postJSON to be called
-        $this->notification->expects($this->once())
-                           ->method('postJSON')
-                           ->with($this->equalTo('https://notify.bugsnag.com'),
-                                  $this->anything());
+        $this->notification->expects($spy = $this->any())->method('postJson');
 
         // Add an error to the notification and deliver it
         $this->notification->addError($this->getError());
         $this->notification->deliver();
+
+        // Check the correct args were passed
+        $this->assertCount(1, $invocations = $spy->getInvocations());
+        $params = $invocations[0]->parameters;
+        $this->assertCount(2, $params);
+        $this->assertSame('https://notify.bugsnag.com', $params[0]);
+        $this->assertInternalType('array', $params[1]);
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['apiKey']);
+        $this->assertInternalType('array', $params[1]['notifier']);
+        $this->assertInternalType('array', $params[1]['events']);
+        $this->assertSame(array('id' => 'foo'), $params[1]['events'][0]['user']);
     }
 
     public function testBeforeNotifySkipsError()
