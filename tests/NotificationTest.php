@@ -25,6 +25,7 @@ class NotificationTest extends AbstractTestCase
     {
         $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
         $this->config->beforeNotifyFunction = 'Bugsnag\Tests\before_notify_skip_error';
+        $this->config->user = array('id' => 'foo');
         $this->resolver = new BasicResolver();
         $this->diagnostics = new Diagnostics($this->config, $this->resolver);
 
@@ -38,13 +39,22 @@ class NotificationTest extends AbstractTestCase
     public function testNotification()
     {
         // Expect request to be called
-        $this->guzzle->expects($this->once())
-                     ->method('request')
-                     ->with($this->equalTo('POST'), $this->equalTo('/'), $this->anything());
+        $this->guzzle->expects($spy = $this->any())->method('request');
 
         // Add an error to the notification and deliver it
         $this->notification->addError($this->getError());
         $this->notification->deliver();
+
+        $this->assertCount(1, $invocations = $spy->getInvocations());
+        $params = $invocations[0]->parameters;
+        $this->assertCount(3, $params);
+        $this->assertSame('POST', $params[0]);
+        $this->assertSame('/', $params[1]);
+        $this->assertInternalType('array', $params[2]);
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[2]['json']['apiKey']);
+        $this->assertInternalType('array', $params[2]['json']['notifier']);
+        $this->assertInternalType('array', $params[2]['json']['events']);
+        $this->assertSame(array('id' => 'foo'), $params[2]['json']['events'][0]['user']);
     }
 
     public function testBeforeNotifySkipsError()
