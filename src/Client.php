@@ -74,7 +74,7 @@ class Client
      */
     public static function make($apiKey = null, $defaults = true)
     {
-        $client = new self(new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY')));
+        $client = new static(new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY')));
 
         if ($defaults) {
             $this->registerDefaultMiddleware();
