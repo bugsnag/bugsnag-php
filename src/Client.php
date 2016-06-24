@@ -58,6 +58,27 @@ class Client
     protected $notification;
 
     /**
+     * Make a new client instance.
+     *
+     * If you don't pass in a key, we'll try to read it from the env variables.
+     *
+     * @param string|null $apiKey  your bugsnag api key
+     * @param bool        $default if we should register our default middleware
+     *
+     * @return static
+     */
+    public static make($apiKey = null, $defaults = true)
+    {
+        $client = new Client(new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY')));
+
+        if ($defaults) {
+            $this->registerDefaultMiddleware();
+        }
+
+        return $client;
+    }
+
+    /**
      * Create a new client instance.
      *
      * @param \Bugsnag\Configuration                   $config
@@ -126,6 +147,18 @@ class Client
     public function getGuzzle()
     {
         return $this->guzzle;
+    }
+
+    /**
+     * Regsier all our default middleware.
+     *
+     * @return $this
+     */
+    public function registerDefaultMiddleware()
+    {
+        // TODO
+
+        return $this;
     }
 
     /**
