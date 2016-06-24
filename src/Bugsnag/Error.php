@@ -323,7 +323,7 @@ class Bugsnag_Error
         $errorArray = array(
             'app' => $this->diagnostics->getAppData(),
             'device' => $this->diagnostics->getDeviceData(),
-            'user' => $this->user ?: $this->diagnostics->getUser(),
+            'user' => is_null($this->user) ? $this->diagnostics->getUser() : $this->user,
             'context' => $this->diagnostics->getContext(),
             'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
