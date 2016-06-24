@@ -25,6 +25,7 @@ class NotificationSkipper
     {
         $this->config = $config;
     }
+
     /**
      * Execute the notification skipper middleware.
      *
