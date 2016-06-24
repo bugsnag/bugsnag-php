@@ -36,6 +36,19 @@ class ErrorTest extends Bugsnag_TestCase
         $this->assertSame($errorArray['metaData']['Testing']['localArray'], 'yo');
     }
 
+    public function testUser()
+    {
+        $this->config->user = array('id' => 123);
+
+        $errorArray = $this->error->toArray();
+        $this->assertSame(array('id' => 123), $errorArray['user']);
+
+        $this->error->setUser(array('foo' => 'bar'));
+
+        $errorArray = $this->error->toArray();
+        $this->assertSame(array('foo' => 'bar'), $errorArray['user']);
+    }
+
     public function testFiltering()
     {
         $this->error->setMetaData(array('Testing' => array('password' => '123456')));

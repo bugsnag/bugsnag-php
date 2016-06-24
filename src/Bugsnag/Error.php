@@ -15,6 +15,7 @@ class Bugsnag_Error
     /** @var Bugsnag_Stacktrace */
     public $stacktrace;
     public $metaData = array();
+    public $user;
     public $config;
     public $diagnostics;
     /** @var Bugsnag_Error|null */
@@ -283,6 +284,20 @@ class Bugsnag_Error
     }
 
     /**
+     * Set the current user.
+     *
+     * @param array|null $user the current user
+     *
+     * @return $this
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
      * Set the previous throwable.
      *
      * @param Throwable $exception the previous throwable
@@ -308,7 +323,7 @@ class Bugsnag_Error
         $errorArray = array(
             'app' => $this->diagnostics->getAppData(),
             'device' => $this->diagnostics->getDeviceData(),
-            'user' => $this->diagnostics->getUser(),
+            'user' => $this->user ?: $this->diagnostics->getUser(),
             'context' => $this->diagnostics->getContext(),
             'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
