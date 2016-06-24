@@ -75,8 +75,6 @@ class Client
         $this->diagnostics = new Diagnostics($this->config, $this->resolver);
         $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]);
 
-        // Register a shutdown function to check for fatal errors
-        // and flush any buffered errors
         register_shutdown_function([$this, 'shutdownHandler']);
     }
 
@@ -350,20 +348,6 @@ class Client
     }
 
     /**
-     * Sets whether Bugsnag should be automatically notified of unhandled exceptions and errors.
-     *
-     * @param bool $autoNotify whether to auto notify or not
-     *
-     * @return $this
-     */
-    public function setAutoNotify($autoNotify)
-    {
-        $this->config->autoNotify = $autoNotify;
-
-        return $this;
-    }
-
-    /**
      * Sets whether errors should be batched together and send at the end of each request.
      *
      * @param bool $batchSending whether to batch together errors
@@ -447,75 +431,6 @@ class Client
     }
 
     /**
-     * Exception handler callback.
-     *
-     * Should only be called internally by PHP's set_exception_handler.
-     *
-     * @param \Throwable $throwable the exception was was thrown
-     *
-     * @return void
-     */
-    public function exceptionHandler($throwable)
-    {
-        if (!$this->config->autoNotify) {
-            return;
-        }
-
-        $error = Error::fromPHPThrowable($this->config, $this->diagnostics, $throwable);
-        $error->setSeverity('error');
-        $this->notify($error);
-    }
-
-    /**
-     * Error handler callback.
-     *
-     * Should only be called internally by PHP's set_error_handler.
-     *
-     * @param int    $errno   the level of the error raised
-     * @param string $errstr  the error message
-     * @param string $errfile the filename that the error was raised in
-     * @param int    $errline the line number the error was raised at
-     *
-     * @return void
-     */
-    public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
-    {
-        if (!$this->config->autoNotify || $this->config->shouldIgnoreErrorCode($errno)) {
-            return;
-        }
-
-        $error = Error::fromPHPError($this->config, $this->diagnostics, $errno, $errstr, $errfile, $errline);
-        $this->notify($error);
-    }
-
-    /**
-     * Shutdown handler callback.
-     *
-     * Called when the PHP process has finished running. Should only be called
-     * internally by PHP's register_shutdown_function.
-     *
-     * @return void
-     */
-    public function shutdownHandler()
-    {
-        // Get last error
-        $lastError = error_get_last();
-
-        // Check if a fatal error caused this shutdown
-        if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && $this->config->autoNotify && !$this->config->shouldIgnoreErrorCode($lastError['type'])) {
-            $error = Error::fromPHPError($this->config, $this->diagnostics, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
-            $error->setSeverity('error');
-            $this->notify($error);
-        }
-
-        // Flush any buffered errors
-        if ($this->notification) {
-            $this->notification->deliver();
-            $this->notification = null;
-        }
-    }
-
-    /**
      * Batches up errors into notifications for later sending.
      *
      * @param \Bugsnag\Error $error    the error to batch up
@@ -550,5 +465,18 @@ class Client
     protected function sendErrorsOnShutdown()
     {
         return $this->config->batchSending && $this->resolver->resolve()->isRequest();
+    }
+
+    /**
+     * Flush any buffered errors.
+     *
+     * @return void
+     */
+    public function shutdownHandler()
+    {
+        if ($this->notification) {
+            $this->notification->deliver();
+            $this->notification = null;
+        }
     }
 }
