@@ -50,15 +50,15 @@ class ErrorTest extends AbstractTestCase
 
     public function testUser()
     {
-        $this->config->user = array('id' => 123);
+        $this->config->user = ['id' => 123];
 
         $errorArray = $this->error->toArray();
-        $this->assertSame(array('id' => 123), $errorArray['user']);
+        $this->assertSame(['id' => 123], $errorArray['user']);
 
-        $this->error->setUser(array('foo' => 'bar'));
+        $this->error->setUser(['foo' => 'bar']);
 
         $errorArray = $this->error->toArray();
-        $this->assertSame(array('foo' => 'bar'), $errorArray['user']);
+        $this->assertSame(['foo' => 'bar'], $errorArray['user']);
     }
 
     public function testFiltering()
