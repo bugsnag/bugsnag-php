@@ -35,7 +35,7 @@ class Configuration
     /**
      * Create a new config instance.
      *
-     * @param string   $apiKey  your bugsnag api key
+     * @param string $apiKey your bugsnag api key
      *
      * @throws \InvalidArgumentException
      *
@@ -61,9 +61,9 @@ class Configuration
     {
         if (isset($this->errorReportingLevel)) {
             return !($this->errorReportingLevel & $code);
-        } else {
-            return !(error_reporting() & $code);
         }
+
+        return !(error_reporting() & $code);
     }
 
     /**
@@ -77,6 +77,7 @@ class Configuration
     {
         $this->projectRoot = $projectRoot;
         $this->projectRootRegex = '/'.preg_quote($projectRoot, '/').'[\\/]?/i';
+
         if (is_null($this->stripPath)) {
             $this->setStripPath($projectRoot);
         }
