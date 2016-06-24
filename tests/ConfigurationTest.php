@@ -3,16 +3,24 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
+use Bugsnag\Diagnostics;
+use Bugsnag\Error;
+use Bugsnag\Pipeline\Middleware\NotificationSkipper;
+use Bugsnag\Request\BasicResolver;
+use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ConfigurationTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
+    /** @var \Bugsnag\Diagnostics */
+    protected $diagnostics;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
+        $this->diagnostics = new Diagnostics($this->config, new BasicResolver());
     }
 
     /**
@@ -25,26 +33,53 @@ class ConfigurationTest extends TestCase
 
     public function testDefaultReleaseStageShouldNotify()
     {
-        $this->assertTrue($this->config->shouldNotify());
+        $this->expectOutputString('NOTIFIED');
+
+        $skipper = new NotificationSkipper($this->config);
+
+        $skipper(Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception()), function () {
+            echo 'NOTIFIED';
+        });
     }
 
     public function testCustomReleaseStageShouldNotify()
     {
         $this->config->releaseStage = 'staging';
-        $this->assertTrue($this->config->shouldNotify());
+
+        $this->expectOutputString('NOTIFIED');
+
+        $skipper = new NotificationSkipper($this->config);
+
+        $skipper(Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception()), function () {
+            echo 'NOTIFIED';
+        });
     }
 
     public function testCustomNotifyReleaseStagesShouldNotify()
     {
         $this->config->notifyReleaseStages = ['banana'];
-        $this->assertFalse($this->config->shouldNotify());
+
+        $this->expectOutputString('');
+
+        $skipper = new NotificationSkipper($this->config);
+
+        $skipper(Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception()), function () {
+            echo 'NOTIFIED';
+        });
     }
 
     public function testBothCustomShouldNotify()
     {
         $this->config->releaseStage = 'banana';
         $this->config->notifyReleaseStages = ['banana'];
-        $this->assertTrue($this->config->shouldNotify());
+
+        $this->expectOutputString('NOTIFIED');
+
+        $skipper = new NotificationSkipper($this->config);
+
+        $skipper(Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception()), function () {
+            echo 'NOTIFIED';
+        });
     }
 
     public function testNotifier()
