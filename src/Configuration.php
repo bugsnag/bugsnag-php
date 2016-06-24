@@ -18,9 +18,6 @@ class Configuration
         'version' => '3.0.0',
         'url' => 'https://bugsnag.com',
     ];
-    public $sendEnvironment = false;
-    public $sendCookies = true;
-    public $sendSession = true;
     public $sendCode = true;
     public $stripPath;
     public $stripPathRegex;
@@ -33,7 +30,6 @@ class Configuration
     public $hostname;
 
     public $metaData;
-    public $beforeNotifyFunction;
     public $errorReportingLevel;
 
     /**
@@ -52,16 +48,6 @@ class Configuration
         }
 
         $this->apiKey = $apiKey;
-    }
-
-    /**
-     * Should we notify?
-     *
-     * @return bool
-     */
-    public function shouldNotify()
-    {
-        return is_null($this->notifyReleaseStages) || (is_array($this->notifyReleaseStages) && in_array($this->releaseStage, $this->notifyReleaseStages));
     }
 
     /**

@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Pipeline\BasicPipeline;
+use Bugsnag\Pipeline\PipelineInterface;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
 use Exception;
@@ -19,6 +21,13 @@ class Client
      * @var \Bugsnag\Configuration
      */
     protected $config;
+
+    /**
+     * The notification pipeline instance.
+     *
+     * @var \Bugsnag\Pipeline\PipelineInterface
+     */
+    protected $pipeline;
 
     /**
      * The request resolver instance.
@@ -51,15 +60,17 @@ class Client
     /**
      * Create a new client instance.
      *
-     * @param \Bugsnag\Configuration                  $config
-     * @param \Bugsnag\Request\ResolverInterface|null $resolver
-     * @param \GuzzleHttp\ClientInterface|null        $guzzle
+     * @param \Bugsnag\Configuration                   $config
+     * @param \Bugsnag\Pipeline\PipelineInterface|null $pipeline
+     * @param \Bugsnag\Request\ResolverInterface|null  $resolver
+     * @param \GuzzleHttp\ClientInterface|null         $guzzle
      *
      * @return void
      */
-    public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
+    public function __construct(Configuration $config, PipelineInterface $pipeline = null, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
     {
         $this->config = $config;
+        $this->pipeline = $pipeline ?: new BasicPipeline();
         $this->resolver = $resolver ?: new BasicResolver();
         $this->diagnostics = new Diagnostics($this->config, $this->resolver);
         $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]);
@@ -77,6 +88,16 @@ class Client
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * Get the notification pipeline instance.
+     *
+     * @return \Bugsnag\Pipeline\PipelineInterface
+     */
+    public function getPipeline()
+    {
+        return $this->pipeline;
     }
 
     /**
@@ -311,33 +332,6 @@ class Client
     }
 
     /**
-     * Set a custom function to call before notifying Bugsnag of an error.
-     *
-     * You can use this to call your own error handling functions, or to add
-     * custom tabs of data to each error on your Bugsnag dashboard.
-     *
-     * // Adding meta-data example
-     * function before_bugsnag_notify($error) {
-     *     $error->addMetaData([
-     *         'user' => [
-     *             'name' => 'James'
-     *         ]
-     *     ]);
-     * }
-     * $bugsnag->setBeforeNotifyFunction('before_bugsnag_notify');
-     *
-     * @param callable $beforeNotifyFunction
-     *
-     * @return $this
-     */
-    public function setBeforeNotifyFunction($beforeNotifyFunction)
-    {
-        $this->config->beforeNotifyFunction = $beforeNotifyFunction;
-
-        return $this;
-    }
-
-    /**
      * Set Bugsnag's error reporting level.
      *
      * If this is not set, we'll use your current PHP error_reporting value
@@ -395,48 +389,6 @@ class Client
     public function setNotifier($notifier)
     {
         $this->config->notifier = $notifier;
-
-        return $this;
-    }
-
-    /**
-     * Sets whether Bugsnag should send $_ENV with each error.
-     *
-     * @param bool $sendEnvironment whether to send the environment
-     *
-     * @return $this
-     */
-    public function setSendEnvironment($sendEnvironment)
-    {
-        $this->config->sendEnvironment = $sendEnvironment;
-
-        return $this;
-    }
-
-    /**
-     * Sets whether Bugsnag should send cookie data with each error.
-     *
-     * @param bool $sendCookies whether to send the environment
-     *
-     * @return $this
-     */
-    public function setSendCookies($sendCookies)
-    {
-        $this->config->sendCookies = $sendCookies;
-
-        return $this;
-    }
-
-    /**
-     * Sets whether Bugsnag should send session data with each error.
-     *
-     * @param bool $sendSession whether to send the environment
-     *
-     * @return $this
-     */
-    public function setSendSession($sendSession)
-    {
-        $this->config->sendSession = $sendSession;
 
         return $this;
     }
@@ -582,14 +534,14 @@ class Client
         if ($this->sendErrorsOnShutdown()) {
             // Create a batch notification unless we already have one
             if (is_null($this->notification)) {
-                $this->notification = new Notification($this->config);
+                $this->notification = new Notification($this->config, $this->pipeline, $this->guzzle);
             }
 
             // Add this error to the notification
             $this->notification->addError($error, $metaData);
         } else {
             // Create and deliver notification immediately
-            $notif = new Notification($this->config);
+            $notif = new Notification($this->config, $this->pipeline, $this->guzzle);
             $notif->addError($error, $metaData);
             $notif->deliver();
         }

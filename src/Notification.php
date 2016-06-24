@@ -2,7 +2,7 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Request\ResolverInterface;
+use Bugsnag\Pipeline\PipelineInterface;
 use Exception;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
@@ -17,11 +17,11 @@ class Notification
     protected $config;
 
     /**
-     * The request resolver instance.
+     * The pipeline instance.
      *
-     * @var \Bugsnag\Request\ResolverInterface
+     * @var \Bugsnag\Pipeline\PipelineInterface
      */
-    protected $resolver;
+    protected $pipeline;
 
     /**
      * The guzzle client instance.
@@ -40,16 +40,16 @@ class Notification
     /**
      * Create a new notification instance.
      *
-     * @param \Bugsnag\Configuration             $config   the configuration instance
-     * @param \Bugsnag\Request\ResolverInterface $resolver the request resolver instance
-     * @param \GuzzleHttp\ClientInterface        $guzzle   the guzzle client instance
+     * @param \Bugsnag\Configuration              $config   the configuration instance
+     * @param \Bugsnag\Pipeline\PipelineInterface $pipeline the notification pipleine instance
+     * @param \GuzzleHttp\ClientInterface         $guzzle   the guzzle client instance
      *
      * @return void
      */
-    public function __construct(Configuration $config, ResolverInterface $resolver, ClientInterface $guzzle)
+    public function __construct(Configuration $config, PipelineInterface $pipeline, ClientInterface $guzzle)
     {
         $this->config = $config;
-        $this->resolver = $resolver;
+        $this->pipeline = $pipeline;
         $this->guzzle = $guzzle;
     }
 
@@ -63,52 +63,13 @@ class Notification
      */
     public function addError(Error $error, $passedMetaData = [])
     {
-        // Check if this error should be sent to Bugsnag
-        if (!$this->config->shouldNotify()) {
-            return false;
-        }
+        return $this->pipeline->execute($error, function ($error) use ($passedMetaData) {
+            $error->setMetaData($passedMetaData);
 
-        // Add global meta-data to error
-        $error->setMetaData($this->config->metaData);
-
-        $request = $this->resolver->resolve();
-
-        // Add request meta-data to error
-        if ($request->isRequest()) {
-            $error->setMetaData($request->getMetaData());
-        }
-
-        // Session Tab
-        if ($this->config->sendSession && $request->getSessionData()) {
-            $error->setMetaData(['session' => $request->getSessionData()]);
-        }
-
-        // Cookies Tab
-        if ($this->config->sendCookies && $request->getCookieData()) {
-            $error->setMetaData(['cookies' => $request->getCookieData()]);
-        }
-
-        // Add environment meta-data to error
-        if ($this->config->sendEnvironment && $_ENV) {
-            $error->setMetaData(['Environment' => $_ENV]);
-        }
-
-        // Add user-specified meta-data to error
-        $error->setMetaData($passedMetaData);
-
-        // Run beforeNotify function (can cause more meta-data to be merged)
-        if (isset($this->config->beforeNotifyFunction) && is_callable($this->config->beforeNotifyFunction)) {
-            $beforeNotifyReturn = call_user_func($this->config->beforeNotifyFunction, $error);
-        }
-
-        // Skip this error if the beforeNotify function returned FALSE
-        if (!isset($beforeNotifyReturn) || $beforeNotifyReturn !== false) {
             $this->errorQueue[] = $error;
 
             return true;
-        } else {
-            return false;
-        }
+        });
     }
 
     /**
