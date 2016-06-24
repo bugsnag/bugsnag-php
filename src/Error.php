@@ -21,6 +21,7 @@ class Error
     /** @var \Bugsnag\Stacktrace */
     public $stacktrace;
     public $metaData = [];
+    public $user;
     public $config;
     public $diagnostics;
     /** @var \Bugsnag\Error|null */
@@ -275,6 +276,20 @@ class Error
     }
 
     /**
+     * Set the current user.
+     *
+     * @param array|null $user the current user
+     *
+     * @return $this
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
      * Set the previous throwable.
      *
      * @param \Throwable $exception the previous throwable
@@ -300,7 +315,7 @@ class Error
         $errorArray = [
             'app' => $this->diagnostics->getAppData(),
             'device' => $this->diagnostics->getDeviceData(),
-            'user' => $this->diagnostics->getUser(),
+            'user' => is_null($this->user) ? $this->diagnostics->getUser() : $this->user,
             'context' => $this->diagnostics->getContext(),
             'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,

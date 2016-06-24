@@ -494,11 +494,6 @@ class Client
      * Called when the PHP process has finished running. Should only be called
      * internally by PHP's register_shutdown_function.
      *
-     * @param int    $errno   the level of the error raised
-     * @param string $errstr  the error message
-     * @param string $errfile the filename that the error was raised in
-     * @param int    $errline the line number the error was raised at
-     *
      * @return void
      */
     public function shutdownHandler()

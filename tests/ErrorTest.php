@@ -48,6 +48,19 @@ class ErrorTest extends AbstractTestCase
         $this->assertSame($errorArray['metaData']['Testing']['localArray'], 'yo');
     }
 
+    public function testUser()
+    {
+        $this->config->user = array('id' => 123);
+
+        $errorArray = $this->error->toArray();
+        $this->assertSame(array('id' => 123), $errorArray['user']);
+
+        $this->error->setUser(array('foo' => 'bar'));
+
+        $errorArray = $this->error->toArray();
+        $this->assertSame(array('foo' => 'bar'), $errorArray['user']);
+    }
+
     public function testFiltering()
     {
         $this->error->setMetaData(['Testing' => ['password' => '123456']]);

@@ -1,6 +1,24 @@
 Changelog
 =========
 
+## 2.9.0 (2016-06-24)
+
+## Enhancements
+
+* Support completely overriding the user on errors
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#209](https://github.com/bugsnag/bugsnag-php/pull/209)
+
+## Bug Fixes
+
+* Deal with large payloads and batching correctly
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [64c00d3](https://github.com/bugsnag/bugsnag-php/commit/64c00d3f9b872f4d87f0ea03e950831e55bba8d2)
+
+* Completed the fix for double input reading
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#199](https://github.com/bugsnag/bugsnag-php/pull/199)
+
 ## 2.8.0 (2016-06-21)
 
 ## Enhancements
@@ -17,9 +35,12 @@ Changelog
   [#159](https://github.com/bugsnag/bugsnag-php/pull/159)
 
 * Restore support for PHP 5.2
+  [Graham Campbell](https://github.com/GrahamCampbell)
   [#148](https://github.com/bugsnag/bugsnag-php/pull/148)
 
 * Enforce integer type on stack frame line numbers
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#157](https://github.com/bugsnag/bugsnag-php/pull/157)
 
 ## 2.7.3 (2016-06-20)
 
