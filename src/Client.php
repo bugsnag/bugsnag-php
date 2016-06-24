@@ -67,7 +67,7 @@ class Client
      *
      * @return static
      */
-    public static make($apiKey = null, $defaults = true)
+    public static function make($apiKey = null, $defaults = true)
     {
         $client = new Client(new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY')));
 
