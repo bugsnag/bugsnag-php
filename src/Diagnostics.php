@@ -65,9 +65,7 @@ class Diagnostics
      */
     public function getDeviceData()
     {
-        return [
-            'hostname' => $this->config->get('hostname', php_uname('n')),
-        ];
+        return ['hostname' => $this->config->hostname ?: php_uname('n')];
     }
 
     /**
@@ -77,7 +75,7 @@ class Diagnostics
      */
     public function getContext()
     {
-        return $this->config->get('context', $this->resolver->resolve()->getContext());
+        return $this->config->context ?: $this->resolver->resolve()->getContext();
     }
 
     /**
@@ -87,13 +85,8 @@ class Diagnostics
      */
     public function getUser()
     {
-        $defaultUser = [];
-        $userId = $this->resolver->resolve()->getUserId();
+        $id = $this->resolver->resolve()->getUserId();
 
-        if (!is_null($userId)) {
-            $defaultUser['id'] = $userId;
-        }
-
-        return $this->config->get('user', $defaultUser);
+        return is_null($id) ? (array) $this->config->user : array_merge(['id' => $id], (array) $this->config->user);
     }
 }

@@ -95,23 +95,4 @@ class Configuration
         $this->stripPath = $stripPath;
         $this->stripPathRegex = '/'.preg_quote($stripPath, '/').'[\\/]?/i';
     }
-
-    /**
-     * Get the given configuration.
-     *
-     * @param string $prop    the property to get
-     * @param mixed  $default the value to fallback to
-     *
-     * @return mixed
-     */
-    public function get($prop, $default = null)
-    {
-        $configured = $this->$prop;
-
-        if (is_array($configured) && is_array($default)) {
-            return array_merge($default, $configured);
-        } else {
-            return $configured ? $configured : $default;
-        }
-    }
 }
