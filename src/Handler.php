@@ -20,7 +20,7 @@ class Handler
      */
     public static function register(Client $client)
     {
-        $client = new self($client);
+        $client = new static($client);
 
         set_error_handler([$client, 'errorHandler']);
         set_exception_handler([$client, 'exceptionHandler']);
