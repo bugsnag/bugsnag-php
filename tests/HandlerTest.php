@@ -62,7 +62,7 @@ class HandlerTest extends TestCase
         $this->client->expects($this->never())->method('notify');
 
         $this->client->setErrorReportingLevel(E_NOTICE);
-        
+
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
@@ -74,7 +74,7 @@ class HandlerTest extends TestCase
         $this->client->expects($this->never())->method('notify');
 
         $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE);
-        
+
         Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
     }
 }
