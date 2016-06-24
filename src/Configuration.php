@@ -7,7 +7,6 @@ use InvalidArgumentException;
 class Configuration
 {
     public $apiKey;
-    public $autoNotify = true;
     public $batchSending = true;
     public $notifyReleaseStages;
     public $filters = ['password'];
