@@ -5,6 +5,11 @@ namespace Bugsnag;
 use Bugsnag\Pipeline\BasicPipeline;
 use Bugsnag\Pipeline\PipelineInterface;
 use Bugsnag\Request\BasicResolver;
+use Bugsnag\Request\Middleware\AddGlobalMetaData;
+use Bugsnag\Request\Middleware\AddRequestCookieData;
+use Bugsnag\Request\Middleware\AddRequestSessionData;
+use Bugsnag\Request\Middleware\AddRequestMetaData;
+use Bugsnag\Request\Middleware\NotificationSkipper;
 use Bugsnag\Request\ResolverInterface;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
@@ -156,7 +161,11 @@ class Client
      */
     public function registerDefaultMiddleware()
     {
-        // TODO
+        $this->pipeline->pipe(new AddGlobalMetaData())
+                       ->pipe(new AddRequestMetaData())
+                       ->pipe(new AddRequestCookieData())
+                       ->pipe(new AddRequestSessionData())
+                       ->pipe(new NotificationSkipper());
 
         return $this;
     }
