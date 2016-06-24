@@ -7,8 +7,8 @@ use Bugsnag\Pipeline\PipelineInterface;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\Middleware\AddGlobalMetaData;
 use Bugsnag\Request\Middleware\AddRequestCookieData;
-use Bugsnag\Request\Middleware\AddRequestSessionData;
 use Bugsnag\Request\Middleware\AddRequestMetaData;
+use Bugsnag\Request\Middleware\AddRequestSessionData;
 use Bugsnag\Request\Middleware\NotificationSkipper;
 use Bugsnag\Request\ResolverInterface;
 use Exception;
@@ -74,7 +74,7 @@ class Client
      */
     public static function make($apiKey = null, $defaults = true)
     {
-        $client = new Client(new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY')));
+        $client = new self(new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY')));
 
         if ($defaults) {
             $this->registerDefaultMiddleware();
