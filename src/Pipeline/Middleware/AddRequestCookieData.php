@@ -5,7 +5,7 @@ namespace Bugsnag\Pipeline\Middleware;
 use Bugsnag\Error;
 use Bugsnag\Request\ResolverInterface;
 
-class SetRequestCookieData
+class AddRequestCookieData
 {
     /**
      * The request resolver instance.
