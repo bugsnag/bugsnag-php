@@ -74,20 +74,8 @@ class Client
         $this->resolver = $resolver ?: new BasicResolver();
         $this->diagnostics = new Diagnostics($this->config, $this->resolver);
         $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]);
-    }
 
-    /**
-     * Destroy the client instance.
-     *
-     * @return void
-     */
-    public function __destruct()
-    {
-        // Flush any buffered errors
-        if ($this->notification) {
-            $this->notification->deliver();
-            $this->notification = null;
-        }
+        register_shutdown_function([$this, 'shutdownHandler']);
     }
 
     /**
@@ -477,5 +465,18 @@ class Client
     protected function sendErrorsOnShutdown()
     {
         return $this->config->batchSending && $this->resolver->resolve()->isRequest();
+    }
+
+    /**
+     * Flush any buffered errors.
+     *
+     * @return void
+     */
+    public function shutdownHandler()
+    {
+        if ($this->notification) {
+            $this->notification->deliver();
+            $this->notification = null;
+        }
     }
 }

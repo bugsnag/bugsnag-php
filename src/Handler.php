@@ -16,15 +16,17 @@ class Handler
      *
      * @param \Bugsnag\Client $client
      *
-     * @return void
+     * @return static
      */
     public static function register(Client $client)
     {
-        $client = new static($client);
+        $handler = new static($client);
 
-        set_error_handler([$client, 'errorHandler']);
-        set_exception_handler([$client, 'exceptionHandler']);
-        register_shutdown_function([$client, 'shutdownHandler']);
+        set_error_handler([$handler, 'errorHandler']);
+        set_exception_handler([$handler, 'exceptionHandler']);
+        register_shutdown_function([$handler, 'shutdownHandler']);
+
+        return $handler;
     }
 
     /**
@@ -42,25 +44,21 @@ class Handler
     /**
      * Exception handler callback.
      *
-     * Should only be called internally by PHP's set_exception_handler.
-     *
      * @param \Throwable $throwable the exception was was thrown
      *
      * @return void
      */
     public function exceptionHandler($throwable)
     {
-        $error = Error::fromPHPThrowable($this->config, $this->diagnostics, $throwable);
+        $error = Error::fromPHPThrowable($this->client->getConfig(), $this->client->getDiagnostics(), $throwable);
 
         $error->setSeverity('error');
 
-        $this->notify($error);
+        $this->client->notify($error);
     }
 
     /**
      * Error handler callback.
-     *
-     * Should only be called internally by PHP's set_error_handler.
      *
      * @param int    $errno   the level of the error raised
      * @param string $errstr  the error message
@@ -71,18 +69,17 @@ class Handler
      */
     public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
-        if ($this->config->shouldIgnoreErrorCode($errno)) {
+        if ($this->client->getConfig()->shouldIgnoreErrorCode($errno)) {
             return;
         }
 
-        $error = Error::fromPHPError($this->config, $this->diagnostics, $errno, $errstr, $errfile, $errline);
-        $this->notify($error);
+        $error = Error::fromPHPError($this->client->getConfig(), $this->client->getDiagnostics(), $errno, $errstr, $errfile, $errline);
+
+        $this->client->notify($error);
     }
 
     /**
      * Shutdown handler callback.
-     *
-     * Should only be called internally by PHP's register_shutdown_function.
      *
      * @return void
      */
@@ -92,16 +89,13 @@ class Handler
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
-        if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->config->shouldIgnoreErrorCode($lastError['type'])) {
-            $error = Error::fromPHPError($this->config, $this->diagnostics, $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
+        if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->client->getConfig()->shouldIgnoreErrorCode($lastError['type'])) {
+            $error = Error::fromPHPError($this->client->getConfig(), $this->client->getDiagnostics(), $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
             $error->setSeverity('error');
-            $this->notify($error);
+            $this->client->notify($error);
         }
 
         // Flush any buffered errors
-        if ($this->notification) {
-            $this->notification->deliver();
-            $this->notification = null;
-        }
+        $this->client->shutdownHandler();
     }
 }
