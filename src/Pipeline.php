@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugsnag\Pipeline;
+namespace Bugsnag;
 
 class Pipeline
 {
