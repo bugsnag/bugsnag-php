@@ -5,9 +5,9 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use Bugsnag\Diagnostics;
 use Bugsnag\Error;
+use Bugsnag\Middleware\AddEnvironmentData;
 use Bugsnag\Notification;
 use Bugsnag\Pipeline;
-use Bugsnag\Middleware\AddEnvironmentData;
 use Bugsnag\Request\BasicResolver;
 use GuzzleHttp\Client;
 
