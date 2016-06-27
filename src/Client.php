@@ -76,7 +76,7 @@ class Client
     public static function make($apiKey = null, $endpoint = null, $defaults = true)
     {
         $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
-        $guzzle = new Guzzle(['base_uri' => $endpoint ?: static::ENDPOINT]);
+        $guzzle = new Guzzle(['base_uri' => ($endpoint ?: getenv('BUGSNAG_ENDPOINT')) ?: static::ENDPOINT]);
 
         $client = new static($config, null, null, $guzzle);
 
