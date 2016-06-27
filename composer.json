@@ -14,7 +14,7 @@
         "php": ">=5.2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.8|~5.0"
+        "phpunit/phpunit": "^4.8|^5.0"
     },
     "autoload": {
         "psr-0" : {
@@ -25,5 +25,7 @@
         "branch-alias": {
             "dev-master": "2.9-dev"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
