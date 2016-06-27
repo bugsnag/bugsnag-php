@@ -67,14 +67,18 @@ class Client
      *
      * If you don't pass in a key, we'll try to read it from the env variables.
      *
-     * @param string|null $apiKey  your bugsnag api key
-     * @param bool        $default if we should register our default middleware
+     * @param string|null $apiKey   your bugsnag api key
+     * @param string|null $endpoint your bugsnag endpoint
+     * @param bool        $default  if we should register our default middleware
      *
      * @return static
      */
-    public static function make($apiKey = null, $defaults = true)
+    public static function make($apiKey = null, $endpoint = null, $defaults = true)
     {
-        $client = new static(new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY')));
+        $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
+        $guzzle = new Guzzle(['base_uri' => ($endpoint ?: getenv('BUGSNAG_ENDPOINT')) ?: static::ENDPOINT]);
+
+        $client = new static($config, null, null, $guzzle);
 
         if ($defaults) {
             $this->registerDefaultMiddleware();
