@@ -163,11 +163,11 @@ class Client
      */
     public function registerDefaultMiddleware()
     {
-        $this->pipeline->pipe(new AddGlobalMetaData())
-                       ->pipe(new AddRequestMetaData())
-                       ->pipe(new AddRequestCookieData())
-                       ->pipe(new AddRequestSessionData())
-                       ->pipe(new NotificationSkipper());
+        $this->pipeline->pipe(new AddGlobalMetaData($this->config))
+                       ->pipe(new AddRequestMetaData($this->resolver))
+                       ->pipe(new AddRequestCookieData($this->resolver))
+                       ->pipe(new AddRequestSessionData($this->resolver))
+                       ->pipe(new NotificationSkipper($this->config));
 
         return $this;
     }
