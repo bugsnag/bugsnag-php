@@ -27,7 +27,6 @@ class NotificationTest extends AbstractTestCase
     protected function setUp()
     {
         $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
-        $this->config->user = ['id' => 'foo'];
 
         $this->pipeline = (new Pipeline())->pipe(function (Error $error, callable $next) {
             if ($error->name === 'SkipMe') {
@@ -64,7 +63,7 @@ class NotificationTest extends AbstractTestCase
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[2]['json']['apiKey']);
         $this->assertInternalType('array', $params[2]['json']['notifier']);
         $this->assertInternalType('array', $params[2]['json']['events']);
-        $this->assertSame(['id' => 'foo'], $params[2]['json']['events'][0]['user']);
+        $this->assertSame([], $params[2]['json']['events'][0]['user']);
     }
 
     public function testBeforeNotifySkipsError()

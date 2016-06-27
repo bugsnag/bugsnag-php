@@ -22,6 +22,7 @@ class Error
     public $stacktrace;
     public $metaData = [];
     public $user;
+    public $context;
     public $config;
     public $diagnostics;
     /** @var \Bugsnag\Error|null */
@@ -290,6 +291,20 @@ class Error
     }
 
     /**
+     * Set a context representing the current type of request, or location in code.
+     *
+     * @param string $context the current context
+     *
+     * @return $this
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    /**
      * Set the previous throwable.
      *
      * @param \Throwable $exception the previous throwable
@@ -316,7 +331,7 @@ class Error
             'app' => $this->diagnostics->getAppData(),
             'device' => $this->diagnostics->getDeviceData(),
             'user' => is_null($this->user) ? $this->diagnostics->getUser() : $this->user,
-            'context' => $this->diagnostics->getContext(),
+            'context' => is_null($this->context) ? $this->diagnostics->getUser() : $this->context,
             'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),

@@ -44,21 +44,4 @@ class DiagnosticsTest extends TestCase
 
         $this->assertSame($deviceData['hostname'], 'web1.example.com');
     }
-
-    public function testDefaultContext()
-    {
-        $this->config->context = 'herp#derp';
-        $this->assertSame($this->diagnostics->getContext(), 'herp#derp');
-    }
-
-    public function testDefaultUser()
-    {
-        $this->config->user = ['id' => 123, 'email' => 'test@email.com', 'name' => 'Bob Hoskins'];
-
-        $userData = $this->diagnostics->getUser();
-
-        $this->assertSame($userData['id'], 123);
-        $this->assertSame($userData['email'], 'test@email.com');
-        $this->assertSame($userData['name'], 'Bob Hoskins');
-    }
 }

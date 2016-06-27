@@ -50,11 +50,6 @@ class ErrorTest extends AbstractTestCase
 
     public function testUser()
     {
-        $this->config->user = ['id' => 123];
-
-        $errorArray = $this->error->toArray();
-        $this->assertSame(['id' => 123], $errorArray['user']);
-
         $this->error->setUser(['foo' => 'bar']);
 
         $errorArray = $this->error->toArray();
