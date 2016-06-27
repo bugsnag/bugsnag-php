@@ -2,7 +2,6 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Pipeline;
 use Exception;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
