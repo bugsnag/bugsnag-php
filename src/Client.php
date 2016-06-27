@@ -3,11 +3,11 @@
 namespace Bugsnag;
 
 use Bugsnag\Request\BasicResolver;
-use Bugsnag\Request\Middleware\AddGlobalMetaData;
-use Bugsnag\Request\Middleware\AddRequestCookieData;
-use Bugsnag\Request\Middleware\AddRequestMetaData;
-use Bugsnag\Request\Middleware\AddRequestSessionData;
-use Bugsnag\Request\Middleware\NotificationSkipper;
+use Bugsnag\Middleware\AddGlobalMetaData;
+use Bugsnag\Middleware\AddRequestCookieData;
+use Bugsnag\Middleware\AddRequestMetaData;
+use Bugsnag\Middleware\AddRequestSessionData;
+use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\ResolverInterface;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
