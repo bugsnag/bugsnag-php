@@ -36,8 +36,17 @@ class ClientTest extends TestCase
         $this->client->notifyException(new Exception('Something broke'));
     }
 
-    public function testBaseUri()
+    public function testDefaultSetup()
     {
         $this->assertEquals(new Uri('https://notify.bugsnag.com'), $this->client->getGuzzle()->getConfig('base_uri'));
+    }
+
+    public function testCanMake()
+    {
+        $client = Client::make('123', 'https://example.com');
+
+        $this->assertInstanceOf(Client::class, $client);
+
+        $this->assertEquals(new Uri('https://example.com'), $client->getGuzzle()->getConfig('base_uri'));
     }
 }
