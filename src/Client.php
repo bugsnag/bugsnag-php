@@ -81,7 +81,7 @@ class Client
         $client = new static($config, null, null, $guzzle);
 
         if ($defaults) {
-            $this->registerDefaultMiddleware();
+            $client->registerDefaultMiddleware();
         }
 
         return $client;
