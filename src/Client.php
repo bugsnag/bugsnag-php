@@ -2,12 +2,12 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Request\BasicResolver;
 use Bugsnag\Middleware\AddGlobalMetaData;
 use Bugsnag\Middleware\AddRequestCookieData;
 use Bugsnag\Middleware\AddRequestMetaData;
 use Bugsnag\Middleware\AddRequestSessionData;
 use Bugsnag\Middleware\NotificationSkipper;
+use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
