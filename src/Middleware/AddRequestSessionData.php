@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugsnag\Pipeline\Middleware;
+namespace Bugsnag\Middleware;
 
 use Bugsnag\Error;
 use Bugsnag\Request\ResolverInterface;

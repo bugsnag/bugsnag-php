@@ -5,7 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use Bugsnag\Diagnostics;
 use Bugsnag\Error;
-use Bugsnag\Pipeline\Middleware\NotificationSkipper;
+use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;

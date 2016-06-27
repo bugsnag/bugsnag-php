@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugsnag\Pipeline\Middleware;
+namespace Bugsnag\Middleware;
 
 use Bugsnag\Configuration;
 use Bugsnag\Error;
 
-class AddGlobalMetaData
+class NotificationSkipper
 {
     /**
      * The config instance.
@@ -15,7 +15,7 @@ class AddGlobalMetaData
     protected $config;
 
     /**
-     * Create a new add global meta data middleware instance.
+     * Create a new notification skipper middleware instance.
      *
      * @param \Bugsnag\Configuration $config the configuration instance
      *
@@ -27,7 +27,7 @@ class AddGlobalMetaData
     }
 
     /**
-     * Execute the add global meta data middleware.
+     * Execute the notification skipper middleware.
      *
      * @param \Bugsnag\Error $error
      * @param callable       $next
@@ -36,10 +36,24 @@ class AddGlobalMetaData
      */
     public function __invoke(Error $error, callable $next)
     {
-        if ($data = $this->config->metaData) {
-            $error->setMetaData($data);
+        if (!$this->shouldNotify()) {
+            return false;
         }
 
         return $next($error);
+    }
+
+    /**
+     * Should we notify?
+     *
+     * @return bool
+     */
+    protected function shouldNotify()
+    {
+        if (is_null($this->config->notifyReleaseStages)) {
+            return true;
+        }
+
+        return is_array($this->config->notifyReleaseStages) && in_array($this->config->releaseStage, $this->config->notifyReleaseStages, true);
     }
 }
