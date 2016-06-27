@@ -14,13 +14,13 @@ class Handler
     /**
      * Register our exception handler.
      *
-     * @param \Bugsnag\Client $client
+     * @param \Bugsnag\Client|string|null $client client instance or api key
      *
      * @return static
      */
-    public static function register(Client $client)
+    public static function register($client = null)
     {
-        $handler = new static($client);
+        $handler = new static($client instanceof Client ? $client : Client::make($client));
 
         set_error_handler([$handler, 'errorHandler']);
         set_exception_handler([$handler, 'exceptionHandler']);

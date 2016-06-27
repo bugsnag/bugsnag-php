@@ -5,6 +5,11 @@ namespace Bugsnag;
 use Bugsnag\Pipeline\BasicPipeline;
 use Bugsnag\Pipeline\PipelineInterface;
 use Bugsnag\Request\BasicResolver;
+use Bugsnag\Request\Middleware\AddGlobalMetaData;
+use Bugsnag\Request\Middleware\AddRequestCookieData;
+use Bugsnag\Request\Middleware\AddRequestMetaData;
+use Bugsnag\Request\Middleware\AddRequestSessionData;
+use Bugsnag\Request\Middleware\NotificationSkipper;
 use Bugsnag\Request\ResolverInterface;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
@@ -56,6 +61,27 @@ class Client
      * @var \Bugsnag\Notification|null
      */
     protected $notification;
+
+    /**
+     * Make a new client instance.
+     *
+     * If you don't pass in a key, we'll try to read it from the env variables.
+     *
+     * @param string|null $apiKey  your bugsnag api key
+     * @param bool        $default if we should register our default middleware
+     *
+     * @return static
+     */
+    public static function make($apiKey = null, $defaults = true)
+    {
+        $client = new static(new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY')));
+
+        if ($defaults) {
+            $this->registerDefaultMiddleware();
+        }
+
+        return $client;
+    }
 
     /**
      * Create a new client instance.
@@ -126,6 +152,22 @@ class Client
     public function getGuzzle()
     {
         return $this->guzzle;
+    }
+
+    /**
+     * Regsier all our default middleware.
+     *
+     * @return $this
+     */
+    public function registerDefaultMiddleware()
+    {
+        $this->pipeline->pipe(new AddGlobalMetaData())
+                       ->pipe(new AddRequestMetaData())
+                       ->pipe(new AddRequestCookieData())
+                       ->pipe(new AddRequestSessionData())
+                       ->pipe(new NotificationSkipper());
+
+        return $this;
     }
 
     /**
