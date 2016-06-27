@@ -75,7 +75,7 @@ class Diagnostics
      */
     public function getContext()
     {
-        return $this->config->context ?: $this->resolver->resolve()->getContext();
+        return $this->resolver->resolve()->getContext();
     }
 
     /**
@@ -87,6 +87,6 @@ class Diagnostics
     {
         $id = $this->resolver->resolve()->getUserId();
 
-        return is_null($id) ? (array) $this->config->user : array_merge(['id' => $id], (array) $this->config->user);
+        return is_null($id) ? [] : ['id' => $id];
     }
 }

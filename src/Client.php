@@ -299,38 +299,6 @@ class Client
     }
 
     /**
-     * Set information about the current user of your app, including id, name and email.
-     *
-     * @param array $user an array of user information. Eg:
-     *        [
-     *            'name' => 'Bob Hoskins',
-     *            'email' => 'bob@hoskins.com'
-     *        ]
-     *
-     * @return $this
-     */
-    public function setUser(array $user)
-    {
-        $this->config->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Set a context representing the current type of request, or location in code.
-     *
-     * @param string $context the current context
-     *
-     * @return $this
-     */
-    public function setContext($context)
-    {
-        $this->config->context = $context;
-
-        return $this;
-    }
-
-    /**
      * Set the type of application executing the code.
      *
      * This is usually used to represent if you are running plain PHP code

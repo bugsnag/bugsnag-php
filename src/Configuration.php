@@ -21,9 +21,7 @@ class Configuration
     public $stripPath;
     public $stripPathRegex;
 
-    public $context;
     public $type;
-    public $user;
     public $releaseStage = 'production';
     public $appVersion;
     public $hostname;
