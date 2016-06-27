@@ -2,7 +2,7 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Pipeline\PipelineInterface;
+use Bugsnag\Pipeline;
 use Exception;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
@@ -19,7 +19,7 @@ class Notification
     /**
      * The pipeline instance.
      *
-     * @var \Bugsnag\Pipeline\PipelineInterface
+     * @var \Bugsnag\Pipeline
      */
     protected $pipeline;
 
@@ -40,13 +40,13 @@ class Notification
     /**
      * Create a new notification instance.
      *
-     * @param \Bugsnag\Configuration              $config   the configuration instance
-     * @param \Bugsnag\Pipeline\PipelineInterface $pipeline the notification pipleine instance
-     * @param \GuzzleHttp\ClientInterface         $guzzle   the guzzle client instance
+     * @param \Bugsnag\Configuration      $config   the configuration instance
+     * @param \Bugsnag\Pipeline           $pipeline the notification pipleine instance
+     * @param \GuzzleHttp\ClientInterface $guzzle   the guzzle client instance
      *
      * @return void
      */
-    public function __construct(Configuration $config, PipelineInterface $pipeline, ClientInterface $guzzle)
+    public function __construct(Configuration $config, Pipeline $pipeline, ClientInterface $guzzle)
     {
         $this->config = $config;
         $this->pipeline = $pipeline;

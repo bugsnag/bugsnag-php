@@ -2,9 +2,7 @@
 
 namespace Bugsnag\Pipeline;
 
-use Closure;
-
-class BasicPipeline implements PipelineInterface
+class Pipeline
 {
     /**
      * The array of pipes to pass through.

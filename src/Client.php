@@ -2,8 +2,6 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Pipeline\BasicPipeline;
-use Bugsnag\Pipeline\PipelineInterface;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\Middleware\AddGlobalMetaData;
 use Bugsnag\Request\Middleware\AddRequestCookieData;
@@ -30,7 +28,7 @@ class Client
     /**
      * The notification pipeline instance.
      *
-     * @var \Bugsnag\Pipeline\PipelineInterface
+     * @var \Bugsnag\Pipeline
      */
     protected $pipeline;
 
@@ -90,17 +88,17 @@ class Client
     /**
      * Create a new client instance.
      *
-     * @param \Bugsnag\Configuration                   $config
-     * @param \Bugsnag\Pipeline\PipelineInterface|null $pipeline
-     * @param \Bugsnag\Request\ResolverInterface|null  $resolver
-     * @param \GuzzleHttp\ClientInterface|null         $guzzle
+     * @param \Bugsnag\Configuration                  $config
+     * @param \Bugsnag\Pipeline|null                  $pipeline
+     * @param \Bugsnag\Request\ResolverInterface|null $resolver
+     * @param \GuzzleHttp\ClientInterface|null        $guzzle
      *
      * @return void
      */
-    public function __construct(Configuration $config, PipelineInterface $pipeline = null, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
+    public function __construct(Configuration $config, Pipeline $pipeline = null, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
     {
         $this->config = $config;
-        $this->pipeline = $pipeline ?: new BasicPipeline();
+        $this->pipeline = $pipeline ?: new Pipeline();
         $this->resolver = $resolver ?: new BasicResolver();
         $this->diagnostics = new Diagnostics($this->config, $this->resolver);
         $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]);
@@ -121,7 +119,7 @@ class Client
     /**
      * Get the notification pipeline instance.
      *
-     * @return \Bugsnag\Pipeline\PipelineInterface
+     * @return \Bugsnag\Pipeline
      */
     public function getPipeline()
     {

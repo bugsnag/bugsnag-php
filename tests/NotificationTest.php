@@ -6,8 +6,8 @@ use Bugsnag\Configuration;
 use Bugsnag\Diagnostics;
 use Bugsnag\Error;
 use Bugsnag\Notification;
-use Bugsnag\Pipeline\BasicPipeline;
-use Bugsnag\Pipeline\Middleware\AddEnvironmentData;
+use Bugsnag\Pipeline
+use Bugsnag\Middleware\AddEnvironmentData;
 use Bugsnag\Request\BasicResolver;
 use GuzzleHttp\Client;
 
@@ -15,7 +15,7 @@ class NotificationTest extends AbstractTestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Pipeline\PipleineInterface */
+    /** @var \Bugsnag\Pipeline */
     protected $pipeline;
     /** @var \Bugsnag\Diagnostics */
     protected $diagnostics;
@@ -29,7 +29,7 @@ class NotificationTest extends AbstractTestCase
         $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
         $this->config->user = ['id' => 'foo'];
 
-        $this->pipeline = (new BasicPipeline())->pipe(function (Error $error, callable $next) {
+        $this->pipeline = (new Pipeline())->pipe(function (Error $error, callable $next) {
             if ($error->name === 'SkipMe') {
                 return false;
             }

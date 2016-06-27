@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugsnag\Pipeline\Middleware;
+namespace Bugsnag\Middleware;
 
 use Bugsnag\Error;
 use Bugsnag\Request\ResolverInterface;
 
-class AddRequestMetaData
+class AddRequestCookieData
 {
     /**
      * The request resolver instance.
@@ -15,7 +15,7 @@ class AddRequestMetaData
     protected $resolver;
 
     /**
-     * Create a new add request meta data middleware instance.
+     * Create a new add request cookie data middleware instance.
      *
      * @param \Bugsnag\Request\ResolverInterface $resolver the request resolver instance
      *
@@ -27,17 +27,17 @@ class AddRequestMetaData
     }
 
     /**
-     * Execute the add request meta data middleware.
+     * Execute the add request cookie data middleware.
      *
      * @param \Bugsnag\Error $error
      * @param callable       $next
      *
-     * @return bool
+     * @return mixed
      */
     public function __invoke(Error $error, callable $next)
     {
-        if ($data = $this->resolver->resolve()->getMetaData()) {
-            $error->setMetaData($data);
+        if ($data = $this->resolver->resolve()->getCookieData()) {
+            $error->setMetaData(['cookies' => $data]);
         }
 
         return $next($error);
