@@ -26,18 +26,18 @@ class Client
     protected $config;
 
     /**
-     * The notification pipeline instance.
-     *
-     * @var \Bugsnag\Pipeline
-     */
-    protected $pipeline;
-
-    /**
      * The request resolver instance.
      *
      * @var \Bugsnag\Request\ResolverInterface
      */
     protected $resolver;
+
+    /**
+     * The notification pipeline instance.
+     *
+     * @var \Bugsnag\Pipeline
+     */
+    protected $pipeline;
 
     /**
      * The diagnostics instance.
@@ -76,7 +76,7 @@ class Client
         $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
         $guzzle = new Guzzle(['base_uri' => ($endpoint ?: getenv('BUGSNAG_ENDPOINT')) ?: static::ENDPOINT]);
 
-        $client = new static($config, null, null, $guzzle);
+        $client = new static($config, null, $guzzle);
 
         if ($defaults) {
             $client->registerDefaultMiddleware();
@@ -89,17 +89,16 @@ class Client
      * Create a new client instance.
      *
      * @param \Bugsnag\Configuration                  $config
-     * @param \Bugsnag\Pipeline|null                  $pipeline
      * @param \Bugsnag\Request\ResolverInterface|null $resolver
      * @param \GuzzleHttp\ClientInterface|null        $guzzle
      *
      * @return void
      */
-    public function __construct(Configuration $config, Pipeline $pipeline = null, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
+    public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
     {
         $this->config = $config;
-        $this->pipeline = $pipeline ?: new Pipeline();
         $this->resolver = $resolver ?: new BasicResolver();
+        $this->pipeline = new Pipeline();
         $this->diagnostics = new Diagnostics($this->config, $this->resolver);
         $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]);
 
@@ -114,16 +113,6 @@ class Client
     public function getConfig()
     {
         return $this->config;
-    }
-
-    /**
-     * Get the notification pipeline instance.
-     *
-     * @return \Bugsnag\Pipeline
-     */
-    public function getPipeline()
-    {
-        return $this->pipeline;
     }
 
     /**
