@@ -173,6 +173,20 @@ class Client
     }
 
     /**
+     * Regsier a new notification middleware.
+     *
+     * @param callable $middleware
+     *
+     * @return $this
+     */
+    public function registerMiddleware(callable $middleware)
+    {
+        $this->pipeline->pipe($middleware);
+
+        return $this;
+    }
+
+    /**
      * Set your release stage, eg "production" or "development".
      *
      * @param string $releaseStage the app's current release stage
