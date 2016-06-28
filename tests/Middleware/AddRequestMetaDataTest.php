@@ -50,7 +50,7 @@ class AddRequestMetaDataTest extends TestCase
             'params' => null,
             'clientIp' => '123.45.67.8',
             'userAgent' => 'Example Browser 1.2.3',
-            'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3']
+            'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3'],
         ]], $error->metaData);
     }
 
