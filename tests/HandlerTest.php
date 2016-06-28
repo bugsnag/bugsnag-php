@@ -22,9 +22,6 @@ class HandlerTest extends TestCase
                              ->getMock();
     }
 
-    /**
-     * @runTestsInSeparateProcesses
-     */
     public function testErrorHandler()
     {
         $this->client->expects($this->once())->method('notify');
@@ -32,9 +29,6 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
-    /**
-     * @runTestsInSeparateProcesses
-     */
     public function testExceptionHandler()
     {
         $this->client->expects($this->once())->method('notify');
@@ -42,9 +36,6 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->exceptionHandler(new Exception('Something broke'));
     }
 
-    /**
-     * @runTestsInSeparateProcesses
-     */
     public function testErrorReportingLevel()
     {
         $this->client->expects($this->once())->method('notify');
@@ -54,9 +45,6 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
     }
 
-    /**
-     * @runTestsInSeparateProcesses
-     */
     public function testErrorReportingLevelFails()
     {
         $this->client->expects($this->never())->method('notify');
@@ -66,9 +54,6 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
-    /**
-     * @runTestsInSeparateProcesses
-     */
     public function testErrorReportingWithoutNotice()
     {
         $this->client->expects($this->never())->method('notify');
