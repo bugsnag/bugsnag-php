@@ -103,7 +103,7 @@ class NotificationTest extends AbstractTestCase
         $this->guzzle->expects($spy = $this->any())->method('request');
 
         // Add an error to the notification and deliver it
-        $this->notification->addError($this->getError()->setUser(['foo' => str_repeat('A', 2 ** 20)]));
+        $this->notification->addError($this->getError()->setUser(['foo' => str_repeat('A', 1000000)]));
         $this->notification->deliver();
 
         $this->assertCount(0, $spy->getInvocations());
@@ -119,7 +119,7 @@ class NotificationTest extends AbstractTestCase
         $this->guzzle->expects($spy = $this->any())->method('request');
 
         // Add two errors to the notification and deliver them
-        $this->notification->addError($this->getError()->setUser(['foo' => str_repeat('A', 2 ** 20)]));
+        $this->notification->addError($this->getError()->setUser(['foo' => str_repeat('A', 1000000)]));
         $this->notification->addError($this->getError()->setUser(['foo' => 'bar']));
         $this->notification->deliver();
 
