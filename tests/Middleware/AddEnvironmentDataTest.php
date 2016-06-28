@@ -23,8 +23,12 @@ class AddEnvironmentDataTest extends TestCase
         $this->diagnostics = new Diagnostics($this->config, new BasicResolver());
     }
 
-    public function testCanAddMetaData()
+    public function testCanAddEnvData()
     {
+        foreach (array_keys($_ENV) as $env) {
+            unset($_ENV[$env]);
+        }
+
         $_ENV['SOMETHING'] = 'blah';
 
         $error = Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception())->setMetaData(['bar' => 'baz']);
@@ -42,6 +46,10 @@ class AddEnvironmentDataTest extends TestCase
 
     public function testCanDoNothing()
     {
+        foreach (array_keys($_ENV) as $env) {
+            unset($_ENV[$env]);
+        }
+
         $error = Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception())->setMetaData(['bar' => 'baz']);
 
         $middleware = new AddEnvironmentData();

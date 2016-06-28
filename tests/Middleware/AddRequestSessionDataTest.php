@@ -25,7 +25,7 @@ class AddRequestSessionDataTest extends TestCase
         $this->diagnostics = new Diagnostics($this->config, $this->resolver = new BasicResolver());
     }
 
-    public function testCanAddMetaData()
+    public function testCanAddSessionData()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SESSION = ['session' => 'sessionval'];

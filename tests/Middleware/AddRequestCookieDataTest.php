@@ -25,7 +25,7 @@ class AddRequestCookieDataTest extends TestCase
         $this->diagnostics = new Diagnostics($this->config, $this->resolver = new BasicResolver());
     }
 
-    public function testCanAddMetaData()
+    public function testCanAddCookieData()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_COOKIE = ['cookie' => 'cookieval'];
