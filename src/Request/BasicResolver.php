@@ -79,9 +79,19 @@ class BasicResolver implements ResolverInterface
             return $result ?: null;
         }
 
-        $result = $post ?: (static::parseInput($server, file_get_contents('php://input')) ?: false);
+        $result = $post ?: static::parseInput($server, static::readInput());
 
         return $result ?: null;
+    }
+
+    /**
+     * Read the PHP input stream.
+     *
+     * @return string|false
+     */
+    protected static function readInput()
+    {
+        return file_get_contents('php://input') ?: false;
     }
 
     /**
@@ -99,16 +109,12 @@ class BasicResolver implements ResolverInterface
         }
 
         if (isset($server['CONTENT_TYPE']) && stripos($server['CONTENT_TYPE'], 'application/json') === 0) {
-            $result = (array) json_decode($input, true);
+            return (array) json_decode($input, true) ?: null;
         }
 
         if (isset($server['REQUEST_METHOD']) && strtoupper($server['REQUEST_METHOD']) === 'PUT') {
             parse_str($input, $params);
-            $result = isset($result) ? array_merge($result, $params) : $params;
-        }
-
-        if (isset($result)) {
-            return $result;
+            return (array) $params ?: null;
         }
     }
 }
