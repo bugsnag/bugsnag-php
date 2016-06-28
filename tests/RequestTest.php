@@ -27,7 +27,7 @@ class RequestTest extends TestCase
         $_COOKIE = ['cookie' => 'cookieval'];
         $_SESSION = ['session' => 'sessionval'];
 
-        $this->resolver = $resolver = new BasicResolver();
+        $this->resolver = new BasicResolver();
     }
 
     public function testResolverInterface()
