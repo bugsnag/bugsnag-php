@@ -6,10 +6,13 @@ use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
+use phpmock\phpunit\PHPMock;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ClientTest extends TestCase
 {
+    use PHPMock;
+
     /** @var \PHPUnit_Framework_MockObject_MockObject|\Bugsnag\Client */
     protected $client;
 
@@ -48,5 +51,17 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(Client::class, $client);
 
         $this->assertEquals(new Uri('https://example.com'), $client->getGuzzle()->getConfig('base_uri'));
+    }
+
+    public function testCanMakeFromEnv()
+    {
+        $env = $this->getFunctionMock('Bugsnag', 'getenv');
+        $env->expects($this->exactly(2))->will($this->returnValue('http://foo.com'));
+
+        $client = Client::make();
+
+        $this->assertInstanceOf(Client::class, $client);
+
+        $this->assertEquals(new Uri('http://foo.com'), $client->getGuzzle()->getConfig('base_uri'));
     }
 }
