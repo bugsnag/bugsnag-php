@@ -114,6 +114,7 @@ class BasicResolver implements ResolverInterface
 
         if (isset($server['REQUEST_METHOD']) && strtoupper($server['REQUEST_METHOD']) === 'PUT') {
             parse_str($input, $params);
+
             return (array) $params ?: null;
         }
     }
