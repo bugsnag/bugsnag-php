@@ -9,8 +9,8 @@ use Bugsnag\Request\BasicResolver;
 use Exception;
 use InvalidArgumentException;
 use ParseError;
-use stdClass;
 use phpmock\phpunit\PHPMock;
+use stdClass;
 
 class ErrorTest extends AbstractTestCase
 {
