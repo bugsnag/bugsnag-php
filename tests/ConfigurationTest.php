@@ -44,7 +44,7 @@ class ConfigurationTest extends TestCase
 
     public function testCustomReleaseStageShouldNotify()
     {
-        $this->config->releaseStage = 'staging';
+        $this->config->appData['releaseStage'] = 'staging';
 
         $this->expectOutputString('NOTIFIED');
 
@@ -70,7 +70,7 @@ class ConfigurationTest extends TestCase
 
     public function testBothCustomShouldNotify()
     {
-        $this->config->releaseStage = 'banana';
+        $this->config->appData['releaseStage'] = 'banana';
         $this->config->notifyReleaseStages = ['banana'];
 
         $this->expectOutputString('NOTIFIED');
@@ -100,5 +100,24 @@ class ConfigurationTest extends TestCase
         $this->config->errorReportingLevel = E_ALL;
 
         $this->assertfalse($this->config->shouldIgnoreErrorCode(E_NOTICE));
+    }
+
+    public function testAppData()
+    {
+        $this->assertSame(['releaseStage' => 'production'], $this->config->getAppData());
+
+        $this->config->appData['releaseStage'] = 'qa1';
+        $this->config->appData['version'] = '1.2.3';
+        $this->config->appData['type'] = 'laravel';
+
+        $this->assertSame(['releaseStage' => 'qa1', 'version' => '1.2.3', 'type' => 'laravel'], $this->config->getAppData());
+
+        $this->config->appData['type'] = null;
+
+        $this->assertSame(['releaseStage' => 'qa1', 'version' => '1.2.3'], $this->config->getAppData());
+
+        $this->config->appData['releaseStage'] = null;
+
+        $this->assertSame(['releaseStage' => 'production', 'version' => '1.2.3'], $this->config->getAppData());
     }
 }

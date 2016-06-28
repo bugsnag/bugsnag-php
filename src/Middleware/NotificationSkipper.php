@@ -54,6 +54,6 @@ class NotificationSkipper
             return true;
         }
 
-        return is_array($this->config->notifyReleaseStages) && in_array($this->config->releaseStage, $this->config->notifyReleaseStages, true);
+        return is_array($this->config->notifyReleaseStages) && in_array($this->config->getAppData()['releaseStage'], $this->config->notifyReleaseStages, true);
     }
 }
