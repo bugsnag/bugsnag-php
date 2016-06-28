@@ -10,9 +10,12 @@ use Exception;
 use InvalidArgumentException;
 use ParseError;
 use stdClass;
+use phpmock\phpunit\PHPMock;
 
 class ErrorTest extends AbstractTestCase
 {
+    use PHPMock;
+
     /** @var \Bugsnag\Configuration */
     protected $config;
     /** @var \Bugsnag\Request\ResolverInterface */
@@ -132,6 +135,10 @@ class ErrorTest extends AbstractTestCase
 
     public function testInvalidSeverity()
     {
+        // Setup error_log mocking
+        $log = $this->getFunctionMock('Bugsnag', 'error_log');
+        $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Tried to set error severity to bunk which is not allowed.'));
+
         $this->error->setSeverity('bunk');
 
         $errorArray = $this->error->toArray();
