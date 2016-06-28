@@ -16,7 +16,7 @@ class AddEnvironmentData
      */
     public function __invoke(Error $error, callable $next)
     {
-        if ($_ENV) {
+        if (!empty($_ENV)) {
             $error->setMetaData(['Environment' => $_ENV]);
         }
 
