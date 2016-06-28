@@ -15,7 +15,7 @@ class BasicResolver implements ResolverInterface
             return new NullRequest();
         }
 
-        return new PhpRequest($_SERVER, $_SESSION, $_COOKIE, static::getRequestHeaders($_SERVER), static::getInputParams($_SERVER, $_POST));
+        return new PhpRequest($_SERVER, empty($_SESSION) ? [] : $_SESSION, empty($_COOKIE) ? [] : $_COOKIE, static::getRequestHeaders($_SERVER), static::getInputParams($_SERVER, $_POST));
     }
 
     /**
