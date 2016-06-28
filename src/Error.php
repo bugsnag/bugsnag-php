@@ -331,7 +331,7 @@ class Error
             'app' => $this->diagnostics->getAppData(),
             'device' => $this->diagnostics->getDeviceData(),
             'user' => is_null($this->user) ? $this->diagnostics->getUser() : $this->user,
-            'context' => is_null($this->context) ? $this->diagnostics->getUser() : $this->context,
+            'context' => is_null($this->context) ? $this->diagnostics->getContext() : $this->context,
             'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),
