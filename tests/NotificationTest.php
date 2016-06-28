@@ -77,7 +77,7 @@ class NotificationTest extends AbstractTestCase
         $this->guzzle->expects($spy = $this->any())->method('request');
 
         // Add an error to the notification and deliver it
-        $this->notification->addError($this->getError()->setMetaData(['foo' => str_repeat('A', 2 ** 20)]));
+        $this->notification->addError($this->getError()->setMetaData(['foo' => str_repeat('A', 1000000)]));
         $this->notification->deliver();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
