@@ -23,9 +23,6 @@ class AddEnvironmentDataTest extends TestCase
         $this->diagnostics = new Diagnostics($this->config, new BasicResolver());
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testCanAddMetaData()
     {
         $_ENV['SOMETHING'] = 'blah';

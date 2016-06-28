@@ -25,9 +25,6 @@ class AddRequestMetaDataTest extends TestCase
         $this->diagnostics = new Diagnostics($this->config, $this->resolver = new BasicResolver());
     }
 
-    /**
-     * @runInSeparateProcess
-     */
     public function testCanAddMetaData()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
