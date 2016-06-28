@@ -6,8 +6,8 @@ use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Exception;
 use GuzzleHttp\Psr7\Uri;
-use PHPUnit_Framework_TestCase as TestCase;
 use phpmock\phpunit\PHPMock;
+use PHPUnit_Framework_TestCase as TestCase;
 
 class ClientTest extends TestCase
 {
