@@ -14,7 +14,7 @@ class Pipeline
     /**
      * Create a new basic pipeline instance.
      *
-     * @param callable[] $pipes    the array of pipes to pass through
+     * @param callable[] $pipes the array of pipes to pass through
      *
      * @return void
      */
