@@ -4,6 +4,11 @@ namespace Bugsnag;
 
 class ErrorTypes
 {
+    /**
+     * The error types map.
+     *
+     * @var array[]
+     */
     protected static $ERROR_TYPES = [
         E_ERROR => [
             'name' => 'PHP Fatal Error',

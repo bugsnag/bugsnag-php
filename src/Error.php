@@ -8,11 +8,12 @@ use Throwable;
 
 class Error
 {
-    protected static $VALID_SEVERITIES = [
-        'error',
-        'warning',
-        'info',
-    ];
+    /**
+     * The set of valid severities.
+     *
+     * @var string[]
+     */
+    protected static $VALID_SEVERITIES = ['error', 'warning', 'info'];
 
     public $name;
     public $payloadVersion = '2';

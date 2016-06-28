@@ -16,6 +16,11 @@ use Throwable;
 
 class Client
 {
+    /**
+     * The default endpoint.
+     *
+     * @var string
+     */
     const ENDPOINT = 'https://notify.bugsnag.com';
 
     /**

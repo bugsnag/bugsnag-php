@@ -7,7 +7,18 @@ use SplFileObject;
 
 class Stacktrace
 {
+    /**
+     * The default number of lines of code to include.
+     *
+     * @var int
+     */
     const NUM_LINES = 7;
+
+    /**
+     * The default maximum line length for included code.
+     *
+     * @var int
+     */
     const MAX_LENGTH = 200;
 
     /**
