@@ -21,9 +21,8 @@ class Configuration
     public $stripPath;
     public $stripPathRegex;
 
-    public $type;
-    public $releaseStage = 'production';
-    public $appVersion;
+    public $appData = [];
+
     public $hostname;
 
     public $metaData;
@@ -91,5 +90,15 @@ class Configuration
     {
         $this->stripPath = $stripPath;
         $this->stripPathRegex = '/'.preg_quote($stripPath, '/').'[\\/]?/i';
+    }
+
+    /**
+     * Get the application information.
+     *
+     * @return array
+     */
+    public function getAppData()
+    {
+        return array_merge(['releaseStage' => 'production'], array_filter($this->appData));
     }
 }

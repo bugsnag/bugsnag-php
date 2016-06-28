@@ -176,20 +176,6 @@ class Client
     }
 
     /**
-     * Set your release stage, eg "production" or "development".
-     *
-     * @param string $releaseStage the app's current release stage
-     *
-     * @return $this
-     */
-    public function setReleaseStage($releaseStage)
-    {
-        $this->config->releaseStage = $releaseStage;
-
-        return $this;
-    }
-
-    /**
      * Set your app's semantic version, eg "1.2.3".
      *
      * @param string $appVersion the app's version
@@ -198,7 +184,39 @@ class Client
      */
     public function setAppVersion($appVersion)
     {
-        $this->config->appVersion = $appVersion;
+        $this->config->appData['appVersion'] = $appVersion;
+
+        return $this;
+    }
+
+    /**
+     * Set your release stage, eg "production" or "development".
+     *
+     * @param string $releaseStage the app's current release stage
+     *
+     * @return $this
+     */
+    public function setReleaseStage($releaseStage)
+    {
+        $this->config->appData['releaseStage'] = $releaseStage;
+
+        return $this;
+    }
+
+    /**
+     * Set the type of application executing the code.
+     *
+     * This is usually used to represent if you are running plain PHP code
+     * "php", via a framework, eg "laravel", or executing through delayed
+     * worker code, eg "resque".
+     *
+     * @param string|null $type the current type
+     *
+     * @return $this
+     */
+    public function setType($type)
+    {
+        $this->config->appData['type'] = $type;
 
         return $this;
     }
@@ -294,24 +312,6 @@ class Client
     public function setFilters(array $filters)
     {
         $this->config->filters = $filters;
-
-        return $this;
-    }
-
-    /**
-     * Set the type of application executing the code.
-     *
-     * This is usually used to represent if you are running plain PHP code
-     * "php", via a framework, eg "laravel", or executing through delayed
-     * worker code, eg "resque".
-     *
-     * @param string $type the current type
-     *
-     * @return $this
-     */
-    public function setType($type)
-    {
-        $this->config->type = $type;
 
         return $this;
     }
