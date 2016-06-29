@@ -32,12 +32,12 @@ class Error
     /**
      * Create a new error from a PHP error.
      *
-     * @param \Bugsnag\Configuration $config      the config instance
-     * @param int                    $code        the error code
-     * @param string                 $message     the error message
-     * @param string                 $file        the error file
-     * @param int                    $line        the error line
-     * @param bool                   $fatal       if the error was fatal
+     * @param \Bugsnag\Configuration $config  the config instance
+     * @param int                    $code    the error code
+     * @param string                 $message the error message
+     * @param string                 $file    the error file
+     * @param int                    $line    the error line
+     * @param bool                   $fatal   if the error was fatal
      *
      * @return static
      */
@@ -52,8 +52,8 @@ class Error
     /**
      * Create a new error from a PHP throwable.
      *
-     * @param \Bugsnag\Configuration $config      the config instance
-     * @param \Throwable             $throwable   te he throwable instance
+     * @param \Bugsnag\Configuration $config    the config instance
+     * @param \Throwable             $throwable the throwable instance
      *
      * @return static
      */
@@ -68,9 +68,9 @@ class Error
     /**
      * Create a new error from a named error.
      *
-     * @param \Bugsnag\Configuration $config      the config instance
-     * @param string                $name        the error name
-     * @param string|null           $message     the error message
+     * @param \Bugsnag\Configuration $config  the config instance
+     * @param string                 $name    the error name
+     * @param string|null            $message the error message
      *
      * @return static
      */
@@ -89,7 +89,7 @@ class Error
      *
      * This is only for for use only by the static methods above.
      *
-     * @param \Bugsnag\Configuration $config      the config instance
+     * @param \Bugsnag\Configuration $config the config instance
      *
      * @return void
      */
@@ -225,11 +225,11 @@ class Error
     /**
      * Set the PHP error.
      *
-     * @param int    $code     the error code
-     * @param string $message  the error message
-     * @param string $file     the error file
-     * @param int    $line     the error line
-     * @param bool   $fatal    if the error was fatal
+     * @param int    $code    the error code
+     * @param string $message the error message
+     * @param string $file    the error file
+     * @param int    $line    the error line
+     * @param bool   $fatal   if the error was fatal
      *
      * @return $this
      */
@@ -262,7 +262,7 @@ class Error
      *
      * @return $this
      */
-    public function setMetaData($metaData)
+    public function setMetaData(array $metaData)
     {
         if (is_array($metaData)) {
             $this->metaData = array_merge_recursive($this->metaData, $metaData);
@@ -274,11 +274,11 @@ class Error
     /**
      * Set the current user.
      *
-     * @param array|null $user the current user
+     * @param array $user the current user
      *
      * @return $this
      */
-    public function setUser($user)
+    public function setUser(array $user)
     {
         $this->user = $user;
 
