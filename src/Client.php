@@ -187,7 +187,10 @@ class Client
     public function notify(Error $error, $metaData = [])
     {
         $this->pipeline->execute($error, function ($error) use ($metaData) {
-            $error->setMetaData($metaData);
+            if ($metaData) {
+                $error->setMetaData($metaData);
+            }
+
             $this->http->queue($error);
         });
 
