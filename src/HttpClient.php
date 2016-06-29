@@ -6,7 +6,7 @@ use Exception;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
 
-class Notification
+class HttpClient
 {
     /**
      * The config instance.
@@ -16,13 +16,6 @@ class Notification
     protected $config;
 
     /**
-     * The pipeline instance.
-     *
-     * @var \Bugsnag\Pipeline
-     */
-    protected $pipeline;
-
-    /**
      * The guzzle client instance.
      *
      * @var \GuzzleHttp\ClientInterface
@@ -30,56 +23,64 @@ class Notification
     protected $guzzle;
 
     /**
-     * The queue of errors to send to Bugsnag.
+     * The queue of errors to send.
      *
      * @var \Bugsnag\Error[]
      */
-    protected $errorQueue = [];
+    protected $queue = [];
 
     /**
-     * Create a new notification instance.
+     * Create a new http client instance.
      *
      * @param \Bugsnag\Configuration      $config   the configuration instance
-     * @param \Bugsnag\Pipeline           $pipeline the notification pipleine instance
      * @param \GuzzleHttp\ClientInterface $guzzle   the guzzle client instance
      *
      * @return void
      */
-    public function __construct(Configuration $config, Pipeline $pipeline, ClientInterface $guzzle)
+    public function __construct(Configuration $config, ClientInterface $guzzle)
     {
         $this->config = $config;
-        $this->pipeline = $pipeline;
         $this->guzzle = $guzzle;
     }
 
     /**
      * Add an error to the queue.
      *
-     * @param \Bugsnag\Error $config         the bugsnag error instance
-     * @param array          $passedMetaData the associated meta data
+     * @param \Bugsnag\Error $error the bugsnag error instance
      *
-     * @return bool
+     * @return void
      */
-    public function addError(Error $error, $passedMetaData = [])
+    public function queue(Error $error)
     {
-        return $this->pipeline->execute($error, function ($error) use ($passedMetaData) {
-            $error->setMetaData($passedMetaData);
-
-            $this->errorQueue[] = $error;
-
-            return true;
-        });
+        $this->queue[] = $error;
     }
 
     /**
-     * Get the array representation.
+     * Deliver everything on the queue to Bugsnag.
+     *
+     * @return void
+     */
+    public function send()
+    {
+        if (!$this->queue) {
+            return;
+        }
+
+        $this->postJson('/', $this->build());
+
+        $this->queue = [];
+    }
+
+    /**
+     * Build the request data to send.
      *
      * @return array
      */
-    public function toArray()
+    protected function build()
     {
         $events = [];
-        foreach ($this->errorQueue as $error) {
+
+        foreach ($this->queue as $error) {
             $errorArray = $error->toArray();
 
             if (!is_null($errorArray)) {
@@ -95,24 +96,6 @@ class Notification
     }
 
     /**
-     * Deliver everything on the queue to Bugsnag.
-     *
-     * @return void
-     */
-    public function deliver()
-    {
-        if (empty($this->errorQueue)) {
-            return;
-        }
-
-        // Post the request to bugsnag
-        $this->postJson('/', $this->toArray());
-
-        // Clear the error queue
-        $this->errorQueue = [];
-    }
-
-    /**
      * Post the given data to Bugsnag in json form.
      *
      * @param string $url  the url to hit
@@ -120,11 +103,11 @@ class Notification
      *
      * @return void
      */
-    public function postJSON($url, $data)
+    protected function postJSON($url, $data)
     {
         // Try to send the whole lot, or without the meta data for the first
         // event. If failed, try to send the first event, and then the rest of
-        // them, revursively. Decrease by a constant and concquer if you like.
+        // them, recursively. Decrease by a constant and concquer if you like.
         // Note that the base case is satisfied as soon as the payload is small
         // enought to send, or when it's simply discarded.
         try {

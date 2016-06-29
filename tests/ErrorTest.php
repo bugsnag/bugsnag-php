@@ -8,21 +8,20 @@ use Exception;
 use InvalidArgumentException;
 use ParseError;
 use phpmock\phpunit\PHPMock;
+use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 
-class ErrorTest extends AbstractTestCase
+class ErrorTest extends TestCase
 {
     use PHPMock;
 
-    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Error */
     protected $error;
 
     protected function setUp()
     {
         $this->config = new Configuration('example-key');
-        $this->error = $this->getError();
+        $this->error = Error::fromNamedError($this->config, 'Name', 'Message');
     }
 
     public function testMetaData()

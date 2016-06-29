@@ -4,24 +4,32 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use Bugsnag\Configuration;
+use Bugsnag\Error;
+use Bugsnag\Middleware\AddEnvironmentData;
 use Exception;
+use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Psr7\Uri;
 use phpmock\phpunit\PHPMock;
 use PHPUnit_Framework_TestCase as TestCase;
+use ReflectionClass;
 
 class ClientTest extends TestCase
 {
     use PHPMock;
 
-    /** @var \PHPUnit_Framework_MockObject_MockObject|\Bugsnag\Client */
+    protected $guzzle;
+    protected $config;
     protected $client;
 
     protected function setUp()
     {
-        // Mock the notify function
+        $this->guzzle = $this->getMockBuilder(Guzzle::class)
+                             ->setMethods(['request'])
+                             ->getMock();
+
         $this->client = $this->getMockBuilder(Client::class)
                              ->setMethods(['notify'])
-                             ->setConstructorArgs([new Configuration('example-api-key')])
+                             ->setConstructorArgs([$this->config = new Configuration('example-api-key'), null, $this->guzzle])
                              ->getMock();
     }
 
@@ -39,9 +47,22 @@ class ClientTest extends TestCase
         $this->client->notifyException(new Exception('Something broke'));
     }
 
+    protected function getGuzzle(Client $client)
+    {
+        $prop = (new ReflectionClass($client))->getProperty('http');
+        $prop->setAccessible(true);
+
+        $http = $prop->getValue($client);
+
+        $prop = (new ReflectionClass($http))->getProperty('guzzle');
+        $prop->setAccessible(true);
+
+        return $prop->getValue($http);
+    }
+
     public function testDefaultSetup()
     {
-        $this->assertEquals(new Uri('https://notify.bugsnag.com'), $this->client->getGuzzle()->getConfig('base_uri'));
+        $this->assertEquals(new Uri('https://notify.bugsnag.com'), $this->getGuzzle(Client::make('123'))->getConfig('base_uri'));
     }
 
     public function testCanMake()
@@ -50,7 +71,7 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf(Client::class, $client);
 
-        $this->assertEquals(new Uri('https://example.com'), $client->getGuzzle()->getConfig('base_uri'));
+        $this->assertEquals(new Uri('https://example.com'), $this->getGuzzle($client)->getConfig('base_uri'));
     }
 
     public function testCanMakeFromEnv()
@@ -62,7 +83,7 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf(Client::class, $client);
 
-        $this->assertEquals(new Uri('http://foo.com'), $client->getGuzzle()->getConfig('base_uri'));
+        $this->assertEquals(new Uri('http://foo.com'), $this->getGuzzle($client)->getConfig('base_uri'));
     }
 
     public function testDynamicConfigSetting()
@@ -74,5 +95,35 @@ class ClientTest extends TestCase
         $this->assertSame($client, $client->setBatchSending(false));
 
         $this->assertFalse($client->isBatchSending());
+    }
+
+    public function testBeforeNotifySkipsError()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware(function (Error $error, callable $next) {
+            if ($error->name === 'SkipMe') {
+                return false;
+            }
+
+            return $next($error);
+        });
+
+        $this->guzzle->expects($this->never())->method('request');
+
+        $this->client->notify(Error::fromNamedError($this->config, 'SkipMe', 'Message'));
+    }
+
+    public function testNoEnvironmentByDefault()
+    {
+        $_ENV['SOMETHING'] = 'blah';
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerDefaultMiddleware();
+
+        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+
+        $this->assertArrayNotHasKey('Environment', $error->metaData);
     }
 }

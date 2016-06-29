@@ -7,7 +7,6 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class ConfigurationTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
 
     protected function setUp()

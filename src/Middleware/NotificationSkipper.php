@@ -32,14 +32,14 @@ class NotificationSkipper
      * @param \Bugsnag\Error $error
      * @param callable       $next
      *
-     * @return bool
+     * @return void
      */
     public function __invoke(Error $error, callable $next)
     {
         if (!$this->config->shouldNotify()) {
-            return false;
+            return;
         }
 
-        return $next($error);
+        $next($error);
     }
 }
