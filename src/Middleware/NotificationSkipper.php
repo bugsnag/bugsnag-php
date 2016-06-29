@@ -36,24 +36,10 @@ class NotificationSkipper
      */
     public function __invoke(Error $error, callable $next)
     {
-        if (!$this->shouldNotify()) {
+        if (!$this->config->shouldNotify()) {
             return false;
         }
 
         return $next($error);
-    }
-
-    /**
-     * Should we notify?
-     *
-     * @return bool
-     */
-    protected function shouldNotify()
-    {
-        if (is_null($this->config->notifyReleaseStages)) {
-            return true;
-        }
-
-        return is_array($this->config->notifyReleaseStages) && in_array($this->config->getAppData()['releaseStage'], $this->config->notifyReleaseStages, true);
     }
 }

@@ -115,16 +115,6 @@ class Client
     }
 
     /**
-     * Get the request resolver instance.
-     *
-     * @return \Bugsnag\Request\ResolverInterface
-     */
-    public function getResolver()
-    {
-        return $this->resolver;
-    }
-
-    /**
      * Get the config instance.
      *
      * @return \GuzzleHttp\ClientInterface
@@ -162,239 +152,6 @@ class Client
     public function registerMiddleware(callable $middleware)
     {
         $this->pipeline->pipe($middleware);
-
-        return $this;
-    }
-
-    /**
-     * Set your app's semantic version, eg "1.2.3".
-     *
-     * @param string $appVersion the app's version
-     *
-     * @return $this
-     */
-    public function setAppVersion($appVersion)
-    {
-        $this->config->appData['appVersion'] = $appVersion;
-
-        return $this;
-    }
-
-    /**
-     * Set your release stage, eg "production" or "development".
-     *
-     * @param string $releaseStage the app's current release stage
-     *
-     * @return $this
-     */
-    public function setReleaseStage($releaseStage)
-    {
-        $this->config->appData['releaseStage'] = $releaseStage;
-
-        return $this;
-    }
-
-    /**
-     * Set the type of application executing the code.
-     *
-     * This is usually used to represent if you are running plain PHP code
-     * "php", via a framework, eg "laravel", or executing through delayed
-     * worker code, eg "resque".
-     *
-     * @param string|null $type the current type
-     *
-     * @return $this
-     */
-    public function setType($type)
-    {
-        $this->config->appData['type'] = $type;
-
-        return $this;
-    }
-
-    /**
-     * Set the host name.
-     *
-     * @param string $hostname the host name
-     *
-     * @return $this
-     */
-    public function setHostname($hostname)
-    {
-        $this->config->deviceData['hostname'] = $hostname;
-
-        return $this;
-    }
-
-    /**
-     * Set which release stages should be allowed to notify Bugsnag.
-     *
-     * Eg ['production', 'development'].
-     *
-     * @param array $notifyReleaseStages array of release stages to notify for
-     *
-     * @return $this
-     */
-    public function setNotifyReleaseStages(array $notifyReleaseStages)
-    {
-        $this->config->notifyReleaseStages = $notifyReleaseStages;
-
-        return $this;
-    }
-
-    /**
-     * Set the absolute path to the root of your application.
-     *
-     * We use this to help with error grouping and to highlight "in project"
-     * stacktrace lines.
-     *
-     * @param string $projectRoot the root path for your application
-     *
-     * @return $this
-     */
-    public function setProjectRoot($projectRoot)
-    {
-        $this->config->setProjectRoot($projectRoot);
-
-        return $this;
-    }
-
-    /**
-     * Set the absolute split path.
-     *
-     * This is the path that should be stripped from the beginning of any
-     * stacktrace file line. This helps to normalise filenames for grouping
-     * and reduces the noise in stack traces.
-     *
-     * @param string $stripPath the path to strip from filenames
-     *
-     * @return $this
-     */
-    public function setStripPath($stripPath)
-    {
-        $this->config->setStripPath($stripPath);
-
-        return $this;
-    }
-
-    /**
-     * Set the a regular expression for matching filenames in stacktrace lines.
-     *
-     * @param string $projectRootRegex regex matching paths belong to your project
-     *
-     * @return $this
-     */
-    public function setProjectRootRegex($projectRootRegex)
-    {
-        $this->config->projectRootRegex = $projectRootRegex;
-
-        return $this;
-    }
-
-    /**
-     * Set the strings to filter out from metaData arrays before sending then.
-     *
-     * Eg. ['password', 'credit_card'].
-     *
-     * @param array $filters an array of metaData filters
-     *
-     * @return $this
-     */
-    public function setFilters(array $filters)
-    {
-        $this->config->filters = $filters;
-
-        return $this;
-    }
-
-    /**
-     * Set custom metadata to send to Bugsnag with every error.
-     *
-     * You can use this to add custom tabs of data to each error on your
-     * Bugsnag dashboard.
-     *
-     * @param array $metaData an array of arrays of custom data. Eg:
-     *        [
-     *            'user' => [
-     *                'name' => 'James',
-     *                'email' => 'james@example.com'
-     *            ]
-     *        ]
-     * @param bool $merge optionally merge the meta data
-     *
-     * @return $this
-     */
-    public function setMetaData(array $metaData, $merge = false)
-    {
-        if ($merge) {
-            $this->config->metaData = array_merge_recursive((array) $this->config->metaData, $metaData);
-        } else {
-            $this->config->metaData = $metaData;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Set Bugsnag's error reporting level.
-     *
-     * If this is not set, we'll use your current PHP error_reporting value
-     * from your ini file or error_reporting(...) calls.
-     *
-     * @param int $errorReportingLevel the error reporting level integer
-     *                exactly as you would pass to PHP's error_reporting
-     *
-     * @return $this
-     */
-    public function setErrorReportingLevel($errorReportingLevel)
-    {
-        $this->config->errorReportingLevel = $errorReportingLevel;
-
-        return $this;
-    }
-
-    /**
-     * Sets whether errors should be batched together and send at the end of each request.
-     *
-     * @param bool $batchSending whether to batch together errors
-     *
-     * @return $this
-     */
-    public function setBatchSending($batchSending)
-    {
-        $this->config->batchSending = $batchSending;
-
-        return $this;
-    }
-
-    /**
-     * Sets the notifier to report as to Bugsnag.
-     *
-     * This should only be set by other notifier libraries.
-     *
-     * @param array $notifier an array of name, version, url.
-     *
-     * @return $this
-     */
-    public function setNotifier($notifier)
-    {
-        $this->config->notifier = $notifier;
-
-        return $this;
-    }
-
-    /**
-     * Should we send a small snippet of the code that crashed.
-     *
-     * This can help you diagnose even faster from within your dashboard.
-     *
-     * @param bool $sendCode whether to send code to Bugsnag
-     *
-     * @return $this
-     */
-    public function setSendCode($sendCode)
-    {
-        $this->config->sendCode = $sendCode;
 
         return $this;
     }
@@ -470,7 +227,7 @@ class Client
      */
     protected function sendErrorsOnShutdown()
     {
-        return $this->config->batchSending && $this->resolver->resolve()->isRequest();
+        return $this->config->isBatchSending() && $this->resolver->resolve()->isRequest();
     }
 
     /**
@@ -484,5 +241,20 @@ class Client
             $this->notification->deliver();
             $this->notification = null;
         }
+    }
+
+    /**
+     * Dynamically pass calls to the configuration.
+     *
+     * @param string $method
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        $value = call_user_func_array([$this->config, $method], $parameters);
+
+        return stripos($method, 'set') === 0 ? $this : $value;
     }
 }

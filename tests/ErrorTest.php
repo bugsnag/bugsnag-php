@@ -61,7 +61,7 @@ class ErrorTest extends AbstractTestCase
 
     public function testExceptionsNotFiltered()
     {
-        $this->config->filters = ['code'];
+        $this->config->setFilters(['code']);
         $this->error->setPHPError(E_NOTICE, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();

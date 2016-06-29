@@ -31,7 +31,7 @@ class AddRequestSessionDataTest extends TestCase
 
         $middleware = new AddRequestSessionData($this->resolver);
 
-        $this->config->metaData = ['foo' => 'bar'];
+        $this->config->setMetaData(['foo' => 'bar']);
 
         $middleware($error, function () {
             //

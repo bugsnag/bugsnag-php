@@ -64,4 +64,15 @@ class ClientTest extends TestCase
 
         $this->assertEquals(new Uri('http://foo.com'), $client->getGuzzle()->getConfig('base_uri'));
     }
+
+    public function testDynamicConfigSetting()
+    {
+        $client = Client::make('foo');
+
+        $this->assertTrue($client->isBatchSending());
+
+        $this->assertSame($client, $client->setBatchSending(false));
+
+        $this->assertFalse($client->isBatchSending());
+    }
 }

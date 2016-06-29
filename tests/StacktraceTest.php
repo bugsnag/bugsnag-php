@@ -201,7 +201,7 @@ class StacktraceTest extends AbstractTestCase
     public function testCodeDisabled()
     {
         $config = new Configuration('key');
-        $config->sendCode = false;
+        $config->setSendCode(false);
 
         $stacktrace = Stacktrace::fromFrame($config, $this->getFixturePath('code/File.php'), 1)->toArray();
         $this->assertCount(1, $stacktrace);
