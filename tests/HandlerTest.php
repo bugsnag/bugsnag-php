@@ -10,12 +10,10 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class HandlerTest extends TestCase
 {
-    /** @var \PHPUnit_Framework_MockObject_MockObject|\Bugsnag\Client */
     protected $client;
 
     protected function setUp()
     {
-        // Mock the notify function
         $this->client = $this->getMockBuilder(Client::class)
                              ->setMethods(['notify'])
                              ->setConstructorArgs([new Configuration('example-api-key')])

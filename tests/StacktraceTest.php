@@ -4,15 +4,30 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
 use Bugsnag\Stacktrace;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class StacktraceTest extends AbstractTestCase
+class StacktraceTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
 
     protected function setUp()
     {
         $this->config = new Configuration('key');
+    }
+
+    protected function getFixturePath($file)
+    {
+        return realpath(__DIR__.'/fixtures/'.$file);
+    }
+
+    protected function getFixture($file)
+    {
+        return file_get_contents($this->getFixturePath($file));
+    }
+
+    protected function getJsonFixture($file)
+    {
+        return json_decode($this->getFixture($file), true);
     }
 
     protected function assertFrameEquals($frame, $method, $file, $line)

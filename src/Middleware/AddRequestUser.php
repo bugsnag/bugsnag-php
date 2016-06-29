@@ -32,7 +32,7 @@ class AddRequestUser
      * @param \Bugsnag\Error $error
      * @param callable       $next
      *
-     * @return bool
+     * @return void
      */
     public function __invoke(Error $error, callable $next)
     {
@@ -40,6 +40,6 @@ class AddRequestUser
             $error->setUser(['id' => $id]);
         }
 
-        return $next($error);
+        $next($error);
     }
 }

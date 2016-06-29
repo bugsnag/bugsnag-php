@@ -12,7 +12,6 @@ use ReflectionClass;
 
 class RequestTest extends TestCase
 {
-    /** @var \Bugsnag\Request\ResolverInterface */
     protected $resolver;
 
     protected function setUp()

@@ -4,53 +4,39 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Middleware\AddEnvironmentData;
-use Bugsnag\Notification;
-use Bugsnag\Pipeline;
+use Bugsnag\HttpClient;
 use Exception;
 use GuzzleHttp\Client;
 use phpmock\phpunit\PHPMock;
+use PHPUnit_Framework_TestCase as TestCase;
 
-class NotificationTest extends AbstractTestCase
+class HttpClientTest extends TestCase
 {
     use PHPMock;
 
-    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Pipeline */
-    protected $pipeline;
-    /** @var \GuzzleHttp\Client */
     protected $guzzle;
-    /** @var \Bugsnag\Notification|\PHPUnit_Framework_MockObject_MockObject */
-    protected $notification;
+    protected $http;
 
     protected function setUp()
     {
         $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
 
-        $this->pipeline = (new Pipeline())->pipe(function (Error $error, callable $next) {
-            if ($error->name === 'SkipMe') {
-                return false;
-            }
-
-            return $next($error);
-        });
-
         $this->guzzle = $this->getMockBuilder(Client::class)
                              ->setMethods(['request'])
                              ->getMock();
 
-        $this->notification = new Notification($this->config, $this->pipeline, $this->guzzle);
+        $this->http = new HttpClient($this->config, $this->guzzle);
     }
 
-    public function testNotification()
+    public function testHttpClient()
     {
         // Expect request to be called
         $this->guzzle->expects($spy = $this->any())->method('request');
 
-        // Add an error to the notification and deliver it
-        $this->notification->addError($this->getError()->setMetaData(['foo' => 'bar']));
-        $this->notification->deliver();
+        // Add an error to the http and deliver it
+        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
+        $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
@@ -65,14 +51,14 @@ class NotificationTest extends AbstractTestCase
         $this->assertSame(['foo' => 'bar'], $params[2]['json']['events'][0]['metaData']);
     }
 
-    public function testMassiveMetaDataNotification()
+    public function testMassiveMetaDataHttpClient()
     {
         // Expect request to be called
         $this->guzzle->expects($spy = $this->any())->method('request');
 
-        // Add an error to the notification and deliver it
-        $this->notification->addError($this->getError()->setMetaData(['foo' => str_repeat('A', 1000000)]));
-        $this->notification->deliver();
+        // Add an error to the http and deliver it
+        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setMetaData(['foo' => str_repeat('A', 1000000)]));
+        $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
@@ -87,7 +73,7 @@ class NotificationTest extends AbstractTestCase
         $this->assertArrayNotHasKey('metaData', $params[2]['json']['events'][0]);
     }
 
-    public function testMassiveUserNotification()
+    public function testMassiveUserHttpClient()
     {
         // Setup error_log mocking
         $log = $this->getFunctionMock('Bugsnag', 'error_log');
@@ -96,14 +82,14 @@ class NotificationTest extends AbstractTestCase
         // Expect request to be called
         $this->guzzle->expects($spy = $this->any())->method('request');
 
-        // Add an error to the notification and deliver it
-        $this->notification->addError($this->getError()->setUser(['foo' => str_repeat('A', 1000000)]));
-        $this->notification->deliver();
+        // Add an error to the http and deliver it
+        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1000000)]));
+        $this->http->send();
 
         $this->assertCount(0, $spy->getInvocations());
     }
 
-    public function testPartialNotification()
+    public function testPartialHttpClient()
     {
         // Setup error_log mocking
         $log = $this->getFunctionMock('Bugsnag', 'error_log');
@@ -112,10 +98,10 @@ class NotificationTest extends AbstractTestCase
         // Expect request to be called
         $this->guzzle->expects($spy = $this->any())->method('request');
 
-        // Add two errors to the notification and deliver them
-        $this->notification->addError($this->getError()->setUser(['foo' => str_repeat('A', 1000000)]));
-        $this->notification->addError($this->getError()->setUser(['foo' => 'bar']));
-        $this->notification->deliver();
+        // Add two errors to the http and deliver them
+        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1000000)]));
+        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setUser(['foo' => 'bar']));
+        $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
@@ -130,7 +116,7 @@ class NotificationTest extends AbstractTestCase
         $this->assertSame([], $params[2]['json']['events'][0]['metaData']);
     }
 
-    public function testNotificationFails()
+    public function testHttpClientFails()
     {
         // Setup error_log mocking
         $log = $this->getFunctionMock('Bugsnag', 'error_log');
@@ -139,37 +125,8 @@ class NotificationTest extends AbstractTestCase
         // Expect request to be called
         $this->guzzle->method('request')->will($this->throwException(new Exception('Guzzle exception thrown!')));
 
-        // Add an error to the notification and deliver it
-        $this->notification->addError($this->getError()->setMetaData(['foo' => 'bar']));
-        $this->notification->deliver();
-    }
-
-    public function testBeforeNotifySkipsError()
-    {
-        $this->guzzle->expects($this->never())->method('request');
-
-        $this->notification->addError($this->getError('SkipMe', 'Message'));
-        $this->notification->deliver();
-    }
-
-    public function testNoEnvironmentByDefault()
-    {
-        $_ENV['SOMETHING'] = 'blah';
-
-        $notification = new Notification($this->config, $this->pipeline, $this->guzzle);
-        $notification->addError($this->getError());
-        $notificationArray = $notification->toArray();
-        $this->assertArrayNotHasKey('Environment', $notificationArray['events'][0]['metaData']);
-    }
-
-    public function testEnvironmentPresentWhenRequested()
-    {
-        $_ENV['SOMETHING'] = 'blah';
-
-        $this->pipeline->pipe(new AddEnvironmentData());
-        $notification = new Notification($this->config, $this->pipeline, $this->guzzle);
-        $notification->addError($this->getError());
-        $notificationArray = $notification->toArray();
-        $this->assertSame($notificationArray['events'][0]['metaData']['Environment']['SOMETHING'], 'blah');
+        // Add an error to the http and deliver it
+        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
+        $this->http->send();
     }
 }

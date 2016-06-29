@@ -32,7 +32,7 @@ class AddGlobalMetaData
      * @param \Bugsnag\Error $error
      * @param callable       $next
      *
-     * @return bool
+     * @return void
      */
     public function __invoke(Error $error, callable $next)
     {
@@ -40,6 +40,6 @@ class AddGlobalMetaData
             $error->setMetaData($data);
         }
 
-        return $next($error);
+        $next($error);
     }
 }

@@ -47,18 +47,11 @@ class Client
     protected $pipeline;
 
     /**
-     * The guzzle client instance.
+     * The http client instance.
      *
-     * @var \GuzzleHttp\ClientInterface
+     * @var \Bugsnag\HttpClient
      */
-    protected $guzzle;
-
-    /**
-     * The notification instance.
-     *
-     * @var \Bugsnag\Notification|null
-     */
-    protected $notification;
+    protected $http;
 
     /**
      * Make a new client instance.
@@ -99,7 +92,7 @@ class Client
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
         $this->pipeline = new Pipeline();
-        $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]);
+        $this->http = new HttpClient($config, $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]));
 
         register_shutdown_function([$this, 'shutdownHandler']);
     }
@@ -112,16 +105,6 @@ class Client
     public function getConfig()
     {
         return $this->config;
-    }
-
-    /**
-     * Get the config instance.
-     *
-     * @return \GuzzleHttp\ClientInterface
-     */
-    public function getGuzzle()
-    {
-        return $this->guzzle;
     }
 
     /**
@@ -203,20 +186,13 @@ class Client
      */
     public function notify(Error $error, $metaData = [])
     {
-        // Queue or send the error
-        if ($this->sendErrorsOnShutdown()) {
-            // Create a batch notification unless we already have one
-            if (is_null($this->notification)) {
-                $this->notification = new Notification($this->config, $this->pipeline, $this->guzzle);
-            }
+        $this->pipeline->execute($error, function ($error) use ($metaData) {
+            $error->setMetaData($metaData);
+            $this->http->queue($error);
+        });
 
-            // Add this error to the notification
-            $this->notification->addError($error, $metaData);
-        } else {
-            // Create and deliver notification immediately
-            $notif = new Notification($this->config, $this->pipeline, $this->guzzle);
-            $notif->addError($error, $metaData);
-            $notif->deliver();
+        if (!$this->sendErrorsOnShutdown()) {
+            $this->http->send();
         }
     }
 
@@ -237,10 +213,7 @@ class Client
      */
     public function shutdownHandler()
     {
-        if ($this->notification) {
-            $this->notification->deliver();
-            $this->notification = null;
-        }
+        $this->http->send();
     }
 
     /**

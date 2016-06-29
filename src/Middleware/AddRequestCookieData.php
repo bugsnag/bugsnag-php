@@ -32,7 +32,7 @@ class AddRequestCookieData
      * @param \Bugsnag\Error $error
      * @param callable       $next
      *
-     * @return mixed
+     * @return void
      */
     public function __invoke(Error $error, callable $next)
     {
@@ -40,6 +40,6 @@ class AddRequestCookieData
             $error->setMetaData(['cookies' => $data]);
         }
 
-        return $next($error);
+        $next($error);
     }
 }
