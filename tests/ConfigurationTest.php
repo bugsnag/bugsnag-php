@@ -61,4 +61,13 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame(['releaseStage' => 'production', 'version' => '1.2.3'], $this->config->getAppData());
     }
+
+    public function testDeviceData()
+    {
+        $this->assertSame(['hostname' => php_uname('n')], $this->config->getDeviceData());
+
+        $this->config->deviceData['hostname'] = 'web1.example.com';
+
+        $this->assertSame(['hostname' => 'web1.example.com'], $this->config->getDeviceData());
+    }
 }

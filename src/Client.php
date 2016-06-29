@@ -235,7 +235,7 @@ class Client
      */
     public function setHostname($hostname)
     {
-        $this->config->hostname = $hostname;
+        $this->config->deviceData['hostname'] = $hostname;
 
         return $this;
     }
