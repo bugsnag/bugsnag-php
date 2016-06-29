@@ -288,7 +288,7 @@ class Error
     /**
      * Set a context representing the current type of request, or location in code.
      *
-     * @param string $context the current context
+     * @param string|null $context the current context
      *
      * @return $this
      */
