@@ -24,7 +24,7 @@ class AddGlobalMetaDataTest extends TestCase
 
         $middleware = new AddGlobalMetaData($this->config);
 
-        $this->config->metaData = ['foo' => 'bar'];
+        $this->config->setMetaData(['foo' => 'bar']);
 
         $middleware($error, function () {
             //

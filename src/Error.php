@@ -258,15 +258,14 @@ class Error
     /**
      * Set the error meta data.
      *
-     * @param array $metaData the error meta data
+     * @param array[] $metaData an array of arrays of custom data
+     * @param bool    $merge    should we merge the meta data
      *
      * @return $this
      */
-    public function setMetaData(array $metaData)
+    public function setMetaData(array $metaData, $merge = true)
     {
-        if (is_array($metaData)) {
-            $this->metaData = array_merge_recursive($this->metaData, $metaData);
-        }
+        $this->metaData = $merge ? array_merge_recursive($this->metaData, $metaData) : $metaData;
 
         return $this;
     }
@@ -383,8 +382,8 @@ class Error
                 $shouldFilter = false;
 
                 // Apply filters to metadata if required
-                if ($isMetaData && is_array($this->config->filters)) {
-                    foreach ($this->config->filters as $filter) {
+                if ($isMetaData) {
+                    foreach ($this->config->getFilters() as $filter) {
                         if (strpos($key, $filter) !== false) {
                             $shouldFilter = true;
                             break;

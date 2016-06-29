@@ -167,19 +167,15 @@ class Stacktrace
         ];
 
         // Attach some lines of code for context
-        if ($this->config->sendCode) {
+        if ($this->config->shouldSendCode()) {
             $frame['code'] = $this->getCode($file, $line, static::NUM_LINES);
         }
 
         // Check if this frame is inProject
-        $frame['inProject'] = !is_null($this->config->projectRootRegex) && preg_match($this->config->projectRootRegex, $file);
+        $frame['inProject'] = $this->config->isInProject($file);
 
         // Strip out projectRoot from start of file path
-        if (is_null($this->config->stripPathRegex)) {
-            $frame['file'] = $file;
-        } else {
-            $frame['file'] = preg_replace($this->config->stripPathRegex, '', $file);
-        }
+        $frame['file'] = $this->config->getStrippedFilePath($file);
 
         $this->frames[] = $frame;
     }

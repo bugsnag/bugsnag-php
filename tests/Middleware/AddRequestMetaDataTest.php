@@ -35,7 +35,7 @@ class AddRequestMetaDataTest extends TestCase
 
         $middleware = new AddRequestMetaData($this->resolver);
 
-        $this->config->metaData = ['foo' => 'bar'];
+        $this->config->setMetaData(['foo' => 'bar']);
 
         $middleware($error, function () {
             //

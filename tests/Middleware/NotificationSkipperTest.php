@@ -31,7 +31,7 @@ class NotificationSkipperTest extends TestCase
 
     public function testCustomReleaseStageShouldNotify()
     {
-        $this->config->appData['releaseStage'] = 'staging';
+        $this->config->setReleaseStage('staging');
 
         $this->expectOutputString('NOTIFIED');
 
@@ -44,7 +44,7 @@ class NotificationSkipperTest extends TestCase
 
     public function testCustomNotifyReleaseStagesShouldNotify()
     {
-        $this->config->notifyReleaseStages = ['banana'];
+        $this->config->setNotifyReleaseStages(['banana']);
 
         $this->expectOutputString('');
 
@@ -57,8 +57,8 @@ class NotificationSkipperTest extends TestCase
 
     public function testBothCustomShouldNotify()
     {
-        $this->config->appData['releaseStage'] = 'banana';
-        $this->config->notifyReleaseStages = ['banana'];
+        $this->config->setReleaseStage('banana');
+        $this->config->setNotifyReleaseStages(['banana']);
 
         $this->expectOutputString('NOTIFIED');
 

@@ -31,7 +31,7 @@ class AddRequestCookieDataTest extends TestCase
 
         $middleware = new AddRequestCookieData($this->resolver);
 
-        $this->config->metaData = ['foo' => 'bar'];
+        $this->config->setMetaData(['foo' => 'bar']);
 
         $middleware($error, function () {
             //

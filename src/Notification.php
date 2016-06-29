@@ -88,8 +88,8 @@ class Notification
         }
 
         return [
-            'apiKey' => $this->config->apiKey,
-            'notifier' => $this->config->notifier,
+            'apiKey' => $this->config->getApiKey(),
+            'notifier' => $this->config->getNotifier(),
             'events' => $events,
         ];
     }

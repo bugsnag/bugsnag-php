@@ -30,7 +30,7 @@ class AddEnvironmentDataTest extends TestCase
 
         $middleware = new AddEnvironmentData();
 
-        $this->config->metaData = ['foo' => 'bar'];
+        $this->config->setMetaData(['foo' => 'bar']);
 
         $middleware($error, function () {
             //

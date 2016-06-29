@@ -69,7 +69,7 @@ class Handler
      */
     public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
-        if ($this->client->getConfig()->shouldIgnoreErrorCode($errno)) {
+        if ($this->client->shouldIgnoreErrorCode($errno)) {
             return;
         }
 
@@ -89,7 +89,7 @@ class Handler
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
-        if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->client->getConfig()->shouldIgnoreErrorCode($lastError['type'])) {
+        if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->client->shouldIgnoreErrorCode($lastError['type'])) {
             $error = Error::fromPHPError($this->client->getConfig(), $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
             $error->setSeverity('error');
             $this->client->notify($error);

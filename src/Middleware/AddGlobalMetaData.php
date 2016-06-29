@@ -36,7 +36,7 @@ class AddGlobalMetaData
      */
     public function __invoke(Error $error, callable $next)
     {
-        if ($data = $this->config->metaData) {
+        if ($data = $this->config->getMetaData()) {
             $error->setMetaData($data);
         }
 
