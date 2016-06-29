@@ -156,10 +156,16 @@ class PhpRequest implements RequestInterface
     /**
      * Get the request ip.
      *
-     * @return string
+     * @return string|null
      */
     protected function getRequestIp()
     {
-        return isset($this->server['HTTP_X_FORWARDED_FOR']) ? $this->server['HTTP_X_FORWARDED_FOR'] : $this->server['REMOTE_ADDR'];
+        if (isset($this->server['HTTP_X_FORWARDED_FOR'])) {
+            return $this->server['HTTP_X_FORWARDED_FOR'];
+        }
+
+        if (isset($this->server['REMOTE_ADDR'])) {
+            return $this->server['REMOTE_ADDR'];
+        }
     }
 }
