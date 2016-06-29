@@ -3,9 +3,11 @@
 namespace Bugsnag;
 
 use Bugsnag\Middleware\AddGlobalMetaData;
+use Bugsnag\Middleware\AddRequestContext;
 use Bugsnag\Middleware\AddRequestCookieData;
 use Bugsnag\Middleware\AddRequestMetaData;
 use Bugsnag\Middleware\AddRequestSessionData;
+use Bugsnag\Middleware\AddRequestUser;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
@@ -43,13 +45,6 @@ class Client
      * @var \Bugsnag\Pipeline
      */
     protected $pipeline;
-
-    /**
-     * The diagnostics instance.
-     *
-     * @var \Bugsnag\Diagnostics
-     */
-    protected $diagnostics;
 
     /**
      * The guzzle client instance.
@@ -104,7 +99,6 @@ class Client
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
         $this->pipeline = new Pipeline();
-        $this->diagnostics = new Diagnostics($this->config, $this->resolver);
         $this->guzzle = $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]);
 
         register_shutdown_function([$this, 'shutdownHandler']);
@@ -131,16 +125,6 @@ class Client
     }
 
     /**
-     * Get the diagnostics instance.
-     *
-     * @return \Bugsnag\Diagnostics
-     */
-    public function getDiagnostics()
-    {
-        return $this->diagnostics;
-    }
-
-    /**
      * Get the config instance.
      *
      * @return \GuzzleHttp\ClientInterface
@@ -161,6 +145,8 @@ class Client
                        ->pipe(new AddRequestMetaData($this->resolver))
                        ->pipe(new AddRequestCookieData($this->resolver))
                        ->pipe(new AddRequestSessionData($this->resolver))
+                       ->pipe(new AddRequestUser($this->resolver))
+                       ->pipe(new AddRequestContext($this->resolver))
                        ->pipe(new NotificationSkipper($this->config));
 
         return $this;
@@ -425,7 +411,7 @@ class Client
     public function notifyException($throwable, array $metaData = null, $severity = null)
     {
         if ($throwable instanceof Throwable || $throwable instanceof Exception) {
-            $error = Error::fromPHPThrowable($this->config, $this->diagnostics, $throwable);
+            $error = Error::fromPHPThrowable($this->config, $throwable);
             $error->setSeverity($severity);
 
             $this->notify($error, $metaData);
@@ -444,7 +430,7 @@ class Client
      */
     public function notifyError($name, $message, array $metaData = null, $severity = null)
     {
-        $error = Error::fromNamedError($this->config, $this->diagnostics, $name, $message);
+        $error = Error::fromNamedError($this->config, $name, $message);
         $error->setSeverity($severity);
 
         $this->notify($error, $metaData);

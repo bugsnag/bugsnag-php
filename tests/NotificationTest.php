@@ -3,12 +3,10 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
-use Bugsnag\Diagnostics;
 use Bugsnag\Error;
 use Bugsnag\Middleware\AddEnvironmentData;
 use Bugsnag\Notification;
 use Bugsnag\Pipeline;
-use Bugsnag\Request\BasicResolver;
 use Exception;
 use GuzzleHttp\Client;
 use phpmock\phpunit\PHPMock;
@@ -21,8 +19,6 @@ class NotificationTest extends AbstractTestCase
     protected $config;
     /** @var \Bugsnag\Pipeline */
     protected $pipeline;
-    /** @var \Bugsnag\Diagnostics */
-    protected $diagnostics;
     /** @var \GuzzleHttp\Client */
     protected $guzzle;
     /** @var \Bugsnag\Notification|\PHPUnit_Framework_MockObject_MockObject */
@@ -39,8 +35,6 @@ class NotificationTest extends AbstractTestCase
 
             return $next($error);
         });
-
-        $this->diagnostics = new Diagnostics($this->config, new BasicResolver());
 
         $this->guzzle = $this->getMockBuilder(Client::class)
                              ->setMethods(['request'])

@@ -3,24 +3,16 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
-use Bugsnag\Diagnostics;
-use Bugsnag\Request\BasicResolver;
 use Bugsnag\Stacktrace;
 
 class StacktraceTest extends AbstractTestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Request\ResolverInterface */
-    protected $resolver;
-    /** @var \Bugsnag\Diagnostics */
-    protected $diagnostics;
 
     protected function setUp()
     {
         $this->config = new Configuration('key');
-        $this->resolver = new BasicResolver();
-        $this->diagnostics = new Diagnostics($this->config, $this->resolver);
     }
 
     protected function assertFrameEquals($frame, $method, $file, $line)
