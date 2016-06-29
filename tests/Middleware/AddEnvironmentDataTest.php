@@ -3,10 +3,8 @@
 namespace Bugsnag\Tests\Middleware;
 
 use Bugsnag\Configuration;
-use Bugsnag\Diagnostics;
 use Bugsnag\Error;
 use Bugsnag\Middleware\AddEnvironmentData;
-use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -14,13 +12,10 @@ class AddEnvironmentDataTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Diagnostics */
-    protected $diagnostics;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
-        $this->diagnostics = new Diagnostics($this->config, new BasicResolver());
     }
 
     public function testCanAddEnvData()
@@ -31,7 +26,7 @@ class AddEnvironmentDataTest extends TestCase
 
         $_ENV['SOMETHING'] = 'blah';
 
-        $error = Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception())->setMetaData(['bar' => 'baz']);
+        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $middleware = new AddEnvironmentData();
 
@@ -50,7 +45,7 @@ class AddEnvironmentDataTest extends TestCase
             unset($_ENV[$env]);
         }
 
-        $error = Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception())->setMetaData(['bar' => 'baz']);
+        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $middleware = new AddEnvironmentData();
 

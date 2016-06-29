@@ -22,10 +22,9 @@ class Error
     /** @var \Bugsnag\Stacktrace */
     public $stacktrace;
     public $metaData = [];
-    public $user;
+    public $user = [];
     public $context;
     public $config;
-    public $diagnostics;
     /** @var \Bugsnag\Error|null */
     public $previous;
     public $groupingHash;
@@ -34,7 +33,6 @@ class Error
      * Create a new error from a PHP error.
      *
      * @param \Bugsnag\Configuration $config      the config instance
-     * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
      * @param int                    $code        the error code
      * @param string                 $message     the error message
      * @param string                 $file        the error file
@@ -43,9 +41,9 @@ class Error
      *
      * @return static
      */
-    public static function fromPHPError(Configuration $config, Diagnostics $diagnostics, $code, $message, $file, $line, $fatal = false)
+    public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
     {
-        $error = new static($config, $diagnostics);
+        $error = new static($config);
         $error->setPHPError($code, $message, $file, $line, $fatal);
 
         return $error;
@@ -55,14 +53,13 @@ class Error
      * Create a new error from a PHP throwable.
      *
      * @param \Bugsnag\Configuration $config      the config instance
-     * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
      * @param \Throwable             $throwable   te he throwable instance
      *
      * @return static
      */
-    public static function fromPHPThrowable(Configuration $config, Diagnostics $diagnostics, $throwable)
+    public static function fromPHPThrowable(Configuration $config, $throwable)
     {
-        $error = new static($config, $diagnostics);
+        $error = new static($config);
         $error->setPHPThrowable($throwable);
 
         return $error;
@@ -72,15 +69,14 @@ class Error
      * Create a new error from a named error.
      *
      * @param \Bugsnag\Configuration $config      the config instance
-     * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
      * @param string                $name        the error name
      * @param string|null           $message     the error message
      *
      * @return static
      */
-    public static function fromNamedError(Configuration $config, Diagnostics $diagnostics, $name, $message = null)
+    public static function fromNamedError(Configuration $config, $name, $message = null)
     {
-        $error = new static($config, $diagnostics);
+        $error = new static($config);
         $error->setName($name)
               ->setMessage($message)
               ->setStacktrace(Stacktrace::generate($config));
@@ -94,14 +90,12 @@ class Error
      * This is only for for use only by the static methods above.
      *
      * @param \Bugsnag\Configuration $config      the config instance
-     * @param \Bugsnag\Diagnostics   $diagnostics the diagnostics instance
      *
      * @return void
      */
-    protected function __construct(Configuration $config, Diagnostics $diagnostics)
+    protected function __construct(Configuration $config)
     {
         $this->config = $config;
-        $this->diagnostics = $diagnostics;
     }
 
     /**
@@ -315,7 +309,7 @@ class Error
     public function setPrevious($exception)
     {
         if ($exception) {
-            $this->previous = static::fromPHPThrowable($this->config, $this->diagnostics, $exception);
+            $this->previous = static::fromPHPThrowable($this->config, $exception);
         }
 
         return $this;
@@ -331,8 +325,8 @@ class Error
         $errorArray = [
             'app' => $this->config->getAppData(),
             'device' => $this->config->getDeviceData(),
-            'user' => is_null($this->user) ? $this->diagnostics->getUser() : $this->user,
-            'context' => is_null($this->context) ? $this->diagnostics->getContext() : $this->context,
+            'user' => $this->user,
+            'context' => $this->context,
             'payloadVersion' => $this->payloadVersion,
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),

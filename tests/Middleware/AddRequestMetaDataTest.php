@@ -3,7 +3,6 @@
 namespace Bugsnag\Tests\Middleware;
 
 use Bugsnag\Configuration;
-use Bugsnag\Diagnostics;
 use Bugsnag\Error;
 use Bugsnag\Middleware\AddRequestMetaData;
 use Bugsnag\Request\BasicResolver;
@@ -14,15 +13,13 @@ class AddRequestMetaDataTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Diagnostics */
-    protected $diagnostics;
     /** @var \Bugsnag\Request\ResolverInterface */
     protected $resolver;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
-        $this->diagnostics = new Diagnostics($this->config, $this->resolver = new BasicResolver());
+        $this->resolver = new BasicResolver();
     }
 
     public function testCanAddMetaData()
@@ -34,7 +31,7 @@ class AddRequestMetaDataTest extends TestCase
         $_SERVER['HTTP_HOST'] = 'example.com';
         $_SERVER['HTTP_USER_AGENT'] = 'Example Browser 1.2.3';
 
-        $error = Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception())->setMetaData(['bar' => 'baz']);
+        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $middleware = new AddRequestMetaData($this->resolver);
 
@@ -54,9 +51,9 @@ class AddRequestMetaDataTest extends TestCase
         ]], $error->metaData);
     }
 
-    public function testCanDoNothing()
+    public function testFallsBackToNull()
     {
-        $error = Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception())->setMetaData(['bar' => 'baz']);
+        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $middleware = new AddRequestMetaData($this->resolver);
 

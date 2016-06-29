@@ -9,12 +9,10 @@ abstract class AbstractTestCase extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Diagnostics */
-    protected $diagnostics;
 
     protected function getError($name = 'Name', $message = 'Message')
     {
-        return Error::fromNamedError($this->config, $this->diagnostics, $name, $message);
+        return Error::fromNamedError($this->config, $name, $message);
     }
 
     protected function getFixturePath($file)

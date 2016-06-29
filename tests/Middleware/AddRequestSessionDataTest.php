@@ -3,7 +3,6 @@
 namespace Bugsnag\Tests\Middleware;
 
 use Bugsnag\Configuration;
-use Bugsnag\Diagnostics;
 use Bugsnag\Error;
 use Bugsnag\Middleware\AddRequestSessionData;
 use Bugsnag\Request\BasicResolver;
@@ -14,15 +13,13 @@ class AddRequestSessionDataTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Diagnostics */
-    protected $diagnostics;
     /** @var \Bugsnag\Request\ResolverInterface */
     protected $resolver;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
-        $this->diagnostics = new Diagnostics($this->config, $this->resolver = new BasicResolver());
+        $this->resolver = new BasicResolver();
     }
 
     public function testCanAddSessionData()
@@ -30,7 +27,7 @@ class AddRequestSessionDataTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SESSION = ['session' => 'sessionval'];
 
-        $error = Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception())->setMetaData(['bar' => 'baz']);
+        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $middleware = new AddRequestSessionData($this->resolver);
 
@@ -45,7 +42,22 @@ class AddRequestSessionDataTest extends TestCase
 
     public function testCanDoNothing()
     {
-        $error = Error::fromPHPThrowable($this->config, $this->diagnostics, new Exception())->setMetaData(['bar' => 'baz']);
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+
+        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+
+        $middleware = new AddRequestSessionData($this->resolver);
+
+        $middleware($error, function () {
+            //
+        });
+
+        $this->assertSame(['bar' => 'baz'], $error->metaData);
+    }
+
+    public function testFallsBackToNull()
+    {
+        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $middleware = new AddRequestSessionData($this->resolver);
 
