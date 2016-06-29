@@ -24,8 +24,12 @@ class ConfigurationTest extends TestCase
 
     public function testNotifier()
     {
-        $this->assertSame($this->config->getNotifier()['name'], 'Bugsnag PHP (Official)');
-        $this->assertSame($this->config->getNotifier()['url'], 'https://bugsnag.com');
+        $this->assertSame('Bugsnag PHP (Official)', $this->config->getNotifier()['name']);
+        $this->assertSame('https://bugsnag.com', $this->config->getNotifier()['url']);
+
+        $this->config->setNotifier(['foo' => 'bar']);
+
+        $this->assertSame(['foo' => 'bar'], $this->config->getNotifier());
     }
 
     public function testShouldIgnore()
@@ -40,6 +44,16 @@ class ConfigurationTest extends TestCase
         $this->config->setErrorReportingLevel(E_ALL);
 
         $this->assertfalse($this->config->shouldIgnoreErrorCode(E_NOTICE));
+    }
+
+    public function testRootPath()
+    {
+        $this->assertFalse($this->config->isInProject(__FILE__));
+
+        $this->config->setProjectRoot(__DIR__);
+
+        $this->assertTrue($this->config->isInProject(__FILE__));
+        $this->assertFalse($this->config->isInProject(dirname(__DIR__)));
     }
 
     public function testAppData()
