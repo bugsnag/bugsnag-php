@@ -332,7 +332,7 @@ class Error
             'metaData' => $this->cleanupObj($this->metaData, true),
         ];
 
-        if (isset($this->groupingHash)) {
+        if ($this->groupingHash) {
             $errorArray['groupingHash'] = $this->groupingHash;
         }
 
@@ -346,11 +346,7 @@ class Error
      */
     public function exceptionArray()
     {
-        if ($this->previous) {
-            $exceptionArray = $this->previous->exceptionArray();
-        } else {
-            $exceptionArray = [];
-        }
+        $exceptionArray = $this->previous ? $this->previous->exceptionArray() : [];
 
         $exceptionArray[] = [
             'errorClass' => $this->name,
