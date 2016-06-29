@@ -330,7 +330,7 @@ class Error
     {
         $errorArray = [
             'app' => $this->config->getAppData(),
-            'device' => $this->diagnostics->getDeviceData(),
+            'device' => $this->config->getDeviceData(),
             'user' => is_null($this->user) ? $this->diagnostics->getUser() : $this->user,
             'context' => is_null($this->context) ? $this->diagnostics->getContext() : $this->context,
             'payloadVersion' => $this->payloadVersion,

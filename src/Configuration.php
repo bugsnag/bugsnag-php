@@ -22,8 +22,7 @@ class Configuration
     public $stripPathRegex;
 
     public $appData = [];
-
-    public $hostname;
+    public $deviceData = [];
 
     public $metaData;
     public $errorReportingLevel;
@@ -100,5 +99,15 @@ class Configuration
     public function getAppData()
     {
         return array_merge(['releaseStage' => 'production'], array_filter($this->appData));
+    }
+
+    /**
+     * Get the device information.
+     *
+     * @return array
+     */
+    public function getDeviceData()
+    {
+        return array_merge(['hostname' => php_uname('n')], array_filter($this->deviceData));
     }
 }

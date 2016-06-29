@@ -35,16 +35,6 @@ class Diagnostics
     }
 
     /**
-     * Get the device information.
-     *
-     * @return array
-     */
-    public function getDeviceData()
-    {
-        return ['hostname' => $this->config->hostname ?: php_uname('n')];
-    }
-
-    /**
      * Get the error context.
      *
      * @return array
