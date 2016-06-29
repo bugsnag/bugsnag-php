@@ -5,7 +5,6 @@ namespace Bugsnag\Tests;
 use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Middleware\AddEnvironmentData;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Psr7\Uri;
