@@ -9,24 +9,80 @@ use Throwable;
 class Error
 {
     /**
-     * The set of valid severities.
+     * The payload version.
      *
-     * @var string[]
+     * @var int
      */
-    protected static $VALID_SEVERITIES = ['error', 'warning', 'info'];
+    const PAYLOAD_VERSION = 2;
 
+    /**
+     * The error name.
+     *
+     * @var string
+     */
     public $name;
-    public $payloadVersion = '2';
+
+    /**
+     * The error message.
+     *
+     * @var string|null
+     */
     public $message;
+
+    /**
+     * The error severity.
+     *
+     * @var string
+     */
     public $severity = 'warning';
-    /** @var \Bugsnag\Stacktrace */
+
+    /**
+     * The associated stacktrace.
+     *
+     * @var \Bugsnag\Stacktrace 
+     */
     public $stacktrace;
+
+    /**
+     * The associated meta data.
+     *
+     * @var array[]
+     */
     public $metaData = [];
+
+    /**
+     * The associated user.
+     *
+     * @var array
+     */
     public $user = [];
+
+    /**
+     * The associated context.
+     *
+     * @var string|null
+     */
     public $context;
+
+    /**
+     * The config object.
+     *
+     * @var \Bugsnag\Config
+     */
     public $config;
-    /** @var \Bugsnag\Error|null */
+
+    /**
+     * The previous error.
+     *
+     * @var \Bugsnag\Error|null
+     */
     public $previous;
+
+    /**
+     * The grouping hash.
+     *
+     * @var string
+     */
     public $groupingHash;
 
     /**
@@ -34,7 +90,7 @@ class Error
      *
      * @param \Bugsnag\Configuration $config  the config instance
      * @param int                    $code    the error code
-     * @param string                 $message the error message
+     * @param string|null            $message the error message
      * @param string                 $file    the error file
      * @param int                    $line    the error line
      * @param bool                   $fatal   if the error was fatal
@@ -171,14 +227,14 @@ class Error
     /**
      * Set the error severity.
      *
-     * @param int|null $severity the error severity
+     * @param string|null $severity the error severity
      *
      * @return $this
      */
     public function setSeverity($severity)
     {
         if (!is_null($severity)) {
-            if (in_array($severity, static::$VALID_SEVERITIES)) {
+            if (in_array($severity, ['error', 'warning', 'info'], true)) {
                 $this->severity = $severity;
             } else {
                 error_log('Bugsnag Warning: Tried to set error severity to '.$severity.' which is not allowed.');
@@ -225,11 +281,11 @@ class Error
     /**
      * Set the PHP error.
      *
-     * @param int    $code    the error code
-     * @param string $message the error message
-     * @param string $file    the error file
-     * @param int    $line    the error line
-     * @param bool   $fatal   if the error was fatal
+     * @param int         $code    the error code
+     * @param string|null $message the error message
+     * @param string      $file    the error file
+     * @param int         $line    the error line
+     * @param bool        $fatal   if the error was fatal
      *
      * @return $this
      */
@@ -326,7 +382,7 @@ class Error
             'device' => $this->config->getDeviceData(),
             'user' => $this->user,
             'context' => $this->context,
-            'payloadVersion' => $this->payloadVersion,
+            'payloadVersion' => static::PAYLOAD_VERSION,
             'severity' => $this->severity,
             'exceptions' => $this->exceptionArray(),
             'metaData' => $this->cleanupObj($this->metaData, true),

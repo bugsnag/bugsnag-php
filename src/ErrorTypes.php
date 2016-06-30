@@ -95,7 +95,7 @@ class ErrorTypes
      */
     public static function isFatal($code)
     {
-        return static::getSeverity($code) == 'error';
+        return static::getSeverity($code) === 'error';
     }
 
     /**
@@ -109,9 +109,9 @@ class ErrorTypes
     {
         if (array_key_exists($code, static::$ERROR_TYPES)) {
             return static::$ERROR_TYPES[$code]['name'];
-        } else {
-            return 'Unknown';
         }
+
+        return 'Unknown';
     }
 
     /**
@@ -125,9 +125,9 @@ class ErrorTypes
     {
         if (array_key_exists($code, static::$ERROR_TYPES)) {
             return static::$ERROR_TYPES[$code]['severity'];
-        } else {
-            return 'error';
         }
+
+        return 'error';
     }
 
     /**
@@ -140,6 +140,7 @@ class ErrorTypes
     public static function getLevelsForSeverity($severity)
     {
         $levels = 0;
+
         foreach (static::$ERROR_TYPES as $level => $info) {
             if ($info['severity'] == $severity) {
                 $levels |= $level;
