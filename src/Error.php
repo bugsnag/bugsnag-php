@@ -16,6 +16,27 @@ class Error
     const PAYLOAD_VERSION = '2';
 
     /**
+     * The config object.
+     *
+     * @var \Bugsnag\Config
+     */
+    public $config;
+
+    /**
+     * The associated stacktrace.
+     *
+     * @var \Bugsnag\Stacktrace
+     */
+    public $stacktrace;
+
+    /**
+     * The previous error.
+     *
+     * @var \Bugsnag\Error|null
+     */
+    public $previous;
+
+    /**
      * The error name.
      *
      * @var string
@@ -37,11 +58,18 @@ class Error
     public $severity = 'warning';
 
     /**
-     * The associated stacktrace.
+     * The associated context.
      *
-     * @var \Bugsnag\Stacktrace
+     * @var string|null
      */
-    public $stacktrace;
+    public $context;
+
+    /**
+     * The grouping hash.
+     *
+     * @var string
+     */
+    public $groupingHash;
 
     /**
      * The associated meta data.
@@ -56,34 +84,6 @@ class Error
      * @var array
      */
     public $user = [];
-
-    /**
-     * The associated context.
-     *
-     * @var string|null
-     */
-    public $context;
-
-    /**
-     * The config object.
-     *
-     * @var \Bugsnag\Config
-     */
-    public $config;
-
-    /**
-     * The previous error.
-     *
-     * @var \Bugsnag\Error|null
-     */
-    public $previous;
-
-    /**
-     * The grouping hash.
-     *
-     * @var string
-     */
-    public $groupingHash;
 
     /**
      * Create a new error from a PHP error.
@@ -155,96 +155,6 @@ class Error
     }
 
     /**
-     * Set the error name.
-     *
-     * @param string $name the error name
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return $this
-     */
-    public function setName($name)
-    {
-        if (is_scalar($name) || method_exists($name, '__toString')) {
-            $this->name = (string) $name;
-        } else {
-            throw new InvalidArgumentException('Name must be a string.');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Set the error message.
-     *
-     * @param string|null $message the error message
-     *
-     * @throws \InvalidArgumentException
-     *
-     * @return $this
-     */
-    public function setMessage($message)
-    {
-        if ($message === null) {
-            $this->message = null;
-        } elseif (is_scalar($message) || method_exists($message, '__toString')) {
-            $this->message = (string) $message;
-        } else {
-            throw new InvalidArgumentException('Message must be a string.');
-        }
-
-        return $this;
-    }
-
-    /**
-     * Set the grouping hash.
-     *
-     * @param string $groupingHash the grouping hash
-     *
-     * @return $this
-     */
-    public function setGroupingHash($groupingHash)
-    {
-        $this->groupingHash = $groupingHash;
-
-        return $this;
-    }
-
-    /**
-     * Set the bugsnag stacktrace.
-     *
-     * @param \Bugsnag\Stacktrace $stacktrace the stacktrace instance
-     *
-     * @return $this
-     */
-    public function setStacktrace(Stacktrace $stacktrace)
-    {
-        $this->stacktrace = $stacktrace;
-
-        return $this;
-    }
-
-    /**
-     * Set the error severity.
-     *
-     * @param string|null $severity the error severity
-     *
-     * @return $this
-     */
-    public function setSeverity($severity)
-    {
-        if (!is_null($severity)) {
-            if (in_array($severity, ['error', 'warning', 'info'], true)) {
-                $this->severity = $severity;
-            } else {
-                error_log('Bugsnag Warning: Tried to set error severity to '.$severity.' which is not allowed.');
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Set the PHP throwable.
      *
      * @param Throwable $exception the throwable instance
@@ -312,6 +222,126 @@ class Error
     }
 
     /**
+     * Set the bugsnag stacktrace.
+     *
+     * @param \Bugsnag\Stacktrace $stacktrace the stacktrace instance
+     *
+     * @return $this
+     */
+    public function setStacktrace(Stacktrace $stacktrace)
+    {
+        $this->stacktrace = $stacktrace;
+
+        return $this;
+    }
+
+    /**
+     * Set the previous throwable.
+     *
+     * @param \Throwable $exception the previous throwable
+     *
+     * @return $this
+     */
+    public function setPrevious($exception)
+    {
+        if ($exception) {
+            $this->previous = static::fromPHPThrowable($this->config, $exception);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the error name.
+     *
+     * @param string $name the error name
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        if (is_scalar($name) || method_exists($name, '__toString')) {
+            $this->name = (string) $name;
+        } else {
+            throw new InvalidArgumentException('Name must be a string.');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the error message.
+     *
+     * @param string|null $message the error message
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return $this
+     */
+    public function setMessage($message)
+    {
+        if ($message === null) {
+            $this->message = null;
+        } elseif (is_scalar($message) || method_exists($message, '__toString')) {
+            $this->message = (string) $message;
+        } else {
+            throw new InvalidArgumentException('Message must be a string.');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set the error severity.
+     *
+     * @param string|null $severity the error severity
+     *
+     * @return $this
+     */
+    public function setSeverity($severity)
+    {
+        if (!is_null($severity)) {
+            if (in_array($severity, ['error', 'warning', 'info'], true)) {
+                $this->severity = $severity;
+            } else {
+                error_log('Bugsnag Warning: Tried to set error severity to '.$severity.' which is not allowed.');
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set a context representing the current type of request, or location in code.
+     *
+     * @param string|null $context the current context
+     *
+     * @return $this
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
+    /**
+     * Set the grouping hash.
+     *
+     * @param string $groupingHash the grouping hash
+     *
+     * @return $this
+     */
+    public function setGroupingHash($groupingHash)
+    {
+        $this->groupingHash = $groupingHash;
+
+        return $this;
+    }
+
+    /**
      * Set the error meta data.
      *
      * @param array[] $metaData an array of arrays of custom data
@@ -336,36 +366,6 @@ class Error
     public function setUser(array $user)
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    /**
-     * Set a context representing the current type of request, or location in code.
-     *
-     * @param string|null $context the current context
-     *
-     * @return $this
-     */
-    public function setContext($context)
-    {
-        $this->context = $context;
-
-        return $this;
-    }
-
-    /**
-     * Set the previous throwable.
-     *
-     * @param \Throwable $exception the previous throwable
-     *
-     * @return $this
-     */
-    public function setPrevious($exception)
-    {
-        if ($exception) {
-            $this->previous = static::fromPHPThrowable($this->config, $exception);
-        }
 
         return $this;
     }
