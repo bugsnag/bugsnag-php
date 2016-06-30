@@ -96,7 +96,7 @@ class Client
 
         $this->registerMiddleware(new NotificationSkipper($config));
 
-        register_shutdown_function([$this, 'shutdownHandler']);
+        register_shutdown_function([$this, 'flush']);
     }
 
     /**
@@ -195,19 +195,9 @@ class Client
             $this->http->queue($error);
         });
 
-        if (!$this->sendErrorsOnShutdown()) {
-            $this->http->send();
+        if (!$this->config->isBatchSending()) {
+            $this->flush();
         }
-    }
-
-    /**
-     * Should we send errors immediately, or on shutdown?
-     *
-     * @return bool
-     */
-    protected function sendErrorsOnShutdown()
-    {
-        return $this->config->isBatchSending() && $this->resolver->resolve()->isRequest();
     }
 
     /**
@@ -215,7 +205,7 @@ class Client
      *
      * @return void
      */
-    public function shutdownHandler()
+    public function flush()
     {
         $this->http->send();
     }

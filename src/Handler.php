@@ -96,6 +96,6 @@ class Handler
         }
 
         // Flush any buffered errors
-        $this->client->shutdownHandler();
+        $this->client->flush();
     }
 }
