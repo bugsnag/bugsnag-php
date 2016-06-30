@@ -39,7 +39,7 @@ class Error
     /**
      * The associated stacktrace.
      *
-     * @var \Bugsnag\Stacktrace 
+     * @var \Bugsnag\Stacktrace
      */
     public $stacktrace;
 
