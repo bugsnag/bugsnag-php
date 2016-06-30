@@ -1,5 +1,7 @@
 # Bugsnag error reporter for PHP
-[![build status](https://travis-ci.org/bugsnag/bugsnag-php.svg?branch=master)](https://travis-ci.org/bugsnag/bugsnag-php)
+
+[![Build Status](https://img.shields.io/travis/bugsnag/bugsnag-php/master.svg?style=flat-square)](https://travis-ci.org/bugsnag/bugsnag-php)
+[![StyleCI Status](https://styleci.io/repos/7568230/shield?branch=master)](https://styleci.io/repos/7568230)
 
 
 The Bugsnag error reporter for PHP gives you instant notification of errors and exceptions in your PHP applications.
