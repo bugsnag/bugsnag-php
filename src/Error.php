@@ -344,7 +344,7 @@ class Error
      *
      * @return array
      */
-    public function exceptionArray()
+    protected function exceptionArray()
     {
         $exceptionArray = $this->previous ? $this->previous->exceptionArray() : [];
 
@@ -372,41 +372,44 @@ class Error
         }
 
         if (is_array($obj)) {
-            $cleanArray = [];
+            $clean = [];
+
             foreach ($obj as $key => $value) {
-                // Check if this key should be filtered
-                $shouldFilter = false;
-
-                // Apply filters to metadata if required
-                if ($isMetaData) {
-                    foreach ($this->config->getFilters() as $filter) {
-                        if (strpos($key, $filter) !== false) {
-                            $shouldFilter = true;
-                            break;
-                        }
-                    }
-                }
-                // Apply filter
-                if ($shouldFilter) {
-                    $cleanArray[$key] = '[FILTERED]';
-                } else {
-                    $cleanArray[$key] = $this->cleanupObj($value, $isMetaData);
-                }
+                $clean[$key] = $this->shouldFilter($key, $isMetaData) ? '[FILTERED]' : $this->cleanupObj($value, $isMetaData);
             }
 
-            return $cleanArray;
-        } elseif (is_string($obj)) {
-            // UTF8-encode if not already encoded
-            if (function_exists('mb_detect_encoding') && !mb_detect_encoding($obj, 'UTF-8', true)) {
-                return utf8_encode($obj);
-            } else {
-                return $obj;
-            }
-        } elseif (is_object($obj)) {
-            // json_encode -> json_decode trick turns an object into an array
-            return $this->cleanupObj(json_decode(json_encode($obj), true), $isMetaData);
-        } else {
-            return $obj;
+            return $clean;
         }
+
+        if (is_string($obj)) {
+            return (function_exists('mb_detect_encoding') && !mb_detect_encoding($obj, 'UTF-8', true)) ? utf8_encode($obj) : $obj;
+        }
+
+        if (is_object($obj)) {
+            return $this->cleanupObj(json_decode(json_encode($obj), true), $isMetaData);
+        }
+
+        return $obj;
+    }
+
+    /**
+     * Should we filter the given element.
+     *
+     * @param string $key        the associated key
+     * @param bool   $isMetaData if it is meta data
+     *
+     * @return bool
+     */
+    protected function shouldFilter($key, $isMetaData)
+    {
+        if ($isMetaData) {
+            foreach ($this->config->getFilters() as $filter) {
+                if (strpos($key, $filter) !== false) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
