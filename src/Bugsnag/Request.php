@@ -25,12 +25,12 @@ class Bugsnag_Request
             return $requestData;
         }
 
-        $requestData = array();
+        $requestData = [];
 
-        $methodsWithPayload = array('PUT');
+        $methodsWithPayload = ['PUT'];
 
         // Request Tab
-        $requestData['request'] = array();
+        $requestData['request'] = [];
         $requestData['request']['url'] = self::getCurrentUrl();
         if (isset($_SERVER['REQUEST_METHOD'])) {
             $requestData['request']['httpMethod'] = $_SERVER['REQUEST_METHOD'];
@@ -125,7 +125,7 @@ class Bugsnag_Request
             return getallheaders();
         }
 
-        $headers = array();
+        $headers = [];
 
         foreach ($_SERVER as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {

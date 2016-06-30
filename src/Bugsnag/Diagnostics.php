@@ -28,7 +28,7 @@ class Bugsnag_Diagnostics
      */
     public function getAppData()
     {
-        $appData = array();
+        $appData = [];
 
         if (!is_null($this->config->appVersion)) {
             $appData['version'] = $this->config->appVersion;
@@ -52,9 +52,9 @@ class Bugsnag_Diagnostics
      */
     public function getDeviceData()
     {
-        return array(
+        return [
             'hostname' => $this->config->get('hostname', php_uname('n')),
-        );
+        ];
     }
 
     /**
@@ -74,7 +74,7 @@ class Bugsnag_Diagnostics
      */
     public function getUser()
     {
-        $defaultUser = array();
+        $defaultUser = [];
         $userId = Bugsnag_Request::getUserId();
 
         if (!is_null($userId)) {

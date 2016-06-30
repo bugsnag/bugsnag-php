@@ -2,84 +2,84 @@
 
 class Bugsnag_ErrorTypes
 {
-    private static $ERROR_TYPES = array(
-        E_ERROR => array(
+    private static $ERROR_TYPES = [
+        E_ERROR => [
             'name' => 'PHP Fatal Error',
             'severity' => 'error',
-        ),
+        ],
 
-        E_WARNING => array(
+        E_WARNING => [
             'name' => 'PHP Warning',
             'severity' => 'warning',
-        ),
+        ],
 
-        E_PARSE => array(
+        E_PARSE => [
             'name' => 'PHP Parse Error',
             'severity' => 'error',
-        ),
+        ],
 
-        E_NOTICE => array(
+        E_NOTICE => [
             'name' => 'PHP Notice',
             'severity' => 'info',
-        ),
+        ],
 
-        E_CORE_ERROR => array(
+        E_CORE_ERROR => [
             'name' => 'PHP Core Error',
             'severity' => 'error',
-        ),
+        ],
 
-        E_CORE_WARNING => array(
+        E_CORE_WARNING => [
             'name' => 'PHP Core Warning',
             'severity' => 'warning',
-        ),
+        ],
 
-        E_COMPILE_ERROR => array(
+        E_COMPILE_ERROR => [
             'name' => 'PHP Compile Error',
             'severity' => 'error',
-        ),
+        ],
 
-        E_COMPILE_WARNING => array(
+        E_COMPILE_WARNING => [
             'name' => 'PHP Compile Warning',
             'severity' => 'warning',
-        ),
+        ],
 
-        E_USER_ERROR => array(
+        E_USER_ERROR => [
             'name' => 'User Error',
             'severity' => 'error',
-        ),
+        ],
 
-        E_USER_WARNING => array(
+        E_USER_WARNING => [
             'name' => 'User Warning',
             'severity' => 'warning',
-        ),
+        ],
 
-        E_USER_NOTICE => array(
+        E_USER_NOTICE => [
             'name' => 'User Notice',
             'severity' => 'info',
-        ),
+        ],
 
-        E_STRICT => array(
+        E_STRICT => [
             'name' => 'PHP Strict',
             'severity' => 'info',
-        ),
+        ],
 
-        E_RECOVERABLE_ERROR => array(
+        E_RECOVERABLE_ERROR => [
             'name' => 'PHP Recoverable Error',
             'severity' => 'error',
-        ),
+        ],
 
         // E_DEPRECATED (Since PHP 5.3.0)
-        8192 => array(
+        8192 => [
             'name' => 'PHP Deprecated',
             'severity' => 'info',
-        ),
+        ],
 
         // E_USER_DEPRECATED (Since PHP 5.3.0)
-        16384 => array(
+        16384 => [
             'name' => 'User Deprecated',
             'severity' => 'info',
-        ),
-    );
+        ],
+    ];
 
     /**
      * Is the given error code fatal?

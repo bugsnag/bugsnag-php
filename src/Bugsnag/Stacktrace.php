@@ -5,7 +5,7 @@ class Bugsnag_Stacktrace
     private static $DEFAULT_NUM_LINES = 7;
     private static $MAX_LINE_LENGTH = 200;
 
-    public $frames = array();
+    public $frames = [];
     private $config;
 
     /**
@@ -133,17 +133,17 @@ class Bugsnag_Stacktrace
     public function addFrame($file, $line, $method, $class = null)
     {
         // Account for special "filenames" in eval'd code
-        $matches = array();
+        $matches = [];
         if (preg_match("/^(.*?)\((\d+)\) : (?:eval\(\)'d code|runtime-created function)$/", $file, $matches)) {
             $file = $matches[1];
             $line = $matches[2];
         }
 
         // Construct the frame
-        $frame = array(
+        $frame = [
             'lineNumber' => (int) $line,
             'method' => $class ? "$class::$method" : $method,
-        );
+        ];
 
         // Attach some lines of code for context
         if ($this->config->sendCode) {
@@ -193,7 +193,7 @@ class Bugsnag_Stacktrace
             }
 
             // Get the code for this range
-            $code = array();
+            $code = [];
 
             $file->seek($start - 1);
             while ($file->key() < $end) {
