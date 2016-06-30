@@ -1,7 +1,7 @@
 # Bugsnag error reporter for PHP
 
-[![Build Status](https://img.shields.io/travis/bugsnag/bugsnag-php/develop.svg?style=flat-square)](https://travis-ci.org/bugsnag/bugsnag-php)
-[![StyleCI Status](https://styleci.io/repos/7568230/shield?branch=develop)](https://styleci.io/repos/7568230)
+[![Build Status](https://img.shields.io/travis/bugsnag/bugsnag-php/master.svg?style=flat-square)](https://travis-ci.org/bugsnag/bugsnag-php)
+[![StyleCI Status](https://styleci.io/repos/7568230/shield?branch=master)](https://styleci.io/repos/7568230)
 
 
 The Bugsnag error reporter for PHP gives you instant notification of errors and exceptions in your PHP applications.
@@ -9,7 +9,7 @@ The Bugsnag error reporter for PHP gives you instant notification of errors and 
 ## Features
 
 * Automatically report unhandled exceptions and crashes
-* Report handled exceptions 
+* Report handled exceptions
 * Attach user information to determine how many people are affected by a crash
 * Send customized diagnostic data
 
