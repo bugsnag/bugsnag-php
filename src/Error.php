@@ -11,9 +11,9 @@ class Error
     /**
      * The payload version.
      *
-     * @var int
+     * @var string
      */
-    const PAYLOAD_VERSION = 2;
+    const PAYLOAD_VERSION = '2';
 
     /**
      * The error name.
