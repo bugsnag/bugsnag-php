@@ -143,13 +143,13 @@ class Client
     /**
      * Notify Bugsnag of a non-fatal/handled throwable.
      *
-     * @param \Throwable $throwable the throwable to notify Bugsnag about
-     * @param array      $metaData  optional metaData to send with this error
-     * @param string     $severity  optional severity of this error (fatal/error/warning/info)
+     * @param \Throwable  $throwable the throwable to notify Bugsnag about
+     * @param array[]     $metaData  optional metaData to send with this error
+     * @param string|null $severity  optional severity of this error (fatal/error/warning/info)
      *
      * @return void
      */
-    public function notifyException($throwable, array $metaData = null, $severity = null)
+    public function notifyException($throwable, array $metaData = [], $severity = null)
     {
         if ($throwable instanceof Throwable || $throwable instanceof Exception) {
             $error = Error::fromPHPThrowable($this->config, $throwable);
@@ -162,14 +162,14 @@ class Client
     /**
      * Notify Bugsnag of a non-fatal/handled error.
      *
-     * @param string $name     the name of the error, a short (1 word) string
-     * @param string $message  the error message
-     * @param array  $metaData optional metaData to send with this error
-     * @param string $severity optional severity of this error (fatal/error/warning/info)
+     * @param string      $name     the name of the error, a short (1 word) string
+     * @param string      $message  the error message
+     * @param array[]     $metaData optional metaData to send with this error
+     * @param string|null $severity optional severity of this error (fatal/error/warning/info)
      *
      * @return void
      */
-    public function notifyError($name, $message, array $metaData = null, $severity = null)
+    public function notifyError($name, $message, array $metaData = [], $severity = null)
     {
         $error = Error::fromNamedError($this->config, $name, $message);
         $error->setSeverity($severity);
@@ -181,7 +181,7 @@ class Client
      * Batches up errors into notifications for later sending.
      *
      * @param \Bugsnag\Error $error    the error to batch up
-     * @param array          $metaData optional meta data to send with the error
+     * @param array[]        $metaData optional meta data to send with the error
      *
      * @return void
      */
