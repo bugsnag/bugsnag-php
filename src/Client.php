@@ -110,23 +110,6 @@ class Client
     }
 
     /**
-     * Regsier all our default middleware.
-     *
-     * @return $this
-     */
-    public function registerDefaultMiddleware()
-    {
-        $this->pipeline->pipe(new AddGlobalMetaData($this->config))
-                       ->pipe(new AddRequestMetaData($this->resolver))
-                       ->pipe(new AddRequestCookieData($this->resolver))
-                       ->pipe(new AddRequestSessionData($this->resolver))
-                       ->pipe(new AddRequestUser($this->resolver))
-                       ->pipe(new AddRequestContext($this->resolver));
-
-        return $this;
-    }
-
-    /**
      * Regsier a new notification middleware.
      *
      * @param callable $middleware
@@ -136,6 +119,23 @@ class Client
     public function registerMiddleware(callable $middleware)
     {
         $this->pipeline->pipe($middleware);
+
+        return $this;
+    }
+
+    /**
+     * Regsier all our default middleware.
+     *
+     * @return $this
+     */
+    public function registerDefaultMiddleware()
+    {
+        $this->registerMiddleware(new AddGlobalMetaData($this->config))
+             ->registerMiddleware(new AddRequestMetaData($this->resolver))
+             ->registerMiddleware(new AddRequestCookieData($this->resolver))
+             ->registerMiddleware(new AddRequestSessionData($this->resolver))
+             ->registerMiddleware(new AddRequestUser($this->resolver))
+             ->registerMiddleware(new AddRequestContext($this->resolver));
 
         return $this;
     }
