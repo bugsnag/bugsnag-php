@@ -94,6 +94,8 @@ class Client
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]));
 
+        $this->registerMiddleware(new NotificationSkipper($config));
+
         register_shutdown_function([$this, 'shutdownHandler']);
     }
 
@@ -119,8 +121,7 @@ class Client
                        ->pipe(new AddRequestCookieData($this->resolver))
                        ->pipe(new AddRequestSessionData($this->resolver))
                        ->pipe(new AddRequestUser($this->resolver))
-                       ->pipe(new AddRequestContext($this->resolver))
-                       ->pipe(new NotificationSkipper($this->config));
+                       ->pipe(new AddRequestContext($this->resolver));
 
         return $this;
     }
