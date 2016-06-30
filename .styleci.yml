@@ -4,3 +4,6 @@ disabled:
 
 enabled:
   - unalign_double_arrow
+
+finder:
+  exclude: Bugsnag
