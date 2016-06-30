@@ -34,9 +34,10 @@ The Bugsnag error reporter for PHP gives you instant notification of errors and 
 
 ## Contributing
 
-All contributors are welcome! For information on how to build, test
-and release `bugsnag-php`, see our
-[contributing guide](https://github.com/bugsnag/bugsnag-php/blob/develop/CONTRIBUTING.md). Feel free to comment on [existing issues](https://github.com/bugsnag/bugsnag-php/issues) for clarification or starting points.
+All contributors are welcome! For information on how to build, test and release
+`bugsnag-php`, see our [contributing guide](CONTRIBUTING.md). Feel free to
+comment on [existing issues](https://github.com/bugsnag/bugsnag-php/issues) for
+clarification or starting points.
 
 ## License
 
