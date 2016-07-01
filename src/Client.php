@@ -151,12 +151,13 @@ class Client
      */
     public function notifyException($throwable, array $metaData = [], $severity = null)
     {
-        if ($throwable instanceof Throwable || $throwable instanceof Exception) {
-            $error = Error::fromPHPThrowable($this->config, $throwable);
-            $error->setSeverity($severity);
+        $error = Error::fromPHPThrowable($this->config, $throwable);
 
-            $this->notify($error, $metaData);
+        if ($severity) {
+            $error->setSeverity($severity);
         }
+
+        $this->notify($error, $metaData);
     }
 
     /**
@@ -172,7 +173,10 @@ class Client
     public function notifyError($name, $message, array $metaData = [], $severity = null)
     {
         $error = Error::fromNamedError($this->config, $name, $message);
-        $error->setSeverity($severity);
+
+        if ($severity) {
+            $error->setSeverity($severity);
+        }
 
         $this->notify($error, $metaData);
     }
