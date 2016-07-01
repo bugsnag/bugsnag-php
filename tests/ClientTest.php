@@ -113,6 +113,15 @@ class ClientTest extends TestCase
         $this->client->notify(Error::fromNamedError($this->config, 'SkipMe', 'Message'));
     }
 
+    public function testMetaDataWorks()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'), ['foo' => 'baz']);
+
+        $this->assertSame(['foo' => 'baz'], $error->metaData);
+    }
+
     public function testNoEnvironmentByDefault()
     {
         $_ENV['SOMETHING'] = 'blah';
@@ -124,5 +133,46 @@ class ClientTest extends TestCase
         $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
 
         $this->assertArrayNotHasKey('Environment', $error->metaData);
+    }
+
+    public function testBatchingDoesNotFlush()
+    {
+        $this->client = $this->getMockBuilder(Client::class)
+                             ->setMethods(['flush'])
+                             ->setConstructorArgs([$this->config, null, $this->guzzle])
+                             ->getMock();
+
+        $this->client->expects($this->never())->method('flush');
+
+        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+    }
+
+    public function testFlushesWhenNotBatching()
+    {
+        $this->client = $this->getMockBuilder(Client::class)
+                             ->setMethods(['flush'])
+                             ->setConstructorArgs([$this->config, null, $this->guzzle])
+                             ->getMock();
+
+        $this->client->expects($this->once())->method('flush');
+
+        $this->client->setBatchSending(false);
+
+        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+    }
+
+    public function testCanManuallyFlush()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->setBatchSending(false);
+
+        $this->guzzle->expects($this->once())->method('request');
+
+        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+
+        $this->client->flush();
+        $this->client->flush();
+        $this->client->flush();
     }
 }
