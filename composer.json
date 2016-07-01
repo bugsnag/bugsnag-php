@@ -19,9 +19,6 @@
         "php-mock/php-mock-phpunit": "^1.1"
     },
     "autoload": {
-        "psr-0" : {
-            "Bugsnag_" : "src/"
-        },
         "psr-4" : {
             "Bugsnag\\" : "src/"
         }
