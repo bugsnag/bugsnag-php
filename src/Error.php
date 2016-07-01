@@ -20,21 +20,21 @@ class Error
      *
      * @var \Bugsnag\Config
      */
-    public $config;
+    protected $config;
 
     /**
      * The associated stacktrace.
      *
      * @var \Bugsnag\Stacktrace
      */
-    public $stacktrace;
+    protected $stacktrace;
 
     /**
      * The previous error.
      *
      * @var \Bugsnag\Error|null
      */
-    public $previous;
+    protected $previous;
 
     /**
      * The error name.
@@ -157,32 +157,24 @@ class Error
     /**
      * Set the PHP throwable.
      *
-     * @param Throwable $exception the throwable instance
+     * @param \Throwable $throwable the throwable instance
+     *
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
-    public function setPHPThrowable($exception)
+    public function setPHPThrowable($throwable)
     {
-        if (interface_exists(Throwable::class)) {
-            if (!$exception instanceof Throwable) {
-                error_log('Bugsnag Warning: The exception must implement Throwable.');
-
-                return $this;
-            }
-        } else {
-            if (!$exception instanceof Exception) {
-                error_log('Bugsnag Warning: The exception must be an Exception.');
-
-                return $this;
-            }
+        if (!$throwable instanceof Throwable && !$throwable instanceof Exception) {
+            throw new InvalidArgumentException('The throwable must implement Throwable or extend Exception.');
         }
 
-        $this->setName(get_class($exception))
-             ->setMessage($exception->getMessage())
-             ->setStacktrace(Stacktrace::fromBacktrace($this->config, $exception->getTrace(), $exception->getFile(), $exception->getLine()));
+        $this->setName(get_class($throwable))
+             ->setMessage($throwable->getMessage())
+             ->setStacktrace(Stacktrace::fromBacktrace($this->config, $throwable->getTrace(), $throwable->getFile(), $throwable->getLine()));
 
-        if (method_exists($exception, 'getPrevious')) {
-            $this->setPrevious($exception->getPrevious());
+        if (method_exists($throwable, 'getPrevious')) {
+            $this->setPrevious($throwable->getPrevious());
         }
 
         return $this;
@@ -228,7 +220,7 @@ class Error
      *
      * @return $this
      */
-    public function setStacktrace(Stacktrace $stacktrace)
+    protected function setStacktrace(Stacktrace $stacktrace)
     {
         $this->stacktrace = $stacktrace;
 
@@ -238,14 +230,14 @@ class Error
     /**
      * Set the previous throwable.
      *
-     * @param \Throwable $exception the previous throwable
+     * @param \Throwable $throwable the previous throwable
      *
      * @return $this
      */
-    public function setPrevious($exception)
+    protected function setPrevious($throwable)
     {
-        if ($exception) {
-            $this->previous = static::fromPHPThrowable($this->config, $exception);
+        if ($throwable) {
+            $this->previous = static::fromPHPThrowable($this->config, $throwable);
         }
 
         return $this;
@@ -265,7 +257,7 @@ class Error
         if (is_scalar($name) || method_exists($name, '__toString')) {
             $this->name = (string) $name;
         } else {
-            throw new InvalidArgumentException('Name must be a string.');
+            throw new InvalidArgumentException('The name must be a string.');
         }
 
         return $this;
@@ -287,7 +279,7 @@ class Error
         } elseif (is_scalar($message) || method_exists($message, '__toString')) {
             $this->message = (string) $message;
         } else {
-            throw new InvalidArgumentException('Message must be a string.');
+            throw new InvalidArgumentException('The message must be a string.');
         }
 
         return $this;
@@ -296,18 +288,18 @@ class Error
     /**
      * Set the error severity.
      *
-     * @param string|null $severity the error severity
+     * @param string $severity the error severity
+     *
+     * @throws \InvalidArgumentException
      *
      * @return $this
      */
     public function setSeverity($severity)
     {
-        if (!is_null($severity)) {
-            if (in_array($severity, ['error', 'warning', 'info'], true)) {
-                $this->severity = $severity;
-            } else {
-                error_log('Bugsnag Warning: Tried to set error severity to '.$severity.' which is not allowed.');
-            }
+        if (in_array($severity, ['error', 'warning', 'info'], true)) {
+            $this->severity = $severity;
+        } else {
+            throw new InvalidArgumentException('The severity must be either "error", "warning", or "info".');
         }
 
         return $this;
