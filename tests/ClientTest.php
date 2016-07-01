@@ -39,11 +39,25 @@ class ClientTest extends TestCase
         $this->client->notifyError('SomeError', 'Some message');
     }
 
+    public function testManualErrorNotificationWithSeverity()
+    {
+        $this->client->expects($this->once())->method('notify');
+
+        $this->client->notifyError('SomeError', 'Some message', [], 'info');
+    }
+
     public function testManualExceptionNotification()
     {
         $this->client->expects($this->once())->method('notify');
 
         $this->client->notifyException(new Exception('Something broke'));
+    }
+
+    public function testManualExceptionNotificationWithSeverity()
+    {
+        $this->client->expects($this->once())->method('notify');
+
+        $this->client->notifyException(new Exception('Something broke'), [], 'info');
     }
 
     protected function getGuzzle(Client $client)

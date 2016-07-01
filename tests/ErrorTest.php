@@ -7,14 +7,11 @@ use Bugsnag\Error;
 use Exception;
 use InvalidArgumentException;
 use ParseError;
-use phpmock\phpunit\PHPMock;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 
 class ErrorTest extends TestCase
 {
-    use PHPMock;
-
     protected $config;
     protected $error;
 
@@ -28,8 +25,7 @@ class ErrorTest extends TestCase
     {
         $this->error->setMetaData(['Testing' => ['globalArray' => 'hi']]);
 
-        $errorArray = $this->error->toArray();
-        $this->assertSame($errorArray['metaData']['Testing']['globalArray'], 'hi');
+        $this->assertSame(['Testing' => ['globalArray' => 'hi']], $this->error->toArray()['metaData']);
     }
 
     public function testMetaDataMerging()
@@ -37,25 +33,28 @@ class ErrorTest extends TestCase
         $this->error->setMetaData(['Testing' => ['globalArray' => 'hi']]);
         $this->error->setMetaData(['Testing' => ['localArray' => 'yo']]);
 
-        $errorArray = $this->error->toArray();
-        $this->assertSame($errorArray['metaData']['Testing']['globalArray'], 'hi');
-        $this->assertSame($errorArray['metaData']['Testing']['localArray'], 'yo');
+        $this->assertSame(['Testing' => ['globalArray' => 'hi', 'localArray' => 'yo']], $this->error->toArray()['metaData']);
+    }
+
+    public function testMetaDataObj()
+    {
+        $this->error->setMetaData(['Testing' => (object) ['globalArray' => 'hi']]);
+
+        $this->assertSame(['Testing' => ['globalArray' => 'hi']], $this->error->toArray()['metaData']);
     }
 
     public function testUser()
     {
         $this->error->setUser(['foo' => 'bar']);
 
-        $errorArray = $this->error->toArray();
-        $this->assertSame(['foo' => 'bar'], $errorArray['user']);
+        $this->assertSame(['foo' => 'bar'], $this->error->toArray()['user']);
     }
 
     public function testFiltering()
     {
         $this->error->setMetaData(['Testing' => ['password' => '123456']]);
 
-        $errorArray = $this->error->toArray();
-        $this->assertSame($errorArray['metaData']['Testing']['password'], '[FILTERED]');
+        $this->assertSame(['password' => '[FILTERED]'], $this->error->toArray()['metaData']['Testing']);
     }
 
     public function testExceptionsNotFiltered()
@@ -98,6 +97,7 @@ class ErrorTest extends TestCase
 
         $errorArray = $this->error->toArray();
         $this->assertSame($errorArray['severity'], 'info');
+        $this->assertCount(1, $errorArray['exceptions']);
     }
 
     public function testErrorSeverity()
@@ -106,6 +106,7 @@ class ErrorTest extends TestCase
 
         $errorArray = $this->error->toArray();
         $this->assertSame($errorArray['severity'], 'error');
+        $this->assertCount(1, $errorArray['exceptions']);
     }
 
     public function testRecoverableErrorSeverity()
@@ -113,7 +114,18 @@ class ErrorTest extends TestCase
         $this->error->setPHPError(E_RECOVERABLE_ERROR, 'Broken', 'file', 123);
 
         $errorArray = $this->error->toArray();
-        $this->assertEquals($errorArray['severity'], 'error');
+        $this->assertSame($errorArray['severity'], 'error');
+        $this->assertCount(1, $errorArray['exceptions']);
+    }
+
+    public function testFatalErrorSeverity()
+    {
+        $this->error->setPHPError(E_ERROR, 'Broken', 'file', 123, true);
+
+        $errorArray = $this->error->toArray();
+        $this->assertSame($errorArray['severity'], 'error');
+        $this->assertCount(1, $errorArray['exceptions']);
+        $this->assertCount(1, $errorArray['exceptions'][0]['stacktrace']);
     }
 
     public function testManualSeverity()
@@ -124,16 +136,12 @@ class ErrorTest extends TestCase
         $this->assertSame($errorArray['severity'], 'error');
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
     public function testInvalidSeverity()
     {
-        // Setup error_log mocking
-        $log = $this->getFunctionMock('Bugsnag', 'error_log');
-        $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Tried to set error severity to bunk which is not allowed.'));
-
         $this->error->setSeverity('bunk');
-
-        $errorArray = $this->error->toArray();
-        $this->assertSame($errorArray['severity'], 'warning');
     }
 
     public function testPreviousException()
@@ -173,6 +181,22 @@ class ErrorTest extends TestCase
         $exception = class_exists(ParseError::class) ? new ParseError() : new InvalidArgumentException();
 
         $this->assertSame($this->error, $this->error->setPHPThrowable($exception));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetNotThrowable()
+    {
+        $this->assertSame($this->error, $this->error->setPHPThrowable(new stdClass()));
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSetNotObject()
+    {
+        $this->assertSame($this->error, $this->error->setPHPThrowable('foo'));
     }
 
     /**

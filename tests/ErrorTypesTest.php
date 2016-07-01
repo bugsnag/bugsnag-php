@@ -9,9 +9,9 @@ class ErrorTypesTest extends TestCase
 {
     public function testGetLevelsForSeverity()
     {
-        $this->assertEquals(ErrorTypes::getLevelsForSeverity('error'), 4437);
-        $this->assertEquals(ErrorTypes::getLevelsForSeverity('warning'), 674);
-        $this->assertEquals(ErrorTypes::getLevelsForSeverity('info'), 27656);
+        $this->assertSame(4437, ErrorTypes::getLevelsForSeverity('error'));
+        $this->assertSame(674, ErrorTypes::getLevelsForSeverity('warning'));
+        $this->assertSame(27656, ErrorTypes::getLevelsForSeverity('info'));
     }
 
     public function testIsFatal()
