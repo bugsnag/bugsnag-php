@@ -121,10 +121,6 @@ class Bugsnag_Request
      */
     public static function getRequestHeaders()
     {
-        if (function_exists('getallheaders')) {
-            return getallheaders();
-        }
-
         $headers = array();
 
         foreach ($_SERVER as $name => $value) {
