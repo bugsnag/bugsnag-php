@@ -51,6 +51,23 @@ class HttpClientTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $params[2]['json']['events'][0]['metaData']);
     }
 
+    public function testHttpClientMultipleSend()
+    {
+        // Expect request to be called
+        $this->guzzle->expects($spy = $this->any())->method('request');
+
+        // Add an error to the http and deliver it
+        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
+        $this->http->send();
+
+        // Make sure these do nothing
+        $this->http->send();
+        $this->http->send();
+
+        // Check we only sent once
+        $this->assertCount(1, $invocations = $spy->getInvocations());
+    }
+
     public function testMassiveMetaDataHttpClient()
     {
         // Expect request to be called
