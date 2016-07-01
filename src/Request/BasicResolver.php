@@ -40,10 +40,6 @@ class BasicResolver implements ResolverInterface
             return $headers;
         }
 
-        if (function_exists('getallheaders')) {
-            return $headers = getallheaders();
-        }
-
         $headers = [];
 
         foreach ($server as $name => $value) {
