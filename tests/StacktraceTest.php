@@ -4,10 +4,13 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
 use Bugsnag\Stacktrace;
+use phpmock\phpunit\PHPMock;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class StacktraceTest extends TestCase
 {
+    use PHPMock;
+
     protected $config;
 
     protected function setUp()
@@ -169,6 +172,17 @@ class StacktraceTest extends TestCase
         for ($i = 9; $i <= 15; $i++) {
             $this->assertCodeEquals($fileContents[$i - 1], $topFrame['code'][$i]);
         }
+    }
+
+    public function testCodeBadFile()
+    {
+        // Ensure we deal with race conditions ok
+        $file = $this->getFunctionMock('Bugsnag', 'file_exists');
+        $file->expects($this->once())->with($this->equalTo('file-does-not-exist'))->will($this->returnValue(true));
+
+        $stacktrace = Stacktrace::fromFrame($this->config, 'file-does-not-exist', 12)->toArray();
+
+        $this->assertSame([['lineNumber' => 12, 'method' => '[unknown]', 'code' => null, 'inProject' => false, 'file' => 'file-does-not-exist']], $stacktrace);
     }
 
     public function testCodeShortFile()
