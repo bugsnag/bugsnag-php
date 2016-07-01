@@ -11,7 +11,6 @@ use Bugsnag\Middleware\AddRequestUser;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
-use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
 use Throwable;
