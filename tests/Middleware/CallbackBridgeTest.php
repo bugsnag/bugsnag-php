@@ -18,12 +18,25 @@ class CallbackBridgeTest extends TestCase
         $this->config = new Configuration('API-KEY');
     }
 
-    public function testDefaultReleaseStageShouldNotify()
+    public function testCallback()
     {
         $this->expectOutputString('1reached');
 
         $middleware = new CallbackBridge(function ($error) {
             echo $error instanceof Error;
+        });
+
+        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
+            echo 'reached';
+        });
+    }
+
+    public function testSkips()
+    {
+        $this->expectOutputString('');
+
+        $middleware = new CallbackBridge(function ($error) {
+            return false;
         });
 
         $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {

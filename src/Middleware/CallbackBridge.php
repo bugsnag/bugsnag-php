@@ -31,14 +31,14 @@ class CallbackBridge
      * @param \Bugsnag\Error $error
      * @param callable       $next
      *
-     * @return bool
+     * @return void
      */
     public function __invoke(Error $error, callable $next)
     {
         $callback = $this->callback;
 
-        $callback($error);
-
-        return $next($error);
+        if ($callback($error) !== false) {
+            $next($error);
+        }
     }
 }
