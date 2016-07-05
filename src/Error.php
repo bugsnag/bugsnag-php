@@ -327,7 +327,7 @@ class Error
 
         return $this;
     }
-    
+
     /**
      * Get the error severity.
      *
