@@ -29,7 +29,7 @@ class NullRequest implements RequestInterface
      *
      * @return array
      */
-    public function getCookie()
+    public function getCookies()
     {
         return [];
     }

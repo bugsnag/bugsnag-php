@@ -84,7 +84,7 @@ class PhpRequest implements RequestInterface
      *
      * @return array
      */
-    public function getCookie()
+    public function getCookies()
     {
         return $this->cookie;
     }

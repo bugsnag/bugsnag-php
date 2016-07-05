@@ -23,7 +23,7 @@ interface RequestInterface
      *
      * @return array
      */
-    public function getCookie();
+    public function getCookies();
 
     /**
      * Get the request formatted as meta data.

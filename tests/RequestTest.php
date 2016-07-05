@@ -61,7 +61,7 @@ class RequestTest extends TestCase
     {
         $_COOKIE = ['cookie' => 'cookieval'];
 
-        $this->assertSame(['cookie' => 'cookieval'], $this->resolver->resolve()->getCookie());
+        $this->assertSame(['cookie' => 'cookieval'], $this->resolver->resolve()->getCookies());
     }
 
     public function testSession()

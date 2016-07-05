@@ -35,7 +35,7 @@ class RequestCookies
      */
     public function __invoke(Error $error)
     {
-        if ($data = $this->resolver->resolve()->getCookie()) {
+        if ($data = $this->resolver->resolve()->getCookies()) {
             $error->setMetaData(['cookies' => $data]);
         }
     }
