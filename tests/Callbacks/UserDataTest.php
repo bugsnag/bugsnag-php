@@ -2,13 +2,13 @@
 
 namespace Bugsnag\Tests\Callbacks;
 
+use Bugsnag\Callbacks\CustomUser;
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Callbacks\CustomUser;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
-class CustomUserTest extends TestCase
+class UserDataTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
@@ -46,7 +46,6 @@ class CustomUserTest extends TestCase
 
     public function testCanBehaveUnderAnException()
     {
-
         $error = Error::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new CustomUser(function () {
