@@ -41,49 +41,49 @@ class Error
      *
      * @var string
      */
-    public $name;
+    protected $name;
 
     /**
      * The error message.
      *
      * @var string|null
      */
-    public $message;
+    protected $message;
 
     /**
      * The error severity.
      *
-     * @var string
+     * @var string|null
      */
-    public $severity = 'warning';
+    protected $severity;
 
     /**
      * The associated context.
      *
      * @var string|null
      */
-    public $context;
+    protected $context;
 
     /**
      * The grouping hash.
      *
-     * @var string
+     * @var string|null
      */
-    public $groupingHash;
+    protected $groupingHash;
 
     /**
      * The associated meta data.
      *
      * @var array[]
      */
-    public $metaData = [];
+    protected $metaData = [];
 
     /**
      * The associated user.
      *
      * @var array
      */
-    public $user = [];
+    protected $user = [];
 
     /**
      * Create a new error from a PHP error.
@@ -100,6 +100,7 @@ class Error
     public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
     {
         $error = new static($config);
+
         $error->setPHPError($code, $message, $file, $line, $fatal);
 
         return $error;
@@ -116,6 +117,7 @@ class Error
     public static function fromPHPThrowable(Configuration $config, $throwable)
     {
         $error = new static($config);
+
         $error->setPHPThrowable($throwable);
 
         return $error;
@@ -133,6 +135,7 @@ class Error
     public static function fromNamedError(Configuration $config, $name, $message = null)
     {
         $error = new static($config);
+
         $error->setName($name)
               ->setMessage($message)
               ->setStacktrace(Stacktrace::generate($config));
@@ -264,6 +267,16 @@ class Error
     }
 
     /**
+     * Get the error name.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * Set the error message.
      *
      * @param string|null $message the error message
@@ -286,9 +299,19 @@ class Error
     }
 
     /**
+     * Get the error message.
+     *
+     * @return string|null
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
      * Set the error severity.
      *
-     * @param string $severity the error severity
+     * @param string|null $severity the error severity
      *
      * @throws \InvalidArgumentException
      *
@@ -296,13 +319,23 @@ class Error
      */
     public function setSeverity($severity)
     {
-        if (in_array($severity, ['error', 'warning', 'info'], true)) {
+        if (in_array($severity, ['error', 'warning', 'info', null], true)) {
             $this->severity = $severity;
         } else {
             throw new InvalidArgumentException('The severity must be either "error", "warning", or "info".');
         }
 
         return $this;
+    }
+
+    /**
+     * Get the error severity.
+     *
+     * @return string
+     */
+    public function getSeverity()
+    {
+        return $this->severity ?: 'warning';
     }
 
     /**
@@ -320,9 +353,19 @@ class Error
     }
 
     /**
+     * Get the error context.
+     *
+     * @return string|null
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
      * Set the grouping hash.
      *
-     * @param string $groupingHash the grouping hash
+     * @param string|null $groupingHash the grouping hash
      *
      * @return $this
      */
@@ -331,6 +374,16 @@ class Error
         $this->groupingHash = $groupingHash;
 
         return $this;
+    }
+
+    /**
+     * Get the grouping hash.
+     *
+     * @return string|null
+     */
+    public function getGroupingHash()
+    {
+        return $this->groupingHash;
     }
 
     /**
@@ -349,6 +402,16 @@ class Error
     }
 
     /**
+     * Get the error meta data.
+     *
+     * @return array[]
+     */
+    public function getMetaData()
+    {
+        return $this->metaData;
+    }
+
+    /**
      * Set the current user.
      *
      * @param array $user the current user
@@ -363,6 +426,16 @@ class Error
     }
 
     /**
+     * Get the current user.
+     *
+     * @return array
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
      * Get the array representation.
      *
      * @return array
@@ -372,16 +445,16 @@ class Error
         $errorArray = [
             'app' => $this->config->getAppData(),
             'device' => $this->config->getDeviceData(),
-            'user' => $this->user,
-            'context' => $this->context,
+            'user' => $this->getUser(),
+            'context' => $this->getContext(),
             'payloadVersion' => static::PAYLOAD_VERSION,
-            'severity' => $this->severity,
+            'severity' => $this->getSeverity(),
             'exceptions' => $this->exceptionArray(),
-            'metaData' => $this->cleanupObj($this->metaData, true),
+            'metaData' => $this->cleanupObj($this->getMetaData(), true),
         ];
 
-        if ($this->groupingHash) {
-            $errorArray['groupingHash'] = $this->groupingHash;
+        if ($hash = $this->getGroupingHash()) {
+            $errorArray['groupingHash'] = $hash;
         }
 
         return $errorArray;

@@ -46,7 +46,7 @@ class RequestMetaDataTest extends TestCase
             'clientIp' => '123.45.67.8',
             'userAgent' => 'Example Browser 1.2.3',
             'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3'],
-        ]], $error->metaData);
+        ]], $error->getMetaData());
     }
 
     public function testFallsBackToNull()
@@ -57,6 +57,6 @@ class RequestMetaDataTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->metaData);
+        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
     }
 }

@@ -28,7 +28,7 @@ class CustomUserTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['foo' => 123], $error->user);
+        $this->assertSame(['foo' => 123], $error->getUser());
     }
 
     public function testCanDoNothing()
@@ -41,7 +41,7 @@ class CustomUserTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->user);
+        $this->assertSame(['bar' => 'baz'], $error->getUser());
     }
 
     public function testCanBehaveUnderAnException()
@@ -54,6 +54,6 @@ class CustomUserTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->user);
+        $this->assertSame(['bar' => 'baz'], $error->getUser());
     }
 }
