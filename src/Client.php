@@ -8,7 +8,6 @@ use Bugsnag\Middleware\AddRequestCookieData;
 use Bugsnag\Middleware\AddRequestMetaData;
 use Bugsnag\Middleware\AddRequestSessionData;
 use Bugsnag\Middleware\AddRequestUser;
-use Bugsnag\Middleware\AddUserUser;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
