@@ -8,6 +8,7 @@ use Bugsnag\Middleware\AddRequestCookieData;
 use Bugsnag\Middleware\AddRequestMetaData;
 use Bugsnag\Middleware\AddRequestSessionData;
 use Bugsnag\Middleware\AddRequestUser;
+use Bugsnag\Middleware\AddUserData;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
@@ -134,6 +135,20 @@ class Client
              ->registerMiddleware(new AddRequestSessionData($this->resolver))
              ->registerMiddleware(new AddRequestUser($this->resolver))
              ->registerMiddleware(new AddRequestContext($this->resolver));
+
+        return $this;
+    }
+
+    /**
+     * Register the current user resolver.
+     *
+     * @param callable $resolver the user resolver callback
+     *
+     * @return $this
+     */
+    public function registerUserResolver(callable $resolver)
+    {
+        $this->registerMiddleware(new AddUserData($resolver));
 
         return $this;
     }
