@@ -1,15 +1,15 @@
 <?php
 
-namespace Bugsnag\Tests\Middleware;
+namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Middleware\AddRequestContext;
+use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
-class AddRequestContextTest extends TestCase
+class RequestContextTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
@@ -22,18 +22,16 @@ class AddRequestContextTest extends TestCase
         $this->resolver = new BasicResolver();
     }
 
-    public function testCanAddContext()
+    public function testCanContext()
     {
         $_SERVER['REQUEST_METHOD'] = 'PUT';
         $_SERVER['REQUEST_URI'] = '/blah/blah.php?some=param';
 
         $error = Error::fromPHPThrowable($this->config, new Exception());
 
-        $middleware = new AddRequestContext($this->resolver);
+        $callback = new RequestContext($this->resolver);
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame('PUT /blah/blah.php', $error->context);
     }
@@ -44,11 +42,9 @@ class AddRequestContextTest extends TestCase
 
         $error = Error::fromPHPThrowable($this->config, new Exception());
 
-        $middleware = new AddRequestContext($this->resolver);
+        $callback = new RequestContext($this->resolver);
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(null, $error->context);
     }
@@ -57,11 +53,9 @@ class AddRequestContextTest extends TestCase
     {
         $error = Error::fromPHPThrowable($this->config, new Exception());
 
-        $middleware = new AddRequestContext($this->resolver);
+        $callback = new RequestContext($this->resolver);
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(null, $error->context);
     }

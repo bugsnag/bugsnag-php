@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugsnag\Middleware;
+namespace Bugsnag\Callbacks;
 
 use Bugsnag\Configuration;
 use Bugsnag\Error;
 
-class AddGlobalMetaData
+class GlobalMetaData
 {
     /**
      * The config instance.
@@ -15,7 +15,7 @@ class AddGlobalMetaData
     protected $config;
 
     /**
-     * Create a new add global meta data middleware instance.
+     * Create a new global meta data callback instance.
      *
      * @param \Bugsnag\Configuration $config the configuration instance
      *
@@ -27,19 +27,16 @@ class AddGlobalMetaData
     }
 
     /**
-     * Execute the add global meta data middleware.
+     * Execute the global meta data callback.
      *
      * @param \Bugsnag\Error $error
-     * @param callable       $next
      *
      * @return void
      */
-    public function __invoke(Error $error, callable $next)
+    public function __invoke(Error $error)
     {
         if ($data = $this->config->getMetaData()) {
             $error->setMetaData($data);
         }
-
-        $next($error);
     }
 }

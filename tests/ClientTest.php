@@ -157,7 +157,7 @@ class ClientTest extends TestCase
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->registerDefaultMiddleware();
+        $this->client->registerDefaultCallbacks();
 
         $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
 

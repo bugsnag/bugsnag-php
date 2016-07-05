@@ -2,13 +2,14 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Middleware\AddGlobalMetaData;
-use Bugsnag\Middleware\AddRequestContext;
-use Bugsnag\Middleware\AddRequestCookieData;
-use Bugsnag\Middleware\AddRequestMetaData;
-use Bugsnag\Middleware\AddRequestSessionData;
-use Bugsnag\Middleware\AddRequestUser;
-use Bugsnag\Middleware\AddUserData;
+use Bugsnag\Callbacks\CustomUser;
+use Bugsnag\Callbacks\GlobalMetaData;
+use Bugsnag\Callbacks\RequestContext;
+use Bugsnag\Callbacks\RequestCookies;
+use Bugsnag\Callbacks\RequestMetaData;
+use Bugsnag\Callbacks\RequestSession;
+use Bugsnag\Callbacks\RequestUser;
+use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
@@ -59,7 +60,7 @@ class Client
      *
      * @param string|null $apiKey   your bugsnag api key
      * @param string|null $endpoint your bugsnag endpoint
-     * @param bool        $default  if we should register our default middleware
+     * @param bool        $default  if we should register our default callbacks
      *
      * @return static
      */
@@ -71,7 +72,7 @@ class Client
         $client = new static($config, null, $guzzle);
 
         if ($defaults) {
-            $client->registerDefaultMiddleware();
+            $client->registerDefaultCallbacks();
         }
 
         return $client;
@@ -123,18 +124,32 @@ class Client
     }
 
     /**
-     * Regsier all our default middleware.
+     * Regsier a new notification callback.
+     *
+     * @param callable $callback
      *
      * @return $this
      */
-    public function registerDefaultMiddleware()
+    public function registerCallback(callable $callback)
     {
-        $this->registerMiddleware(new AddGlobalMetaData($this->config))
-             ->registerMiddleware(new AddRequestMetaData($this->resolver))
-             ->registerMiddleware(new AddRequestCookieData($this->resolver))
-             ->registerMiddleware(new AddRequestSessionData($this->resolver))
-             ->registerMiddleware(new AddRequestUser($this->resolver))
-             ->registerMiddleware(new AddRequestContext($this->resolver));
+        $this->registerMiddleware(new CallbackBridge($callback));
+
+        return $this;
+    }
+
+    /**
+     * Regsier all our default callbacks.
+     *
+     * @return $this
+     */
+    public function registerDefaultCallbacks()
+    {
+        $this->registerCallback(new GlobalMetaData($this->config))
+             ->registerCallback(new RequestMetaData($this->resolver))
+             ->registerCallback(new RequestCookies($this->resolver))
+             ->registerCallback(new RequestSession($this->resolver))
+             ->registerCallback(new RequestUser($this->resolver))
+             ->registerCallback(new RequestContext($this->resolver));
 
         return $this;
     }
@@ -148,7 +163,7 @@ class Client
      */
     public function registerUserResolver(callable $resolver)
     {
-        $this->registerMiddleware(new AddUserData($resolver));
+        $this->registerCallback(new CustomUser($resolver));
 
         return $this;
     }

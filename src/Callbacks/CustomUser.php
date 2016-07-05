@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugsnag\Middleware;
+namespace Bugsnag\Callbacks;
 
 use Bugsnag\Error;
 use Exception;
 
-class AddUserData
+class CustomUser
 {
     /**
      * The user resolver.
@@ -15,7 +15,7 @@ class AddUserData
     protected $resolver;
 
     /**
-     * Create a new user data middleware instance.
+     * Create a new custom user callback instance.
      *
      * @param callable $resolver the user resolver
      *
@@ -27,14 +27,13 @@ class AddUserData
     }
 
     /**
-     * Execute the add user data middleware.
+     * Execute the user data callback.
      *
      * @param \Bugsnag\Error $error
-     * @param callable       $next
      *
-     * @return bool
+     * @return void
      */
-    public function __invoke(Error $error, callable $next)
+    public function __invoke(Error $error)
     {
         $resolver = $this->resolver;
 
@@ -45,7 +44,5 @@ class AddUserData
         } catch (Exception $e) {
             // Ignore any errors.
         }
-
-        return $next($error);
     }
 }

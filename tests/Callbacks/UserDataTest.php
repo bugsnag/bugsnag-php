@@ -1,14 +1,14 @@
 <?php
 
-namespace Bugsnag\Tests\Middleware;
+namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Middleware\AddUserData;
+use Bugsnag\Callbacks\CustomUser;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
-class AddUserDataTest extends TestCase
+class CustomUserTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
@@ -18,17 +18,15 @@ class AddUserDataTest extends TestCase
         $this->config = new Configuration('API-KEY');
     }
 
-    public function testCanAddUser()
+    public function testCanUser()
     {
         $error = Error::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
 
-        $middleware = new AddUserData(function () {
+        $callback = new CustomUser(function () {
             return ['foo' => 123];
         });
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(['foo' => 123], $error->user);
     }
@@ -37,13 +35,11 @@ class AddUserDataTest extends TestCase
     {
         $error = Error::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
 
-        $middleware = new AddUserData(function () {
+        $callback = new CustomUser(function () {
             // do nothing
         });
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(['bar' => 'baz'], $error->user);
     }
@@ -53,13 +49,11 @@ class AddUserDataTest extends TestCase
 
         $error = Error::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
 
-        $middleware = new AddUserData(function () {
+        $callback = new CustomUser(function () {
             throw new Exception();
         });
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(['bar' => 'baz'], $error->user);
     }

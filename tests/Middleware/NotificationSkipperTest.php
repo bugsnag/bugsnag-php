@@ -22,9 +22,9 @@ class NotificationSkipperTest extends TestCase
     {
         $this->expectOutputString('NOTIFIED');
 
-        $skipper = new NotificationSkipper($this->config);
+        $middleware = new NotificationSkipper($this->config);
 
-        $skipper(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -35,9 +35,9 @@ class NotificationSkipperTest extends TestCase
 
         $this->expectOutputString('NOTIFIED');
 
-        $skipper = new NotificationSkipper($this->config);
+        $middleware = new NotificationSkipper($this->config);
 
-        $skipper(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -48,9 +48,9 @@ class NotificationSkipperTest extends TestCase
 
         $this->expectOutputString('');
 
-        $skipper = new NotificationSkipper($this->config);
+        $middleware = new NotificationSkipper($this->config);
 
-        $skipper(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -62,9 +62,9 @@ class NotificationSkipperTest extends TestCase
 
         $this->expectOutputString('NOTIFIED');
 
-        $skipper = new NotificationSkipper($this->config);
+        $middleware = new NotificationSkipper($this->config);
 
-        $skipper(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }

@@ -19,17 +19,17 @@ class NullRequest implements RequestInterface
      *
      * @return array
      */
-    public function getSessionData()
+    public function getSession()
     {
         return [];
     }
 
     /**
-     * Get the cookie data.
+     * Get the cookies.
      *
      * @return array
      */
-    public function getCookieData()
+    public function getCookies()
     {
         return [];
     }

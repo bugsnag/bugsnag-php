@@ -1,15 +1,15 @@
 <?php
 
-namespace Bugsnag\Tests\Middleware;
+namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Middleware\AddRequestMetaData;
+use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
-class AddRequestMetaDataTest extends TestCase
+class RequestMetaDataTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
@@ -22,7 +22,7 @@ class AddRequestMetaDataTest extends TestCase
         $this->resolver = new BasicResolver();
     }
 
-    public function testCanAddMetaData()
+    public function testCanMetaData()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REQUEST_URI'] = '/blah/blah.php?some=param';
@@ -33,13 +33,11 @@ class AddRequestMetaDataTest extends TestCase
 
         $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
-        $middleware = new AddRequestMetaData($this->resolver);
+        $callback = new RequestMetaData($this->resolver);
 
         $this->config->setMetaData(['foo' => 'bar']);
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(['bar' => 'baz', 'request' => [
             'url' => 'http://example.com/blah/blah.php?some=param',
@@ -55,11 +53,9 @@ class AddRequestMetaDataTest extends TestCase
     {
         $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
-        $middleware = new AddRequestMetaData($this->resolver);
+        $callback = new RequestMetaData($this->resolver);
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(['bar' => 'baz'], $error->metaData);
     }

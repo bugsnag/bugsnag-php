@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugsnag\Middleware;
+namespace Bugsnag\Callbacks;
 
 use Bugsnag\Error;
 use Bugsnag\Request\ResolverInterface;
 
-class AddRequestUser
+class RequestCookies
 {
     /**
      * The request resolver instance.
@@ -15,7 +15,7 @@ class AddRequestUser
     protected $resolver;
 
     /**
-     * Create a new add request user middleware instance.
+     * Create a new request cookies callback instance.
      *
      * @param \Bugsnag\Request\ResolverInterface $resolver the request resolver instance
      *
@@ -27,19 +27,16 @@ class AddRequestUser
     }
 
     /**
-     * Execute the add request user middleware.
+     * Execute the request cookies callback.
      *
      * @param \Bugsnag\Error $error
-     * @param callable       $next
      *
      * @return void
      */
-    public function __invoke(Error $error, callable $next)
+    public function __invoke(Error $error)
     {
-        if ($id = $this->resolver->resolve()->getUserId()) {
-            $error->setUser(['id' => $id]);
+        if ($data = $this->resolver->resolve()->getCookies()) {
+            $error->setMetaData(['cookies' => $data]);
         }
-
-        $next($error);
     }
 }
