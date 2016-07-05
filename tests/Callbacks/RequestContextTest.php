@@ -2,9 +2,9 @@
 
 namespace Bugsnag\Tests\Callbacks;
 
+use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;

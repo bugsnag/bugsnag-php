@@ -2,9 +2,9 @@
 
 namespace Bugsnag\Tests\Callbacks;
 
+use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Callbacks\GlobalMetaData;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
