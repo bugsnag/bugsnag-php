@@ -25,7 +25,7 @@ class NullRequest implements RequestInterface
     }
 
     /**
-     * Get the cookie data.
+     * Get the cookies.
      *
      * @return array
      */

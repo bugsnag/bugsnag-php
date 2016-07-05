@@ -19,7 +19,7 @@ interface RequestInterface
     public function getSession();
 
     /**
-     * Get the cookie data.
+     * Get the cookies.
      *
      * @return array
      */

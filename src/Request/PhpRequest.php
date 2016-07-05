@@ -23,7 +23,7 @@ class PhpRequest implements RequestInterface
      *
      * @var array
      */
-    protected $cookie;
+    protected $cookies;
 
     /**
      * The http headers.
@@ -44,17 +44,17 @@ class PhpRequest implements RequestInterface
      *
      * @param array      $server  the server variables
      * @param array      $session the session variables
-     * @param array      $cookie  the cookie variables
+     * @param array      $cookies the cookie variables
      * @param array      $headers the http headers
      * @param array|null $input   the input params
      *
      * @return void
      */
-    public function __construct(array $server, array $session, array $cookie, array $headers, array $input = null)
+    public function __construct(array $server, array $session, array $cookies, array $headers, array $input = null)
     {
         $this->server = $server;
         $this->session = $session;
-        $this->cookie = $cookie;
+        $this->cookies = $cookies;
         $this->headers = $headers;
         $this->input = $input;
     }
@@ -80,13 +80,13 @@ class PhpRequest implements RequestInterface
     }
 
     /**
-     * Get the cookie data.
+     * Get the cookies.
      *
      * @return array
      */
     public function getCookies()
     {
-        return $this->cookie;
+        return $this->cookies;
     }
 
     /**
