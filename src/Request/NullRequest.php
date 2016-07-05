@@ -19,7 +19,7 @@ class NullRequest implements RequestInterface
      *
      * @return array
      */
-    public function getSessionData()
+    public function getSession()
     {
         return [];
     }
@@ -29,7 +29,7 @@ class NullRequest implements RequestInterface
      *
      * @return array
      */
-    public function getCookieData()
+    public function getCookie()
     {
         return [];
     }

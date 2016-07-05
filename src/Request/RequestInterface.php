@@ -16,14 +16,14 @@ interface RequestInterface
      *
      * @return array
      */
-    public function getSessionData();
+    public function getSession();
 
     /**
      * Get the cookie data.
      *
      * @return array
      */
-    public function getCookieData();
+    public function getCookie();
 
     /**
      * Get the request formatted as meta data.

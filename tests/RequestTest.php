@@ -61,14 +61,14 @@ class RequestTest extends TestCase
     {
         $_COOKIE = ['cookie' => 'cookieval'];
 
-        $this->assertSame(['cookie' => 'cookieval'], $this->resolver->resolve()->getCookieData());
+        $this->assertSame(['cookie' => 'cookieval'], $this->resolver->resolve()->getCookie());
     }
 
     public function testSession()
     {
         $_SESSION = ['session' => 'sessionval'];
 
-        $this->assertSame(['session' => 'sessionval'], $this->resolver->resolve()->getSessionData());
+        $this->assertSame(['session' => 'sessionval'], $this->resolver->resolve()->getSession());
     }
 
     public function testGetMetaDataWithPost()

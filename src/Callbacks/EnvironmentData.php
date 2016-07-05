@@ -1,25 +1,22 @@
 <?php
 
-namespace Bugsnag\Middleware;
+namespace Bugsnag\Callbacks;
 
 use Bugsnag\Error;
 
-class AddEnvironmentData
+class EnvironmentData
 {
     /**
-     * Execute the add environment data middleware.
+     * Execute the environment data callback.
      *
      * @param \Bugsnag\Error $error
-     * @param callable       $next
      *
      * @return void
      */
-    public function __invoke(Error $error, callable $next)
+    public function __invoke(Error $error)
     {
         if (!empty($_ENV)) {
             $error->setMetaData(['Environment' => $_ENV]);
         }
-
-        $next($error);
     }
 }

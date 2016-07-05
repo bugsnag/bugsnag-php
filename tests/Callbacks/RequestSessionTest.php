@@ -1,15 +1,15 @@
 <?php
 
-namespace Bugsnag\Tests\Middleware;
+namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Configuration;
 use Bugsnag\Error;
-use Bugsnag\Middleware\AddRequestCookieData;
+use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
-class AddRequestCookieDataTest extends TestCase
+class RequestSessionTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
@@ -22,22 +22,20 @@ class AddRequestCookieDataTest extends TestCase
         $this->resolver = new BasicResolver();
     }
 
-    public function testCanAddCookieData()
+    public function testCanSession()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_COOKIE = ['cookie' => 'cookieval'];
+        $_SESSION = ['session' => 'sessionval'];
 
         $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
-        $middleware = new AddRequestCookieData($this->resolver);
+        $callback = new RequestSession($this->resolver);
 
         $this->config->setMetaData(['foo' => 'bar']);
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
-        $this->assertSame(['bar' => 'baz', 'cookies' => ['cookie' => 'cookieval']], $error->metaData);
+        $this->assertSame(['bar' => 'baz', 'session' => ['session' => 'sessionval']], $error->metaData);
     }
 
     public function testCanDoNothing()
@@ -46,11 +44,9 @@ class AddRequestCookieDataTest extends TestCase
 
         $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
-        $middleware = new AddRequestCookieData($this->resolver);
+        $callback = new RequestSession($this->resolver);
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(['bar' => 'baz'], $error->metaData);
     }
@@ -59,11 +55,9 @@ class AddRequestCookieDataTest extends TestCase
     {
         $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
-        $middleware = new AddRequestCookieData($this->resolver);
+        $callback = new RequestSession($this->resolver);
 
-        $middleware($error, function () {
-            //
-        });
+        $callback($error);
 
         $this->assertSame(['bar' => 'baz'], $error->metaData);
     }

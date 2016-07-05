@@ -74,7 +74,7 @@ class PhpRequest implements RequestInterface
      *
      * @return array
      */
-    public function getSessionData()
+    public function getSession()
     {
         return $this->session;
     }
@@ -84,7 +84,7 @@ class PhpRequest implements RequestInterface
      *
      * @return array
      */
-    public function getCookieData()
+    public function getCookie()
     {
         return $this->cookie;
     }

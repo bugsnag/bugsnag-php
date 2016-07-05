@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugsnag\Middleware;
+namespace Bugsnag\Callbacks;
 
 use Bugsnag\Error;
 use Bugsnag\Request\ResolverInterface;
 
-class AddRequestMetaData
+class RequestSession
 {
     /**
      * The request resolver instance.
@@ -15,7 +15,7 @@ class AddRequestMetaData
     protected $resolver;
 
     /**
-     * Create a new add request meta data middleware instance.
+     * Create a new request session callback instance.
      *
      * @param \Bugsnag\Request\ResolverInterface $resolver the request resolver instance
      *
@@ -27,19 +27,16 @@ class AddRequestMetaData
     }
 
     /**
-     * Execute the add request meta data middleware.
+     * Execute the request session callback.
      *
      * @param \Bugsnag\Error $error
-     * @param callable       $next
      *
      * @return void
      */
-    public function __invoke(Error $error, callable $next)
+    public function __invoke(Error $error)
     {
-        if ($data = $this->resolver->resolve()->getMetaData()) {
-            $error->setMetaData($data);
+        if ($data = $this->resolver->resolve()->getSession()) {
+            $error->setMetaData(['session' => $data]);
         }
-
-        $next($error);
     }
 }

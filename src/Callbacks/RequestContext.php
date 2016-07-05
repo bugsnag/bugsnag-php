@@ -1,11 +1,11 @@
 <?php
 
-namespace Bugsnag\Middleware;
+namespace Bugsnag\Callbacks;
 
 use Bugsnag\Error;
 use Bugsnag\Request\ResolverInterface;
 
-class AddRequestSessionData
+class RequestContext
 {
     /**
      * The request resolver instance.
@@ -15,7 +15,7 @@ class AddRequestSessionData
     protected $resolver;
 
     /**
-     * Create a new add request session data middleware instance.
+     * Create a new request context callback instance.
      *
      * @param \Bugsnag\Request\ResolverInterface $resolver the request resolver instance
      *
@@ -27,19 +27,16 @@ class AddRequestSessionData
     }
 
     /**
-     * Execute the add request session data middleware.
+     * Execute the request context callback.
      *
      * @param \Bugsnag\Error $error
-     * @param callable       $next
      *
      * @return void
      */
-    public function __invoke(Error $error, callable $next)
+    public function __invoke(Error $error)
     {
-        if ($data = $this->resolver->resolve()->getSessionData()) {
-            $error->setMetaData(['session' => $data]);
+        if ($context = $this->resolver->resolve()->getContext()) {
+            $error->setContext($context);
         }
-
-        $next($error);
     }
 }
