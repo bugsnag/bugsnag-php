@@ -142,6 +142,21 @@ class ClientTest extends TestCase
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
+        $this->client->registerUserResolver(function () {
+            return ['foo' => 'test'];
+        });
+
+        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+
+        $this->assertSame(['foo' => 'test'], $error->user);
+    }
+
+    public function testUserResolution()
+    {
+        $_ENV['SOMETHING'] = 'blah';
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
         $this->client->registerDefaultMiddleware();
 
         $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
