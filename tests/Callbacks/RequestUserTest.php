@@ -33,7 +33,7 @@ class RequestUserTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['id' => '123.45.67.8'], $error->user);
+        $this->assertSame(['id' => '123.45.67.8'], $error->getUser());
     }
 
     public function testCanForwardedUser()
@@ -48,7 +48,7 @@ class RequestUserTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['id' => '321.42.42.42'], $error->user);
+        $this->assertSame(['id' => '321.42.42.42'], $error->getUser());
     }
 
     public function testCanDoNothing()
@@ -61,7 +61,7 @@ class RequestUserTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->user);
+        $this->assertSame(['bar' => 'baz'], $error->getUser());
     }
 
     public function testFallsBackToNull()
@@ -72,6 +72,6 @@ class RequestUserTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->user);
+        $this->assertSame(['bar' => 'baz'], $error->getUser());
     }
 }

@@ -219,27 +219,27 @@ class ErrorTest extends TestCase
     {
         $this->error->setName(123);
 
-        $this->assertSame('123', $this->error->name);
+        $this->assertSame('123', $this->error->getName());
     }
 
     public function testGoodSetMessage()
     {
         $this->error->setMessage('foo bar baz');
 
-        $this->assertSame('foo bar baz', $this->error->message);
+        $this->assertSame('foo bar baz', $this->error->getMessage());
     }
 
     public function testEmptySetMessage()
     {
         $this->error->setMessage('');
 
-        $this->assertSame('', $this->error->message);
+        $this->assertSame('', $this->error->getMessage());
     }
 
     public function testNullSetMessage()
     {
         $this->error->setMessage(null);
 
-        $this->assertSame(null, $this->error->message);
+        $this->assertSame(null, $this->error->getMessage());
     }
 }

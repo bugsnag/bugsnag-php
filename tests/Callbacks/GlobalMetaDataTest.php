@@ -28,7 +28,7 @@ class GlobalMetaDataTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz', 'foo' => 'bar'], $error->metaData);
+        $this->assertSame(['bar' => 'baz', 'foo' => 'bar'], $error->getMetaData());
     }
 
     public function testCanDoNothing()
@@ -39,6 +39,6 @@ class GlobalMetaDataTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->metaData);
+        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
     }
 }

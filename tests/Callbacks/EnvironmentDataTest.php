@@ -36,7 +36,7 @@ class EnvironmentDataTest extends TestCase
             //
         });
 
-        $this->assertSame(['bar' => 'baz', 'Environment' => ['SOMETHING' => 'blah']], $error->metaData);
+        $this->assertSame(['bar' => 'baz', 'Environment' => ['SOMETHING' => 'blah']], $error->getMetaData());
     }
 
     public function testCanDoNothing()
@@ -51,6 +51,6 @@ class EnvironmentDataTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->metaData);
+        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
     }
 }

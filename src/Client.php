@@ -181,9 +181,7 @@ class Client
     {
         $error = Error::fromPHPThrowable($this->config, $throwable);
 
-        if ($severity) {
-            $error->setSeverity($severity);
-        }
+        $error->setSeverity($severity);
 
         $this->notify($error, $metaData);
     }
@@ -202,9 +200,7 @@ class Client
     {
         $error = Error::fromNamedError($this->config, $name, $message);
 
-        if ($severity) {
-            $error->setSeverity($severity);
-        }
+        $error->setSeverity($severity);
 
         $this->notify($error, $metaData);
     }

@@ -35,7 +35,7 @@ class RequestSessionTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz', 'session' => ['session' => 'sessionval']], $error->metaData);
+        $this->assertSame(['bar' => 'baz', 'session' => ['session' => 'sessionval']], $error->getMetaData());
     }
 
     public function testCanDoNothing()
@@ -48,7 +48,7 @@ class RequestSessionTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->metaData);
+        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
     }
 
     public function testFallsBackToNull()
@@ -59,6 +59,6 @@ class RequestSessionTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(['bar' => 'baz'], $error->metaData);
+        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
     }
 }

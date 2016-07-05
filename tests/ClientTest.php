@@ -115,7 +115,7 @@ class ClientTest extends TestCase
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
         $this->client->registerMiddleware(function (Error $error, callable $next) {
-            if ($error->name === 'SkipMe') {
+            if ($error->getName() === 'SkipMe') {
                 return false;
             }
 
@@ -133,7 +133,7 @@ class ClientTest extends TestCase
 
         $this->client->notify($error = Error::fromNamedError($this->config, 'Name'), ['foo' => 'baz']);
 
-        $this->assertSame(['foo' => 'baz'], $error->metaData);
+        $this->assertSame(['foo' => 'baz'], $error->getMetaData());
     }
 
     public function testNoEnvironmentByDefault()
@@ -148,7 +148,7 @@ class ClientTest extends TestCase
 
         $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
 
-        $this->assertSame(['foo' => 'test'], $error->user);
+        $this->assertSame(['foo' => 'test'], $error->getUser());
     }
 
     public function testUserResolution()
@@ -161,7 +161,7 @@ class ClientTest extends TestCase
 
         $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
 
-        $this->assertArrayNotHasKey('Environment', $error->metaData);
+        $this->assertArrayNotHasKey('Environment', $error->getMetaData());
     }
 
     public function testBatchingDoesNotFlush()

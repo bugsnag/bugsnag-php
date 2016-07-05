@@ -33,7 +33,7 @@ class RequestContextTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame('PUT /blah/blah.php', $error->context);
+        $this->assertSame('PUT /blah/blah.php', $error->getContext());
     }
 
     public function testCanDoNothing()
@@ -46,7 +46,7 @@ class RequestContextTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(null, $error->context);
+        $this->assertSame(null, $error->getContext());
     }
 
     public function testFallsBackToNull()
@@ -57,6 +57,6 @@ class RequestContextTest extends TestCase
 
         $callback($error);
 
-        $this->assertSame(null, $error->context);
+        $this->assertSame(null, $error->getContext());
     }
 }
