@@ -8,7 +8,7 @@ use Bugsnag\Error;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
-class UserDataTest extends TestCase
+class CustomUserTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
     protected $config;
