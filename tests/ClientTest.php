@@ -43,7 +43,9 @@ class ClientTest extends TestCase
     {
         $this->client->expects($this->once())->method('notify');
 
-        $this->client->notifyError('SomeError', 'Some message', [], 'info');
+        $this->client->notifyError('SomeError', 'Some message', function ($error) {
+            $error->setSeverity('info');
+        });
     }
 
     public function testManualExceptionNotification()
@@ -57,7 +59,9 @@ class ClientTest extends TestCase
     {
         $this->client->expects($this->once())->method('notify');
 
-        $this->client->notifyException(new Exception('Something broke'), [], 'info');
+        $this->client->notifyException(new Exception('Something broke'), function ($error) {
+            $error->setSeverity('info');
+        });
     }
 
     protected function getGuzzle(Client $client)
@@ -131,7 +135,9 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'), ['foo' => 'baz']);
+        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'), function ($error) {
+            $error->setMetaData(['foo' => 'baz']);
+        });
 
         $this->assertSame(['foo' => 'baz'], $error->getMetaData());
     }
