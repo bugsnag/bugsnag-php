@@ -14,16 +14,20 @@ class Handler
     /**
      * Register our exception handler.
      *
-     * @param \Bugsnag\Client|string|null $client client instance or api key
+     * @param \Bugsnag\Client|string|null $client   client instance or api key
+     * @param bool                        $shutdown only register the shutdown handler
      *
      * @return static
      */
-    public static function register($client = null)
+    public static function register($client = null, $shutdown = false)
     {
         $handler = new static($client instanceof Client ? $client : Client::make($client));
 
-        set_error_handler([$handler, 'errorHandler']);
-        set_exception_handler([$handler, 'exceptionHandler']);
+        if ($shutdown === false) {
+            set_error_handler([$handler, 'errorHandler']);
+            set_exception_handler([$handler, 'exceptionHandler']);
+        }
+
         register_shutdown_function([$handler, 'shutdownHandler']);
 
         return $handler;
