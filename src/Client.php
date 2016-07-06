@@ -194,9 +194,9 @@ class Client
      */
     public function notifyError($name, $message, callable $callback = null)
     {
-        $error = Error::fromNamedError($this->config, $callback);
+        $error = Error::fromNamedError($this->config, $name, $message);
 
-        $this->notify($error, $metaData);
+        $this->notify($error, $callback);
     }
 
     /**
