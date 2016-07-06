@@ -2,6 +2,7 @@
 
 namespace Bugsnag;
 
+use BadMethodCallException;
 use Bugsnag\Callbacks\CustomUser;
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Callbacks\RequestContext;
@@ -210,11 +211,19 @@ class Client
      * @param string $method
      * @param array  $parameters
      *
+     * @throws \BadMethodCallException
+     *
      * @return mixed
      */
     public function __call($method, $parameters)
     {
-        $value = call_user_func_array([$this->config, $method], $parameters);
+        $callable = [$this->config, $method];
+
+        if (!is_callable($callable)) {
+            throw new BadMethodCallException("The method '{$method}' does not exist.");
+        }
+
+        $value = call_user_func_array($callable, $parameters);
 
         return stripos($method, 'set') === 0 ? $this : $value;
     }
