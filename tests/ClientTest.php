@@ -153,6 +153,16 @@ class ClientTest extends TestCase
         $this->assertArrayNotHasKey('Environment', $error->getMetaData());
     }
 
+    /**
+     * @expectedException \BadMethodCallException
+     */
+    public function testBadMethodCall()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->foo();
+    }
+
     public function testBatchingDoesNotFlush()
     {
         $this->client = $this->getMockBuilder(Client::class)
