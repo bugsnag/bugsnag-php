@@ -2,7 +2,6 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Callbacks\CustomUser;
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Callbacks\RequestCookies;
@@ -94,7 +93,7 @@ class Client
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]));
 
-        $this->registerMiddleware(new NotificationSkipper($config));
+        $this->pipeline->pipe(new NotificationSkipper($config));
 
         register_shutdown_function([$this, 'flush']);
     }
@@ -110,20 +109,6 @@ class Client
     }
 
     /**
-     * Regsier a new notification middleware.
-     *
-     * @param callable $middleware
-     *
-     * @return $this
-     */
-    public function registerMiddleware(callable $middleware)
-    {
-        $this->pipeline->pipe($middleware);
-
-        return $this;
-    }
-
-    /**
      * Regsier a new notification callback.
      *
      * @param callable $callback
@@ -132,7 +117,7 @@ class Client
      */
     public function registerCallback(callable $callback)
     {
-        $this->registerMiddleware(new CallbackBridge($callback));
+        $this->pipeline->pipe(new CallbackBridge($callback));
 
         return $this;
     }
@@ -150,20 +135,6 @@ class Client
              ->registerCallback(new RequestSession($this->resolver))
              ->registerCallback(new RequestUser($this->resolver))
              ->registerCallback(new RequestContext($this->resolver));
-
-        return $this;
-    }
-
-    /**
-     * Register the current user resolver.
-     *
-     * @param callable $resolver the user resolver callback
-     *
-     * @return $this
-     */
-    public function registerUserResolver(callable $resolver)
-    {
-        $this->registerCallback(new CustomUser($resolver));
 
         return $this;
     }
