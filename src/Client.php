@@ -2,7 +2,6 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Callbacks\CustomUser;
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Callbacks\RequestCookies;
