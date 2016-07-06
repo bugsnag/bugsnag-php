@@ -171,53 +171,47 @@ class Client
     /**
      * Notify Bugsnag of a non-fatal/handled throwable.
      *
-     * @param \Throwable  $throwable the throwable to notify Bugsnag about
-     * @param array[]     $metaData  optional metaData to send with this error
-     * @param string|null $severity  optional severity of this error (fatal/error/warning/info)
+     * @param \Throwable    $throwable the throwable to notify Bugsnag about
+     * @param callable|null $callback  the customization callback
      *
      * @return void
      */
-    public function notifyException($throwable, array $metaData = [], $severity = null)
+    public function notifyException($throwable, callable $callback = null)
     {
         $error = Error::fromPHPThrowable($this->config, $throwable);
 
-        $error->setSeverity($severity);
-
-        $this->notify($error, $metaData);
+        $this->notify($error, $callback);
     }
 
     /**
      * Notify Bugsnag of a non-fatal/handled error.
      *
-     * @param string      $name     the name of the error, a short (1 word) string
-     * @param string      $message  the error message
-     * @param array[]     $metaData optional metaData to send with this error
-     * @param string|null $severity optional severity of this error (fatal/error/warning/info)
+     * @param string        $name     the name of the error, a short (1 word) string
+     * @param string        $message  the error message
+     * @param callable|null $callback the customization callback
      *
      * @return void
      */
-    public function notifyError($name, $message, array $metaData = [], $severity = null)
+    public function notifyError($name, $message, callable $callback = null)
     {
         $error = Error::fromNamedError($this->config, $name, $message);
 
-        $error->setSeverity($severity);
-
-        $this->notify($error, $metaData);
+        $this->notify($error, $callback);
     }
 
     /**
      * Batches up errors into notifications for later sending.
      *
      * @param \Bugsnag\Error $error    the error to batch up
-     * @param array[]        $metaData optional meta data to send with the error
+     * @param callable|null  $callback the customization callback
      *
      * @return void
      */
-    public function notify(Error $error, $metaData = [])
+    public function notify(Error $error, callable $callback = null)
     {
-        $this->pipeline->execute($error, function ($error) use ($metaData) {
-            if ($metaData) {
-                $error->setMetaData($metaData);
+        $this->pipeline->execute($error, function ($error) use ($callback) {
+            if ($callback) {
+                $callback($error);
             }
 
             $this->http->queue($error);
