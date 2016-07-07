@@ -3,8 +3,8 @@
 namespace Bugsnag\Tests\Middleware;
 
 use Bugsnag\Configuration;
-use Bugsnag\Report;
 use Bugsnag\Middleware\NotificationSkipper;
+use Bugsnag\Report;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
