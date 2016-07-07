@@ -1,6 +1,43 @@
 Changelog
 =========
 
+## 3.0.0 (2016-07-07)
+
+This is a major refactor to make the library clearer and easier to use. The
+minimum PHP version supported has been updated to 5.5.9. For upgrading
+instructions, see
+[the upgrading guide](https://github.com/bugsnag/bugsnag-php/blob/master/UPGRADING.md#2x-to-3x).
+
+
+### Enhancements
+
+* Added a pipeline system for loading request information, app information, and
+  other metadata. Each component can be individually loaded.
+
+* Make request resolution customizable
+  [#99](https://github.com/bugsnag/bugsnag-php/issues/99)
+
+* Replaced transport handling with [Guzzle](http://guzzlephp.org)
+
+* `notify()`, `notifyException()` and `notifyError()` now accept a callable
+  –instead of `metaData` and `severity`– which can be used to modify any of
+  the [properties of an error report](http://docs.bugsnag.com.dev/platforms/php/other/customizing-error-reports/#the-report-object).
+
+* Deprecated methods from v2 have been removed
+
+* Namespaced the library under `Bugsnag`
+
+### Bug Fixes
+
+* Improved cURL transport performance
+  [#114](https://github.com/bugsnag/bugsnag-php/issues/114)
+
+* Fixed double read of php://input
+  [#92](https://github.com/bugsnag/bugsnag-php/issues/92)
+
+* Every other bug
+
+
 ## 2.9.1 (2016-07-06)
 
 ### Bug Fixes
