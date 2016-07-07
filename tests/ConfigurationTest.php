@@ -62,11 +62,11 @@ class ConfigurationTest extends TestCase
 
         $this->config->setReleaseStage('qa1');
         $this->config->setAppVersion('1.2.3');
-        $this->config->setType('laravel');
+        $this->config->setAppType('laravel');
 
         $this->assertSame(['releaseStage' => 'qa1', 'version' => '1.2.3', 'type' => 'laravel'], $this->config->getAppData());
 
-        $this->config->setType(null);
+        $this->config->setAppType(null);
 
         $this->assertSame(['releaseStage' => 'qa1', 'version' => '1.2.3'], $this->config->getAppData());
 

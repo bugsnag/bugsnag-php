@@ -345,7 +345,7 @@ class Configuration
      *
      * @return $this
      */
-    public function setType($type)
+    public function setAppType($type)
     {
         $this->appData['type'] = $type;
 
