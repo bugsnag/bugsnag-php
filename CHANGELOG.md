@@ -29,13 +29,7 @@ instructions, see
 
 ### Bug Fixes
 
-* Improved cURL transport performance
-  [#114](https://github.com/bugsnag/bugsnag-php/issues/114)
-
-* Fixed double read of php://input
-  [#92](https://github.com/bugsnag/bugsnag-php/issues/92)
-
-* Every other bug
+* Every bug
 
 
 ## 2.9.1 (2016-07-06)
