@@ -32,8 +32,8 @@ class HttpClient
     /**
      * Create a new http client instance.
      *
-     * @param \Bugsnag\Configuration      $config   the configuration instance
-     * @param \GuzzleHttp\ClientInterface $guzzle   the guzzle client instance
+     * @param \Bugsnag\Configuration      $config the configuration instance
+     * @param \GuzzleHttp\ClientInterface $guzzle the guzzle client instance
      *
      * @return void
      */

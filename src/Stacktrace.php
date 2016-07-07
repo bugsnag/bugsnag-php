@@ -147,7 +147,7 @@ class Stacktrace
      * @param string      $file   the associated file
      * @param int         $line   the line number
      * @param string      $method the method called
-     * @param string|null $class the associated class
+     * @param string|null $class  the associated class
      *
      * @return void
      */
