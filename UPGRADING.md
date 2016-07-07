@@ -21,3 +21,7 @@ We've removed any deprecated functionality. The main thing to watch out for is t
 #### Configuration
 
 We've changed how our configuration system works. You can now build up our config object in a similar way to how you configured the client in v2, and then pass that as the first paramater when you construct the client object. In addition, we've removed some configuration options in faviour of using our new notification pipeline system. Now you can register middleware as well as callbacks to have maximum flxibility. We've also switched to using Guzzle, so you can change the base URI and proxy details by directly interacting with guzzle.
+
+#### Customizing handled errors
+
+We have changed how you attach metadata and update the severity of handled errors in `Bugsnag::notify`. Previously metadata and severity were additional parameters to the `notify` method, now the method takes an optional callable with the Error object, so these properties and more can be changed directly. See the documentation for [reporting handled errors](http://docs.bugsnag.com/platforms/php/other/reporting-handled-errors/) for more information.
