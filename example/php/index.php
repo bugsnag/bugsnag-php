@@ -1,6 +1,8 @@
 <?php
 
-require_once '../../build/bugsnag.phar';
+require_once 'vendor/autoload.php';
 
-$bugsnag = new Bugsnag_Client('YOUR-API-KEY-HERE');
-$bugsnag->notifyError('Broken', 'Something broke', array('tab' => array('paying' => true, 'object' => (object) array('key' => 'value'), 'null' => null, 'string' => 'test', 'int' => 4)));
+$bugsnag = Bugsnag\Client::make('YOUR-API-KEY-HERE');
+$bugsnag->notifyError('Broken', 'Something broke', function (Bugsnag\Report $report) {
+    $report->setMetaData(['tab' => ['paying' => true, 'object' => (object) ['key' => 'value'], 'null' => null, 'string' => 'test', 'int' => 4]]);
+});

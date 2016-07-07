@@ -9,7 +9,7 @@ The Bugsnag error reporter for PHP gives you instant notification of errors and 
 ## Features
 
 * Automatically report unhandled exceptions and crashes
-* Report handled exceptions 
+* Report handled exceptions
 * Attach user information to determine how many people are affected by a crash
 * Send customized diagnostic data
 

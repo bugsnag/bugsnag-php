@@ -1,9 +1,7 @@
 language: php
 
 php:
-  - 5.2
-  - 5.3
-  - 5.4
+  - 5.5.9
   - 5.5
   - 5.6
   - 7.0
@@ -12,8 +10,7 @@ php:
 sudo: false
 
 install:
-  - if [ "$TRAVIS_PHP_VERSION" != "5.2" ]; then travis_retry composer install --no-interaction --prefer-source; fi
+  - travis_retry composer install --no-interaction --prefer-source
 
 script:
-  - if [ "$TRAVIS_PHP_VERSION" == "5.2" ]; then phpunit; fi
-  - if [ "$TRAVIS_PHP_VERSION" != "5.2" ]; then vendor/bin/phpunit; fi
+  - make test
