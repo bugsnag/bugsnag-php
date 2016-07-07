@@ -106,7 +106,7 @@ class Configuration
     public function __construct($apiKey)
     {
         if (!is_string($apiKey)) {
-            throw new InvalidArgumentException('Bugsnag Error: Invalid API key');
+            throw new InvalidArgumentException('Invalid API key');
         }
 
         $this->apiKey = $apiKey;
