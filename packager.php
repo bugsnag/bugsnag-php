@@ -8,4 +8,6 @@ $packager->deepCopy('LICENSE.txt', 'LICENSE.txt');
 
 $packager->recursiveCopy('src', 'Bugsnag', ['php']);
 
+$packager->createAutoloader();
+
 $packager->createPhar(__DIR__.'/build/bugsnag.phar');
