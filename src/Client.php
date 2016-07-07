@@ -176,7 +176,7 @@ class Client
      *
      * This may simply involve queuing it for later if we're batching.
      *
-     * @param \Bugsnag\Report $report  the report to batch up
+     * @param \Bugsnag\Report $report   the error report to send
      * @param callable|null   $callback the customization callback
      *
      * @return void
