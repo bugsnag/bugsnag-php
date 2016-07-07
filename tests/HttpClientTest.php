@@ -3,7 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\HttpClient;
 use Exception;
 use GuzzleHttp\Client;
@@ -34,8 +34,8 @@ class HttpClientTest extends TestCase
         // Expect request to be called
         $this->guzzle->expects($spy = $this->any())->method('request');
 
-        // Add an error to the http and deliver it
-        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
+        // Add a report to the http and deliver it
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
         $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
@@ -56,8 +56,8 @@ class HttpClientTest extends TestCase
         // Expect request to be called
         $this->guzzle->expects($spy = $this->any())->method('request');
 
-        // Add an error to the http and deliver it
-        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
+        // Add a report to the http and deliver it
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
         $this->http->send();
 
         // Make sure these do nothing
@@ -73,8 +73,8 @@ class HttpClientTest extends TestCase
         // Expect request to be called
         $this->guzzle->expects($spy = $this->any())->method('request');
 
-        // Add an error to the http and deliver it
-        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setMetaData(['foo' => str_repeat('A', 1000000)]));
+        // Add a report to the http and deliver it
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => str_repeat('A', 1000000)]));
         $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
@@ -99,8 +99,8 @@ class HttpClientTest extends TestCase
         // Expect request to be called
         $this->guzzle->expects($spy = $this->any())->method('request');
 
-        // Add an error to the http and deliver it
-        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1000000)]));
+        // Add a report to the http and deliver it
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1000000)]));
         $this->http->send();
 
         $this->assertCount(0, $spy->getInvocations());
@@ -116,8 +116,8 @@ class HttpClientTest extends TestCase
         $this->guzzle->expects($spy = $this->any())->method('request');
 
         // Add two errors to the http and deliver them
-        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1000000)]));
-        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setUser(['foo' => 'bar']));
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1000000)]));
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => 'bar']));
         $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
@@ -142,8 +142,8 @@ class HttpClientTest extends TestCase
         // Expect request to be called
         $this->guzzle->method('request')->will($this->throwException(new Exception('Guzzle exception thrown!')));
 
-        // Add an error to the http and deliver it
-        $this->http->queue(Error::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
+        // Add a report to the http and deliver it
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
         $this->http->send();
     }
 }

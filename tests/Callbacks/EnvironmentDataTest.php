@@ -4,7 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\EnvironmentData;
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -26,17 +26,17 @@ class EnvironmentDataTest extends TestCase
 
         $_ENV['SOMETHING'] = 'blah';
 
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new EnvironmentData();
 
         $this->config->setMetaData(['foo' => 'bar']);
 
-        $callback($error, function () {
+        $callback($report, function () {
             //
         });
 
-        $this->assertSame(['bar' => 'baz', 'Environment' => ['SOMETHING' => 'blah']], $error->getMetaData());
+        $this->assertSame(['bar' => 'baz', 'Environment' => ['SOMETHING' => 'blah']], $report->getMetaData());
     }
 
     public function testCanDoNothing()
@@ -45,12 +45,12 @@ class EnvironmentDataTest extends TestCase
             unset($_ENV[$env]);
         }
 
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new EnvironmentData();
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
+        $this->assertSame(['bar' => 'baz'], $report->getMetaData());
     }
 }

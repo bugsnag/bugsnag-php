@@ -4,7 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\RequestUser;
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -27,13 +27,13 @@ class RequestUserTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REMOTE_ADDR'] = '123.45.67.8';
 
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new RequestUser($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['id' => '123.45.67.8'], $error->getUser());
+        $this->assertSame(['id' => '123.45.67.8'], $report->getUser());
     }
 
     public function testCanForwardedUser()
@@ -42,36 +42,36 @@ class RequestUserTest extends TestCase
         $_SERVER['HTTP_X_FORWARDED_FOR'] = '321.42.42.42';
         $_SERVER['REMOTE_ADDR'] = '123.45.67.8';
 
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new RequestUser($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['id' => '321.42.42.42'], $error->getUser());
+        $this->assertSame(['id' => '321.42.42.42'], $report->getUser());
     }
 
     public function testCanDoNothing()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
 
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new RequestUser($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz'], $error->getUser());
+        $this->assertSame(['bar' => 'baz'], $report->getUser());
     }
 
     public function testFallsBackToNull()
     {
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new RequestUser($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz'], $error->getUser());
+        $this->assertSame(['bar' => 'baz'], $report->getUser());
     }
 }

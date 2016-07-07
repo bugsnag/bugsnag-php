@@ -2,7 +2,7 @@
 
 namespace Bugsnag\Middleware;
 
-use Bugsnag\Error;
+use Bugsnag\Report;
 
 class CallbackBridge
 {
@@ -28,17 +28,17 @@ class CallbackBridge
     /**
      * Execute the add callback bridge middleware.
      *
-     * @param \Bugsnag\Error $error
-     * @param callable       $next
+     * @param \Bugsnag\Report $report the bugsnag report instance
+     * @param callable        $next   the next stage callback
      *
      * @return void
      */
-    public function __invoke(Error $error, callable $next)
+    public function __invoke(Report $report, callable $next)
     {
         $callback = $this->callback;
 
-        if ($callback($error) !== false) {
-            $next($error);
+        if ($callback($report) !== false) {
+            $next($report);
         }
     }
 }

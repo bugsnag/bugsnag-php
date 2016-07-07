@@ -2,7 +2,7 @@
 
 namespace Bugsnag\Callbacks;
 
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\Request\ResolverInterface;
 
 class RequestSession
@@ -29,14 +29,14 @@ class RequestSession
     /**
      * Execute the request session callback.
      *
-     * @param \Bugsnag\Error $error
+     * @param \Bugsnag\Report $report the bugsnag report instance
      *
      * @return void
      */
-    public function __invoke(Error $error)
+    public function __invoke(Report $report)
     {
         if ($data = $this->resolver->resolve()->getSession()) {
-            $error->setMetaData(['session' => $data]);
+            $report->setMetaData(['session' => $data]);
         }
     }
 }

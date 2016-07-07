@@ -4,7 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Psr7\Uri;
@@ -43,8 +43,8 @@ class ClientTest extends TestCase
     {
         $this->client->expects($this->once())->method('notify');
 
-        $this->client->notifyError('SomeError', 'Some message', function ($error) {
-            $error->setSeverity('info');
+        $this->client->notifyError('SomeError', 'Some message', function ($report) {
+            $report->setSeverity('info');
         });
     }
 
@@ -59,8 +59,8 @@ class ClientTest extends TestCase
     {
         $this->client->expects($this->once())->method('notify');
 
-        $this->client->notifyException(new Exception('Something broke'), function ($error) {
-            $error->setSeverity('info');
+        $this->client->notifyException(new Exception('Something broke'), function ($report) {
+            $report->setSeverity('info');
         });
     }
 
@@ -118,26 +118,26 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->registerCallback(function (Error $error) {
-            if ($error->getName() === 'SkipMe') {
+        $this->client->registerCallback(function (Report $report) {
+            if ($report->getName() === 'SkipMe') {
                 return false;
             }
         });
 
         $this->guzzle->expects($this->never())->method('request');
 
-        $this->client->notify(Error::fromNamedError($this->config, 'SkipMe', 'Message'));
+        $this->client->notify(Report::fromNamedError($this->config, 'SkipMe', 'Message'));
     }
 
     public function testMetaDataWorks()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'), function ($error) {
-            $error->setMetaData(['foo' => 'baz']);
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'), function ($report) {
+            $report->setMetaData(['foo' => 'baz']);
         });
 
-        $this->assertSame(['foo' => 'baz'], $error->getMetaData());
+        $this->assertSame(['foo' => 'baz'], $report->getMetaData());
     }
 
     public function testNoEnvironmentByDefault()
@@ -148,9 +148,9 @@ class ClientTest extends TestCase
 
         $this->client->registerDefaultCallbacks();
 
-        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
 
-        $this->assertArrayNotHasKey('Environment', $error->getMetaData());
+        $this->assertArrayNotHasKey('Environment', $report->getMetaData());
     }
 
     /**
@@ -172,7 +172,7 @@ class ClientTest extends TestCase
 
         $this->client->expects($this->never())->method('flush');
 
-        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
     }
 
     public function testFlushesWhenNotBatching()
@@ -186,7 +186,7 @@ class ClientTest extends TestCase
 
         $this->client->setBatchSending(false);
 
-        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
     }
 
     public function testCanManuallyFlush()
@@ -197,7 +197,7 @@ class ClientTest extends TestCase
 
         $this->guzzle->expects($this->once())->method('request');
 
-        $this->client->notify($error = Error::fromNamedError($this->config, 'Name'));
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
 
         $this->client->flush();
         $this->client->flush();

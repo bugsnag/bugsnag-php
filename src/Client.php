@@ -150,9 +150,9 @@ class Client
      */
     public function notifyException($throwable, callable $callback = null)
     {
-        $error = Error::fromPHPThrowable($this->config, $throwable);
+        $report = Report::fromPHPThrowable($this->config, $throwable);
 
-        $this->notify($error, $callback);
+        $this->notify($report, $callback);
     }
 
     /**
@@ -166,27 +166,27 @@ class Client
      */
     public function notifyError($name, $message, callable $callback = null)
     {
-        $error = Error::fromNamedError($this->config, $name, $message);
+        $report = Report::fromNamedError($this->config, $name, $message);
 
-        $this->notify($error, $callback);
+        $this->notify($report, $callback);
     }
 
     /**
-     * Batches up errors into notifications for later sending.
+     * Batches up reports into notifications for later sending.
      *
-     * @param \Bugsnag\Error $error    the error to batch up
+     * @param \Bugsnag\Report $report  the report to batch up
      * @param callable|null  $callback the customization callback
      *
      * @return void
      */
-    public function notify(Error $error, callable $callback = null)
+    public function notify(Report $report, callable $callback = null)
     {
-        $this->pipeline->execute($error, function ($error) use ($callback) {
+        $this->pipeline->execute($report, function ($report) use ($callback) {
             if ($callback) {
-                $callback($error);
+                $callback($report);
             }
 
-            $this->http->queue($error);
+            $this->http->queue($report);
         });
 
         if (!$this->config->isBatchSending()) {
@@ -195,7 +195,7 @@ class Client
     }
 
     /**
-     * Flush any buffered errors.
+     * Flush any buffered reports.
      *
      * @return void
      */

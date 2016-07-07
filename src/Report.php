@@ -6,7 +6,7 @@ use Exception;
 use InvalidArgumentException;
 use Throwable;
 
-class Error
+class Report
 {
     /**
      * The payload version.
@@ -30,9 +30,9 @@ class Error
     protected $stacktrace;
 
     /**
-     * The previous error.
+     * The previous report.
      *
-     * @var \Bugsnag\Error|null
+     * @var \Bugsnag\Report|null
      */
     protected $previous;
 
@@ -86,7 +86,7 @@ class Error
     protected $user = [];
 
     /**
-     * Create a new error from a PHP error.
+     * Create a new report from a PHP error.
      *
      * @param \Bugsnag\Configuration $config  the config instance
      * @param int                    $code    the error code
@@ -99,15 +99,15 @@ class Error
      */
     public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
     {
-        $error = new static($config);
+        $report = new static($config);
 
-        $error->setPHPError($code, $message, $file, $line, $fatal);
+        $report->setPHPError($code, $message, $file, $line, $fatal);
 
-        return $error;
+        return $report;
     }
 
     /**
-     * Create a new error from a PHP throwable.
+     * Create a new report from a PHP throwable.
      *
      * @param \Bugsnag\Configuration $config    the config instance
      * @param \Throwable             $throwable the throwable instance
@@ -116,15 +116,15 @@ class Error
      */
     public static function fromPHPThrowable(Configuration $config, $throwable)
     {
-        $error = new static($config);
+        $report = new static($config);
 
-        $error->setPHPThrowable($throwable);
+        $report->setPHPThrowable($throwable);
 
-        return $error;
+        return $report;
     }
 
     /**
-     * Create a new error from a named error.
+     * Create a new report from a named error.
      *
      * @param \Bugsnag\Configuration $config  the config instance
      * @param string                 $name    the error name
@@ -134,17 +134,17 @@ class Error
      */
     public static function fromNamedError(Configuration $config, $name, $message = null)
     {
-        $error = new static($config);
+        $report = new static($config);
 
-        $error->setName($name)
+        $report->setName($name)
               ->setMessage($message)
               ->setStacktrace(Stacktrace::generate($config));
 
-        return $error;
+        return $report;
     }
 
     /**
-     * Create a new error instance.
+     * Create a new report instance.
      *
      * This is only for for use only by the static methods above.
      *
@@ -442,7 +442,7 @@ class Error
      */
     public function toArray()
     {
-        $errorArray = [
+        $event = [
             'app' => $this->config->getAppData(),
             'device' => $this->config->getDeviceData(),
             'user' => $this->getUser(),
@@ -454,10 +454,10 @@ class Error
         ];
 
         if ($hash = $this->getGroupingHash()) {
-            $errorArray['groupingHash'] = $hash;
+            $event['groupingHash'] = $hash;
         }
 
-        return $errorArray;
+        return $event;
     }
 
     /**

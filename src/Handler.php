@@ -50,11 +50,11 @@ class Handler
      */
     public function exceptionHandler($throwable)
     {
-        $error = Error::fromPHPThrowable($this->client->getConfig(), $throwable);
+        $report = Report::fromPHPThrowable($this->client->getConfig(), $throwable);
 
-        $error->setSeverity('error');
+        $report->setSeverity('error');
 
-        $this->client->notify($error);
+        $this->client->notify($report);
     }
 
     /**
@@ -73,9 +73,9 @@ class Handler
             return;
         }
 
-        $error = Error::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline);
+        $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline);
 
-        $this->client->notify($error);
+        $this->client->notify($report);
     }
 
     /**
@@ -90,9 +90,9 @@ class Handler
 
         // Check if a fatal error caused this shutdown
         if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->client->shouldIgnoreErrorCode($lastError['type'])) {
-            $error = Error::fromPHPError($this->client->getConfig(), $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
-            $error->setSeverity('error');
-            $this->client->notify($error);
+            $report = Report::fromPHPError($this->client->getConfig(), $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
+            $report->setSeverity('error');
+            $this->client->notify($report);
         }
 
         // Flush any buffered errors

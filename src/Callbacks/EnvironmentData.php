@@ -2,21 +2,21 @@
 
 namespace Bugsnag\Callbacks;
 
-use Bugsnag\Error;
+use Bugsnag\Report;
 
 class EnvironmentData
 {
     /**
      * Execute the environment data callback.
      *
-     * @param \Bugsnag\Error $error
+     * @param \Bugsnag\Report $report the bugsnag report instance
      *
      * @return void
      */
-    public function __invoke(Error $error)
+    public function __invoke(Report $report)
     {
         if (!empty($_ENV)) {
-            $error->setMetaData(['Environment' => $_ENV]);
+            $report->setMetaData(['Environment' => $_ENV]);
         }
     }
 }

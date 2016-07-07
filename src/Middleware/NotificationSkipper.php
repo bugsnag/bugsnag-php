@@ -3,7 +3,7 @@
 namespace Bugsnag\Middleware;
 
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 
 class NotificationSkipper
 {
@@ -29,17 +29,17 @@ class NotificationSkipper
     /**
      * Execute the notification skipper middleware.
      *
-     * @param \Bugsnag\Error $error
-     * @param callable       $next
+     * @param \Bugsnag\Report $report the bugsnag report instance
+     * @param callable        $next   the next stage callback
      *
      * @return void
      */
-    public function __invoke(Error $error, callable $next)
+    public function __invoke(Report $report, callable $next)
     {
         if (!$this->config->shouldNotify()) {
             return;
         }
 
-        $next($error);
+        $next($report);
     }
 }

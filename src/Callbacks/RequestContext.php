@@ -2,7 +2,7 @@
 
 namespace Bugsnag\Callbacks;
 
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\Request\ResolverInterface;
 
 class RequestContext
@@ -29,14 +29,14 @@ class RequestContext
     /**
      * Execute the request context callback.
      *
-     * @param \Bugsnag\Error $error
+     * @param \Bugsnag\Report $report the bugsnag report instance
      *
      * @return void
      */
-    public function __invoke(Error $error)
+    public function __invoke(Report $report)
     {
         if ($context = $this->resolver->resolve()->getContext()) {
-            $error->setContext($context);
+            $report->setContext($context);
         }
     }
 }

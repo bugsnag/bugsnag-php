@@ -2,7 +2,7 @@
 
 namespace Bugsnag\Callbacks;
 
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\Request\ResolverInterface;
 
 class RequestUser
@@ -29,14 +29,14 @@ class RequestUser
     /**
      * Execute the request user callback.
      *
-     * @param \Bugsnag\Error $error
+     * @param \Bugsnag\Report $report the bugsnag report instance
      *
      * @return void
      */
-    public function __invoke(Error $error)
+    public function __invoke(Report $report)
     {
         if ($id = $this->resolver->resolve()->getUserId()) {
-            $error->setUser(['id' => $id]);
+            $report->setUser(['id' => $id]);
         }
     }
 }
