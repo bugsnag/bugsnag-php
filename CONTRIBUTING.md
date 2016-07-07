@@ -24,10 +24,11 @@ Releasing
 1. Commit all outstanding changes
 2. Bump the version in `src/Configuration.php`.
 3. Update the CHANGELOG.md, and README if appropriate.
-4. Commit, tag push
+4. Build a new phar package by running `make package`.
+5. Commit, tag push
     ```
     git commit -am v3.x.x
     git tag v3.x.x
     git push origin master && git push --tags
     ```
-5. Update the setup guides for PHP (and its frameworks) with any new content.
+6. Update the setup guides for PHP (and its frameworks) with any new content.
