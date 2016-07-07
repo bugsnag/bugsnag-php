@@ -172,10 +172,12 @@ class Client
     }
 
     /**
-     * Batches up reports into notifications for later sending.
+     * Notify Bugsnag of the given error report.
+     *
+     * This may simply involve queuing it for later if we're batching.
      *
      * @param \Bugsnag\Report $report  the report to batch up
-     * @param callable|null  $callback the customization callback
+     * @param callable|null   $callback the customization callback
      *
      * @return void
      */
