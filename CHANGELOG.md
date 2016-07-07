@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 2.9.1 (2016-07-06)
+
+### Bug Fixes
+
+* Fixed broken header parsing
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#260](https://github.com/bugsnag/bugsnag-php/pull/260)
+
 ## 2.9.0 (2016-06-24)
 
 ## Enhancements
