@@ -4,7 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -31,13 +31,13 @@ class RequestMetaDataTest extends TestCase
         $_SERVER['HTTP_HOST'] = 'example.com';
         $_SERVER['HTTP_USER_AGENT'] = 'Example Browser 1.2.3';
 
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestMetaData($this->resolver);
 
         $this->config->setMetaData(['foo' => 'bar']);
 
-        $callback($error);
+        $callback($report);
 
         $this->assertSame(['bar' => 'baz', 'request' => [
             'url' => 'http://example.com/blah/blah.php?some=param',
@@ -46,17 +46,17 @@ class RequestMetaDataTest extends TestCase
             'clientIp' => '123.45.67.8',
             'userAgent' => 'Example Browser 1.2.3',
             'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3'],
-        ]], $error->getMetaData());
+        ]], $report->getMetaData());
     }
 
     public function testFallsBackToNull()
     {
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestMetaData($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
+        $this->assertSame(['bar' => 'baz'], $report->getMetaData());
     }
 }

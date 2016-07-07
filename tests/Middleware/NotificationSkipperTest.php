@@ -3,8 +3,8 @@
 namespace Bugsnag\Tests\Middleware;
 
 use Bugsnag\Configuration;
-use Bugsnag\Error;
 use Bugsnag\Middleware\NotificationSkipper;
+use Bugsnag\Report;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -24,7 +24,7 @@ class NotificationSkipperTest extends TestCase
 
         $middleware = new NotificationSkipper($this->config);
 
-        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -37,7 +37,7 @@ class NotificationSkipperTest extends TestCase
 
         $middleware = new NotificationSkipper($this->config);
 
-        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -50,7 +50,7 @@ class NotificationSkipperTest extends TestCase
 
         $middleware = new NotificationSkipper($this->config);
 
-        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -64,7 +64,7 @@ class NotificationSkipperTest extends TestCase
 
         $middleware = new NotificationSkipper($this->config);
 
-        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }

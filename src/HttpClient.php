@@ -23,9 +23,9 @@ class HttpClient
     protected $guzzle;
 
     /**
-     * The queue of errors to send.
+     * The queue of reports to send.
      *
-     * @var \Bugsnag\Error[]
+     * @var \Bugsnag\Report[]
      */
     protected $queue = [];
 
@@ -44,15 +44,15 @@ class HttpClient
     }
 
     /**
-     * Add an error to the queue.
+     * Add a report to the queue.
      *
-     * @param \Bugsnag\Error $error the bugsnag error instance
+     * @param \Bugsnag\Report $report the bugsnag report instance
      *
      * @return void
      */
-    public function queue(Error $error)
+    public function queue(Report $report)
     {
-        $this->queue[] = $error;
+        $this->queue[] = $report;
     }
 
     /**
@@ -80,11 +80,11 @@ class HttpClient
     {
         $events = [];
 
-        foreach ($this->queue as $error) {
-            $errorArray = $error->toArray();
+        foreach ($this->queue as $report) {
+            $event = $report->toArray();
 
-            if (!is_null($errorArray)) {
-                $events[] = $errorArray;
+            if ($event) {
+                $events[] = $event;
             }
         }
 

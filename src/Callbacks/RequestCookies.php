@@ -2,7 +2,7 @@
 
 namespace Bugsnag\Callbacks;
 
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\Request\ResolverInterface;
 
 class RequestCookies
@@ -29,14 +29,14 @@ class RequestCookies
     /**
      * Execute the request cookies callback.
      *
-     * @param \Bugsnag\Error $error
+     * @param \Bugsnag\Report $report the bugsnag report instance
      *
      * @return void
      */
-    public function __invoke(Error $error)
+    public function __invoke(Report $report)
     {
         if ($data = $this->resolver->resolve()->getCookies()) {
-            $error->setMetaData(['cookies' => $data]);
+            $report->setMetaData(['cookies' => $data]);
         }
     }
 }

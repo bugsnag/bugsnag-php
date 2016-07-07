@@ -3,8 +3,8 @@
 namespace Bugsnag\Tests\Middleware;
 
 use Bugsnag\Configuration;
-use Bugsnag\Error;
 use Bugsnag\Middleware\CallbackBridge;
+use Bugsnag\Report;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -22,11 +22,11 @@ class CallbackBridgeTest extends TestCase
     {
         $this->expectOutputString('1reached');
 
-        $middleware = new CallbackBridge(function ($error) {
-            echo $error instanceof Error;
+        $middleware = new CallbackBridge(function ($report) {
+            echo $report instanceof Report;
         });
 
-        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'reached';
         });
     }
@@ -35,11 +35,11 @@ class CallbackBridgeTest extends TestCase
     {
         $this->expectOutputString('');
 
-        $middleware = new CallbackBridge(function ($error) {
+        $middleware = new CallbackBridge(function ($report) {
             return false;
         });
 
-        $middleware(Error::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
             echo 'reached';
         });
     }

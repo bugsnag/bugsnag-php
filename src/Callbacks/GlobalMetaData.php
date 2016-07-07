@@ -3,7 +3,7 @@
 namespace Bugsnag\Callbacks;
 
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 
 class GlobalMetaData
 {
@@ -29,14 +29,14 @@ class GlobalMetaData
     /**
      * Execute the global meta data callback.
      *
-     * @param \Bugsnag\Error $error
+     * @param \Bugsnag\Report $report the bugsnag report instance
      *
      * @return void
      */
-    public function __invoke(Error $error)
+    public function __invoke(Report $report)
     {
         if ($data = $this->config->getMetaData()) {
-            $error->setMetaData($data);
+            $report->setMetaData($data);
         }
     }
 }

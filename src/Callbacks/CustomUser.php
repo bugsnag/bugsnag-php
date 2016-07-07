@@ -2,7 +2,7 @@
 
 namespace Bugsnag\Callbacks;
 
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Exception;
 
 class CustomUser
@@ -29,17 +29,17 @@ class CustomUser
     /**
      * Execute the user data callback.
      *
-     * @param \Bugsnag\Error $error
+     * @param \Bugsnag\Report $report the bugsnag report instance
      *
      * @return void
      */
-    public function __invoke(Error $error)
+    public function __invoke(Report $report)
     {
         $resolver = $this->resolver;
 
         try {
             if ($user = $resolver()) {
-                $error->setUser($user);
+                $report->setUser($user);
             }
         } catch (Exception $e) {
             // Ignore any errors.

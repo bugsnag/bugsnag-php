@@ -4,7 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -20,25 +20,25 @@ class GlobalMetaDataTest extends TestCase
 
     public function testCanMetaData()
     {
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new GlobalMetaData($this->config);
 
         $this->config->setMetaData(['foo' => 'bar']);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz', 'foo' => 'bar'], $error->getMetaData());
+        $this->assertSame(['bar' => 'baz', 'foo' => 'bar'], $report->getMetaData());
     }
 
     public function testCanDoNothing()
     {
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new GlobalMetaData($this->config);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
+        $this->assertSame(['bar' => 'baz'], $report->getMetaData());
     }
 }

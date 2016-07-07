@@ -4,7 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -27,36 +27,36 @@ class RequestContextTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'PUT';
         $_SERVER['REQUEST_URI'] = '/blah/blah.php?some=param';
 
-        $error = Error::fromPHPThrowable($this->config, new Exception());
+        $report = Report::fromPHPThrowable($this->config, new Exception());
 
         $callback = new RequestContext($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame('PUT /blah/blah.php', $error->getContext());
+        $this->assertSame('PUT /blah/blah.php', $report->getContext());
     }
 
     public function testCanDoNothing()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
 
-        $error = Error::fromPHPThrowable($this->config, new Exception());
+        $report = Report::fromPHPThrowable($this->config, new Exception());
 
         $callback = new RequestContext($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(null, $error->getContext());
+        $this->assertSame(null, $report->getContext());
     }
 
     public function testFallsBackToNull()
     {
-        $error = Error::fromPHPThrowable($this->config, new Exception());
+        $report = Report::fromPHPThrowable($this->config, new Exception());
 
         $callback = new RequestContext($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(null, $error->getContext());
+        $this->assertSame(null, $report->getContext());
     }
 }

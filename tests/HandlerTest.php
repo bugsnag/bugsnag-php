@@ -74,8 +74,8 @@ class HandlerTest extends TestCase
 
     public function testCanFatalShutdown()
     {
-        $error = $this->getFunctionMock('Bugsnag', 'error_get_last');
-        $error->expects($this->once())->will($this->returnValue(['type' => E_ERROR, 'message' => 'Undefined variable: a', 'file' => '/foo/index.php', 'line' => 2]));
+        $report = $this->getFunctionMock('Bugsnag', 'error_get_last');
+        $report->expects($this->once())->will($this->returnValue(['type' => E_ERROR, 'message' => 'Undefined variable: a', 'file' => '/foo/index.php', 'line' => 2]));
 
         $this->client->expects($this->once())->method('notify');
         $this->client->expects($this->once())->method('flush');

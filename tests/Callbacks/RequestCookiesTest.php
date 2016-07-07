@@ -4,7 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\RequestCookies;
 use Bugsnag\Configuration;
-use Bugsnag\Error;
+use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -27,38 +27,38 @@ class RequestCookiesTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_COOKIE = ['cookie' => 'cookieval'];
 
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestCookies($this->resolver);
 
         $this->config->setMetaData(['foo' => 'bar']);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz', 'cookies' => ['cookie' => 'cookieval']], $error->getMetaData());
+        $this->assertSame(['bar' => 'baz', 'cookies' => ['cookie' => 'cookieval']], $report->getMetaData());
     }
 
     public function testCanDoNothing()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
 
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestCookies($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
+        $this->assertSame(['bar' => 'baz'], $report->getMetaData());
     }
 
     public function testFallsBackToNull()
     {
-        $error = Error::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestCookies($this->resolver);
 
-        $callback($error);
+        $callback($report);
 
-        $this->assertSame(['bar' => 'baz'], $error->getMetaData());
+        $this->assertSame(['bar' => 'baz'], $report->getMetaData());
     }
 }
