@@ -13,7 +13,7 @@ class Parser
      * @param int      $start
      * @param int|null $end
      *
-     * @return array[]
+     * @return \Generator
      */
     public function parse($content, $start = 1, $end = null)
     {
@@ -29,20 +29,19 @@ class Parser
      *
      * @param array[] $tokens
      *
-     * @return array[]
+     * @return \Generator
      */
     protected function transform($tokens)
     {
-        $transformed = [];
-
         $previous = 1;
 
         foreach ($tokens as $token) {
-            $transformed[] = $new = $this->generate($token, $previous);
-            $previous = $new['line'];
-        }
+            $new = $this->generate($token, $previous);
 
-        return $transformed;
+            $previous = $new['line'];
+
+            yield $new;
+        }
     }
 
     /**
@@ -77,12 +76,10 @@ class Parser
      * @param int      $start
      * @param int|null $end
      *
-     * @return array[]
+     * @return \Generator
      */
     protected function filter($tokens, $start, $end)
     {
-        $filtered = [];
-
         foreach ($tokens as $token) {
             if ($token['line'] < $start) {
                 continue; // if we're too early in the file, skip
@@ -92,9 +89,7 @@ class Parser
                 break; // if we're too far through, we're done
             }
 
-            $filtered[] = $token;
+            yield $token;
         }
-
-        return $filtered;
     }
 }

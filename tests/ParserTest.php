@@ -49,7 +49,7 @@ class ParserTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, $parser->parse("<?php\necho 'foo';\n// hi"));
+        $this->assertSame($expected, iterator_to_array($parser->parse("<?php\necho 'foo';\n// hi")));
     }
 
     public function testWithRestrictedStart()
@@ -64,7 +64,7 @@ class ParserTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, $parser->parse("<?php\necho 'foo';\n// hi", 3));
+        $this->assertSame($expected, iterator_to_array($parser->parse("<?php\necho 'foo';\n// hi", 3)));
     }
 
     public function testWithRestrictedEnd()
@@ -104,6 +104,6 @@ class ParserTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, $parser->parse("<?php\necho 'foo';\n// hi", 1, 2));
+        $this->assertSame($expected, iterator_to_array($parser->parse("<?php\necho 'foo';\n// hi", 1, 2)));
     }
 }
