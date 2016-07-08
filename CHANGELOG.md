@@ -1,13 +1,20 @@
 Changelog
 =========
 
+## 3.0.1 (2016-07-08)
+
+### Bug Fixes
+
+* Lowered the minimum PHP version to 5.5.0
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#295](https://github.com/bugsnag/bugsnag-php/pull/295)
+
 ## 3.0.0 (2016-07-07)
 
 This is a major refactor to make the library clearer and easier to use. The
 minimum PHP version supported has been updated to 5.5.9. For upgrading
 instructions, see
 [the upgrading guide](https://github.com/bugsnag/bugsnag-php/blob/master/UPGRADING.md#2x-to-3x).
-
 
 ### Enhancements
 
@@ -30,7 +37,6 @@ instructions, see
 ### Bug Fixes
 
 * Every bug
-
 
 ## 2.9.1 (2016-07-06)
 
