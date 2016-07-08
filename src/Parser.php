@@ -94,7 +94,7 @@ class Parser
      *
      * @return \Generator
      */
-    protected function filter($tokens, $start, $end)
+    protected function filter(Generator $tokens, $start, $end)
     {
         foreach ($tokens as $token) {
             if ($token['line'] < $start) {
