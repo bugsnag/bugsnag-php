@@ -12,7 +12,7 @@ class Inspector
      * @var \Bugsnag\Files\Parser
      */
     protected $parser;
- 
+
     /**
      * The file to inspect.
      *

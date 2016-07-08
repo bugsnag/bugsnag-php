@@ -5,8 +5,8 @@ namespace Bugsnag\Tests\Files;
 use Bugsnag\Files\Filesystem;
 use Bugsnag\Files\Inspector;
 use Bugsnag\Files\Parser;
-use ReflectionClass;
 use PHPUnit_Framework_TestCase as TestCase;
+use ReflectionClass;
 
 class FilesystemTest extends TestCase
 {

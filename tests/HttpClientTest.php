@@ -3,8 +3,8 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
-use Bugsnag\HttpClient;
 use Bugsnag\Files\Filesystem;
+use Bugsnag\HttpClient;
 use Bugsnag\Report;
 use Exception;
 use GuzzleHttp\Client;

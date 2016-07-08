@@ -4,7 +4,6 @@ namespace Bugsnag;
 
 use Bugsnag\Files\Filesystem;
 use RuntimeException;
-use SplFileObject;
 
 class Stacktrace
 {
