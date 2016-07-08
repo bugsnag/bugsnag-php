@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use Generator;
+
 class Parser
 {
     /**
@@ -17,7 +19,7 @@ class Parser
      */
     public function parse($content, $start = 1, $end = null)
     {
-        $tokens = token_get_all($content);
+        $tokens = $this->tokenize($content);
 
         $transformed = $this->transform($tokens);
 
@@ -25,13 +27,27 @@ class Parser
     }
 
     /**
-     * Transform the given set of tokens into a friendly representation.
+     * Tokenize the given code using PHP's tokenizer.
      *
-     * @param array[] $tokens
+     * @param string $content
      *
      * @return \Generator
      */
-    protected function transform($tokens)
+    protected function tokenize($content)
+    {
+        foreach (token_get_all($content) as $token) {
+            yield $token;
+        }
+    }
+
+    /**
+     * Transform the given set of tokens into a friendly representation.
+     *
+     * @param \Generator $tokens
+     *
+     * @return \Generator
+     */
+    protected function transform(Generator $tokens)
     {
         $previous = 1;
 
@@ -72,9 +88,9 @@ class Parser
     /**
      * Filter out the tokens outside the area we're interested in.
      *
-     * @param array[]  $tokens
-     * @param int      $start
-     * @param int|null $end
+     * @param \Generator $tokens
+     * @param int        $start
+     * @param int|null   $end
      *
      * @return \Generator
      */

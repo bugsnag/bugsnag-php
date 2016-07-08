@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Parser;
+use Generator;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ParserTest extends TestCase
@@ -49,7 +50,11 @@ class ParserTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, iterator_to_array($parser->parse("<?php\necho 'foo';\n// hi")));
+        $parsed = $parser->parse("<?php\necho 'foo';\n// hi");
+
+        $this->assertInstanceOf(Generator::class, $parsed);
+
+        $this->assertSame($expected, iterator_to_array($parsed));
     }
 
     public function testWithRestrictedStart()
@@ -64,7 +69,11 @@ class ParserTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, iterator_to_array($parser->parse("<?php\necho 'foo';\n// hi", 3)));
+        $parsed = $parser->parse("<?php\necho 'foo';\n// hi", 3);
+
+        $this->assertInstanceOf(Generator::class, $parsed);
+
+        $this->assertSame($expected, iterator_to_array($parsed));
     }
 
     public function testWithRestrictedEnd()
@@ -104,6 +113,10 @@ class ParserTest extends TestCase
             ],
         ];
 
-        $this->assertSame($expected, iterator_to_array($parser->parse("<?php\necho 'foo';\n// hi", 1, 2)));
+        $parsed = $parser->parse("<?php\necho 'foo';\n// hi", 1, 2);
+
+        $this->assertInstanceOf(Generator::class, $parsed);
+
+        $this->assertSame($expected, iterator_to_array($parsed));
     }
 }
