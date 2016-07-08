@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests\Middleware;
 
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Report;
 use Exception;
@@ -10,12 +11,13 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class NotificationSkipperTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
+    protected $filesystem;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
+        $this->filesystem = new Filesystem();
     }
 
     public function testDefaultReleaseStageShouldNotify()
@@ -24,7 +26,7 @@ class NotificationSkipperTest extends TestCase
 
         $middleware = new NotificationSkipper($this->config);
 
-        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, $this->filesystem, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -37,7 +39,7 @@ class NotificationSkipperTest extends TestCase
 
         $middleware = new NotificationSkipper($this->config);
 
-        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, $this->filesystem, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -50,7 +52,7 @@ class NotificationSkipperTest extends TestCase
 
         $middleware = new NotificationSkipper($this->config);
 
-        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, $this->filesystem, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }
@@ -64,7 +66,7 @@ class NotificationSkipperTest extends TestCase
 
         $middleware = new NotificationSkipper($this->config);
 
-        $middleware(Report::fromPHPThrowable($this->config, new Exception()), function () {
+        $middleware(Report::fromPHPThrowable($this->config, $this->filesystem, new Exception()), function () {
             echo 'NOTIFIED';
         });
     }

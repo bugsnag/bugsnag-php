@@ -4,6 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
 use Exception;
@@ -11,15 +12,15 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class RequestSessionTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Request\ResolverInterface */
     protected $resolver;
+    protected $filesystem;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
         $this->resolver = new BasicResolver();
+        $this->filesystem = new Filesystem();
     }
 
     public function testCanSession()
@@ -27,7 +28,7 @@ class RequestSessionTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SESSION = ['session' => 'sessionval'];
 
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestSession($this->resolver);
 
@@ -42,7 +43,7 @@ class RequestSessionTest extends TestCase
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
 
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestSession($this->resolver);
 
@@ -53,7 +54,7 @@ class RequestSessionTest extends TestCase
 
     public function testFallsBackToNull()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestSession($this->resolver);
 

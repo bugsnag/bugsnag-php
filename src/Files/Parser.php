@@ -1,6 +1,6 @@
 <?php
 
-namespace Bugsnag;
+namespace Bugsnag\Files;
 
 use Generator;
 

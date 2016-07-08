@@ -9,6 +9,7 @@ use Bugsnag\Callbacks\RequestCookies;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
@@ -38,6 +39,13 @@ class Client
      * @var \Bugsnag\Request\ResolverInterface
      */
     protected $resolver;
+
+    /**
+     * The filesystem instance.
+     *
+     * @var \Bugsnag\Files\Filesystem
+     */
+    protected $filesystem;
 
     /**
      * The notification pipeline instance.
@@ -91,6 +99,7 @@ class Client
     {
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
+        $this->filesystem = new Filesystem();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]));
 
@@ -107,6 +116,16 @@ class Client
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * Get the fileystem instance.
+     *
+     * @return \Bugsnag\Files\Filesystem
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
     }
 
     /**
@@ -150,7 +169,7 @@ class Client
      */
     public function notifyException($throwable, callable $callback = null)
     {
-        $report = Report::fromPHPThrowable($this->config, $throwable);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, $throwable);
 
         $this->notify($report, $callback);
     }
@@ -166,7 +185,7 @@ class Client
      */
     public function notifyError($name, $message, callable $callback = null)
     {
-        $report = Report::fromNamedError($this->config, $name, $message);
+        $report = Report::fromNamedError($this->config, $this->filesystem, $name, $message);
 
         $this->notify($report, $callback);
     }

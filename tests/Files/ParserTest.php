@@ -1,8 +1,8 @@
 <?php
 
-namespace Bugsnag\Tests;
+namespace Bugsnag\Tests\Files;
 
-use Bugsnag\Parser;
+use Bugsnag\Files\Parser;
 use Generator;
 use PHPUnit_Framework_TestCase as TestCase;
 

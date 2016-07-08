@@ -2,6 +2,7 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Files\Filesystem;
 use Exception;
 use InvalidArgumentException;
 use Throwable;
@@ -21,6 +22,13 @@ class Report
      * @var \Bugsnag\Config
      */
     protected $config;
+
+    /**
+     * The filesystem object.
+     *
+     * @var \Bugsnag\Files\Filesystem
+     */
+    protected $filesystem;
 
     /**
      * The associated stacktrace.
@@ -88,18 +96,19 @@ class Report
     /**
      * Create a new report from a PHP error.
      *
-     * @param \Bugsnag\Configuration $config  the config instance
-     * @param int                    $code    the error code
-     * @param string|null            $message the error message
-     * @param string                 $file    the error file
-     * @param int                    $line    the error line
-     * @param bool                   $fatal   if the error was fatal
+     * @param \Bugsnag\Configuration    $config     the config instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the config instance
+     * @param int                       $code       the error code
+     * @param string|null               $message    the error message
+     * @param string                    $file       the error file
+     * @param int                       $line       the error line
+     * @param bool                      $fatal      if the error was fatal
      *
      * @return static
      */
-    public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
+    public static function fromPHPError(Configuration $config, Filesystem $filesystem, $code, $message, $file, $line, $fatal = false)
     {
-        $report = new static($config);
+        $report = new static($config, $filesystem);
 
         $report->setPHPError($code, $message, $file, $line, $fatal);
 
@@ -109,14 +118,15 @@ class Report
     /**
      * Create a new report from a PHP throwable.
      *
-     * @param \Bugsnag\Configuration $config    the config instance
-     * @param \Throwable             $throwable the throwable instance
+     * @param \Bugsnag\Configuration    $config     the config instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the config instance
+     * @param \Throwable                $throwable  the throwable instance
      *
      * @return static
      */
-    public static function fromPHPThrowable(Configuration $config, $throwable)
+    public static function fromPHPThrowable(Configuration $config, Filesystem $filesystem, $throwable)
     {
-        $report = new static($config);
+        $report = new static($config, $filesystem);
 
         $report->setPHPThrowable($throwable);
 
@@ -126,19 +136,20 @@ class Report
     /**
      * Create a new report from a named error.
      *
-     * @param \Bugsnag\Configuration $config  the config instance
-     * @param string                 $name    the error name
-     * @param string|null            $message the error message
+     * @param \Bugsnag\Configuration    $config     the config instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the config instance
+     * @param string                    $name       the error name
+     * @param string|null               $message    the error message
      *
      * @return static
      */
-    public static function fromNamedError(Configuration $config, $name, $message = null)
+    public static function fromNamedError(Configuration $config, Filesystem $filesystem, $name, $message = null)
     {
-        $report = new static($config);
+        $report = new static($config, $filesystem);
 
         $report->setName($name)
               ->setMessage($message)
-              ->setStacktrace(Stacktrace::generate($config));
+              ->setStacktrace(Stacktrace::generate($config, $filesystem));
 
         return $report;
     }
@@ -148,13 +159,15 @@ class Report
      *
      * This is only for for use only by the static methods above.
      *
-     * @param \Bugsnag\Configuration $config the config instance
+     * @param \Bugsnag\Configuration    $config     the config instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the config instance
      *
      * @return void
      */
-    protected function __construct(Configuration $config)
+    protected function __construct(Configuration $config, Filesystem $filesystem)
     {
         $this->config = $config;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -174,7 +187,7 @@ class Report
 
         $this->setName(get_class($throwable))
              ->setMessage($throwable->getMessage())
-             ->setStacktrace(Stacktrace::fromBacktrace($this->config, $throwable->getTrace(), $throwable->getFile(), $throwable->getLine()));
+             ->setStacktrace(Stacktrace::fromBacktrace($this->config, $this->filesystem, $throwable->getTrace(), $throwable->getFile(), $throwable->getLine()));
 
         if (method_exists($throwable, 'getPrevious')) {
             $this->setPrevious($throwable->getPrevious());
@@ -203,9 +216,9 @@ class Report
             //
             // In these situations, we generate a "stacktrace" containing only
             // the line and file number where the crash occurred.
-            $stacktrace = Stacktrace::fromFrame($this->config, $file, $line);
+            $stacktrace = Stacktrace::fromFrame($this->config, $this->filesystem, $file, $line);
         } else {
-            $stacktrace = Stacktrace::generate($this->config);
+            $stacktrace = Stacktrace::generate($this->config, $this->filesystem);
         }
 
         $this->setName(ErrorTypes::getName($code))
@@ -240,7 +253,7 @@ class Report
     protected function setPrevious($throwable)
     {
         if ($throwable) {
-            $this->previous = static::fromPHPThrowable($this->config, $throwable);
+            $this->previous = static::fromPHPThrowable($this->config, $this->filesystem, $throwable);
         }
 
         return $this;

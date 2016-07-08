@@ -50,7 +50,7 @@ class Handler
      */
     public function exceptionHandler($throwable)
     {
-        $report = Report::fromPHPThrowable($this->client->getConfig(), $throwable);
+        $report = Report::fromPHPThrowable($this->client->getConfig(), $this->client->getFilesystem(), $throwable);
 
         $report->setSeverity('error');
 
@@ -73,7 +73,7 @@ class Handler
             return;
         }
 
-        $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline);
+        $report = Report::fromPHPError($this->client->getConfig(), $this->client->getFilesystem(), $errno, $errstr, $errfile, $errline);
 
         $this->client->notify($report);
     }
@@ -90,7 +90,7 @@ class Handler
 
         // Check if a fatal error caused this shutdown
         if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->client->shouldIgnoreErrorCode($lastError['type'])) {
-            $report = Report::fromPHPError($this->client->getConfig(), $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
+            $report = Report::fromPHPError($this->client->getConfig(), $this->client->getFilesystem(), $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
             $report->setSeverity('error');
             $this->client->notify($report);
         }
