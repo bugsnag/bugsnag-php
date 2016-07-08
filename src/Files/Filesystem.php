@@ -12,7 +12,7 @@ class Filesystem
      * @var \Bugsnag\Files\Parser
      */
     protected $parser;
- 
+
     /**
      * Create a new filesystem instance.
      *
@@ -22,7 +22,7 @@ class Filesystem
      */
     public function __construct(Parser $parser = null)
     {
-        $this->parser = $parser ?: new Parser;
+        $this->parser = $parser ?: new Parser();
     }
 
     /**
