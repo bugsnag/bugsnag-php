@@ -4,6 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
@@ -19,6 +20,7 @@ class ClientTest extends TestCase
     protected $guzzle;
     protected $config;
     protected $client;
+    protected $filesystem;
 
     protected function setUp()
     {
@@ -30,6 +32,8 @@ class ClientTest extends TestCase
                              ->setMethods(['notify'])
                              ->setConstructorArgs([$this->config = new Configuration('example-api-key'), null, $this->guzzle])
                              ->getMock();
+
+        $this->filesystem = new Filesystem();
     }
 
     public function testManualErrorNotification()
@@ -126,14 +130,14 @@ class ClientTest extends TestCase
 
         $this->guzzle->expects($this->never())->method('request');
 
-        $this->client->notify(Report::fromNamedError($this->config, 'SkipMe', 'Message'));
+        $this->client->notify(Report::fromNamedError($this->config, $this->filesystem, 'SkipMe', 'Message'));
     }
 
     public function testMetaDataWorks()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'), function ($report) {
+        $this->client->notify($report = Report::fromNamedError($this->config, $this->filesystem, 'Name'), function ($report) {
             $report->setMetaData(['foo' => 'baz']);
         });
 
@@ -148,7 +152,7 @@ class ClientTest extends TestCase
 
         $this->client->registerDefaultCallbacks();
 
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+        $this->client->notify($report = Report::fromNamedError($this->config, $this->filesystem, 'Name'));
 
         $this->assertArrayNotHasKey('Environment', $report->getMetaData());
     }
@@ -172,7 +176,7 @@ class ClientTest extends TestCase
 
         $this->client->expects($this->never())->method('flush');
 
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+        $this->client->notify($report = Report::fromNamedError($this->config, $this->filesystem, 'Name'));
     }
 
     public function testFlushesWhenNotBatching()
@@ -186,7 +190,7 @@ class ClientTest extends TestCase
 
         $this->client->setBatchSending(false);
 
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+        $this->client->notify($report = Report::fromNamedError($this->config, $this->filesystem, 'Name'));
     }
 
     public function testCanManuallyFlush()
@@ -197,7 +201,7 @@ class ClientTest extends TestCase
 
         $this->guzzle->expects($this->once())->method('request');
 
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+        $this->client->notify($report = Report::fromNamedError($this->config, $this->filesystem, 'Name'));
 
         $this->client->flush();
         $this->client->flush();

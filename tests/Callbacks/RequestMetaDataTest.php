@@ -4,6 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
 use Exception;
@@ -11,15 +12,15 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class RequestMetaDataTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Request\ResolverInterface */
     protected $resolver;
+    protected $filesystem;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
         $this->resolver = new BasicResolver();
+        $this->filesystem = new Filesystem();
     }
 
     public function testCanMetaData()
@@ -31,7 +32,7 @@ class RequestMetaDataTest extends TestCase
         $_SERVER['HTTP_HOST'] = 'example.com';
         $_SERVER['HTTP_USER_AGENT'] = 'Example Browser 1.2.3';
 
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestMetaData($this->resolver);
 
@@ -51,7 +52,7 @@ class RequestMetaDataTest extends TestCase
 
     public function testFallsBackToNull()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestMetaData($this->resolver);
 

@@ -4,23 +4,25 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class GlobalMetaDataTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
+    protected $filesystem;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
+        $this->filesystem = new Filesystem();
     }
 
     public function testCanMetaData()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new GlobalMetaData($this->config);
 
@@ -33,7 +35,7 @@ class GlobalMetaDataTest extends TestCase
 
     public function testCanDoNothing()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new GlobalMetaData($this->config);
 

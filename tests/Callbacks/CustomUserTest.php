@@ -4,23 +4,25 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\CustomUser;
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class CustomUserTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
+    protected $filesystem;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
+        $this->filesystem = new Filesystem();
     }
 
     public function testCanUser()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new CustomUser(function () {
             return ['foo' => 123];
@@ -33,7 +35,7 @@ class CustomUserTest extends TestCase
 
     public function testCanDoNothing()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new CustomUser(function () {
             // do nothing
@@ -46,7 +48,7 @@ class CustomUserTest extends TestCase
 
     public function testCanBehaveUnderAnException()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new CustomUser(function () {
             throw new Exception();

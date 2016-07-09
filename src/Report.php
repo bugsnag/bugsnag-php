@@ -2,12 +2,21 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Files\Filesystem;
 use Exception;
 use InvalidArgumentException;
+use RuntimeException;
 use Throwable;
 
 class Report
 {
+    /**
+     * The default number of lines of tokens.
+     *
+     * @var int
+     */
+    const NUM_LINES = 25;
+
     /**
      * The payload version.
      *
@@ -21,6 +30,13 @@ class Report
      * @var \Bugsnag\Config
      */
     protected $config;
+
+    /**
+     * The filesystem object.
+     *
+     * @var \Bugsnag\Files\Filesystem
+     */
+    protected $filesystem;
 
     /**
      * The associated stacktrace.
@@ -65,6 +81,13 @@ class Report
     protected $context;
 
     /**
+     * The associated tokens.
+     *
+     * @var array[]|null
+     */
+    protected $tokens;
+
+    /**
      * The grouping hash.
      *
      * @var string|null
@@ -88,18 +111,19 @@ class Report
     /**
      * Create a new report from a PHP error.
      *
-     * @param \Bugsnag\Configuration $config  the config instance
-     * @param int                    $code    the error code
-     * @param string|null            $message the error message
-     * @param string                 $file    the error file
-     * @param int                    $line    the error line
-     * @param bool                   $fatal   if the error was fatal
+     * @param \Bugsnag\Configuration    $config     the config instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the config instance
+     * @param int                       $code       the error code
+     * @param string|null               $message    the error message
+     * @param string                    $file       the error file
+     * @param int                       $line       the error line
+     * @param bool                      $fatal      if the error was fatal
      *
      * @return static
      */
-    public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
+    public static function fromPHPError(Configuration $config, Filesystem $filesystem, $code, $message, $file, $line, $fatal = false)
     {
-        $report = new static($config);
+        $report = new static($config, $filesystem);
 
         $report->setPHPError($code, $message, $file, $line, $fatal);
 
@@ -109,14 +133,15 @@ class Report
     /**
      * Create a new report from a PHP throwable.
      *
-     * @param \Bugsnag\Configuration $config    the config instance
-     * @param \Throwable             $throwable the throwable instance
+     * @param \Bugsnag\Configuration    $config     the config instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the config instance
+     * @param \Throwable                $throwable  the throwable instance
      *
      * @return static
      */
-    public static function fromPHPThrowable(Configuration $config, $throwable)
+    public static function fromPHPThrowable(Configuration $config, Filesystem $filesystem, $throwable)
     {
-        $report = new static($config);
+        $report = new static($config, $filesystem);
 
         $report->setPHPThrowable($throwable);
 
@@ -126,19 +151,20 @@ class Report
     /**
      * Create a new report from a named error.
      *
-     * @param \Bugsnag\Configuration $config  the config instance
-     * @param string                 $name    the error name
-     * @param string|null            $message the error message
+     * @param \Bugsnag\Configuration    $config     the config instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the config instance
+     * @param string                    $name       the error name
+     * @param string|null               $message    the error message
      *
      * @return static
      */
-    public static function fromNamedError(Configuration $config, $name, $message = null)
+    public static function fromNamedError(Configuration $config, Filesystem $filesystem, $name, $message = null)
     {
-        $report = new static($config);
+        $report = new static($config, $filesystem);
 
         $report->setName($name)
               ->setMessage($message)
-              ->setStacktrace(Stacktrace::generate($config));
+              ->setStacktrace(Stacktrace::generate($config, $filesystem));
 
         return $report;
     }
@@ -148,13 +174,15 @@ class Report
      *
      * This is only for for use only by the static methods above.
      *
-     * @param \Bugsnag\Configuration $config the config instance
+     * @param \Bugsnag\Configuration    $config     the config instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the config instance
      *
      * @return void
      */
-    protected function __construct(Configuration $config)
+    protected function __construct(Configuration $config, Filesystem $filesystem)
     {
         $this->config = $config;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -174,7 +202,13 @@ class Report
 
         $this->setName(get_class($throwable))
              ->setMessage($throwable->getMessage())
-             ->setStacktrace(Stacktrace::fromBacktrace($this->config, $throwable->getTrace(), $throwable->getFile(), $throwable->getLine()));
+             ->setStacktrace(Stacktrace::fromBacktrace($this->config, $this->filesystem, $throwable->getTrace(), $throwable->getFile(), $throwable->getLine()));
+
+        try {
+            $this->setTokens($this->filesystem->inspect($throwable->getFile())->getTokens($throwable->getLine(), static::NUM_LINES));
+        } catch (RuntimeException $e) {
+            //
+        }
 
         if (method_exists($throwable, 'getPrevious')) {
             $this->setPrevious($throwable->getPrevious());
@@ -203,15 +237,21 @@ class Report
             //
             // In these situations, we generate a "stacktrace" containing only
             // the line and file number where the crash occurred.
-            $stacktrace = Stacktrace::fromFrame($this->config, $file, $line);
+            $stacktrace = Stacktrace::fromFrame($this->config, $this->filesystem, $file, $line);
         } else {
-            $stacktrace = Stacktrace::generate($this->config);
+            $stacktrace = Stacktrace::generate($this->config, $this->filesystem);
         }
 
         $this->setName(ErrorTypes::getName($code))
              ->setMessage($message)
              ->setSeverity(ErrorTypes::getSeverity($code))
              ->setStacktrace($stacktrace);
+
+        try {
+            $this->setTokens($this->filesystem->inspect($file)->getTokens($line, static::NUM_LINES));
+        } catch (RuntimeException $e) {
+            //
+        }
 
         return $this;
     }
@@ -240,7 +280,7 @@ class Report
     protected function setPrevious($throwable)
     {
         if ($throwable) {
-            $this->previous = static::fromPHPThrowable($this->config, $throwable);
+            $this->previous = static::fromPHPThrowable($this->config, $this->filesystem, $throwable);
         }
 
         return $this;
@@ -363,6 +403,30 @@ class Report
     }
 
     /**
+     * Set the file tokens.
+     *
+     * @param array[] $tokens the file tokens
+     *
+     * @return $this
+     */
+    public function setTokens(array $tokens)
+    {
+        $this->tokens = $tokens;
+
+        return $this;
+    }
+
+    /**
+     * Get the file tokens.
+     *
+     * @return array[]|null
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
+    }
+
+    /**
      * Set the grouping hash.
      *
      * @param string|null $groupingHash the grouping hash
@@ -452,6 +516,10 @@ class Report
             'exceptions' => $this->exceptionArray(),
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
         ];
+
+        if ($tokens = $this->getTokens()) {
+            $event['tokens'] = $tokens;
+        }
 
         if ($hash = $this->getGroupingHash()) {
             $event['groupingHash'] = $hash;

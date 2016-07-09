@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Exception;
 use InvalidArgumentException;
@@ -13,12 +14,14 @@ use stdClass;
 class ReportTest extends TestCase
 {
     protected $config;
+    protected $filesystem;
     protected $report;
 
     protected function setUp()
     {
         $this->config = new Configuration('example-key');
-        $this->report = Report::fromNamedError($this->config, 'Name', 'Message');
+        $this->filesystem = new Filesystem();
+        $this->report = Report::fromNamedError($this->config, $this->filesystem, 'Name', 'Message');
     }
 
     public function testMetaData()
@@ -148,7 +151,7 @@ class ReportTest extends TestCase
     {
         $exception = new Exception('secondly', 65533, new Exception('firstly'));
 
-        $report = Report::fromPHPThrowable($this->config, $exception);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, $exception);
 
         $event = $report->toArray();
 

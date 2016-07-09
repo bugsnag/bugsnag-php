@@ -4,18 +4,20 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\EnvironmentData;
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class EnvironmentDataTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
+    protected $filesystem;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
+        $this->filesystem = new Filesystem();
     }
 
     public function testCanEnvData()
@@ -26,7 +28,7 @@ class EnvironmentDataTest extends TestCase
 
         $_ENV['SOMETHING'] = 'blah';
 
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new EnvironmentData();
 
@@ -45,7 +47,7 @@ class EnvironmentDataTest extends TestCase
             unset($_ENV[$env]);
         }
 
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new EnvironmentData();
 

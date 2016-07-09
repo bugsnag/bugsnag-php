@@ -2,8 +2,8 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Files\Filesystem;
 use RuntimeException;
-use SplFileObject;
 
 class Stacktrace
 {
@@ -29,6 +29,13 @@ class Stacktrace
     protected $config;
 
     /**
+     * The filesystem instance.
+     *
+     * @var \Bugsnag\Files\Filesystem
+     */
+    protected $filesystem;
+
+    /**
      * The array of frames.
      *
      * @var array
@@ -38,30 +45,32 @@ class Stacktrace
     /**
      * Generate a new stacktrace using the given config.
      *
-     * @param \Bugsnag\Configuration $config the configuration instance
+     * @param \Bugsnag\Configuration    $config     the configuration instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the filesystem instance
      *
      * @return static
      */
-    public static function generate(Configuration $config)
+    public static function generate(Configuration $config, Filesystem $filesystem)
     {
         // Reduce memory usage by omitting args and objects from backtrace
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT);
 
-        return static::fromBacktrace($config, $backtrace, '[generator]', 0);
+        return static::fromBacktrace($config, $filesystem, $backtrace, '[generator]', 0);
     }
 
     /**
      * Create a new stacktrace instance from a frame.
      *
-     * @param \Bugsnag\Configuration $config the configuration instance
-     * @param string                 $file   the associated file
-     * @param int                    $line   the line number
+     * @param \Bugsnag\Configuration    $config     the configuration instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the filesystem instance
+     * @param string                    $file       the associated file
+     * @param int                       $line       the line number
      *
      * @return static
      */
-    public static function fromFrame(Configuration $config, $file, $line)
+    public static function fromFrame(Configuration $config, Filesystem $filesystem, $file, $line)
     {
-        $stacktrace = new static($config);
+        $stacktrace = new static($config, $filesystem);
         $stacktrace->addFrame($file, $line, '[unknown]');
 
         return $stacktrace;
@@ -70,16 +79,17 @@ class Stacktrace
     /**
      * Create a new stacktrace instance from a backtrace.
      *
-     * @param \Bugsnag\Configuration $config    the configuration instance
-     * @param array                  $backtrace the associated backtrace
-     * @param int                    $topFile   the top file to use
-     * @param int                    $topLine   the top line to use
+     * @param \Bugsnag\Configuration    $config     the configuration instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the filesystem instance
+     * @param array                     $backtrace  the associated backtrace
+     * @param int                       $topFile    the top file to use
+     * @param int                       $topLine    the top line to use
      *
      * @return static
      */
-    public static function fromBacktrace(Configuration $config, array $backtrace, $topFile, $topLine)
+    public static function fromBacktrace(Configuration $config, Filesystem $filesystem, array $backtrace, $topFile, $topLine)
     {
-        $stacktrace = new static($config);
+        $stacktrace = new static($config, $filesystem);
 
         // PHP backtrace's are misaligned, we need to shift the file/line down a frame
         foreach ($backtrace as $frame) {
@@ -122,13 +132,15 @@ class Stacktrace
     /**
      * Create a new stacktrace instance.
      *
-     * @param \Bugsnag\Configuration $config the configuration instance
+     * @param \Bugsnag\Configuration    $config     the configuration instance
+     * @param \Bugsnag\Files\Filesystem $filesystem the filesystem instance
      *
      * @return void
      */
-    public function __construct(Configuration $config)
+    public function __construct(Configuration $config, Filesystem $filesystem)
     {
         $this->config = $config;
+        $this->filesystem = $filesystem;
     }
 
     /**
@@ -191,34 +203,12 @@ class Stacktrace
      */
     protected function getCode($path, $line, $numLines)
     {
-        if (empty($path) || empty($line) || !file_exists($path)) {
+        if (empty($path) || empty($line)) {
             return;
         }
 
         try {
-            // Get the number of lines in the file
-            $file = new SplFileObject($path);
-            $file->seek(PHP_INT_MAX);
-            $totalLines = $file->key() + 1;
-
-            // Work out which lines we should fetch
-            $start = max($line - floor($numLines / 2), 1);
-            $end = $start + ($numLines - 1);
-            if ($end > $totalLines) {
-                $end = $totalLines;
-                $start = max($end - ($numLines - 1), 1);
-            }
-
-            // Get the code for this range
-            $code = [];
-
-            $file->seek($start - 1);
-            while ($file->key() < $end) {
-                $code[$file->key() + 1] = rtrim(substr($file->current(), 0, static::MAX_LENGTH));
-                $file->next();
-            }
-
-            return $code;
+            return $this->filesystem->inspect($path)->getCode($line, static::NUM_LINES, static::MAX_LENGTH);
         } catch (RuntimeException $ex) {
             // do nothing
         }

@@ -4,6 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\RequestUser;
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
 use Exception;
@@ -11,15 +12,15 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class RequestUserTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Request\ResolverInterface */
     protected $resolver;
+    protected $filesystem;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
         $this->resolver = new BasicResolver();
+        $this->filesystem = new Filesystem();
     }
 
     public function testCanUser()
@@ -27,7 +28,7 @@ class RequestUserTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REMOTE_ADDR'] = '123.45.67.8';
 
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new RequestUser($this->resolver);
 
@@ -42,7 +43,7 @@ class RequestUserTest extends TestCase
         $_SERVER['HTTP_X_FORWARDED_FOR'] = '321.42.42.42';
         $_SERVER['REMOTE_ADDR'] = '123.45.67.8';
 
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new RequestUser($this->resolver);
 
@@ -55,7 +56,7 @@ class RequestUserTest extends TestCase
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
 
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new RequestUser($this->resolver);
 
@@ -66,7 +67,7 @@ class RequestUserTest extends TestCase
 
     public function testFallsBackToNull()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception())->setUser(['bar' => 'baz']);
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception())->setUser(['bar' => 'baz']);
 
         $callback = new RequestUser($this->resolver);
 

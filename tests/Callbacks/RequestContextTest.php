@@ -4,6 +4,7 @@ namespace Bugsnag\Tests\Callbacks;
 
 use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Configuration;
+use Bugsnag\Files\Filesystem;
 use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
 use Exception;
@@ -11,15 +12,15 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class RequestContextTest extends TestCase
 {
-    /** @var \Bugsnag\Configuration */
     protected $config;
-    /** @var \Bugsnag\Request\ResolverInterface */
     protected $resolver;
+    protected $filesystem;
 
     protected function setUp()
     {
         $this->config = new Configuration('API-KEY');
         $this->resolver = new BasicResolver();
+        $this->filesystem = new Filesystem();
     }
 
     public function testCanContext()
@@ -27,7 +28,7 @@ class RequestContextTest extends TestCase
         $_SERVER['REQUEST_METHOD'] = 'PUT';
         $_SERVER['REQUEST_URI'] = '/blah/blah.php?some=param';
 
-        $report = Report::fromPHPThrowable($this->config, new Exception());
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception());
 
         $callback = new RequestContext($this->resolver);
 
@@ -40,7 +41,7 @@ class RequestContextTest extends TestCase
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
 
-        $report = Report::fromPHPThrowable($this->config, new Exception());
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception());
 
         $callback = new RequestContext($this->resolver);
 
@@ -51,7 +52,7 @@ class RequestContextTest extends TestCase
 
     public function testFallsBackToNull()
     {
-        $report = Report::fromPHPThrowable($this->config, new Exception());
+        $report = Report::fromPHPThrowable($this->config, $this->filesystem, new Exception());
 
         $callback = new RequestContext($this->resolver);
 
