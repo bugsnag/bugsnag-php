@@ -6,9 +6,9 @@ Upgrading
 
 *Our PHP library has gone through some major improvements, and there are some small changes you'll need to make to get onto the new version.*
 
-#### PHP 5.5.9+
+#### PHP 5.5+
 
-We now require PHP 5.5.9 or higher. If you're using an older version of PHP, you can still use v2. We will containue to maintain v2 along side v3. For more information, see the [legacy PHP integration guide](http://docs.bugsnag.com/platforms/php/legacy).
+We now require PHP 5.5 or higher. If you're using an older version of PHP, you can still use v2. We will containue to maintain v2 along side v3. For more information, see the [legacy PHP integration guide](http://docs.bugsnag.com/platforms/php/legacy).
 
 #### Namespaces
 
