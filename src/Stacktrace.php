@@ -196,24 +196,16 @@ class Stacktrace
         }
 
         try {
-            // Get the number of lines in the file
             $file = new SplFileObject($path);
             $file->seek(PHP_INT_MAX);
             $totalLines = $file->key() + 1;
 
-            // Work out which lines we should fetch
-            $start = max($line - floor($numLines / 2), 1);
-            $end = $start + ($numLines - 1);
-            if ($end > $totalLines) {
-                $end = $totalLines;
-                $start = max($end - ($numLines - 1), 1);
-            }
+            $bounds = Parser::getBounds($line, $numLines, $totalLines);
 
-            // Get the code for this range
             $code = [];
 
-            $file->seek($start - 1);
-            while ($file->key() < $end) {
+            $file->seek($bounds[0] - 1);
+            while ($file->key() < $bounds[1]) {
                 $code[$file->key() + 1] = rtrim(substr($file->current(), 0, static::MAX_LENGTH));
                 $file->next();
             }
