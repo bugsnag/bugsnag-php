@@ -158,12 +158,17 @@ class Bugsnag_Notification
 
         // Prefer cURL if it is installed, otherwise fall back to fopen()
         // cURL supports both timeouts and proxies
-        if (function_exists('curl_version')) {
-            $this->postWithCurl($url, $body);
-        } elseif (ini_get('allow_url_fopen')) {
-            $this->postWithFopen($url, $body);
-        } else {
-            error_log('Bugsnag Warning: Couldn\'t notify (neither cURL or allow_url_fopen are available on your PHP installation)');
+
+        try {
+            if (function_exists('curl_version')) {
+                $this->postWithCurl($url, $body);
+            } elseif (ini_get('allow_url_fopen')) {
+                $this->postWithFopen($url, $body);
+            } else {
+                error_log('Bugsnag Warning: Couldn\'t notify (neither cURL or allow_url_fopen are available on your PHP installation)');
+            }
+        } catch (Exception $e) {
+            error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
         }
     }
 
