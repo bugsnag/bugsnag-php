@@ -12,7 +12,7 @@
     }],
     "require": {
         "php": ">=5.5",
-        "guzzlehttp/guzzle": "^6.2.1"
+        "guzzlehttp/guzzle": "^6.0"
     },
     "require-dev": {
         "mtdowling/burgomaster": "dev-master#72151eddf5f0cf101502b94bf5031f9c53501a04",
