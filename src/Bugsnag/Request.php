@@ -101,7 +101,9 @@ class Bugsnag_Request
     {
         $schema = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)) ? 'https://' : 'http://';
 
-        return $schema.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+        $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+
+        return $schema.$host.$_SERVER['REQUEST_URI'];
     }
 
     /**
