@@ -28,7 +28,7 @@ instructions, see
 
 * `notify()`, `notifyException()` and `notifyError()` now accept a callable
   –instead of `metaData` and `severity`– which can be used to modify any of
-  the [properties of an error report](http://docs.bugsnag.com.dev/platforms/php/other/customizing-error-reports/#the-report-object).
+  the [properties of an error report](http://docs.bugsnag.com/platforms/php/other/customizing-error-reports/#the-report-object).
 
 * Deprecated methods from v2 have been removed
 
