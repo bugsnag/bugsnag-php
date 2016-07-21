@@ -150,7 +150,9 @@ class PhpRequest implements RequestInterface
     {
         $schema = ((!empty($this->server['HTTPS']) && $this->server['HTTPS'] !== 'off') || (!empty($this->server['SERVER_PORT']) && $this->server['SERVER_PORT'] == 443)) ? 'https://' : 'http://';
 
-        return $schema.$this->server['HTTP_HOST'].$this->server['REQUEST_URI'];
+        $host = isset($this->server['HTTP_HOST']) ? $this->server['HTTP_HOST'] : 'localhost';
+
+        return $schema.$host.$this->server['REQUEST_URI'];
     }
 
     /**
