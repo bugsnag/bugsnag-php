@@ -68,7 +68,7 @@ class Client
     public static function make($apiKey = null, $endpoint = null, $defaults = true)
     {
         $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
-        $guzzle = static::makeGuzle($endpoint ?: getenv('BUGSNAG_ENDPOINT'));
+        $guzzle = static::makeGuzzle($endpoint ?: getenv('BUGSNAG_ENDPOINT'));
 
         $client = new static($config, null, $guzzle);
 
@@ -93,7 +93,7 @@ class Client
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
         $this->pipeline = new Pipeline();
-        $this->http = new HttpClient($config, $guzzle ?: static::makeGuzle());
+        $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
 
         $this->pipeline->pipe(new NotificationSkipper($config));
 
@@ -107,7 +107,7 @@ class Client
      *
      * @return \GuzzleHttp\ClientInterface
      */
-    protected static function makeGuzle($base = null)
+    protected static function makeGuzzle($base = null)
     {
         $options = [
             'base_uri' => $base ?: static::ENDPOINT,
