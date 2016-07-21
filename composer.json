@@ -21,7 +21,7 @@
     },
     "suggest": {
         "composer/ca-bundle": "Composer's CA bundle can be useful if you are having pear verification issues."
-    }
+    },
     "autoload": {
         "psr-4" : {
             "Bugsnag\\" : "src/"
