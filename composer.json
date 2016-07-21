@@ -19,6 +19,9 @@
         "phpunit/phpunit": "^4.8|^5.0",
         "php-mock/php-mock-phpunit": "^1.1"
     },
+    "suggest": {
+        "composer/ca-bundle": "Composer's CA bundle can be useful if you are having pear verification issues."
+    }
     "autoload": {
         "psr-4" : {
             "Bugsnag\\" : "src/"

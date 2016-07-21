@@ -13,6 +13,7 @@ use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
+use Composer\CaBundle\CaBundle;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
 
@@ -67,7 +68,7 @@ class Client
     public static function make($apiKey = null, $endpoint = null, $defaults = true)
     {
         $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
-        $guzzle = new Guzzle(['base_uri' => ($endpoint ?: getenv('BUGSNAG_ENDPOINT')) ?: static::ENDPOINT]);
+        $guzzle = static::makeGuzle($endpoint ?: getenv('BUGSNAG_ENDPOINT'));
 
         $client = new static($config, null, $guzzle);
 
@@ -92,11 +93,29 @@ class Client
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
         $this->pipeline = new Pipeline();
-        $this->http = new HttpClient($config, $guzzle ?: new Guzzle(['base_uri' => static::ENDPOINT]));
+        $this->http = new HttpClient($config, $guzzle ?: static::makeGuzle());
 
         $this->pipeline->pipe(new NotificationSkipper($config));
 
         register_shutdown_function([$this, 'flush']);
+    }
+
+    /**
+     * Make a new guzzle client instance.
+     *
+     * @param string|null $base
+     *
+     * @return \GuzzleHttp\ClientInterface
+     */
+    protected static function makeGuzle($base = null)
+    {
+        $options = ['base_uri' => $base ?: static::ENDPOINT];
+
+        if (class_exists(CaBundle::class)) {
+            $options['cert'] = CaBundle::getSystemCaRootBundlePath();
+        }
+
+        new Guzzle($options);
     }
 
     /**
