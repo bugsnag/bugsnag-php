@@ -12,15 +12,13 @@
     }],
     "require": {
         "php": ">=5.5",
+        "composer/ca-bundle": "^1.0",
         "guzzlehttp/guzzle": "^6.0"
     },
     "require-dev": {
         "mtdowling/burgomaster": "dev-master#72151eddf5f0cf101502b94bf5031f9c53501a04",
         "phpunit/phpunit": "^4.8|^5.0",
         "php-mock/php-mock-phpunit": "^1.1"
-    },
-    "suggest": {
-        "composer/ca-bundle": "Composer's CA bundle can be useful if you are having peer verification issues."
     },
     "autoload": {
         "psr-4" : {
