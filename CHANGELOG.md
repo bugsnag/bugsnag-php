@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## 2.9.2 (2016-07-21)
+
+### Bug Fixes
+
+* Don't hard fail on sending HTTP requests
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#305](https://github.com/bugsnag/bugsnag-php/pull/305)
+
+* Fallback to localhost when HTTP_HOST is not set
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#302](https://github.com/bugsnag/bugsnag-php/pull/302)
+
 ## 2.9.1 (2016-07-06)
 
 ### Bug Fixes
