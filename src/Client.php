@@ -115,7 +115,7 @@ class Client
             $options['cert'] = CaBundle::getSystemCaRootBundlePath();
         }
 
-        new Guzzle($options);
+        return new Guzzle($options);
     }
 
     /**
