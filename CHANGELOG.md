@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## 3.1.0 (2016-07-22)
+
+### Bug Fixes
+
+* Fallback to localhost when HTTP_HOST is not set
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#302](https://github.com/bugsnag/bugsnag-php/pull/302)
+
+* Fixed certificate verification on some systems
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#308](https://github.com/bugsnag/bugsnag-php/pull/308)
+
 ## 3.0.1 (2016-07-08)
 
 ### Bug Fixes
