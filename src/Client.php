@@ -109,10 +109,11 @@ class Client
      */
     protected static function makeGuzzle($base = null)
     {
-        $options = [
-            'base_uri' => $base ?: static::ENDPOINT,
-            'cert' => CaBundle::getSystemCaRootBundlePath(),
-        ];
+        $options = ['base_uri' => $base ?: static::ENDPOINT];
+
+        if (class_exists(CaBundle::class)) {
+            $options['cert'] = CaBundle::getSystemCaRootBundlePath();
+        }
 
         return new Guzzle($options);
     }
