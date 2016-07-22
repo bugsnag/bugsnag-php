@@ -12,6 +12,7 @@
     }],
     "require": {
         "php": ">=5.5",
+        "composer/ca-bundle": "^1.0",
         "guzzlehttp/guzzle": "^6.0"
     },
     "require-dev": {
@@ -31,7 +32,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0-dev"
+            "dev-develop": "3.1-dev"
         }
     },
     "minimum-stability": "dev",
