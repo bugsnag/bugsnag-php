@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 3.1.1 (2016-07-25)
+
+### Bug Fixes
+
+* Fixed certificate verification on Windows
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#318](https://github.com/bugsnag/bugsnag-php/pull/318)
+
 ## 3.1.0 (2016-07-22)
 
 ### Bug Fixes
