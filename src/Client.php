@@ -111,11 +111,25 @@ class Client
     {
         $options = ['base_uri' => $base ?: static::ENDPOINT];
 
-        if (class_exists(CaBundle::class)) {
-            $options['cert'] = CaBundle::getSystemCaRootBundlePath();
+        if ($path = static::getCaBundlePath()) {
+            $options['verify'] = $path;
         }
 
         return new Guzzle($options);
+    }
+
+    /**
+     * Get the ca bundle path if one exists.
+     *
+     * @return string|false
+     */
+    protected static function getCaBundlePath()
+    {
+        if (!class_exists(CaBundle::class)) {
+            return false;
+        }
+
+        return realpath(CaBundle::getSystemCaRootBundlePath());
     }
 
     /**
