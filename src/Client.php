@@ -230,6 +230,34 @@ class Client
     }
 
     /**
+     * Notify Bugsnag of a deployment.
+     *
+     * @param string|null $repository the repository from which you are deploying the code
+     * @param string|null $branch     the source control branch from which you are deploying
+     * @param string|null $revision   the source control revision you are currently deploying
+     *
+     * @return void
+     */
+    public function deploy($repository = null, $branch = null, $revision = null)
+    {
+        $data = [];
+
+        if ($repository) {
+            $data['repository'] = $repository;
+        }
+
+        if ($branch) {
+            $data['branch'] = $branch;
+        }
+
+        if ($revision) {
+            $data['revision'] = $revision;
+        }
+
+        $this->http->deploy($data);
+    }
+
+    /**
      * Flush any buffered reports.
      *
      * @return void

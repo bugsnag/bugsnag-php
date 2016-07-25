@@ -56,6 +56,28 @@ class HttpClient
     }
 
     /**
+     * Notify Bugsnag of a deployment.
+     *
+     * @param array $data the deployment information
+     *
+     * @return void
+     */
+    public function deploy(array $data)
+    {
+        $app = $this->config->getAppData();
+
+        $data['releaseStage'] = $app['releaseStage'];
+
+        if (isset($app['version'])) {
+            $data['appVersion'] = $app['version'];
+        }
+
+        $data['apiKey'] = $this->config->getApiKey();
+
+        $this->guzzle->request('POST', 'deploy', ['json' => $data]);
+    }
+
+    /**
      * Deliver everything on the queue to Bugsnag.
      *
      * @return void
