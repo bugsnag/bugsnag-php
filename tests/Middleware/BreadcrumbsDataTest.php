@@ -109,8 +109,8 @@ class BreadcrumbsDataTest extends TestCase
         $middleware = new BreadcrumbData($this->recorder);
 
         $this->recorder->record(new Breadcrumb('Foo', 'error', ['foo' => 'bar']));
-        
-        for ($i = 0; $i < 30; $i++) { 
+
+        for ($i = 0; $i < 30; $i++) {
             $this->recorder->record(new Breadcrumb('Bar', 'log'));
         }
 
@@ -133,6 +133,5 @@ class BreadcrumbsDataTest extends TestCase
         $this->assertSame('Baz', $breadcrumbs[24]['name']);
         $this->assertSame('navigation', $breadcrumbs[24]['type']);
         $this->assertSame(['baz' => 'bar'], $breadcrumbs[24]['metaData']);
-
     }
 }
