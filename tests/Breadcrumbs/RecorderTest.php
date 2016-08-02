@@ -49,7 +49,7 @@ class RecorderTest extends TestCase
 
         $recorder->record($one);
 
-        for ($i = 0; $i < 30; $i++) { 
+        for ($i = 0; $i < 30; $i++) {
             $recorder->record($two);
         }
 
