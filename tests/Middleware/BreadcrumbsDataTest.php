@@ -26,7 +26,7 @@ class BreadcrumbsDataTest extends TestCase
 
     public function testWithoutBreadcrumbs()
     {
-        $breadcrumbs;
+        $breadcrumbs = null;
         $middleware = new BreadcrumbData($this->recorder);
 
         $middleware(Report::fromPHPThrowable($this->config, new Exception()), function (Report $report) use (&$breadcrumbs) {
@@ -38,7 +38,7 @@ class BreadcrumbsDataTest extends TestCase
 
     public function testBasicBreadcrumb()
     {
-        $breadcrumbs;
+        $breadcrumbs = null;
         $middleware = new BreadcrumbData($this->recorder);
 
         $this->recorder->record(new Breadcrumb('Foo', 'error'));
@@ -58,7 +58,7 @@ class BreadcrumbsDataTest extends TestCase
 
     public function testBreadcrumbWithMetaData()
     {
-        $breadcrumbs;
+        $breadcrumbs = null;
         $middleware = new BreadcrumbData($this->recorder);
 
         $this->recorder->record(new Breadcrumb('Foo', 'error', ['foo' => 'bar']));
@@ -78,7 +78,7 @@ class BreadcrumbsDataTest extends TestCase
 
     public function testTwoBreadcrumbs()
     {
-        $breadcrumbs;
+        $breadcrumbs = null;
         $middleware = new BreadcrumbData($this->recorder);
 
         $this->recorder->record(new Breadcrumb('Foo', 'error', ['foo' => 'bar']));
@@ -105,7 +105,7 @@ class BreadcrumbsDataTest extends TestCase
 
     public function testManyBreadcrumbs()
     {
-        $breadcrumbs;
+        $breadcrumbs = null;
         $middleware = new BreadcrumbData($this->recorder);
 
         $this->recorder->record(new Breadcrumb('Foo', 'error', ['foo' => 'bar']));
