@@ -18,7 +18,7 @@ class Breadcrum
      *
      * @var string
      */
-    const REQUEST_TYPE= 'request';
+    const REQUEST_TYPE = 'request';
 
     /**
      * The process type.

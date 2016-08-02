@@ -5,7 +5,7 @@ namespace Bugsnag\Middleware;
 use Bugsnag\Breadcrums\Recorder;
 use Bugsnag\Report;
 
-class BreadrumData
+class BreadcrumData
 {
     /**
      * The recorder instance.
