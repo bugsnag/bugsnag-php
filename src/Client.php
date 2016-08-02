@@ -250,6 +250,8 @@ class Client
             $this->http->queue($report);
         });
 
+        $this->leaveBreadcrumb($report->getShortName(), 'error', $report->getSummary());
+
         if (!$this->config->isBatchSending()) {
             $this->flush();
         }

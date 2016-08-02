@@ -5,6 +5,8 @@ namespace Bugsnag;
 use Bugsnag\Breadcrumbs\Breadcrumb;
 use Exception;
 use InvalidArgumentException;
+use ReflectionClass;
+use ReflectionException;
 use Throwable;
 
 class Report
@@ -285,6 +287,20 @@ class Report
     }
 
     /**
+     * Get the short name.
+     *
+     * @return string
+     */
+    public function getShortName()
+    {
+        try {
+            return (new ReflectionClass($this->name))->getShortName();
+        } catch (ReflectionException $e) {
+            return $this->name;
+        }
+    }
+
+    /**
      * Set the error message.
      *
      * @param string|null $message the error message
@@ -463,6 +479,20 @@ class Report
         }
 
         $this->breadcrumbs[] = $data;
+    }
+
+    /**
+     * Get the report summary.
+     *
+     * @return string[]
+     */
+    public function getSummary()
+    {
+        return array_filter([
+            'name' => $this->getName(),
+            'message' => $this->getMessage(),
+            'severity' => $this->getSeverity(),
+        ]);
     }
 
     /**

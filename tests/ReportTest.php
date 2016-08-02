@@ -222,6 +222,20 @@ class ReportTest extends TestCase
         $this->assertSame('123', $this->report->getName());
     }
 
+    public function testGetShortNameClass()
+    {
+        $this->report->setName('Bugsnag\Client');
+
+        $this->assertSame('Client', $this->report->getShortName());
+    }
+
+    public function testGetShortNameFallback()
+    {
+        $this->report->setName('foo bar baz');
+
+        $this->assertSame('foo bar baz', $this->report->getShortName());
+    }
+
     public function testGoodSetMessage()
     {
         $this->report->setMessage('foo bar baz');
@@ -241,5 +255,22 @@ class ReportTest extends TestCase
         $this->report->setMessage(null);
 
         $this->assertSame(null, $this->report->getMessage());
+    }
+
+    public function testGetSummaryFull()
+    {
+        $this->report->setName('foo');
+        $this->report->setMessage('bar');
+        $this->report->setSeverity('info');
+
+        $this->assertSame(['name' => 'foo', 'message' => 'bar', 'severity' => 'info'], $this->report->getSummary());
+    }
+
+    public function testGetSummaryPartial()
+    {
+        $this->report->setName('foo');
+        $this->report->setMessage(null);
+
+        $this->assertSame(['name' => 'foo', 'severity' => 'warning'], $this->report->getSummary());
     }
 }

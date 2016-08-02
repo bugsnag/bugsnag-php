@@ -197,6 +197,43 @@ class ClientTest extends TestCase
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
     }
 
+    public function testBreadcrumsAgain()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->leaveBreadcrumb('Test', 'user', ['foo' => 'bar']);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $breadcrumbs = $report->toArray()['breadcrumbs'];
+
+        $this->assertCount(1, $breadcrumbs);
+
+        $this->assertCount(4, $breadcrumbs[0]);
+        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        $this->assertSame('Test', $breadcrumbs[0]['name']);
+        $this->assertSame('user', $breadcrumbs[0]['type']);
+        $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $breadcrumbs = $report->toArray()['breadcrumbs'];
+
+        $this->assertCount(2, $breadcrumbs);
+
+        $this->assertCount(4, $breadcrumbs[0]);
+        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        $this->assertSame('Test', $breadcrumbs[0]['name']);
+        $this->assertSame('user', $breadcrumbs[0]['type']);
+        $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
+
+        $this->assertCount(4, $breadcrumbs[1]);
+        $this->assertInternalType('string', $breadcrumbs[1]['timestamp']);
+        $this->assertSame('Name', $breadcrumbs[1]['name']);
+        $this->assertSame('error', $breadcrumbs[1]['type']);
+        $this->assertSame(['name' => 'Name', 'severity' => 'warning'], $breadcrumbs[1]['metaData']);
+    }
+
     public function testNoEnvironmentByDefault()
     {
         $_ENV['SOMETHING'] = 'blah';
