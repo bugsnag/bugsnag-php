@@ -456,7 +456,7 @@ class Report
 
         $metaData = $this->cleanupObj($breadcrum->getMetaData(), true);
 
-        if (strlen(json_encode($metaData)) =< Breadcrum::MAX_SIZE) {
+        if (strlen(json_encode($metaData)) <= Breadcrum::MAX_SIZE) {
             $data['metaData'] = $metaData;
         }
 

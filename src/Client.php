@@ -196,7 +196,7 @@ class Client
      */
     public function leaveBreadcrum($name, $type = null, array $metaData = [])
     {
-        $this->recorder->record(new Breadcrum(substr(((string) $name, 0, 30), (string) $type ?: Breadcrum::MANUAL_TYPE, $metaData));
+        $this->recorder->record(new Breadcrum(substr((string) $name, 0, 30), (string) $type ?: Breadcrum::MANUAL_TYPE, $metaData));
     }
 
     /**
