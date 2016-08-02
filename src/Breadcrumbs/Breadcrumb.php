@@ -1,10 +1,10 @@
 <?php
 
-namespace Bugsnag\Breadcrums;
+namespace Bugsnag\Breadcrumbs;
 
 use InvalidArgumentException;
 
-class Breadcrum
+class Breadcrumb
 {
     /**
      * The navigation type.
@@ -77,35 +77,35 @@ class Breadcrum
     const MAX_SIZE = 4000;
 
     /**
-     * The timestamp of the breadcrum.
+     * The timestamp of the breadcrumb.
      *
      * @var string
      */
     protected $timestamp;
 
     /**
-     * The name of the breadcrum.
+     * The name of the breadcrumb.
      *
      * @var string
      */
     protected $name;
 
     /**
-     * The type of the breadcrum.
+     * The type of the breadcrumb.
      *
      * @var string
      */
     protected $type;
 
     /**
-     * The meta data of the breadcrum.
+     * The meta data of the breadcrumb.
      *
      * @var array
      */
     protected $metaData;
 
     /**
-     * Create a new breadcrum instance.
+     * Create a new breadcrumb instance.
      *
      * @param string $name     the name of the breadcrumb
      * @param string $type     the type of breadcrumb
@@ -118,17 +118,17 @@ class Breadcrum
     public function __construct($name, $type, array $metaData = [])
     {
         if (!is_string($name) || $name === '') {
-            throw new InvalidArgumentException('The breadcrum name must be a non-empty string.');
+            throw new InvalidArgumentException('The breadcrumb name must be a non-empty string.');
         }
 
         if (strlen($name) > static::MAX_SIZE) {
-            throw new InvalidArgumentException(sprintf('The breadcrum name must be at most %d characters in length.', static::MAX_LENGTH));
+            throw new InvalidArgumentException(sprintf('The breadcrumb name must be at most %d characters in length.', static::MAX_LENGTH));
         }
 
         $types = static::getTypes();
 
         if (!in_array($type, $types, true)) {
-            throw new InvalidArgumentException(sprintf('The breadcrum type must be one of the set of %d standard types.', count($types)));
+            throw new InvalidArgumentException(sprintf('The breadcrumb type must be one of the set of %d standard types.', count($types)));
         }
 
         $this->timestamp = gmdate('Y-m-d\TH:i:s\Z');
@@ -138,7 +138,7 @@ class Breadcrum
     }
 
     /**
-     * Get the breadcrum as an array.
+     * Get the breadcrumb as an array.
      *
      * Note that this is without the meta data.
      *
@@ -154,7 +154,7 @@ class Breadcrum
     }
 
     /**
-     * Get the breadcrum meta data.
+     * Get the breadcrumb meta data.
      *
      * Note that this still needs sanitizing before use.
      *

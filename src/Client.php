@@ -3,15 +3,15 @@
 namespace Bugsnag;
 
 use BadMethodCallException;
-use Bugsnag\Breadcrums\Breadcrum;
-use Bugsnag\Breadcrums\Recorder;
+use Bugsnag\Breadcrumbs\Breadcrumb;
+use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Callbacks\RequestCookies;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
-use Bugsnag\Middleware\BreadcrumData;
+use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
@@ -44,9 +44,9 @@ class Client
     protected $resolver;
 
     /**
-     * The breadcrum recorder instance.
+     * The breadcrumb recorder instance.
      *
-     * @var \Bugsnag\Breadcrums\Recorder
+     * @var \Bugsnag\Breadcrumbs\Recorder
      */
     protected $recorder;
 
@@ -107,7 +107,7 @@ class Client
         $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
 
         $this->pipeline->pipe(new NotificationSkipper($config));
-        $this->pipeline->pipe(new BreadcrumData($this->recorder));
+        $this->pipeline->pipe(new BreadcrumbData($this->recorder));
 
         register_shutdown_function([$this, 'flush']);
     }
@@ -186,7 +186,7 @@ class Client
     }
 
     /**
-     * Record the given breadcrum.
+     * Record the given breadcrumb.
      *
      * @param string      $name     the name of the breadcrumb
      * @param string|null $type     the type of breadcrumb
@@ -194,9 +194,9 @@ class Client
      *
      * @return void
      */
-    public function leaveBreadcrum($name, $type = null, array $metaData = [])
+    public function leaveBreadcrumb($name, $type = null, array $metaData = [])
     {
-        $this->recorder->record(new Breadcrum(substr((string) $name, 0, 30), (string) $type ?: Breadcrum::MANUAL_TYPE, $metaData));
+        $this->recorder->record(new Breadcrumb(substr((string) $name, 0, 30), (string) $type ?: Breadcrumb::MANUAL_TYPE, $metaData));
     }
 
     /**

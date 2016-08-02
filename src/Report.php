@@ -2,7 +2,7 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Breadcrums\Breadcrum;
+use Bugsnag\Breadcrumbs\Breadcrumb;
 use Exception;
 use InvalidArgumentException;
 use Throwable;
@@ -87,11 +87,11 @@ class Report
     protected $user = [];
 
     /**
-     * The associated breadcrums.
+     * The associated breadcrumbs.
      *
      * @var array[]
      */
-    protected $breadcrums = [];
+    protected $breadcrumbs = [];
 
     /**
      * Create a new report from a PHP error.
@@ -444,23 +444,23 @@ class Report
     }
 
     /**
-     * Add a breadcrum to the report.
+     * Add a breadcrumb to the report.
      *
-     * @param \Bugsnag\Breadcrums\Breadcrum $breadcrum
+     * @param \Bugsnag\Breadcrumbs\Breadcrumb $breadcrumb
      *
      * @return void
      */
-    public function addBreadcrum(Breadcrum $breadcrum)
+    public function addBreadcrumb(Breadcrumb $breadcrumb)
     {
-        $data = $breadcrum->toArray();
+        $data = $breadcrumb->toArray();
 
-        $metaData = $this->cleanupObj($breadcrum->getMetaData(), true);
+        $metaData = $this->cleanupObj($breadcrumb->getMetaData(), true);
 
-        if (strlen(json_encode($metaData)) <= Breadcrum::MAX_SIZE) {
+        if (strlen(json_encode($metaData)) <= Breadcrumb::MAX_SIZE) {
             $data['metaData'] = $metaData;
         }
 
-        $this->breadcrums[] = $data;
+        $this->breadcrumbs[] = $data;
     }
 
     /**
@@ -478,7 +478,7 @@ class Report
             'payloadVersion' => static::PAYLOAD_VERSION,
             'severity' => $this->getSeverity(),
             'exceptions' => $this->exceptionArray(),
-            'breadcrums' => $this->breadcrums,
+            'breadcrumbs' => $this->breadcrumbs,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
         ];
 

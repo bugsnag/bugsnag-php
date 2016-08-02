@@ -1,24 +1,24 @@
 <?php
 
-namespace Bugsnag\Breadcrums;
+namespace Bugsnag\Breadcrumbs;
 
 use Iterator;
 
 class Recorder implements Iterator
 {
     /**
-     * The maximum number of breadcrums to store.
+     * The maximum number of breadcrumbs to store.
      *
      * @var int
      */
     const MAX_ITEMS = 25;
 
     /**
-     * The recorded breadcrums.
+     * The recorded breadcrumbs.
      *
-     * @var \Bugsnag\Breadcrums\Breadcrum[]
+     * @var \Bugsnag\Breadcrumbs\Breadcrumb[]
      */
-    protected $breadcrums = [];
+    protected $breadcrumbs = [];
 
     /**
      * The head position.
@@ -42,38 +42,38 @@ class Recorder implements Iterator
     protected $position = 0;
 
     /**
-     * Record a breadcrum.
+     * Record a breadcrumb.
      *
-     * We're recording a maximum of 25 breadcrums. Once we've recorded 25, we
+     * We're recording a maximum of 25 breadcrumbs. Once we've recorded 25, we
      * start wrapping back around and replacing the earlier ones. In order to
      * indicate the start of the list, we advance a head pointer.
      *
-     * @param \Bugsnag\Breadcrums\Breadcrum $breadcrum
+     * @param \Bugsnag\Breadcrumbs\Breadcrumb $breadcrumb
      *
      * @return void
      */
-    public function record(Breadcrum $breadcrum)
+    public function record(Breadcrumb $breadcrumb)
     {
         // advance the head by one if we've caught up
-        if ($this->breadcrums && $this->pointer === $this->head) {
+        if ($this->breadcrumbs && $this->pointer === $this->head) {
             $this->head = ($this->head + 1) % static::MAX_ITEMS;
         }
 
-        // record the new breadcrum
-        $this->breadcrums[$this->pointer] = $breadcrum;
+        // record the new breadcrumb
+        $this->breadcrumbs[$this->pointer] = $breadcrumb;
 
-        // advance the pointer so we set the next breadcrum in the next slot
+        // advance the pointer so we set the next breadcrumb in the next slot
         $this->pointer = ($this->pointer + 1) % static::MAX_ITEMS;
     }
 
     /**
      * Get the current item.
      *
-     * @return \Bugsnag\Breadcrums\Breadcrum
+     * @return \Bugsnag\Breadcrumbs\Breadcrumb
      */
     public function current()
     {
-        return $this->breadcrums[$this->key()];
+        return $this->breadcrumbs[$this->key()];
     }
 
     /**
@@ -114,6 +114,6 @@ class Recorder implements Iterator
      */
     public function valid()
     {
-        return $this->position < count($breadcrums);
+        return $this->position < count($this->breadcrumbs);
     }
 }

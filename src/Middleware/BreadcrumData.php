@@ -2,22 +2,22 @@
 
 namespace Bugsnag\Middleware;
 
-use Bugsnag\Breadcrums\Recorder;
+use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Report;
 
-class BreadcrumData
+class BreadcrumbData
 {
     /**
      * The recorder instance.
      *
-     * @var \Bugsnag\Breadcrums\Recorder
+     * @var \Bugsnag\Breadcrumbs\Recorder
      */
     protected $recorder;
 
     /**
-     * Create a new breadcrum data middleware instance.
+     * Create a new breadcrumb data middleware instance.
      *
-     * @param \Bugsnag\Breadcrums\Recorder $recorder the recorder instance
+     * @param \Bugsnag\Breadcrumbs\Recorder $recorder the recorder instance
      *
      * @return void
      */
@@ -36,8 +36,8 @@ class BreadcrumData
      */
     public function __invoke(Report $report, callable $next)
     {
-        foreach ($this->recorder as $breadcrum) {
-            $report->addBreadcrum($breadcrum);
+        foreach ($this->recorder as $breadcrumb) {
+            $report->addBreadcrumb($breadcrumb);
         }
 
         $next($report);
