@@ -75,7 +75,7 @@ class Recorder implements Iterator
     {
         return $this->breadcrums[$this->key()];
     }
-    
+
     /**
      * Get the current key.
      *
@@ -86,7 +86,7 @@ class Recorder implements Iterator
         // note that the position will move from 0 -> 24
         return ($this->head + $this->position) % static::MAX_ITEMS;
     }
-    
+
     /**
      * Advance the key position.
      *
@@ -96,7 +96,7 @@ class Recorder implements Iterator
     {
         $this->position++;
     }
-    
+
     /**
      * Rewind the key position.
      *
@@ -106,7 +106,7 @@ class Recorder implements Iterator
     {
         $this->position = 0;
     }
-    
+
     /**
      * Is the current key position set?
      *
