@@ -3,12 +3,15 @@
 namespace Bugsnag;
 
 use BadMethodCallException;
+use Bugsnag\Breadcrumbs\Breadcrumb;
+use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Callbacks\RequestCookies;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
+use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
@@ -39,6 +42,13 @@ class Client
      * @var \Bugsnag\Request\ResolverInterface
      */
     protected $resolver;
+
+    /**
+     * The breadcrumb recorder instance.
+     *
+     * @var \Bugsnag\Breadcrumbs\Recorder
+     */
+    protected $recorder;
 
     /**
      * The notification pipeline instance.
@@ -92,10 +102,12 @@ class Client
     {
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
+        $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
 
         $this->pipeline->pipe(new NotificationSkipper($config));
+        $this->pipeline->pipe(new BreadcrumbData($this->recorder));
 
         register_shutdown_function([$this, 'flush']);
     }
@@ -171,6 +183,20 @@ class Client
              ->registerCallback(new RequestContext($this->resolver));
 
         return $this;
+    }
+
+    /**
+     * Record the given breadcrumb.
+     *
+     * @param string      $name     the name of the breadcrumb
+     * @param string|null $type     the type of breadcrumb
+     * @param array       $metaData additional information about the breadcrumb
+     *
+     * @return void
+     */
+    public function leaveBreadcrumb($name, $type = null, array $metaData = [])
+    {
+        $this->recorder->record(new Breadcrumb(substr((string) $name, 0, 30), (string) $type ?: Breadcrumb::MANUAL_TYPE, $metaData));
     }
 
     /**
