@@ -70,11 +70,11 @@ class Breadcrumb
     const MAX_LENGTH = 30;
 
     /**
-     * The maximum size of the meta data.
+     * The maximum size of the breadcrumb.
      *
      * @var int
      */
-    const MAX_SIZE = 4000;
+    const MAX_SIZE = 4096;
 
     /**
      * The timestamp of the breadcrumb.
