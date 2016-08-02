@@ -2,6 +2,7 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Breadcrums\Breadcrum;
 use Exception;
 use InvalidArgumentException;
 use Throwable;
@@ -13,7 +14,7 @@ class Report
      *
      * @var string
      */
-    const PAYLOAD_VERSION = '2';
+    const PAYLOAD_VERSION = '3';
 
     /**
      * The config object.
@@ -84,6 +85,13 @@ class Report
      * @var array
      */
     protected $user = [];
+
+    /**
+     * The associated breadcrums.
+     *
+     * @var array[]
+     */
+    protected $breadcrums = [];
 
     /**
      * Create a new report from a PHP error.
@@ -436,6 +444,26 @@ class Report
     }
 
     /**
+     * Add a breadcrum to the report.
+     *
+     * @param \Bugsnag\Breadcrums\Breadcrum $breadcrum
+     *
+     * @return void
+     */
+    public function addBreadcrum(Breadcrum $breadcrum)
+    {
+        $data = $breadcrum->toArray();
+
+        $metaData = $this->cleanupObj($breadcrum->getMetaData(), true);
+
+        if (strlen(json_encode($metaData)) =< Breadcrum::MAX_SIZE) {
+            $data['metaData'] = $metaData;
+        }
+
+        $this->breadcrums[] = $data;
+    }
+
+    /**
      * Get the array representation.
      *
      * @return array
@@ -450,6 +478,7 @@ class Report
             'payloadVersion' => static::PAYLOAD_VERSION,
             'severity' => $this->getSeverity(),
             'exceptions' => $this->exceptionArray(),
+            'breadcrums' => $this->breadcrums,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
         ];
 
