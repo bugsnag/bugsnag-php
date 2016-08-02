@@ -456,7 +456,7 @@ class Report
 
         $metaData = $this->cleanupObj($breadcrumb->getMetaData(), true);
 
-        if (strlen(json_encode($metaData)) <= Breadcrumb::MAX_SIZE) {
+        if ($metaData && strlen(json_encode($metaData)) <= Breadcrumb::MAX_SIZE) {
             $data['metaData'] = $metaData;
         }
 

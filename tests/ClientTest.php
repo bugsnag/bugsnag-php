@@ -140,6 +140,63 @@ class ClientTest extends TestCase
         $this->assertSame(['foo' => 'baz'], $report->getMetaData());
     }
 
+    public function testBreadcrumsWorks()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->leaveBreadcrumb('Test', 'user', ['foo' => 'bar']);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $breadcrumbs = $report->toArray()['breadcrumbs'];
+
+        $this->assertCount(1, $breadcrumbs);
+
+        $this->assertCount(4, $breadcrumbs[0]);
+        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        $this->assertSame('Test', $breadcrumbs[0]['name']);
+        $this->assertSame('user', $breadcrumbs[0]['type']);
+        $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
+    }
+
+    public function testBreadcrumsLong()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->leaveBreadcrumb('This error name is far too long to be allowed through.', 'user', ['foo' => 'bar']);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $breadcrumbs = $report->toArray()['breadcrumbs'];
+
+        $this->assertCount(1, $breadcrumbs);
+
+        $this->assertCount(4, $breadcrumbs[0]);
+        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        $this->assertSame('This error name is far too lon', $breadcrumbs[0]['name']);
+        $this->assertSame('user', $breadcrumbs[0]['type']);
+        $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
+    }
+
+    public function testBreadcrumsLarge()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->leaveBreadcrumb('Test', 'user', ['foo' => str_repeat('A', 5000)]);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $breadcrumbs = $report->toArray()['breadcrumbs'];
+
+        $this->assertCount(1, $breadcrumbs);
+
+        $this->assertCount(3, $breadcrumbs[0]);
+        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        $this->assertSame('Test', $breadcrumbs[0]['name']);
+        $this->assertSame('user', $breadcrumbs[0]['type']);
+        $this->assertFalse(isset($breadcrumbs[0]['metaData']));
+    }
+
     public function testNoEnvironmentByDefault()
     {
         $_ENV['SOMETHING'] = 'blah';

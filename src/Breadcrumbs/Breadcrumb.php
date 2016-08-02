@@ -121,7 +121,7 @@ class Breadcrumb
             throw new InvalidArgumentException('The breadcrumb name must be a non-empty string.');
         }
 
-        if (strlen($name) > static::MAX_SIZE) {
+        if (strlen($name) > static::MAX_LENGTH) {
             throw new InvalidArgumentException(sprintf('The breadcrumb name must be at most %d characters in length.', static::MAX_LENGTH));
         }
 
@@ -134,7 +134,7 @@ class Breadcrumb
         $this->timestamp = gmdate('Y-m-d\TH:i:s\Z');
         $this->name = $name;
         $this->type = $type;
-        $this->metaData = $data;
+        $this->metaData = $metaData;
     }
 
     /**

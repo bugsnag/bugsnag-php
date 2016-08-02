@@ -196,7 +196,7 @@ class Client
      */
     public function leaveBreadcrumb($name, $type = null, array $metaData = [])
     {
-        $this->recorder->record(new Breadcrumb(substr((string) $name, 0, 30), (string) $type ?: Breadcrumb::MANUAL_TYPE, $metaData));
+        $this->recorder->record(new Breadcrumb(substr((string) $name, 0, Breadcrumb::MAX_LENGTH), (string) $type ?: Breadcrumb::MANUAL_TYPE, $metaData));
     }
 
     /**

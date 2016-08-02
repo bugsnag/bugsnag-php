@@ -88,7 +88,7 @@ class ReportTest extends TestCase
         $this->report->setPHPError(E_ERROR, 'Broken', 'file', 123);
 
         $event = $this->report->toArray();
-        $this->assertSame($event['payloadVersion'], '2');
+        $this->assertSame('3', $event['payloadVersion']);
     }
 
     public function testNoticeSeverity()

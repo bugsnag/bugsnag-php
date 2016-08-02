@@ -73,7 +73,7 @@ class Recorder implements Iterator
      */
     public function current()
     {
-        return $this->breadcrumbs[$this->key()];
+        return $this->breadcrumbs[($this->head + $this->position) % static::MAX_ITEMS];
     }
 
     /**
@@ -83,8 +83,7 @@ class Recorder implements Iterator
      */
     public function key()
     {
-        // note that the position will move from 0 -> 24
-        return ($this->head + $this->position) % static::MAX_ITEMS;
+        return $this->position;
     }
 
     /**
