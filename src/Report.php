@@ -86,6 +86,13 @@ class Report
     protected $user = [];
 
     /**
+     * The error time.
+     *
+     * @var string
+     */
+    protected $time;
+
+    /**
      * Create a new report from a PHP error.
      *
      * @param \Bugsnag\Configuration $config  the config instance
@@ -155,6 +162,7 @@ class Report
     protected function __construct(Configuration $config)
     {
         $this->config = $config;
+        $this->time = gmdate('Y-m-d\TH:i:s\Z');
     }
 
     /**
@@ -444,7 +452,7 @@ class Report
     {
         $event = [
             'app' => $this->config->getAppData(),
-            'device' => $this->config->getDeviceData(),
+            'device' => array_merge(['time' => $this->time], $this->config->getDeviceData()),
             'user' => $this->getUser(),
             'context' => $this->getContext(),
             'payloadVersion' => static::PAYLOAD_VERSION,
