@@ -7,6 +7,7 @@ use Bugsnag\Configuration;
 use Bugsnag\Report;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Uri;
 use phpmock\phpunit\PHPMock;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -23,7 +24,7 @@ class ClientTest extends TestCase
     protected function setUp()
     {
         $this->guzzle = $this->getMockBuilder(Guzzle::class)
-                             ->setMethods(['request'])
+                             ->setMethods(['post'])
                              ->getMock();
 
         $this->client = $this->getMockBuilder(Client::class)
@@ -79,7 +80,11 @@ class ClientTest extends TestCase
 
     public function testDefaultSetup()
     {
-        $this->assertEquals(new Uri('https://notify.bugsnag.com'), $this->getGuzzle(Client::make('123'))->getConfig('base_uri'));
+        if (version_compare(ClientInterface::VERSION, '6') === 1) {
+            $this->assertEquals(new Uri('https://notify.bugsnag.com'), $this->getGuzzle(Client::make('123'))->getConfig('base_uri'));
+        } else {
+            $this->assertSame('https://notify.bugsnag.com', $this->getGuzzle(Client::make('123'))->getBaseUrl());
+        }
     }
 
     public function testCanMake()
@@ -88,7 +93,11 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf(Client::class, $client);
 
-        $this->assertEquals(new Uri('https://example.com'), $this->getGuzzle($client)->getConfig('base_uri'));
+        if (version_compare(ClientInterface::VERSION, '6') === 1) {
+            $this->assertEquals(new Uri('https://example.com'), $this->getGuzzle($client)->getConfig('base_uri'));
+        } else {
+            $this->assertSame('https://example.com', $this->getGuzzle($client)->getBaseUrl());
+        }
     }
 
     public function testCanMakeFromEnv()
@@ -100,7 +109,11 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf(Client::class, $client);
 
-        $this->assertEquals(new Uri('http://foo.com'), $this->getGuzzle($client)->getConfig('base_uri'));
+        if (version_compare(ClientInterface::VERSION, '6') === 1) {
+            $this->assertEquals(new Uri('http://foo.com'), $this->getGuzzle($client)->getConfig('base_uri'));
+        } else {
+            $this->assertSame('http://foo.com', $this->getGuzzle($client)->getBaseUrl());
+        }
     }
 
     public function testDynamicConfigSetting()
@@ -124,7 +137,7 @@ class ClientTest extends TestCase
             }
         });
 
-        $this->guzzle->expects($this->never())->method('request');
+        $this->guzzle->expects($this->never())->method('post');
 
         $this->client->notify(Report::fromNamedError($this->config, 'SkipMe', 'Message'));
     }
@@ -335,7 +348,7 @@ class ClientTest extends TestCase
 
         $this->client->setBatchSending(false);
 
-        $this->guzzle->expects($this->once())->method('request');
+        $this->guzzle->expects($this->once())->method('post');
 
         $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
 
@@ -346,7 +359,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksOutOfTheBox()
     {
-        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -355,7 +368,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithgReleaseStage()
     {
-        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key']]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -366,7 +379,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithAppVersion()
     {
-        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'production', 'appVersion' => '1.1.0', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'production', 'appVersion' => '1.1.0', 'apiKey' => 'example-api-key']]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -377,7 +390,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithRepository()
     {
-        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['repository' => 'foo', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['repository' => 'foo', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -386,7 +399,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithBranch()
     {
-        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['branch' => 'master', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['branch' => 'master', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -395,7 +408,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithRevision()
     {
-        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['revision' => 'bar', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['revision' => 'bar', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -404,7 +417,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithEverything()
     {
-        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['repository' => 'baz', 'branch' => 'develop', 'revision' => 'foo', 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['repository' => 'baz', 'branch' => 'develop', 'revision' => 'foo', 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key']]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 

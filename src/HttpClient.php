@@ -74,7 +74,7 @@ class HttpClient
 
         $data['apiKey'] = $this->config->getApiKey();
 
-        $this->guzzle->request('POST', 'deploy', ['json' => $data]);
+        $this->guzzle->post('deploy', ['json' => $data]);
     }
 
     /**
@@ -148,7 +148,7 @@ class HttpClient
 
         // Send via guzzle and log any failures
         try {
-            $this->guzzle->request('POST', $url, ['json' => $normalized]);
+            $this->guzzle->post($url, ['json' => $normalized]);
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
         }
