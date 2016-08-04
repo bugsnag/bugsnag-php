@@ -204,7 +204,21 @@ class Client
             //
         }
 
-        $this->recorder->record(new Breadcrumb(substr((string) $name, 0, Breadcrumb::MAX_LENGTH), (string) $type ?: Breadcrumb::MANUAL_TYPE, $metaData));
+        $name = substr((string) $name, 0, Breadcrumb::MAX_LENGTH);
+
+        $type = in_array($type, Breadcrumb::getTypes(), true) ? $type : Breadcrumb::MANUAL_TYPE;
+
+        $this->recorder->record(new Breadcrumb($name, $type, $metaData));
+    }
+
+    /**
+     * Clear all recorded breadcrumbs.
+     *
+     * @return void
+     */
+    public function clearBreadcrumbs()
+    {
+        $this->recorder->clear();
     }
 
     /**

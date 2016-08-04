@@ -68,6 +68,19 @@ class Recorder implements Countable, Iterator
     }
 
     /**
+     * Clear all recorded breadcrumbs.
+     *
+     * @return void
+     */
+    public function clear()
+    {
+        $this->head = 0;
+        $this->pointer = 0;
+        $this->position = 0;
+        $this->breadcrumbs = [];
+    }
+
+    /**
      * Get the number of stored breadcrumbs.
      *
      * @return int

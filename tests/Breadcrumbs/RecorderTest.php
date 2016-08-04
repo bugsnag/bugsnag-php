@@ -24,6 +24,11 @@ class RecorderTest extends TestCase
 
         $this->assertCount(0, $recorder);
         $this->assertSame([], iterator_to_array($recorder));
+
+        $recorder->clear();
+
+        $this->assertCount(0, $recorder);
+        $this->assertSame([], iterator_to_array($recorder));
     }
 
     public function testOneRecorded()
@@ -35,6 +40,11 @@ class RecorderTest extends TestCase
 
         $this->assertCount(1, $recorder);
         $this->assertSame([$breadcrumb], iterator_to_array($recorder));
+
+        $recorder->clear();
+
+        $this->assertCount(0, $recorder);
+        $this->assertSame([], iterator_to_array($recorder));
     }
 
     public function testTwoRecorded()
@@ -48,6 +58,11 @@ class RecorderTest extends TestCase
 
         $this->assertCount(2, $recorder);
         $this->assertSame([$one, $two], iterator_to_array($recorder));
+
+        $recorder->clear();
+
+        $this->assertCount(0, $recorder);
+        $this->assertSame([], iterator_to_array($recorder));
     }
 
     public function testManyRecorded()
@@ -69,5 +84,10 @@ class RecorderTest extends TestCase
 
         $this->assertCount(25, $recorder);
         $this->assertSame([$two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $two, $three, $two, $three], iterator_to_array($recorder));
+
+        $recorder->clear();
+
+        $this->assertCount(0, $recorder);
+        $this->assertSame([], iterator_to_array($recorder));
     }
 }
