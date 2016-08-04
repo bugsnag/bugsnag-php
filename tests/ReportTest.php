@@ -21,6 +21,15 @@ class ReportTest extends TestCase
         $this->report = Report::fromNamedError($this->config, 'Name', 'Message');
     }
 
+    public function testDeviceData()
+    {
+        $data = $this->report->toArray();
+
+        $this->assertCount(2, $data['device']);
+        $this->assertInternalType('string', $data['device']['time']);
+        $this->assertSame(php_uname('n'), $data['device']['hostname']);
+    }
+
     public function testMetaData()
     {
         $this->report->setMetaData(['Testing' => ['globalArray' => 'hi']]);
