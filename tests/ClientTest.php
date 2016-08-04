@@ -203,4 +203,74 @@ class ClientTest extends TestCase
         $this->client->flush();
         $this->client->flush();
     }
+
+    public function testDeployWorksOutOfTheBox()
+    {
+        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->deploy();
+    }
+
+    public function testDeployWorksWithgReleaseStage()
+    {
+        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->config->setReleaseStage('staging');
+
+        $this->client->deploy();
+    }
+
+    public function testDeployWorksWithAppVersion()
+    {
+        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'production', 'appVersion' => '1.1.0', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->config->setAppVersion('1.1.0');
+
+        $this->client->deploy();
+    }
+
+    public function testDeployWorksWithRepository()
+    {
+        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['repository' => 'foo', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->deploy('foo');
+    }
+
+    public function testDeployWorksWithBranch()
+    {
+        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['branch' => 'master', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->deploy(null, 'master');
+    }
+
+    public function testDeployWorksWithRevision()
+    {
+        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['revision' => 'bar', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->deploy(null, null, 'bar');
+    }
+
+    public function testDeployWorksWithEverything()
+    {
+        $this->guzzle->expects($this->once())->method('request')->with($this->equalTo('POST'), $this->equalTo('deploy'), $this->equalTo(['json' => ['repository' => 'baz', 'branch' => 'develop', 'revision' => 'foo', 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->config->setReleaseStage('development');
+        $this->config->setAppVersion('1.3.1');
+
+        $this->client->deploy('baz', 'develop', 'foo');
+    }
 }
