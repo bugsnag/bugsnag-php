@@ -2,6 +2,7 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Breadcrumbs\Breadcrumb;
 use Exception;
 use InvalidArgumentException;
 use Throwable;
@@ -13,7 +14,7 @@ class Report
      *
      * @var string
      */
-    const PAYLOAD_VERSION = '2';
+    const PAYLOAD_VERSION = '3';
 
     /**
      * The config object.
@@ -84,6 +85,13 @@ class Report
      * @var array
      */
     protected $user = [];
+
+    /**
+     * The associated breadcrumbs.
+     *
+     * @var array[]
+     */
+    protected $breadcrumbs = [];
 
     /**
      * The error time.
@@ -444,6 +452,42 @@ class Report
     }
 
     /**
+     * Add a breadcrumb to the report.
+     *
+     * @param \Bugsnag\Breadcrumbs\Breadcrumb $breadcrumb
+     *
+     * @return void
+     */
+    public function addBreadcrumb(Breadcrumb $breadcrumb)
+    {
+        $data = $breadcrumb->toArray();
+
+        if ($metaData = $this->cleanupObj($breadcrumb->getMetaData(), true)) {
+            $data['metaData'] = $metaData;
+
+            if (strlen(json_encode($data)) > Breadcrumb::MAX_SIZE) {
+                unset($data['metaData']);
+            }
+        }
+
+        $this->breadcrumbs[] = $data;
+    }
+
+    /**
+     * Get the report summary.
+     *
+     * @return string[]
+     */
+    public function getSummary()
+    {
+        return array_filter([
+            'name' => $this->getName(),
+            'message' => $this->getMessage(),
+            'severity' => $this->getSeverity(),
+        ]);
+    }
+
+    /**
      * Get the array representation.
      *
      * @return array
@@ -458,6 +502,7 @@ class Report
             'payloadVersion' => static::PAYLOAD_VERSION,
             'severity' => $this->getSeverity(),
             'exceptions' => $this->exceptionArray(),
+            'breadcrumbs' => $this->breadcrumbs,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
         ];
 

@@ -97,7 +97,7 @@ class ReportTest extends TestCase
         $this->report->setPHPError(E_ERROR, 'Broken', 'file', 123);
 
         $event = $this->report->toArray();
-        $this->assertSame($event['payloadVersion'], '2');
+        $this->assertSame('3', $event['payloadVersion']);
     }
 
     public function testNoticeSeverity()
@@ -250,5 +250,22 @@ class ReportTest extends TestCase
         $this->report->setMessage(null);
 
         $this->assertSame(null, $this->report->getMessage());
+    }
+
+    public function testGetSummaryFull()
+    {
+        $this->report->setName('foo');
+        $this->report->setMessage('bar');
+        $this->report->setSeverity('info');
+
+        $this->assertSame(['name' => 'foo', 'message' => 'bar', 'severity' => 'info'], $this->report->getSummary());
+    }
+
+    public function testGetSummaryPartial()
+    {
+        $this->report->setName('foo');
+        $this->report->setMessage(null);
+
+        $this->assertSame(['name' => 'foo', 'severity' => 'warning'], $this->report->getSummary());
     }
 }
