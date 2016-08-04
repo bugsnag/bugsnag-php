@@ -16,6 +16,13 @@ class Report
     const PAYLOAD_VERSION = '2';
 
     /**
+     * The default number of lines of tokens.
+     *
+     * @var int
+     */
+    const NUM_LINES = 35;
+
+    /**
      * The config object.
      *
      * @var \Bugsnag\Config
@@ -63,6 +70,13 @@ class Report
      * @var string|null
      */
     protected $context;
+
+    /**
+     * The associated tokens.
+     *
+     * @var array[]|null
+     */
+    protected $tokens;
 
     /**
      * The grouping hash.
@@ -184,6 +198,11 @@ class Report
              ->setMessage($throwable->getMessage())
              ->setStacktrace(Stacktrace::fromBacktrace($this->config, $throwable->getTrace(), $throwable->getFile(), $throwable->getLine()));
 
+        if ($contents = @file_get_contents($throwable->getFile())) {
+            $bounds = Parser::getBounds($throwable->getLine(), static::NUM_LINES);
+            $this->setTokens((new Parser())->parse($contents, $bounds[0], $bounds[1]));
+        }
+
         if (method_exists($throwable, 'getPrevious')) {
             $this->setPrevious($throwable->getPrevious());
         }
@@ -220,6 +239,12 @@ class Report
              ->setMessage($message)
              ->setSeverity(ErrorTypes::getSeverity($code))
              ->setStacktrace($stacktrace);
+
+
+        if ($contents = @file_get_contents($file)) {
+            $bounds = Parser::getBounds($line, static::NUM_LINES);
+            $this->setTokens((new Parser())->parse($contents, $bounds[0], $bounds[1]));
+        }
 
         return $this;
     }
@@ -371,6 +396,34 @@ class Report
     }
 
     /**
+     * Set the file tokens.
+     *
+     * @param \Generator|array[] $tokens the file tokens
+     *
+     * @return $this
+     */
+    public function setTokens($tokens)
+    {
+        if (is_array($tokens)) {
+            $this->tokens = $tokens;
+        } else {
+            $this->tokens = iterator_to_array($tokens);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the file tokens.
+     *
+     * @return array[]|null
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
+    }
+
+    /**
      * Set the grouping hash.
      *
      * @param string|null $groupingHash the grouping hash
@@ -460,6 +513,10 @@ class Report
             'exceptions' => $this->exceptionArray(),
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
         ];
+
+        if ($tokens = $this->getTokens()) {
+            $event['tokens'] = $tokens;
+        }
 
         if ($hash = $this->getGroupingHash()) {
             $event['groupingHash'] = $hash;
