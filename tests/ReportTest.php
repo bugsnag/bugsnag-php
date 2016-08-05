@@ -268,4 +268,20 @@ class ReportTest extends TestCase
 
         $this->assertSame(['name' => 'foo', 'severity' => 'warning'], $this->report->getSummary());
     }
+
+    public function testGetSummaryEmpty()
+    {
+        $this->report->setName('foo');
+        $this->report->setMessage('');
+
+        $this->assertSame(['name' => 'foo', 'severity' => 'warning'], $this->report->getSummary());
+    }
+
+    public function testGetSummaryDuplicate()
+    {
+        $this->report->setName('bar');
+        $this->report->setMessage('bar');
+
+        $this->assertSame(['message' => 'bar', 'severity' => 'warning'], $this->report->getSummary());
+    }
 }
