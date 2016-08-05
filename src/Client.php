@@ -123,7 +123,9 @@ class Client
      */
     protected static function makeGuzzle($base = null)
     {
-        $options = ['base_uri' => $base ?: static::ENDPOINT];
+        $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
+
+        $options = [$key => $base ?: static::ENDPOINT];
 
         if ($path = static::getCaBundlePath()) {
             $options['verify'] = $path;
