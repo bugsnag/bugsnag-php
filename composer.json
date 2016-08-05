@@ -13,7 +13,7 @@
     "require": {
         "php": ">=5.5",
         "composer/ca-bundle": "^1.0",
-        "guzzlehttp/guzzle": "^6.0"
+        "guzzlehttp/guzzle": "^5.0|^6.0"
     },
     "require-dev": {
         "mtdowling/burgomaster": "dev-master#72151eddf5f0cf101502b94bf5031f9c53501a04",
@@ -32,7 +32,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.1-dev"
+            "dev-develop": "3.2-dev"
         }
     },
     "minimum-stability": "dev",

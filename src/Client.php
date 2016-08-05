@@ -3,12 +3,15 @@
 namespace Bugsnag;
 
 use BadMethodCallException;
+use Bugsnag\Breadcrumbs\Breadcrumb;
+use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Callbacks\RequestCookies;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
+use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Request\BasicResolver;
@@ -16,6 +19,8 @@ use Bugsnag\Request\ResolverInterface;
 use Composer\CaBundle\CaBundle;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
+use ReflectionClass;
+use ReflectionException;
 
 class Client
 {
@@ -39,6 +44,13 @@ class Client
      * @var \Bugsnag\Request\ResolverInterface
      */
     protected $resolver;
+
+    /**
+     * The breadcrumb recorder instance.
+     *
+     * @var \Bugsnag\Breadcrumbs\Recorder
+     */
+    protected $recorder;
 
     /**
      * The notification pipeline instance.
@@ -92,10 +104,12 @@ class Client
     {
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
+        $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
 
         $this->pipeline->pipe(new NotificationSkipper($config));
+        $this->pipeline->pipe(new BreadcrumbData($this->recorder));
 
         register_shutdown_function([$this, 'flush']);
     }
@@ -109,7 +123,9 @@ class Client
      */
     protected static function makeGuzzle($base = null)
     {
-        $options = ['base_uri' => $base ?: static::ENDPOINT];
+        $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
+
+        $options = [$key => $base ?: static::ENDPOINT];
 
         if ($path = static::getCaBundlePath()) {
             $options['verify'] = $path;
@@ -174,6 +190,40 @@ class Client
     }
 
     /**
+     * Record the given breadcrumb.
+     *
+     * @param string      $name     the name of the breadcrumb
+     * @param string|null $type     the type of breadcrumb
+     * @param array       $metaData additional information about the breadcrumb
+     *
+     * @return void
+     */
+    public function leaveBreadcrumb($name, $type = null, array $metaData = [])
+    {
+        try {
+            $name = (new ReflectionClass($name))->getShortName();
+        } catch (ReflectionException $e) {
+            //
+        }
+
+        $name = substr((string) $name, 0, Breadcrumb::MAX_LENGTH);
+
+        $type = in_array($type, Breadcrumb::getTypes(), true) ? $type : Breadcrumb::MANUAL_TYPE;
+
+        $this->recorder->record(new Breadcrumb($name, $type, $metaData));
+    }
+
+    /**
+     * Clear all recorded breadcrumbs.
+     *
+     * @return void
+     */
+    public function clearBreadcrumbs()
+    {
+        $this->recorder->clear();
+    }
+
+    /**
      * Notify Bugsnag of a non-fatal/handled throwable.
      *
      * @param \Throwable    $throwable the throwable to notify Bugsnag about
@@ -224,9 +274,39 @@ class Client
             $this->http->queue($report);
         });
 
+        $this->leaveBreadcrumb($report->getName(), Breadcrumb::ERROR_TYPE, $report->getSummary());
+
         if (!$this->config->isBatchSending()) {
             $this->flush();
         }
+    }
+
+    /**
+     * Notify Bugsnag of a deployment.
+     *
+     * @param string|null $repository the repository from which you are deploying the code
+     * @param string|null $branch     the source control branch from which you are deploying
+     * @param string|null $revision   the source control revision you are currently deploying
+     *
+     * @return void
+     */
+    public function deploy($repository = null, $branch = null, $revision = null)
+    {
+        $data = [];
+
+        if ($repository) {
+            $data['repository'] = $repository;
+        }
+
+        if ($branch) {
+            $data['branch'] = $branch;
+        }
+
+        if ($revision) {
+            $data['revision'] = $revision;
+        }
+
+        $this->http->deploy($data);
     }
 
     /**
