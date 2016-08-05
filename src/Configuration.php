@@ -359,7 +359,7 @@ class Configuration
      */
     public function getAppData()
     {
-        return array_merge(['releaseStage' => 'production'], array_filter($this->appData));
+        return array_merge(['type' => php_sapi_name(), 'releaseStage' => 'production'], array_filter($this->appData));
     }
 
     /**
