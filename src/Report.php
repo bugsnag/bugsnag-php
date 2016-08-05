@@ -480,11 +480,20 @@ class Report
      */
     public function getSummary()
     {
-        return array_filter([
-            'name' => $this->getName(),
-            'message' => $this->getMessage(),
-            'severity' => $this->getSeverity(),
-        ]);
+        $summary = [];
+
+        $name = $this->getName();
+        $message = $this->getMessage();
+
+        if ($name !== $message) {
+            $summary['name'] = $name;
+        }
+
+        $summary['message'] = $message;
+
+        $summary['severity'] = $this->getSeverity();
+
+        return array_filter($summary);
     }
 
     /**
