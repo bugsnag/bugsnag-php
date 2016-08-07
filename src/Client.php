@@ -118,14 +118,15 @@ class Client
      * Make a new guzzle client instance.
      *
      * @param string|null $base
+     * @param array       $options
      *
      * @return \GuzzleHttp\ClientInterface
      */
-    protected static function makeGuzzle($base = null)
+    public static function makeGuzzle($base = null, array $options = [])
     {
         $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
 
-        $options = [$key => $base ?: static::ENDPOINT];
+        $options[$key] = $base ?: static::ENDPOINT;
 
         if ($path = static::getCaBundlePath()) {
             $options['verify'] = $path;
