@@ -3,7 +3,6 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Parser;
-use Generator;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ParserTest extends TestCase
