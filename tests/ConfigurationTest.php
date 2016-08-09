@@ -58,21 +58,25 @@ class ConfigurationTest extends TestCase
 
     public function testAppData()
     {
-        $this->assertSame(['releaseStage' => 'production'], $this->config->getAppData());
+        $this->assertSame(['type' => 'cli', 'releaseStage' => 'production'], $this->config->getAppData());
 
         $this->config->setReleaseStage('qa1');
         $this->config->setAppVersion('1.2.3');
         $this->config->setAppType('laravel');
 
-        $this->assertSame(['releaseStage' => 'qa1', 'version' => '1.2.3', 'type' => 'laravel'], $this->config->getAppData());
+        $this->assertSame(['type' => 'laravel', 'releaseStage' => 'qa1', 'version' => '1.2.3'], $this->config->getAppData());
 
         $this->config->setAppType(null);
 
-        $this->assertSame(['releaseStage' => 'qa1', 'version' => '1.2.3'], $this->config->getAppData());
+        $this->assertSame(['type' => 'cli', 'releaseStage' => 'qa1', 'version' => '1.2.3'], $this->config->getAppData());
 
         $this->config->setReleaseStage(null);
 
-        $this->assertSame(['releaseStage' => 'production', 'version' => '1.2.3'], $this->config->getAppData());
+        $this->assertSame(['type' => 'cli', 'releaseStage' => 'production', 'version' => '1.2.3'], $this->config->getAppData());
+
+        $this->config->setAppVersion(null);
+
+        $this->assertSame(['type' => 'cli', 'releaseStage' => 'production'], $this->config->getAppData());
     }
 
     public function testDeviceData()
