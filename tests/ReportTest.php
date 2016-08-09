@@ -137,6 +137,26 @@ class ReportTest extends TestCase
         $this->assertCount(1, $event['exceptions'][0]['stacktrace']);
     }
 
+    public function testNoTokensAvailable()
+    {
+        $this->report->setPHPError(E_ERROR, 'Broken', 'file', 123);
+
+        $event = $this->report->toArray();
+        $this->assertArrayNotHasKey('tokens', $event);
+    }
+
+    public function testTokensArePresent()
+    {
+        $this->report->setPHPError(E_ERROR, 'Broken', __FILE__, 123);
+
+        $event = $this->report->toArray();
+        $this->assertArrayHasKey('tokens', $event);
+        $this->assertInternalType('array', $event['tokens']);
+        $this->assertCount(101, $event['tokens']);
+        $this->assertSame(['token' => 'T_CONSTANT_ENCAPSED_STRING', 'content' => '\'file\'', 'line' => 114], $event['tokens'][0]);
+        $this->assertSame(['token' => 'T_VARIABLE', 'content' => '$this', 'line' => 123], $event['tokens'][60]);
+    }
+
     public function testManualSeverity()
     {
         $this->report->setSeverity('error');
@@ -283,5 +303,19 @@ class ReportTest extends TestCase
         $this->report->setMessage('bar');
 
         $this->assertSame(['message' => 'bar', 'severity' => 'warning'], $this->report->getSummary());
+    }
+
+    public function testSetTokens()
+    {
+        $this->report->setTokens(['foo' => 'bar']);
+
+        $this->assertSame(['foo' => 'bar'], $this->report->getTokens());
+    }
+
+    public function testSetTokensLarge()
+    {
+        $this->report->setTokens(['foo' => str_repeat('bar', 20000), 'bar' => str_repeat('baz', 20000)]);
+
+        $this->assertSame(null, $this->report->getTokens());
     }
 }
