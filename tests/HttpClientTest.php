@@ -41,7 +41,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('/', $params[0]);
+        $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
@@ -79,7 +79,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('/', $params[0]);
+        $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
@@ -121,7 +121,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('/', $params[0]);
+        $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
