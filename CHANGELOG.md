@@ -1,6 +1,32 @@
 Changelog
 =========
 
+## 3.2.0 (2016-08-08)
+
+## Enhancements
+
+* Add support for sending breadrumbs with error reports
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#232](https://github.com/bugsnag/bugsnag-php/pull/232)
+
+* Integrate support for deploy tracking
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#317](https://github.com/bugsnag/bugsnag-php/pull/317)
+
+* Support both Guzzle 5 and 6
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#332](https://github.com/bugsnag/bugsnag-php/pull/332)
+
+* Use Server API type as the default app type
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#342](https://github.com/bugsnag/bugsnag-php/pull/342)
+
+## Bug Fixes
+
+* Ensure the error timestamp is correct
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#337](https://github.com/bugsnag/bugsnag-php/pull/337)
+
 ## 3.1.1 (2016-07-25)
 
 ### Bug Fixes
