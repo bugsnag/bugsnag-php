@@ -30,6 +30,13 @@ class HttpClient
     protected $queue = [];
 
     /**
+     * The maximum payload size.
+     *
+     * @var int
+     */
+    const MAX_SIZE = 500000;
+
+    /**
      * Create a new http client instance.
      *
      * @param \Bugsnag\Configuration      $config the configuration instance
@@ -167,13 +174,13 @@ class HttpClient
     {
         $body = json_encode($data);
 
-        if ($this->length($body) > 500000) {
+        if ($this->length($body) > static::MAX_SIZE) {
             unset($data['events'][0]['metaData']);
         }
 
         $body = json_encode($data);
 
-        if ($this->length($body) > 500000) {
+        if ($this->length($body) > static::MAX_SIZE) {
             throw new RuntimeException('Payload too large');
         }
 
