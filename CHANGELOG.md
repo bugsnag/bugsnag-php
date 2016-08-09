@@ -1,15 +1,15 @@
 Changelog
 =========
 
-## 3.2.0 (2016-08-05)
+## 3.2.0 (2016-08-08)
 
 ## Enhancements
 
-* Add support for breadrumbs
+* Add support for sending breadrumbs with error reports
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#232](https://github.com/bugsnag/bugsnag-php/pull/232)
 
-* Added a way to signify deploys
+* Integrate support for deploy tracking
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#317](https://github.com/bugsnag/bugsnag-php/pull/317)
 
@@ -17,9 +17,13 @@ Changelog
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#332](https://github.com/bugsnag/bugsnag-php/pull/332)
 
+* Use Server API type as the default app type
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#342](https://github.com/bugsnag/bugsnag-php/pull/342)
+
 ## Bug Fixes
 
-* Make sure the error timestamp is correct
+* Ensure the error timestamp is correct
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#337](https://github.com/bugsnag/bugsnag-php/pull/337)
 
