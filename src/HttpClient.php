@@ -88,7 +88,7 @@ class HttpClient
             return;
         }
 
-        $this->postJson('/', $this->build());
+        $this->postJson('', $this->build());
 
         $this->queue = [];
     }
