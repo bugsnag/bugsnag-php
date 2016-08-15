@@ -4,6 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
 use Bugsnag\Report;
+use Bugsnag\Stacktrace;
 use Exception;
 use InvalidArgumentException;
 use ParseError;
@@ -74,6 +75,16 @@ class ReportTest extends TestCase
         $event = $this->report->toArray();
         // 'Code' should not be filtered so should remain still be an array
         $this->assertInternalType('array', $event['exceptions'][0]['stacktrace'][0]['code']);
+    }
+
+    public function testCanGetStacktrace()
+    {
+        $this->report->setPHPError(E_NOTICE, 'Broken', 'file', 123);
+
+        $trace = $this->report->getStacktrace();
+
+        $this->assertInstanceOf(Stacktrace::class, $trace);
+        $this->assertCount(8, $trace->toArray());
     }
 
     public function testNoticeName()
