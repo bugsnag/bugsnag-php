@@ -1,17 +1,31 @@
 Changelog
 =========
 
+## 3.3.0 (2016-08-19)
+
+## Enhancements
+
+* Add support for stacktrace modification
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#351](https://github.com/bugsnag/bugsnag-php/pull/351)
+
+## Bug Fixes
+
+* Fixed custom endpoints that mounted on a subfolder
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#349](https://github.com/bugsnag/bugsnag-php/pull/349)
+
 ## 3.2.0 (2016-08-08)
 
 ## Enhancements
 
-* Add support for sending breadrumbs with error reports
-  [Graham Campbell](https://github.com/GrahamCampbell)
-  [#232](https://github.com/bugsnag/bugsnag-php/pull/232)
-
 * Integrate support for deploy tracking
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#317](https://github.com/bugsnag/bugsnag-php/pull/317)
+
+* Add support for sending breadrumbs with error reports
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#323](https://github.com/bugsnag/bugsnag-php/pull/323)
 
 * Support both Guzzle 5 and 6
   [Graham Campbell](https://github.com/GrahamCampbell)
