@@ -47,11 +47,11 @@ class StacktraceTest extends TestCase
 
     public function testFromFrame()
     {
-        $stacktrace = Stacktrace::fromFrame($this->config, 'some_file.php', 123)->toarray();
+        $stacktrace = Stacktrace::fromFrame($this->config, 'some_file.php', 123);
 
-        $this->assertFrameEquals($stacktrace[0], '[unknown]', 'some_file.php', 123);
-
-        $this->assertCount(1, $stacktrace);
+        $this->assertCount(1, $stacktrace->toArray());
+        $this->assertFrameEquals($stacktrace->toArray()[0], '[unknown]', 'some_file.php', 123);
+        $this->assertSame($stacktrace->toArray(), $stacktrace->getFrames());
     }
 
     public function testFrameInsideBugsnag()
@@ -158,6 +158,33 @@ class StacktraceTest extends TestCase
         $this->assertFrameEquals($stacktrace[2], '[main]', 'testing.php', 28);
 
         $this->assertCount(3, $stacktrace);
+    }
+
+    public function testCanRemoveFrame()
+    {
+        $fixture = $this->getJsonFixture('backtraces/exception_handler.json');
+        $this->config->setStripPath('/Users/james/src/bugsnag/bugsnag-php/');
+        $stacktrace = Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line']);
+
+        $stacktrace->removeFrame(1);
+
+        $this->assertFrameEquals($stacktrace->toArray()[0], 'crashy_function', 'testing.php', 25);
+        $this->assertFrameEquals($stacktrace->toArray()[1], '[main]', 'testing.php', 28);
+
+        $this->assertCount(2, $stacktrace->toArray());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Invalid frame index to remove.
+     */
+    public function testCanNotRemoveBadFrame()
+    {
+        $fixture = $this->getJsonFixture('backtraces/exception_handler.json');
+        $this->config->setStripPath('/Users/james/src/bugsnag/bugsnag-php/');
+        $stacktrace = Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line']);
+
+        $stacktrace->removeFrame(4);
     }
 
     public function testCode()

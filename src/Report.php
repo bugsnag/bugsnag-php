@@ -247,6 +247,16 @@ class Report
     }
 
     /**
+     * Get the bugsnag stacktrace.
+     *
+     * @return \Bugsnag\Stacktrace
+     */
+    public function getStacktrace()
+    {
+        return $this->stacktrace;
+    }
+
+    /**
      * Set the previous throwable.
      *
      * @param \Throwable $throwable the previous throwable
