@@ -29,5 +29,5 @@ Releasing
     git tag v3.x.x
     git push origin master && git push --tags
     ```
-5. Build a new phar package by running `make package`.
+5. Build a new phar package by running `make package` and attach it to the GitHub release.
 6. Update the setup guides for PHP (and its frameworks) with any new content.
