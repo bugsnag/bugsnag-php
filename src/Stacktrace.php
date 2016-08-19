@@ -196,24 +196,15 @@ class Stacktrace
         }
 
         try {
-            // Get the number of lines in the file
             $file = new SplFileObject($path);
             $file->seek(PHP_INT_MAX);
-            $totalLines = $file->key() + 1;
 
-            // Work out which lines we should fetch
-            $start = max($line - floor($numLines / 2), 1);
-            $end = $start + ($numLines - 1);
-            if ($end > $totalLines) {
-                $end = $totalLines;
-                $start = max($end - ($numLines - 1), 1);
-            }
+            $bounds = static::getBounds($line, $numLines, $file->key() + 1);
 
-            // Get the code for this range
             $code = [];
 
-            $file->seek($start - 1);
-            while ($file->key() < $end) {
+            $file->seek($bounds[0] - 1);
+            while ($file->key() < $bounds[1]) {
                 $code[$file->key() + 1] = rtrim(substr($file->current(), 0, static::MAX_LENGTH));
                 $file->next();
             }
@@ -222,5 +213,28 @@ class Stacktrace
         } catch (RuntimeException $ex) {
             // do nothing
         }
+    }
+
+    /**
+     * Get the start and end positions for the given line.
+     *
+     * @param int    $line the line to centre about
+     * @param string $num  the number of lines to fetch
+     * @param int    $max  the maximum line number
+     *
+     * @return int[]
+     */
+    protected static function getBounds($line, $num, $max)
+    {
+        $start = max($line - floor($num / 2), 1);
+
+        $end = $start + ($num - 1);
+
+        if ($end > $max) {
+            $end = $max;
+            $start = max($end - ($num - 1), 1);
+        }
+
+        return [$start, $end];
     }
 }
