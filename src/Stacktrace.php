@@ -2,6 +2,7 @@
 
 namespace Bugsnag;
 
+use InvalidArgumentException;
 use RuntimeException;
 use SplFileObject;
 
@@ -134,9 +135,21 @@ class Stacktrace
     /**
      * Get the array representation.
      *
-     * @return array
+     * @return array[]
      */
     public function toArray()
+    {
+        return $this->frames;
+    }
+
+    /**
+     * Get the stacktrace frames.
+     *
+     * This is the same as calling toArray.
+     *
+     * @return array[]
+     */
+    public function getFrames()
     {
         return $this->frames;
     }
@@ -178,6 +191,24 @@ class Stacktrace
         $frame['file'] = $this->config->getStrippedFilePath($file);
 
         $this->frames[] = $frame;
+    }
+
+    /**
+     * Remove the frame at the given index from the stacktrace.
+     *
+     * @param int $index
+     *
+     * @throws \InvalidArgumentException
+     *
+     * @return void
+     */
+    public function removeFrame($index)
+    {
+        if (!isset($this->frames[$index])) {
+            throw new InvalidArgumentException('Invalid frame index to remove.');
+        }
+
+        array_splice($this->frames, $index, 1);
     }
 
     /**
