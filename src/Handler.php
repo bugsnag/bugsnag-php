@@ -65,7 +65,7 @@ class Handler
      * @param string $errfile the filename that the error was raised in
      * @param int    $errline the line number the error was raised at
      *
-     * @return void
+     * @return bool
      */
     public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
@@ -76,6 +76,8 @@ class Handler
         $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline);
 
         $this->client->notify($report);
+
+        return false;
     }
 
     /**
