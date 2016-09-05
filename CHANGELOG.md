@@ -9,7 +9,7 @@ Changelog
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#361](https://github.com/bugsnag/bugsnag-php/pull/361)
 
-* Add support fallback app types
+* Add support for fallback app types
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#363](https://github.com/bugsnag/bugsnag-php/pull/363)
 
