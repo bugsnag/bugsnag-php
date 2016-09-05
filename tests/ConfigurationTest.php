@@ -70,11 +70,19 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame(['type' => 'cli', 'releaseStage' => 'qa1', 'version' => '1.2.3'], $this->config->getAppData());
 
+        $this->config->setFallbackType('foo');
+
+        $this->assertSame(['type' => 'foo', 'releaseStage' => 'qa1', 'version' => '1.2.3'], $this->config->getAppData());
+
         $this->config->setReleaseStage(null);
 
-        $this->assertSame(['type' => 'cli', 'releaseStage' => 'production', 'version' => '1.2.3'], $this->config->getAppData());
+        $this->assertSame(['type' => 'foo', 'releaseStage' => 'production', 'version' => '1.2.3'], $this->config->getAppData());
 
         $this->config->setAppVersion(null);
+
+        $this->assertSame(['type' => 'foo', 'releaseStage' => 'production'], $this->config->getAppData());
+
+        $this->config->setFallbackType(null);
 
         $this->assertSame(['type' => 'cli', 'releaseStage' => 'production'], $this->config->getAppData());
     }
