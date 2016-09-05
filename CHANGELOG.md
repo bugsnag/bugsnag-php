@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## 3.4.0 (2016-09-05)
+
+## Enhancements
+
+* Return false from the error handler
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#361](https://github.com/bugsnag/bugsnag-php/pull/361)
+
+* Add support fallback app types
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#363](https://github.com/bugsnag/bugsnag-php/pull/363)
+
 ## 3.3.0 (2016-08-19)
 
 ## Enhancements
