@@ -67,6 +67,13 @@ class Configuration
     ];
 
     /**
+     * The fallback app type.
+     *
+     * @var string|null
+     */
+    protected $fallbackType;
+
+    /**
      * The application data.
      *
      * @var string[]
@@ -110,6 +117,7 @@ class Configuration
         }
 
         $this->apiKey = $apiKey;
+        $this->fallbackType = php_sapi_name();
     }
 
     /**
@@ -353,13 +361,29 @@ class Configuration
     }
 
     /**
+     * Set the fallback application type.
+     *
+     * This is should be used only by libraries to set an fallback app type.
+     *
+     * @param string|null $type the fallback type
+     *
+     * @return $this
+     */
+    public function setFallbackType($type)
+    {
+        $this->fallbackType = $type;
+
+        return $this;
+    }
+
+    /**
      * Get the application data.
      *
      * @return array
      */
     public function getAppData()
     {
-        return array_merge(['type' => php_sapi_name(), 'releaseStage' => 'production'], array_filter($this->appData));
+        return array_merge(array_filter(['type' => $this->fallbackType, 'releaseStage' => 'production']), array_filter($this->appData));
     }
 
     /**
