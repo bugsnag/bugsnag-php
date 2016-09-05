@@ -84,7 +84,7 @@ class ConfigurationTest extends TestCase
 
         $this->config->setFallbackType(null);
 
-        $this->assertSame(['type' => 'cli', 'releaseStage' => 'production'], $this->config->getAppData());
+        $this->assertSame(['releaseStage' => 'production'], $this->config->getAppData());
     }
 
     public function testDeviceData()
