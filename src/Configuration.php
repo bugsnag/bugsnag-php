@@ -117,7 +117,7 @@ class Configuration
         }
 
         $this->apiKey = $apiKey;
-        $this->$this->fallbackType = php_sapi_name()
+        $this->fallbackType = php_sapi_name();
     }
 
     /**
@@ -383,7 +383,7 @@ class Configuration
      */
     public function getAppData()
     {
-        return array_merge(['type' => $this->fallbackType, 'releaseStage' => 'production'], array_filter($this->appData));
+        return array_merge(array_filter(['type' => $this->fallbackType, 'releaseStage' => 'production']), array_filter($this->appData));
     }
 
     /**
