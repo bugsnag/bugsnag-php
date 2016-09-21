@@ -18,8 +18,8 @@ function sendBugsnagError()
             'object' => (object) ['key' => 'value'],
             'null' => null,
             'string' => 'test',
-            'int' => 4, ],
-        ]);
+            'int' => 4,
+        ]]);
     });
 }
 
