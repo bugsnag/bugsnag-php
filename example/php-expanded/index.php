@@ -1,10 +1,7 @@
 <?php
 
-require_once 'vendor/autoload.php';
-
 // Loaded Bugsnag here
-require_once 'runtime.php';
-
+$bugsnag = require 'runtime.php';
 
 $bugsnag->leaveBreadcrumb('Example breadcrumb!');
 
