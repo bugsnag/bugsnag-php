@@ -8,7 +8,8 @@ require_once 'runtime.php';
 
 $bugsnag->leaveBreadcrumb('Example breadcrumb!');
 
-function sendBugsnagError() {
+function sendBugsnagError()
+{
     global $bugsnag;
 
     $bugsnag->notifyError('Broken', 'Something broke', function (Bugsnag\Report $report) {
@@ -17,7 +18,7 @@ function sendBugsnagError() {
             'object' => (object) ['key' => 'value'],
             'null' => null,
             'string' => 'test',
-            'int' => 4]
+            'int' => 4, ],
         ]);
     });
 }
