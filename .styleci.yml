@@ -1,6 +1,7 @@
 disabled:
   - align_double_arrow
   - phpdoc_align
+  - no_blank_lines_after_throw
 
 enabled:
   - unalign_double_arrow
