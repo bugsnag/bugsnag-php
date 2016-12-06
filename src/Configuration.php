@@ -251,6 +251,22 @@ class Configuration
     }
 
     /**
+     * Set the regular expression used to strip paths from stacktraces.
+     *
+     * @param string|null $stripPathRegex
+     *
+     * @return void
+     */
+    public function setStripPathRegex($stripPathRegex)
+    {
+        if (@preg_match($stripPathRegex, null) === false) {
+            throw new InvalidArgumentException('Invalid strip path regex: '.$stripPathRegex);
+        }
+
+        $this->stripPathRegex = $stripPathRegex;
+    }
+
+    /**
      * Set the stripped file path.
      *
      * @param string $file
