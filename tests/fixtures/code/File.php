@@ -13,6 +13,7 @@ $exception = new Exception('Exception!');
 
 // Throw the exception
 throw $exception;
+
 // Some more variables
 $c = 3;
 $d = 4;
