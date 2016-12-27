@@ -73,9 +73,11 @@ class HttpClient
     {
         $app = $this->config->getAppData();
 
-        $data['releaseStage'] = $app['releaseStage'];
+        if (!isset($data['releaseStage'])) {
+            $data['releaseStage'] = $app['releaseStage'];
+        }
 
-        if (isset($app['version'])) {
+        if (!isset($data['appVersion']) && isset($app['version'])) {
             $data['appVersion'] = $app['version'];
         }
 

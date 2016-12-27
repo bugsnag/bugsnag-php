@@ -285,14 +285,23 @@ class Client
     /**
      * Notify Bugsnag of a deployment.
      *
-     * @param string|null $repository the repository from which you are deploying the code
-     * @param string|null $branch     the source control branch from which you are deploying
-     * @param string|null $revision   the source control revision you are currently deploying
+     * @param string|null $repository    the repository from which you are deploying the code
+     * @param string|null $branch        the source control branch from which you are deploying
+     * @param string|null $revision      the source control revision you are currently deploying
+     * @param string|null $release_stage the release stage (eg, production, staging) currently being deployed
+     * @param string|null $app_version   the source control revision id for the code you are deploying
+     * @param string|null $provider      the name of your source control provider
      *
      * @return void
      */
-    public function deploy($repository = null, $branch = null, $revision = null)
-    {
+    public function deploy(
+        $repository = null,
+        $branch = null,
+        $revision = null,
+        $release_stage = null,
+        $app_version = null,
+        $provider = null
+    ) {
         $data = [];
 
         if ($repository) {
@@ -305,6 +314,18 @@ class Client
 
         if ($revision) {
             $data['revision'] = $revision;
+        }
+
+        if ($release_stage) {
+            $data['releaseStage'] = $release_stage;
+        }
+
+        if ($app_version) {
+            $data['appVersion'] = $app_version;
+        }
+
+        if ($provider) {
+            $data['provider'] = $provider;
         }
 
         $this->http->deploy($data);
