@@ -288,8 +288,8 @@ class Client
      * @param string|null $repository    the repository from which you are deploying the code
      * @param string|null $branch        the source control branch from which you are deploying
      * @param string|null $revision      the source control revision you are currently deploying
-     * @param string|null $release_stage the release stage (eg, production, staging) currently being deployed
-     * @param string|null $app_version   the source control revision id for the code you are deploying
+     * @param string|null $releaseStage the release stage (eg, production, staging) currently being deployed
+     * @param string|null $appVersion   the source control revision id for the code you are deploying
      * @param string|null $provider      the name of your source control provider
      *
      * @return void
@@ -298,8 +298,8 @@ class Client
         $repository = null,
         $branch = null,
         $revision = null,
-        $release_stage = null,
-        $app_version = null,
+        $releaseStage = null,
+        $appVersion = null,
         $provider = null
     ) {
         $data = [];
@@ -316,12 +316,12 @@ class Client
             $data['revision'] = $revision;
         }
 
-        if ($release_stage) {
-            $data['releaseStage'] = $release_stage;
+        if ($releaseStage) {
+            $data['releaseStage'] = $releaseStage;
         }
 
-        if ($app_version) {
-            $data['appVersion'] = $app_version;
+        if ($appVersion) {
+            $data['appVersion'] = $appVersion;
         }
 
         if ($provider) {
