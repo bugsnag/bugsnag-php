@@ -4,7 +4,7 @@
 [![StyleCI Status](https://styleci.io/repos/7568230/shield?branch=master)](https://styleci.io/repos/7568230)
 
 
-The Bugsnag error reporter for PHP gives you instant notification of errors and exceptions in your PHP applications.
+The Bugsnag error reporter for PHP gives you instant notification of errors and exceptions in your PHP applications. Learn more about [automatic PHP error reporting with Bugsnag](https://www.bugsnag.com/platforms/php/). 
 
 ## Features
 
