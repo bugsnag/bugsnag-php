@@ -166,15 +166,15 @@ class ReportTest extends TestCase
 
     public function testPreviousException()
     {
-        $exception = new Exception('secondly', 65533, new Exception('firstly'));
+        $exception = new Exception('caught', 65533, new Exception('underlying cause'));
 
         $report = Report::fromPHPThrowable($this->config, $exception);
 
         $event = $report->toArray();
 
         $this->assertCount(2, $event['exceptions']);
-        $this->assertSame($event['exceptions'][0]['message'], 'firstly');
-        $this->assertSame($event['exceptions'][1]['message'], 'secondly');
+        $this->assertSame($event['exceptions'][0]['message'], 'caught');
+        $this->assertSame($event['exceptions'][1]['message'], 'underlying cause');
     }
 
     public function testErrorGroupingHash()
