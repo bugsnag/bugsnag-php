@@ -549,7 +549,7 @@ class Report
     }
 
     /**
-     * Get serializable representation of the exception causing this report
+     * Get serializable representation of the exception causing this report.
      *
      * @return array
      */
