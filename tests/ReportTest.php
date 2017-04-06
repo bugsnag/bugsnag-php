@@ -164,17 +164,20 @@ class ReportTest extends TestCase
         $this->report->setSeverity('bunk');
     }
 
-    public function testPreviousException()
+    public function testPreviousExceptions()
     {
-        $exception = new Exception('caught', 65533, new Exception('underlying cause'));
+        $initialCause = new Exception('actual problem');
+        $intermediateCause = new Exception('middle of the chain', 65533, $initialCause);
+        $exception = new Exception('caught', 65533, $intermediateCause);
 
         $report = Report::fromPHPThrowable($this->config, $exception);
 
         $event = $report->toArray();
 
-        $this->assertCount(2, $event['exceptions']);
+        $this->assertCount(3, $event['exceptions']);
         $this->assertSame($event['exceptions'][0]['message'], 'caught');
-        $this->assertSame($event['exceptions'][1]['message'], 'underlying cause');
+        $this->assertSame($event['exceptions'][1]['message'], 'middle of the chain');
+        $this->assertSame($event['exceptions'][2]['message'], 'actual problem');
     }
 
     public function testErrorGroupingHash()

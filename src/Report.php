@@ -540,9 +540,10 @@ class Report
     protected function exceptionArray()
     {
         $exceptionArray = [$this->exceptionObject()];
-
-        if ($this->previous) {
-            $exceptionArray[] = $this->previous->exceptionObject();
+        $previous = $this->previous;
+        while ($previous) {
+            $exceptionArray[] = $previous->exceptionObject();
+            $previous = $previous->previous;
         }
 
         return $this->cleanupObj($exceptionArray, false);
