@@ -539,15 +539,28 @@ class Report
      */
     protected function exceptionArray()
     {
-        $exceptionArray = $this->previous ? $this->previous->exceptionArray() : [];
+        $exceptionArray = [$this->exceptionObject()];
+        $previous = $this->previous;
+        while ($previous) {
+            $exceptionArray[] = $previous->exceptionObject();
+            $previous = $previous->previous;
+        }
 
-        $exceptionArray[] = [
+        return $this->cleanupObj($exceptionArray, false);
+    }
+
+    /**
+     * Get serializable representation of the exception causing this report.
+     *
+     * @return array
+     */
+    protected function exceptionObject()
+    {
+        return [
             'errorClass' => $this->name,
             'message' => $this->message,
             'stacktrace' => $this->stacktrace->toArray(),
         ];
-
-        return $this->cleanupObj($exceptionArray, false);
     }
 
     /**
