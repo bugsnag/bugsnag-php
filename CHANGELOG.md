@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## 3.5.0 (2017-04-06)
+
+### Enhancements
+
+* Include more deeply nested exception causes in reports
+
 ## 3.4.0 (2016-09-05)
 
 ## Enhancements
