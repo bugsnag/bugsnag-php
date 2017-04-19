@@ -66,6 +66,13 @@ class Report
     protected $context;
 
     /**
+     * The associated tokens.
+     *
+     * @var array[]|null
+     */
+    protected $tokens;
+
+    /**
      * The grouping hash.
      *
      * @var string|null
@@ -192,6 +199,10 @@ class Report
              ->setMessage($throwable->getMessage())
              ->setStacktrace(Stacktrace::fromBacktrace($this->config, $throwable->getTrace(), $throwable->getFile(), $throwable->getLine()));
 
+        if ($contents = @file_get_contents($throwable->getFile())) {
+            $this->setTokens((new Parser())->parse($contents, $throwable->getLine(), Parser::BEFORE, Parser::AFTER));
+        }
+
         if (method_exists($throwable, 'getPrevious')) {
             $this->setPrevious($throwable->getPrevious());
         }
@@ -228,6 +239,11 @@ class Report
              ->setMessage($message)
              ->setSeverity(ErrorTypes::getSeverity($code))
              ->setStacktrace($stacktrace);
+
+
+        if ($contents = @file_get_contents($file)) {
+            $this->setTokens((new Parser())->parse($contents, $line, Parser::BEFORE, Parser::AFTER));
+        }
 
         return $this;
     }
@@ -389,6 +405,34 @@ class Report
     }
 
     /**
+     * Set the file tokens.
+     *
+     * @param array[]|null $tokens the file tokens
+     *
+     * @return $this
+     */
+    public function setTokens(array $tokens = null)
+    {
+        if (strlen(json_encode($tokens)) > Parser::MAX_SIZE) {
+            $this->tokens = null;
+        } else {
+            $this->tokens = $tokens;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the file tokens.
+     *
+     * @return array[]|null
+     */
+    public function getTokens()
+    {
+        return $this->tokens;
+    }
+
+    /**
      * Set the grouping hash.
      *
      * @param string|null $groupingHash the grouping hash
@@ -524,6 +568,10 @@ class Report
             'breadcrumbs' => $this->breadcrumbs,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
         ];
+
+        if ($tokens = $this->getTokens()) {
+            $event['tokens'] = $tokens;
+        }
 
         if ($hash = $this->getGroupingHash()) {
             $event['groupingHash'] = $hash;
