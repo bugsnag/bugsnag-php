@@ -36,7 +36,7 @@ class Handler
      *
      * @return void
      */
-    protected function __construct(Client $client)
+    public function __construct(Client $client)
     {
         $this->client = $client;
     }
