@@ -93,9 +93,9 @@ class StacktraceTest extends TestCase
         $fixture = $this->getJsonFixture('backtraces/exception_handler.json');
         $stacktrace = Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
 
-        $this->assertFrameEquals($stacktrace[0], 'crashy_function', '/Users/james/src/bugsnag/bugsnag-php/testing.php', 25);
-        $this->assertFrameEquals($stacktrace[1], 'parent_of_crashy_function', '/Users/james/src/bugsnag/bugsnag-php/testing.php', 13);
-        $this->assertFrameEquals($stacktrace[2], '[main]', '/Users/james/src/bugsnag/bugsnag-php/testing.php', 28);
+        $this->assertFrameEquals($stacktrace[0], 'crashy_function', '/dir1/dir2/dir1/testing.php', 25);
+        $this->assertFrameEquals($stacktrace[1], 'parent_of_crashy_function', '/dir1/dir2/dir1/testing.php', 13);
+        $this->assertFrameEquals($stacktrace[2], '[main]', '/dir1/dir2/dir1/testing.php', 28);
 
         $this->assertCount(3, $stacktrace);
     }
@@ -150,12 +150,12 @@ class StacktraceTest extends TestCase
     public function testStrippingPaths()
     {
         $fixture = $this->getJsonFixture('backtraces/exception_handler.json');
-        $this->config->setStripPath('/Users/james/src/bugsnag/bugsnag-php/');
+        $this->config->setStripPath('/dir1/');
         $stacktrace = Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
 
-        $this->assertFrameEquals($stacktrace[0], 'crashy_function', 'testing.php', 25);
-        $this->assertFrameEquals($stacktrace[1], 'parent_of_crashy_function', 'testing.php', 13);
-        $this->assertFrameEquals($stacktrace[2], '[main]', 'testing.php', 28);
+        $this->assertFrameEquals($stacktrace[0], 'crashy_function', 'dir2/dir1/testing.php', 25);
+        $this->assertFrameEquals($stacktrace[1], 'parent_of_crashy_function', 'dir2/dir1/testing.php', 13);
+        $this->assertFrameEquals($stacktrace[2], '[main]', 'dir2/dir1/testing.php', 28);
 
         $this->assertCount(3, $stacktrace);
     }
@@ -168,8 +168,8 @@ class StacktraceTest extends TestCase
 
         $stacktrace->removeFrame(1);
 
-        $this->assertFrameEquals($stacktrace->toArray()[0], 'crashy_function', 'testing.php', 25);
-        $this->assertFrameEquals($stacktrace->toArray()[1], '[main]', 'testing.php', 28);
+        $this->assertFrameEquals($stacktrace->toArray()[0], 'crashy_function', '/dir1/dir2/dir1/testing.php', 25);
+        $this->assertFrameEquals($stacktrace->toArray()[1], '[main]', '/dir1/dir2/dir1/testing.php', 28);
 
         $this->assertCount(2, $stacktrace->toArray());
     }

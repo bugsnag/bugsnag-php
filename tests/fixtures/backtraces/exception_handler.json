@@ -1,14 +1,14 @@
 {
-    "file": "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+    "file": "/dir1/dir2/dir1/testing.php",
     "line": 25,
     "backtrace": [
         {
-            "file": "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+            "file": "/dir1/dir2/dir1/testing.php",
             "line": 13,
             "function": "crashy_function"
         },
         {
-            "file": "/Users/james/src/bugsnag/bugsnag-php/testing.php",
+            "file": "/dir1/dir2/dir1/testing.php",
             "line": 28,
             "function": "parent_of_crashy_function"
         }

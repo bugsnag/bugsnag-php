@@ -247,7 +247,7 @@ class Configuration
      */
     public function setStripPath($stripPath)
     {
-        $this->stripPathRegex = $stripPath ? '/'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
+        $this->stripPathRegex = $stripPath ? '/^'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
     }
 
     /**
