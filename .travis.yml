@@ -58,6 +58,7 @@ matrix:
 before_install:
   - if [[ $TRAVIS_PHP_VERSION =~ ^hhvm ]]; then echo 'hhvm.jit = false' >> /etc/hhvm/php.ini ; fi
   - composer require "guzzlehttp/guzzle:${GUZZLE_VERSION}" --no-update
+  - if [[ $TRAVIS_PHP_VERSION == 7.1 ]]; then composer require "phpunit/phpunit:^6.0" --no-update ; fi
 
 install:
   - if [[ $TRAVIS_PHP_VERSION == 5.5.9 ]]; then travis_retry composer update --no-interaction --prefer-source --prefer-lowest ; fi
