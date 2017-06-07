@@ -219,7 +219,7 @@ class Configuration
      */
     public function setProjectRoot($projectRoot)
     {
-        $this->projectRootRegex = $projectRoot ? '/'.preg_quote($projectRoot, '/').'[\\/]?/i' : null;
+        $this->projectRootRegex = $projectRoot ? '/^'.preg_quote($projectRoot, '/').'[\\/]?/i' : null;
 
         if ($projectRoot && !$this->stripPathRegex) {
             $this->setStripPath($projectRoot);
@@ -247,7 +247,7 @@ class Configuration
      */
     public function setStripPath($stripPath)
     {
-        $this->stripPathRegex = $stripPath ? '/'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
+        $this->stripPathRegex = $stripPath ? '/^'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
     }
 
     /**
