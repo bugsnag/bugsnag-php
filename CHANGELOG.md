@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## 3.5.1 (2017-06-07)
+
+### Bug Fixes
+
+* Fix in-project detection and path stripping support for paths
+  with repeated strings.
+  [Michael Tibben](https://github.com/mtibben)
+  [#384](https://github.com/bugsnag/bugsnag-php/pull/384)
+
 ## 3.5.0 (2017-04-06)
 
 ### Enhancements
