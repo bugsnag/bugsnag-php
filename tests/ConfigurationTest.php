@@ -55,6 +55,12 @@ class ConfigurationTest extends TestCase
         $this->assertTrue($this->config->isInProject('/root/dir/afile.php'));
         $this->assertFalse($this->config->isInProject('/root'));
         $this->assertFalse($this->config->isInProject('/base/root/dir/afile.php'));
+
+        $this->config->setProjectRoot('/root/dir/');
+
+        $this->assertTrue($this->config->isInProject('/root/dir/afile.php'));
+        $this->assertFalse($this->config->isInProject('/root'));
+        $this->assertFalse($this->config->isInProject('/base/root/dir/afile.php'));
     }
 
     public function testAppData()

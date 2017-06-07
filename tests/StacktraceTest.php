@@ -158,6 +158,15 @@ class StacktraceTest extends TestCase
         $this->assertFrameEquals($stacktrace[2], '[main]', 'dir2/dir1/testing.php', 28);
 
         $this->assertCount(3, $stacktrace);
+
+        $this->config->setStripPath('/dir1');
+        $stacktrace = Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line'])->toArray();
+
+        $this->assertFrameEquals($stacktrace[0], 'crashy_function', 'dir2/dir1/testing.php', 25);
+        $this->assertFrameEquals($stacktrace[1], 'parent_of_crashy_function', 'dir2/dir1/testing.php', 13);
+        $this->assertFrameEquals($stacktrace[2], '[main]', 'dir2/dir1/testing.php', 28);
+
+        $this->assertCount(3, $stacktrace);
     }
 
     public function testCanRemoveFrame()
