@@ -18,7 +18,7 @@ Changelog
 
 ## 3.4.0 (2016-09-05)
 
-## Enhancements
+### Enhancements
 
 * Return false from the error handler
   [Graham Campbell](https://github.com/GrahamCampbell)
@@ -30,13 +30,13 @@ Changelog
 
 ## 3.3.0 (2016-08-19)
 
-## Enhancements
+### Enhancements
 
 * Add support for stacktrace modification
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#351](https://github.com/bugsnag/bugsnag-php/pull/351)
 
-## Bug Fixes
+### Bug Fixes
 
 * Fixed custom endpoints that mounted on a subfolder
   [Graham Campbell](https://github.com/GrahamCampbell)
@@ -44,7 +44,7 @@ Changelog
 
 ## 3.2.0 (2016-08-08)
 
-## Enhancements
+### Enhancements
 
 * Integrate support for deploy tracking
   [Graham Campbell](https://github.com/GrahamCampbell)
@@ -62,7 +62,7 @@ Changelog
   [Graham Campbell](https://github.com/GrahamCampbell)
   [#342](https://github.com/bugsnag/bugsnag-php/pull/342)
 
-## Bug Fixes
+### Bug Fixes
 
 * Ensure the error timestamp is correct
   [Graham Campbell](https://github.com/GrahamCampbell)
