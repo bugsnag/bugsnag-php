@@ -131,6 +131,8 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
+        $this->client->setBatchSending(false);
+
         $this->client->registerCallback(function (Report $report) {
             if ($report->getName() === 'SkipMe') {
                 return false;
