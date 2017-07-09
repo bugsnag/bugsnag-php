@@ -144,6 +144,21 @@ class ClientTest extends TestCase
         $this->client->notify(Report::fromNamedError($this->config, 'SkipMe', 'Message'));
     }
 
+    public function testDirectCallbackSkipsError()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->setBatchSending(false);
+
+        $this->guzzle->expects($this->never())->method('post');
+
+        $this->client->notify(Report::fromNamedError($this->config, 'SkipMe', 'Message'), function (Report $report) {
+            if ($report->getName() === 'SkipMe') {
+                return false;
+            }
+        });
+    }
+
     public function testMetaDataWorks()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
