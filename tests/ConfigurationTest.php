@@ -22,6 +22,15 @@ class ConfigurationTest extends TestCase
         new Configuration([]);
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExpcetionMessage Invalid strip path regex: [thisisnotavalidregex
+     */
+    public function testDoesNotAcceptBadStripPathRegex()
+    {
+        $this->config->setStripPathRegex('[thisisnotavalidregex');
+    }
+
     public function testNotifier()
     {
         $this->assertSame('Bugsnag PHP (Official)', $this->config->getNotifier()['name']);
