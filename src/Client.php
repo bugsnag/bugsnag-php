@@ -269,7 +269,9 @@ class Client
     {
         $this->pipeline->execute($report, function ($report) use ($callback) {
             if ($callback) {
-                $callback($report);
+                if ($callback($report) === false) {
+                    return;
+                }
             }
 
             $this->http->queue($report);
