@@ -23,9 +23,11 @@ class HandlerTest extends TestCase
                              ->getMock();
     }
 
+    /**
+     * @expectedException PHPUnit_Framework_Error_Warning
+     */
     public function testErrorHandler()
     {
-        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
         $this->client->expects($this->once())->method('notify');
 
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
@@ -83,9 +85,11 @@ class HandlerTest extends TestCase
         $this->assertFalse($previous_exception_handler_called);
     }
 
+    /**
+     * @expectedException PHPUnit_Framework_Error_Notice
+     */
     public function testErrorReportingLevel()
     {
-        $this->expectException(\PHPUnit_Framework_Error_Notice::class);
         $this->client->expects($this->once())->method('notify');
 
         $this->client->setErrorReportingLevel(E_NOTICE);
@@ -93,9 +97,11 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
     }
 
+    /**
+     * @expectedException PHPUnit_Framework_Error_Warning
+     */
     public function testErrorReportingLevelFails()
     {
-        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
         $this->client->expects($this->never())->method('notify');
 
         $this->client->setErrorReportingLevel(E_NOTICE);
@@ -103,9 +109,11 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
+    /**
+     * @expectedException PHPUnit_Framework_Error_Notice
+     */
     public function testErrorReportingWithoutNotice()
     {
-        $this->expectException(\PHPUnit_Framework_Error_Notice::class);
         $this->client->expects($this->never())->method('notify');
 
         $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE);
