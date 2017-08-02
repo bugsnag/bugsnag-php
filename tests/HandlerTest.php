@@ -25,6 +25,7 @@ class HandlerTest extends TestCase
 
     public function testErrorHandler()
     {
+        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
         $this->client->expects($this->once())->method('notify');
 
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
@@ -35,6 +36,24 @@ class HandlerTest extends TestCase
         $this->client->expects($this->once())->method('notify');
 
         Handler::register($this->client)->exceptionHandler(new Exception('Something broke'));
+    }
+
+    public function testExceptionHandlerCallsPrevious()
+    {
+        // Register a custom exception handler that stores it's parameter in the
+        // parent's scope so we can assert that it was correctly called.
+        $previous_exception_handler_arg = null;
+        set_exception_handler(
+            function ($e) use (&$previous_exception_handler_arg) {
+                $previous_exception_handler_arg = $e;
+            }
+        );
+
+        $e_to_throw = new Exception('Something broke');
+
+        Handler::register($this->client)->exceptionHandler($e_to_throw);
+
+        $this->assertSame($e_to_throw, $previous_exception_handler_arg);
     }
 
     public function testErrorReportingLevel()
