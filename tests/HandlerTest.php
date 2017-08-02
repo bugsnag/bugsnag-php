@@ -31,6 +31,19 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
+    public function testErrorHandlerPreviousOff()
+    {
+        // PHPUnit's error handler should not get called, so no exception should be raised.
+        $exception_raised = false;
+        try {
+            Handler::register($this->client, false)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
+        } catch (\PHPUnit_Framework_Error_Warning $e) {
+            $exception_raised = true;
+        }
+
+        $this->assertFalse($exception_raised);
+    }
+
     public function testExceptionHandler()
     {
         $this->client->expects($this->once())->method('notify');
@@ -56,8 +69,23 @@ class HandlerTest extends TestCase
         $this->assertSame($e_to_throw, $previous_exception_handler_arg);
     }
 
+    public function testExceptionHandlerCallsPreviousOff()
+    {
+        $previous_exception_handler_called = false;
+        set_exception_handler(
+            function ($e) use (&$previous_exception_handler_called) {
+                $previous_exception_handler_called = true;
+            }
+        );
+
+        Handler::register($this->client, false)->exceptionHandler(new Exception());
+
+        $this->assertFalse($previous_exception_handler_called);
+    }
+
     public function testErrorReportingLevel()
     {
+        $this->expectException(\PHPUnit_Framework_Error_Notice::class);
         $this->client->expects($this->once())->method('notify');
 
         $this->client->setErrorReportingLevel(E_NOTICE);
@@ -67,6 +95,7 @@ class HandlerTest extends TestCase
 
     public function testErrorReportingLevelFails()
     {
+        $this->expectException(\PHPUnit_Framework_Error_Warning::class);
         $this->client->expects($this->never())->method('notify');
 
         $this->client->setErrorReportingLevel(E_NOTICE);
@@ -76,6 +105,7 @@ class HandlerTest extends TestCase
 
     public function testErrorReportingWithoutNotice()
     {
+        $this->expectException(\PHPUnit_Framework_Error_Notice::class);
         $this->client->expects($this->never())->method('notify');
 
         $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE);
