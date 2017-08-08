@@ -85,6 +85,19 @@ class HandlerTest extends TestCase
         $this->assertFalse($previous_exception_handler_called);
     }
 
+    public function testCustomErrorHandlerValueReturned()
+    {
+        set_error_handler(
+            function () {
+                return false;
+            }
+        );
+
+        $this->assertFalse(
+            Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke')
+        );
+    }
+
     /**
      * @expectedException PHPUnit_Framework_Error_Notice
      */
