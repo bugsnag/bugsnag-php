@@ -144,7 +144,7 @@ class Handler
         }
 
         if ($this->previousErrorHandler) {
-            call_user_func(
+            return call_user_func(
                 $this->previousErrorHandler,
                 $errno,
                 $errstr,
