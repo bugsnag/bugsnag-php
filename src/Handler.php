@@ -78,7 +78,7 @@ class Handler
      *
      * @return void
      */
-    public function registerErrorHandler($callPrevious = true)
+    public function registerErrorHandler($callPrevious)
     {
         $previous = set_error_handler([$this, 'errorHandler']);
 
@@ -94,7 +94,7 @@ class Handler
      *
      * @return void
      */
-    public function registerExceptionHandler($callPrevious = true)
+    public function registerExceptionHandler($callPrevious)
     {
         $previous = set_exception_handler([$this, 'exceptionHandler']);
 
