@@ -23,9 +23,6 @@ class HandlerTest extends TestCase
                              ->getMock();
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error_Warning
-     */
     public function testErrorHandler()
     {
         $this->client->expects($this->once())->method('notify');
@@ -33,17 +30,12 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
-    public function testErrorHandlerPreviousOff()
+    /**
+     * @expectedException PHPUnit_Framework_Error_Warning
+     */
+    public function testErrorHandlerWithPrevious()
     {
-        // PHPUnit's error handler should not get called, so no exception should be raised.
-        $exception_raised = false;
-        try {
-            Handler::register($this->client, false)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
-        } catch (\PHPUnit_Framework_Error_Warning $e) {
-            $exception_raised = true;
-        }
-
-        $this->assertFalse($exception_raised);
+        Handler::registerWithPrevious($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
     public function testExceptionHandler()
@@ -53,7 +45,7 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->exceptionHandler(new Exception('Something broke'));
     }
 
-    public function testExceptionHandlerCallsPrevious()
+    public function testExceptionHandlerWithPrevious()
     {
         // Register a custom exception handler that stores it's parameter in the
         // parent's scope so we can assert that it was correctly called.
@@ -66,12 +58,12 @@ class HandlerTest extends TestCase
 
         $e_to_throw = new Exception('Something broke');
 
-        Handler::register($this->client)->exceptionHandler($e_to_throw);
+        Handler::registerWithPrevious($this->client)->exceptionHandler($e_to_throw);
 
         $this->assertSame($e_to_throw, $previous_exception_handler_arg);
     }
 
-    public function testExceptionHandlerCallsPreviousOff()
+    public function testExceptionHandlerWithoutPrevious()
     {
         $previous_exception_handler_called = false;
         set_exception_handler(
@@ -80,7 +72,7 @@ class HandlerTest extends TestCase
             }
         );
 
-        Handler::register($this->client, false)->exceptionHandler(new Exception());
+        Handler::register($this->client)->exceptionHandler(new Exception());
 
         $this->assertFalse($previous_exception_handler_called);
     }
@@ -98,9 +90,6 @@ class HandlerTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error_Notice
-     */
     public function testErrorReportingLevel()
     {
         $this->client->expects($this->once())->method('notify');
@@ -110,9 +99,6 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error_Warning
-     */
     public function testErrorReportingLevelFails()
     {
         $this->client->expects($this->never())->method('notify');
@@ -122,9 +108,6 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error_Notice
-     */
     public function testErrorReportingWithoutNotice()
     {
         $this->client->expects($this->never())->method('notify');

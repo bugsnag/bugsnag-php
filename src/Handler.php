@@ -29,19 +29,46 @@ class Handler
      * Register our exception handler.
      *
      * @param \Bugsnag\Client|string|null $client client instance or api key
-     * @param bool $callPrevious whether or not to call the previous handlers
      *
      * @return static
      */
-    public static function register($client = null, $callPrevious = true)
+    public static function register($client = null)
     {
         $handler = new static($client instanceof Client ? $client : Client::make($client));
 
-        $handler->registerErrorHandler($callPrevious);
-        $handler->registerExceptionHandler($callPrevious);
-        $handler->registerShutdownHandler();
+        $handler->registerBugsnagHandlers(false); // don't preserve previous handlers
 
         return $handler;
+    }
+
+    /**
+     * Register our exception handler and preserve those previously registered.
+     *
+     * @param \Bugsnag\Client|string|null $client client instance or api key
+     *
+     * @return static
+     */
+    public static function registerWithPrevious($client = null)
+    {
+        $handler = new static($client instanceof Client ? $client : Client::make($client));
+
+        $handler->registerBugsnagHandlers(true); // preserve previous handlers
+
+        return $handler;
+    }
+
+    /**
+     * Register our handlers, optionally saving those previously registered.
+     *
+     * @param bool $callPrevious whether or not to call the previous handlers
+     *
+     * @return void
+     */
+    protected function registerBugsnagHandlers($callPrevious)
+    {
+        $this->registerErrorHandler($callPrevious);
+        $this->registerExceptionHandler($callPrevious);
+        $this->registerShutdownHandler();
     }
 
     /**
