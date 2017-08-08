@@ -12,14 +12,14 @@ class Handler
     protected $client;
 
     /**
-     * The previously registered error handler as returned by the interpreter.
+     * The previously registered error handler returned by the interpreter.
      *
      * @var callable|null
      */
     protected $previousErrorHandler;
 
     /**
-     * The previously registered exception handler as returned by the interpreter.
+     * The previously registered exception handler returned by the interpreter.
      *
      * @var callable|null
      */
@@ -45,8 +45,7 @@ class Handler
     }
 
     /**
-     * Register the bugsnag error handler and save the previous one
-     * (if it exists) to call later.
+     * Register the bugsnag error handler and save the returned value.
      *
      * @param bool $callPrevious whether or not to call the previous handler
      *
@@ -62,8 +61,7 @@ class Handler
     }
 
     /**
-     * Register the bugsnag exception handler and save the previous one
-     * (if it exists) to call later.
+     * Register the bugsnag error handler and save the returned value.
      *
      * @param bool $callPrevious whether or not to call the previous handler
      *
