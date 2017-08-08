@@ -81,12 +81,13 @@ class HandlerTest extends TestCase
     {
         set_error_handler(
             function () {
-                return false;
+                return '123';
             }
         );
 
-        $this->assertFalse(
-            Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke')
+        $this->assertSame(
+            '123',
+            Handler::registerWithPrevious($this->client)->errorHandler(E_WARNING, 'Something broke')
         );
     }
 
