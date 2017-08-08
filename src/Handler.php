@@ -12,21 +12,21 @@ class Handler
     protected $client;
 
     /**
-     * The previously registered error handler returned by the interpreter.
+     * The previously registered error handler.
      *
      * @var callable|null
      */
     protected $previousErrorHandler;
 
     /**
-     * The previously registered exception handler returned by the interpreter.
+     * The previously registered exception handler.
      *
      * @var callable|null
      */
     protected $previousExceptionHandler;
 
     /**
-     * Register our exception handler.
+     * Register our handlers.
      *
      * @param \Bugsnag\Client|string|null $client client instance or api key
      *
@@ -42,7 +42,7 @@ class Handler
     }
 
     /**
-     * Register our exception handler and preserve those previously registered.
+     * Register our handlers and preserve those previously registered.
      *
      * @param \Bugsnag\Client|string|null $client client instance or api key
      *
@@ -88,7 +88,7 @@ class Handler
     }
 
     /**
-     * Register the bugsnag error handler and save the returned value.
+     * Register the bugsnag exception handler and save the returned value.
      *
      * @param bool $callPrevious whether or not to call the previous handler
      *
