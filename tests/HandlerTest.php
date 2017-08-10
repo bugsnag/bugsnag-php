@@ -30,11 +30,65 @@ class HandlerTest extends TestCase
         Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
     }
 
+    /**
+     * @expectedException PHPUnit_Framework_Error_Warning
+     */
+    public function testErrorHandlerWithPrevious()
+    {
+        Handler::registerWithPrevious($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
+    }
+
     public function testExceptionHandler()
     {
         $this->client->expects($this->once())->method('notify');
 
         Handler::register($this->client)->exceptionHandler(new Exception('Something broke'));
+    }
+
+    public function testExceptionHandlerWithPrevious()
+    {
+        // Register a custom exception handler that stores it's parameter in the
+        // parent's scope so we can assert that it was correctly called.
+        $previous_exception_handler_arg = null;
+        set_exception_handler(
+            function ($e) use (&$previous_exception_handler_arg) {
+                $previous_exception_handler_arg = $e;
+            }
+        );
+
+        $e_to_throw = new Exception('Something broke');
+
+        Handler::registerWithPrevious($this->client)->exceptionHandler($e_to_throw);
+
+        $this->assertSame($e_to_throw, $previous_exception_handler_arg);
+    }
+
+    public function testExceptionHandlerWithoutPrevious()
+    {
+        $previous_exception_handler_called = false;
+        set_exception_handler(
+            function ($e) use (&$previous_exception_handler_called) {
+                $previous_exception_handler_called = true;
+            }
+        );
+
+        Handler::register($this->client)->exceptionHandler(new Exception());
+
+        $this->assertFalse($previous_exception_handler_called);
+    }
+
+    public function testCustomErrorHandlerValueReturned()
+    {
+        set_error_handler(
+            function () {
+                return '123';
+            }
+        );
+
+        $this->assertSame(
+            '123',
+            Handler::registerWithPrevious($this->client)->errorHandler(E_WARNING, 'Something broke')
+        );
     }
 
     public function testErrorReportingLevel()

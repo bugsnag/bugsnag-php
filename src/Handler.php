@@ -12,7 +12,21 @@ class Handler
     protected $client;
 
     /**
-     * Register our exception handler.
+     * The previously registered error handler.
+     *
+     * @var callable|null
+     */
+    protected $previousErrorHandler;
+
+    /**
+     * The previously registered exception handler.
+     *
+     * @var callable|null
+     */
+    protected $previousExceptionHandler;
+
+    /**
+     * Register our handlers.
      *
      * @param \Bugsnag\Client|string|null $client client instance or api key
      *
@@ -22,11 +36,83 @@ class Handler
     {
         $handler = new static($client instanceof Client ? $client : Client::make($client));
 
-        set_error_handler([$handler, 'errorHandler']);
-        set_exception_handler([$handler, 'exceptionHandler']);
-        register_shutdown_function([$handler, 'shutdownHandler']);
+        $handler->registerBugsnagHandlers(false); // don't preserve previous handlers
 
         return $handler;
+    }
+
+    /**
+     * Register our handlers and preserve those previously registered.
+     *
+     * @param \Bugsnag\Client|string|null $client client instance or api key
+     *
+     * @return static
+     */
+    public static function registerWithPrevious($client = null)
+    {
+        $handler = new static($client instanceof Client ? $client : Client::make($client));
+
+        $handler->registerBugsnagHandlers(true); // preserve previous handlers
+
+        return $handler;
+    }
+
+    /**
+     * Register our handlers, optionally saving those previously registered.
+     *
+     * @param bool $callPrevious whether or not to call the previous handlers
+     *
+     * @return void
+     */
+    protected function registerBugsnagHandlers($callPrevious)
+    {
+        $this->registerErrorHandler($callPrevious);
+        $this->registerExceptionHandler($callPrevious);
+        $this->registerShutdownHandler();
+    }
+
+    /**
+     * Register the bugsnag error handler and save the returned value.
+     *
+     * @param bool $callPrevious whether or not to call the previous handler
+     *
+     * @return void
+     */
+    public function registerErrorHandler($callPrevious)
+    {
+        $previous = set_error_handler([$this, 'errorHandler']);
+
+        if ($callPrevious) {
+            $this->previousErrorHandler = $previous;
+        }
+    }
+
+    /**
+     * Register the bugsnag exception handler and save the returned value.
+     *
+     * @param bool $callPrevious whether or not to call the previous handler
+     *
+     * @return void
+     */
+    public function registerExceptionHandler($callPrevious)
+    {
+        $previous = set_exception_handler([$this, 'exceptionHandler']);
+
+        if ($callPrevious) {
+            $this->previousExceptionHandler = $previous;
+        }
+    }
+
+    /**
+     * Register our shutdown handler.
+     *
+     * PHP will call shutdown functions in the order they were registered.
+     *
+     * @return void
+     */
+    public function registerShutdownHandler()
+    {
+        register_shutdown_function([$this, 'shutdownHandler']);
     }
 
     /**
@@ -55,6 +141,13 @@ class Handler
         $report->setSeverity('error');
 
         $this->client->notify($report);
+
+        if ($this->previousExceptionHandler) {
+            call_user_func(
+                $this->previousExceptionHandler,
+                $throwable
+            );
+        }
     }
 
     /**
@@ -69,15 +162,23 @@ class Handler
      */
     public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
-        if ($this->client->shouldIgnoreErrorCode($errno)) {
-            return;
+        if (!$this->client->shouldIgnoreErrorCode($errno)) {
+            $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline);
+
+            $this->client->notify($report);
         }
 
-        $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline);
-
-        $this->client->notify($report);
-
-        return false;
+        if ($this->previousErrorHandler) {
+            return call_user_func(
+                $this->previousErrorHandler,
+                $errno,
+                $errstr,
+                $errfile,
+                $errline
+            );
+        } else {
+            return false;
+        }
     }
 
     /**
