@@ -1,6 +1,24 @@
 Changelog
 =========
 
+## 3.6.0 (2017-08-10)
+
+### Enhancements
+
+* Allow configuring strip path regex
+  [Paul Kuruvilla](https://github.com/rohitpaulk)
+  [#390](https://github.com/bugsnag/bugsnag-php/pull/390)
+
+* Chain previously defined error handlers. This behavior can be activated using
+  `registerWithPrevious`
+  [Matt Terwilliger](https://github.com/mterwill)
+  [#395](https://github.com/bugsnag/bugsnag-php/pull/395)
+
+* Make `Bugsnag\Handler` constructor public instead of protected to allow
+  configuring custom clients
+  [Adam Vercimak](https://github.com/Vmak11)
+  [#381](https://github.com/bugsnag/bugsnag-php/pull/381)
+
 ## 3.5.1 (2017-06-07)
 
 ### Bug Fixes
