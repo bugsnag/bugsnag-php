@@ -63,7 +63,7 @@ class RequestMetaDataTest extends TestCase
             'Input' => 'some test command --opt',
             'Command' => 'some',
             'Arguments' => ['test', 'command'],
-            'Options' => ['--opt']
+            'Options' => ['--opt'],
         ]], $report->getMetaData());
     }
 
