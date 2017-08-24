@@ -12,7 +12,11 @@ class BasicResolver implements ResolverInterface
     public function resolve()
     {
         if (!isset($_SERVER['REQUEST_METHOD'])) {
-            return new NullRequest();
+            if ((php_sapi_name() == 'cli') && (isset($_SERVER['argv']))) {
+                return new ConsoleRequest($_SERVER['argv']);
+            } else {
+                return new NullRequest();
+            }
         }
 
         return new PhpRequest($_SERVER, empty($_SESSION) ? [] : $_SESSION, empty($_COOKIE) ? [] : $_COOKIE, static::getRequestHeaders($_SERVER), static::getInputParams($_SERVER, $_POST));
