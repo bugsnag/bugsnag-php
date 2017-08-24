@@ -3,9 +3,9 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Request\BasicResolver;
+use Bugsnag\Request\ConsoleRequest;
 use Bugsnag\Request\NullRequest;
 use Bugsnag\Request\PhpRequest;
-use Bugsnag\Request\ConsoleRequest;
 use Bugsnag\Request\RequestInterface;
 use Bugsnag\Request\ResolverInterface;
 use PHPUnit_Framework_TestCase as TestCase;
