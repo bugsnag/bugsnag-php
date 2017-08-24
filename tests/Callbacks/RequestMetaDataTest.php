@@ -49,8 +49,28 @@ class RequestMetaDataTest extends TestCase
         ]], $report->getMetaData());
     }
 
+    public function testCanConsoleMetaData()
+    {
+        $_SERVER['argv'] = ['some', 'test', 'command', '--opt'];
+
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+
+        $callback = new RequestMetaData($this->resolver);
+
+        $callback($report);
+
+        $this->assertSame(['bar' => 'baz', 'console' => [
+            'Input' => 'some test command --opt',
+            'Command' => 'some',
+            'Arguments' => ['test', 'command'],
+            'Options' => ['--opt']
+        ]], $report->getMetaData());
+    }
+
     public function testFallsBackToNull()
     {
+        unset($_SERVER['argv']);
+
         $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestMetaData($this->resolver);
