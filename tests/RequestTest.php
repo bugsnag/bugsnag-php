@@ -5,6 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\NullRequest;
 use Bugsnag\Request\PhpRequest;
+use Bugsnag\Request\ConsoleRequest;
 use Bugsnag\Request\RequestInterface;
 use Bugsnag\Request\ResolverInterface;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -36,10 +37,17 @@ class RequestTest extends TestCase
         $this->assertTrue($this->resolver->resolve()->isRequest());
     }
 
-    public function testNotRequest()
+    public function testIsRequestWithConsole()
+    {
+        $_SERVER['argv'] = ['test', 'command', 'string'];
+        unset($_SERVER['REQUEST_METHOD']);
+        $this->assertTrue($this->resolver->resolve()->isRequest());
+    }
+
+    public function testNotRequestOrConsole()
     {
         unset($_SERVER['REQUEST_METHOD']);
-
+        unset($_SERVER['argv']);
         $this->assertFalse($this->resolver->resolve()->isRequest());
     }
 
@@ -49,10 +57,18 @@ class RequestTest extends TestCase
         $this->assertTrue($this->resolver->resolve() instanceof RequestInterface);
     }
 
+    public function testIsConsoleRequest()
+    {
+        $_SERVER['argv'] = ['test', 'command', 'string'];
+        unset($_SERVER['REQUEST_METHOD']);
+        $this->assertTrue($this->resolver->resolve() instanceof ConsoleRequest);
+        $this->assertTrue($this->resolver->resolve() instanceof RequestInterface);
+    }
+
     public function testIsNullRequest()
     {
         unset($_SERVER['REQUEST_METHOD']);
-
+        unset($_SERVER['argv']);
         $this->assertTrue($this->resolver->resolve() instanceof NullRequest);
         $this->assertTrue($this->resolver->resolve() instanceof RequestInterface);
     }
