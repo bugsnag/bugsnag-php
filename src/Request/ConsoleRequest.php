@@ -13,10 +13,12 @@ class ConsoleRequest implements RequestInterface
 
     /**
      * Create a new console request instance.
+     * 
+     * @param array     $commandArray An array of the command line input
      *
      * @return void
      */
-    public function __construct($commandArray)
+    public function __construct(array $commandArray)
     {
         $this->command = $commandArray;
     }
