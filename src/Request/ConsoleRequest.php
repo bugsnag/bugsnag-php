@@ -13,7 +13,7 @@ class ConsoleRequest implements RequestInterface
 
     /**
      * Create a new console request instance.
-     * 
+     *
      * @param array     $commandArray An array of the command line input
      *
      * @return void
