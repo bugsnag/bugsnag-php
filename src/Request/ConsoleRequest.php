@@ -7,20 +7,20 @@ class ConsoleRequest implements RequestInterface
     /**
      * The unformated console command.
      *
-     * @var array
+     * @var string[]
      */
     protected $command;
 
     /**
      * Create a new console request instance.
      *
-     * @param array     $commandArray An array of the command line input
+     * @param string[] $command an array of the console command input
      *
      * @return void
      */
-    public function __construct(array $commandArray)
+    public function __construct(array $command)
     {
-        $this->command = $commandArray;
+        $this->command = $command;
     }
 
     /**
@@ -30,7 +30,7 @@ class ConsoleRequest implements RequestInterface
      */
     public function isRequest()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -88,6 +88,7 @@ class ConsoleRequest implements RequestInterface
      */
     public function getContext()
     {
+        return implode(' ', array_slice($this->command, 0, 2));
     }
 
     /**

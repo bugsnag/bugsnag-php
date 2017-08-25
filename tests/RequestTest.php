@@ -37,11 +37,11 @@ class RequestTest extends TestCase
         $this->assertTrue($this->resolver->resolve()->isRequest());
     }
 
-    public function testIsRequestWithConsole()
+    public function testIsNotRequestWithConsole()
     {
         $_SERVER['argv'] = ['test', 'command', 'string'];
         unset($_SERVER['REQUEST_METHOD']);
-        $this->assertTrue($this->resolver->resolve()->isRequest());
+        $this->assertFalse($this->resolver->resolve()->isRequest());
     }
 
     public function testNotRequestOrConsole()
