@@ -65,7 +65,7 @@ class ConsoleRequest implements RequestInterface
         $arguments = [];
         $options = [];
         foreach (array_slice($this->command, 1) as $arg) {
-            if ($arg[0] == '-') {
+            if (isset($arg[0]) && $arg[0] === '-') {
                 $options[] = $arg;
             } else {
                 $arguments[] = $arg;
