@@ -22,9 +22,8 @@ class BasicResolver implements ResolverInterface
         if (PHP_SAPI === 'cli' && isset($_SERVER['argv'])) {
             return new ConsoleRequest($_SERVER['argv']);
         }
-        
-        return new NullRequest();
 
+        return new NullRequest();
     }
 
     /**
