@@ -60,23 +60,23 @@ class ConsoleRequest implements RequestInterface
      */
     public function getMetaData()
     {
-        if (is_array($this->command)) {
-            $commandString = implode(' ', $this->command);
-            $primaryCommand = $this->command[0];
-            $arguments = [];
-            $options = [];
-            foreach (array_slice($this->command, 1) as $arg) {
-                $arg[0] == '-' ? $options[] = $arg : $arguments[] = $arg;
+        $commandString = implode(' ', $this->command);
+        $primaryCommand = $this->command[0];
+        $arguments = [];
+        $options = [];
+        foreach (array_slice($this->command, 1) as $arg) {
+            if ($arg[0] == '-') {
+                $options[] = $arg;
+            } else {
+                $arguments[] = $arg;
             }
-            $data = [
-                'Input' => $commandString,
-                'Command' => $primaryCommand,
-                'Arguments' => $arguments,
-                'Options' => $options,
-            ];
-        } else {
-            $data = $this->command;
         }
+        $data = [
+            'Input' => $commandString,
+            'Command' => $primaryCommand,
+            'Arguments' => $arguments,
+            'Options' => $options,
+        ];
 
         return ['console' => $data];
     }
@@ -88,7 +88,7 @@ class ConsoleRequest implements RequestInterface
      */
     public function getContext()
     {
-        return implode(' ', array_slice($this->command, 0, 2));
+        return implode(' ', array_slice($this->command, 0, 4));
     }
 
     /**
