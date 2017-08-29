@@ -49,8 +49,23 @@ class RequestContextTest extends TestCase
         $this->assertSame(null, $report->getContext());
     }
 
+    public function testCanConsoleContext()
+    {
+        $_SERVER['argv'] = ['first', 'second', '--opt', 'arg', 'left', 'out'];
+
+        $report = Report::fromPHPThrowable($this->config, new Exception());
+
+        $callback = new RequestContext($this->resolver);
+
+        $callback($report);
+
+        $this->assertSame('first second --opt arg', $report->getContext());
+    }
+
     public function testFallsBackToNull()
     {
+        unset($_SERVER['argv']);
+
         $report = Report::fromPHPThrowable($this->config, new Exception());
 
         $callback = new RequestContext($this->resolver);
