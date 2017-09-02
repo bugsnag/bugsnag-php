@@ -112,3 +112,23 @@ As defined in `Configuration.php` the client will use the `SymfonyResolver` clas
 The Bugsnag-Laravel library again extends the Bugsnag-PHP library and customizes its operation for the [Laravel application framework](https://laravel.com/).
 
 ### Dependency Management
+Laravel uses a very similar dependency management system to Symfony, wrapping classes in `ServiceProviders` that can then be called later through an `Alias` or a `Facade`. The `BugsnagServiceProvider` class implements `boot` and `register` functions as described in the [service provider](https://laravel.com/docs/5.4/providers) documentation.  The `boot` function intialises the configuration and options of the provider, while the `register` function returns a singleton accessible throught the application.
+
+### Customizing the `Client` object
+The `register` function mentioned above creates the `client` object with a base `configuration` and `guzzle`, as well as a `LaravelResolver` to handle retrieving data from created `LaravelRequest` objects in the `Resolver`-`Request` pattern.
+
+It draws its configuration from the Laravel `config` object which the framework automatically populates from the `.env` file or a created `Bugsnag.php` configuration file.
+
+The default callbacks are registered to the `pipeline` in the `setupCallbacks` function, along with customized callbacks to extract custom and user information from the framework to attach to the report.
+
+### Listening for events
+The Laravel notifier uses the [Bugsnag-PSR-Logger](https://github.com/bugsnag/bugsnag-psr-logger) in order to automatically receive error and exception events from the Laravel framework, which is the Laravel prefered method instead of directly registering an `error-handler`.
+
+The notifier wraps the PSR logger in a pair of classes, the `LaravelLogger` and `MultiLogger` for singular and multi-logging setups respectively.  These are added to the framework by aliasing the frameworks PSR-logger interface and class to the `bugsnag.logger` class or `bugsnag.multi` classes depending on the users setup.  This must be done manually within the `AppServiceProvider`.
+
+### Notifying of Deployments
+While deployment notifications can be sent through the client object, Laravel library also provided a deploy command through the `DeployCommand` class. This must be registered through the `commands` array in the `Kernel.php` Laravel file.
+
+## [Bugsnag-Silex](https://github.com/bugsnag/bugsnag-silex)
+
+## [Bugsnag-Magento](https://github.com/bugsnag/bugsnag-magento)
