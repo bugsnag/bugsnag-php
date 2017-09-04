@@ -39,7 +39,7 @@ The handler class provides static functions for registering the Bugsnag unhandle
 
 The static registration functions take an instance of the client object to reference in the event of a an exception by creating a `Report` object with it.
 
-As this is an optional part of the library that must be initiated seperately it should be replaced by an appropriate method of hooking into the error handlers or loggers of the relevant framework.  It must respond to these events by creating a `Report` object from the `client` and exception, and then it must pass it into the client objects `notify` function for it to be sent off to the Bugsnag notification server.
+As this is an optional part of the library that must be initiated separately it should be replaced by an appropriate method of hooking into the error handlers or loggers of the relevant framework.  It must respond to these events by creating a `Report` object from the `client` and exception, and then it must pass it into the client objects `notify` function for it to be sent off to the Bugsnag notification server.
 
 ### The Report Object
 The Report class is used to create readable information from a PHP exception or throwable which can later be used to populate an HTTP request to notify Bugsnag. It is accessible through three static methods:
@@ -81,7 +81,7 @@ This section covers the other available Bugsnag notifiers for PHP frameworks and
 This library implements the [PSR-3 Logger Interface](http://www.php-fig.org/psr/psr-3/) specification to enable users to attach Bugsnag into a standardised logging system. It consists of three classes:
 - `AbstractLogger` an abstract class which implements the PSR spec `LoggerInterface`, which requires a `log` method in its implementors
 - `BugsnagLogger` a logger class which extends the above class.  This logger will record `debug` or `info` logs as `breadcrumb` objects, and will notify Bugsnag of any other log type
-- `MultiLogger` again extends the `AbstractLogger`, but accepts and array of loggers in its construction, allowing other PSR compliant loggers to be used simultaniously with the `BugsnagLogger`
+- `MultiLogger` again extends the `AbstractLogger`, but accepts and array of loggers in its construction, allowing other PSR compliant loggers to be used simultaneously with the `BugsnagLogger`
 
 ## [Bugsnag-Wordpress](https://github.com/bugsnag/bugsnag-wordpress)
 This plugin for wordpress enables Bugsnag through the plugins menu of the wordpress site. It requires an older version of this library (~ 2.2) and so some of the methods and features will likely have been refactored for the newer versions.
@@ -122,7 +122,7 @@ It draws its configuration from the Laravel `config` object which the framework 
 The default callbacks are registered to the `pipeline` in the `setupCallbacks` function, along with customized callbacks to extract custom and user information from the framework to attach to the report.
 
 ### Listening for events
-The Laravel notifier uses the [Bugsnag-PSR-Logger](https://github.com/bugsnag/bugsnag-psr-logger) in order to automatically receive error and exception events from the Laravel framework, which is the Laravel prefered method instead of directly registering an `error-handler`.
+The Laravel notifier uses the [Bugsnag-PSR-Logger](https://github.com/bugsnag/bugsnag-psr-logger) in order to automatically receive error and exception events from the Laravel framework, which is the Laravel preferred method instead of directly registering an `error-handler`.
 
 The notifier wraps the PSR logger in a pair of classes, the `LaravelLogger` and `MultiLogger` for singular and multi-logging setups respectively.  These are added to the framework by aliasing the frameworks PSR-logger interface and class to the `bugsnag.logger` class or `bugsnag.multi` classes depending on the users setup.  This must be done manually within the `AppServiceProvider`.
 
