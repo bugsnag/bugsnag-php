@@ -32,7 +32,7 @@ When utilising this library in a framework specific way it is advised that the c
 There is a provided static `make` method that creates the client object with suitable default `Configuration` and `Guzzle` arguments with the `api_key` and `endpoint` allowing the user to set their Bugsnag settings.
 
 Another important aspect of the client objects construction is the registering of callbacks with a `pipeline` object.  If created with the `make` method the default callbacks will be added to the `pipeline` unless
-the `defaults` argument is set to false.  These default callbacks will be responsible for populating the `report` object with information when necessary, and will should be customised to extract the most relevant information from the error and `resolver` objects used in the framework.
+the `defaults` argument is set to false.  These default callbacks will be responsible for populating the `report` object with information when necessary, and will should be customized to extract the most relevant information from the error and `resolver` objects used in the framework.
 
 ### The Handler Class
 The handler class provides static functions for registering the Bugsnag unhandled error and exception handlers, as well as a shutdown handler.  This is separate to the client object as these handlers and methods of registering them will change across frameworks. 
@@ -92,7 +92,7 @@ This plugin for wordpress enables Bugsnag through the plugins menu of the wordpr
 This library provides an extended version of the base Bugsnag-PHP library customized for the [Symfony PHP framework](symfony.com).
 
 ### Dependency Management
-The libary is bundled for inclusion in the Symfony app framework through the `RegisterBundle` function used for adding Symfony extensions as laid out [here](https://symfony.com/doc/current/bundles.html).  It utilises the `DependencyInjection` folder to set up the extension through the `Configuration.php` file to define the necessary default configuration options, drawing the rest from the apps `config.yml`.  This configuration is then read in and processed by the `BugsnagExtension.php` file, and the arguments are set on the container.
+The libary is bundled for inclusion in the Symfony app framework through the `RegisterBundle` function used for adding Symfony extensions as laid out [here](https://symfony.com/doc/current/bundles.html).  It utilises the `DependencyInjection` folder to set up the extension through the `Configuration.php` file to define the necessary default configuration options, drawing the rest from the app's `config.yml`.  This configuration is then read in and processed by the `BugsnagExtension.php` file, and the arguments are set on the container.
 
 To build the client when requested, the `Configuration.php` defines a factory for the framework to use,  `ClientFactory.php`.  This factory wraps the creation methods for the `client` object and ensures that the client is configured correctly to get information from the framework and respond to events.  The `ClientFactory` configuration can be found in the Bugsnag service definition in `Resources/services.yml`.
 
@@ -132,6 +132,7 @@ The notifier wraps the PSR logger in a pair of classes, the `LaravelLogger` and 
 While deployment notifications can be sent through the client object, Laravel library also provided a deploy command through the `DeployCommand` class. This must be registered through the `commands` array in the `Kernel.php` Laravel file.
 
 ## [Bugsnag-Silex](https://github.com/bugsnag/bugsnag-silex)
-
+TODO
 
 ## [Bugsnag-Magento](https://github.com/bugsnag/bugsnag-magento)
+TODO
