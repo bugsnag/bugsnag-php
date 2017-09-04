@@ -23,7 +23,7 @@ All code required to run the Bugsnag PHP notifier can be found within the `src` 
 The main Bugsnag object that will be used in applications for the purpose of catching and notify of errors is the Client object.  This provides an API for the user to call on for the majority of the functions they will seek to utilise in the library, including: `notify`, `notify-exception`, `notify-error`, `leave-breadcrumb`, and `deploy`.
 
 The client object has three constructor arguments that modify the way it will operate:
-- `configuration` Accepts a `Configuration` object for the user to customize behaviour of the Bugsnag notifier. The configuration options will be set in the most appropriate method for the framework being used, and parsed into this format.
+- `configuration` Accepts a `Configuration` object for the user to customize behavior of the Bugsnag notifier. The configuration options will be set in the most appropriate method for the framework being used, and parsed into this format.
 - `resolver` Accepts an object that implements the `ResolverInterface`.  This object will be responsible for returning an object that implements the `RequestInterface`, which will need to populate a `Report` upon request.  By default if not given a resolver the client will create a `BasicResolver`.
 - `guzzle` Accepts a `Guzzle` object provided by the guzzler library to use as an HTTP request object in the `HTTPClient` object.  By default the client will create one using the static `ENDPOINT` variable.  If it's necessary to change these defaults the static `make_guzzle` may be used with a defined base url and options array, with the result being passed into this argument.
 
@@ -80,7 +80,7 @@ When the `notify` function is called, manually or automatically, a breadcrumb is
 This section covers the other available Bugsnag notifiers for PHP frameworks and how they are implemented and connected to the main Bugsnag-PHP libary and each other.
 
 ## [Bugsnag-PSR-Logger](https://github.com/bugsnag/bugsnag-psr-logger)
-This library implements the [PSR-3 Logger Interface](http://www.php-fig.org/psr/psr-3/) specification to enable users to attach Bugsnag into a standardised logging system. It consists of three classes:
+This library implements the [PSR-3 Logger Interface](http://www.php-fig.org/psr/psr-3/) specification to enable users to attach Bugsnag into a standardized logging system. It consists of three classes:
 - `AbstractLogger` an abstract class which implements the PSR spec `LoggerInterface`, which requires a `log` method in its implementors
 - `BugsnagLogger` a logger class which extends the above class.  This logger will record `debug` or `info` logs as `breadcrumb` objects, and will notify Bugsnag of any other log type
 - `MultiLogger` again extends the `AbstractLogger`, but accepts and array of loggers in its construction, allowing other PSR compliant loggers to be used simultaneously with the `BugsnagLogger`
