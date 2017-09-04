@@ -20,18 +20,18 @@ This document is one of a series describing the layout of the individual Bugsnag
 All code required to run the Bugsnag PHP notifier can be found within the `src` directory.
 
 ### The Client Object
-The main Bugsnag object that will be used in applications for the purpose of catching and notify of errors is the Client object.  This provides an API for the user to call on for the majority of the functions they will seek to utilise in the library, including: `notify`, `notify-exception`, `notify-error`, `leave-breadcrumb`, and `deploy`.
+The main Bugsnag object that will be used in applications for the purpose of catching and notify of errors is the client object.  This provides an API for the user to call on for the majority of the functions they will seek to utilise in the library, including: `notify`, `notify-exception`, `notify-error`, `leave-breadcrumb`, and `deploy`.
 
 The client object has three constructor arguments that modify the way it will operate:
 - `configuration` Accepts a `Configuration` object for the user to customize behavior of the Bugsnag notifier. The configuration options will be set in the most appropriate method for the framework being used, and parsed into this format.
 - `resolver` Accepts an object that implements the `ResolverInterface`.  This object will be responsible for returning an object that implements the `RequestInterface`, which will need to populate a `Report` upon request.  By default if not given a resolver the client will create a `BasicResolver`.
-- `guzzle` Accepts a `Guzzle` object provided by the guzzler library to use as an HTTP request object in the `HTTPClient` object.  By default the client will create one using the static `ENDPOINT` variable.  If it's necessary to change these defaults the static `make_guzzle` may be used with a defined base url and options array, with the result being passed into this argument.
+- `guzzle` Accepts a `Guzzle` object provided by the guzzler library to use as an HTTP request object in the `HTTPClient` object.  By default the client will create one using the static `ENDPOINT` variable.  If it's necessary to change these defaults, the static `make_guzzle` may be used with a defined base url and options array, with the result being passed into this argument.
 
-When utilising this library in a framework specific way it is advised that the client object creation is handled in a way that makes the most sense for access to the notify functions and in order to extract the most relevant data, e.g. by using a different `resolver` with framework specific functions, or wrapping the client in a service provider.
+When utilising this library in a framework-specific way it is advised that the client object creation is handled in a way that makes the most sense for access to the notify functions and in order to extract the most relevant data, e.g. by using a different `resolver` with framework-specific functions, or wrapping the client in a service provider.
 
 There is a provided static `make` method that creates the client object with suitable default `Configuration` and `Guzzle` arguments with the `api_key` and `endpoint` allowing the user to set their Bugsnag settings.
 
-Another important aspect of the client objects construction is the registering of callbacks with a `pipeline` object.  If created with the `make` method the default callbacks will be added to the `pipeline` unless
+Another important aspect of the client object's construction is the registering of callbacks with a `pipeline` object.  If created with the `make` method the default callbacks will be added to the `pipeline` unless
 the `defaults` argument is set to false.  These default callbacks will be responsible for populating the `report` object with information when necessary, and will should be customized to extract the most relevant information from the error and `resolver` objects used in the framework.
 
 ### The Handler Class
@@ -39,7 +39,7 @@ The handler class provides static functions for registering the Bugsnag unhandle
 
 The static registration functions take an instance of the client object to utilise as a source of application information and as a notifier when an unhandled error or exception occurs.
 
-As this is an optional part of the library that must be initiated separately it should be replaced by an appropriate method of hooking into the error handlers or loggers of the relevant framework.  It must respond to these events by creating a `Report` object from the `client` and exception, and then it must pass it into the client objects `notify` function for it to be sent off to the Bugsnag notification server.
+As this is an optional part of the library that must be initiated separately it should be replaced by an appropriate method of hooking into the error handlers or loggers of the relevant framework.  It must respond to these events by creating a `Report` object from the `client` and exception, and then it must pass it into the client object's `notify` function for it to be sent off to the Bugsnag notification server.
 
 ### The Report Object
 The Report class is used to create readable information from a PHP exception or throwable which can later be used to populate an HTTP request to notify Bugsnag. It is accessible through three static methods:
@@ -50,11 +50,11 @@ The Report class is used to create readable information from a PHP exception or 
 These methods should be used to create a report object to ensure that the correct fields are populated for the later notification stages.  
 
 ### The Pipeline and Callbacks
-Upon being passed to the `notify` function, the report object will also be populated with information provided by a series of callbacks created with the `client` object.  Registered with the `registerCallback` method each callback will be provided the `report` in turn and can populate it with additional information if necessary.
+Upon being passed to the `notify` function, the report object will also be populated with information provided by a series of callbacks created with the `client` object.  Registered with the `registerCallback` method, each callback will be passed the `report` in turn and can populate it with additional information if necessary.
 
 The pipeline object itself is responsible for executing these callbacks as a series of closures until they have all been able to access the `report` object and modify its content.  The pipeline object is merely a method of utilising the callbacks, and does not need to be modified per framework.
 
-The default callbacks, registered through the `client` objects `registerDefaultCallbacks` use the `Resolver` and its `Request` objects to extract data about the current environment in the server, where the error-causing request originated from, and any more metadata it can report.
+The default callbacks, registered through the `client` object's `registerDefaultCallbacks` use the `Resolver` and its `Request` objects to extract data about the current environment in the server, where the error-causing request originated from, and any more metadata it can report.
 
 There are two callbacks registered with the pipeline automatically by the client: `BreadcrumbData` which ensures that the recorded `Breadcrumb` objects are attached to the `report`, and `NotificationSkipper` which stops the notification process in the event that the notification should not be sent i.e. when missing an `api_key` or a non-releasing `releaseStage`.
 
@@ -97,7 +97,7 @@ The libary is bundled for inclusion in the Symfony app framework through the `Re
 To build the client when requested, the `Configuration.php` defines a factory for the framework to use,  `ClientFactory.php`.  This factory wraps the creation methods for the `client` object and ensures that the client is configured correctly to get information from the framework and respond to events.  The `ClientFactory` configuration can be found in the Bugsnag service definition in `Resources/services.yml`.
 
 ### Customizing the `Client` object
-The configuration passed through to the `ClientFactory` will modify several of the `client` objects properties.  In additional to the [configuration options](https://docs.bugsnag.com/platforms/php/symfony/configuration-options/) for the user to setup their particular configuration, it also defines the `resolver` object which gathers information that populates the `report` objects used in the notify method.
+The configuration passed through to the `ClientFactory` will modify several of the `client` object's properties.  In additional to the [configuration options](https://docs.bugsnag.com/platforms/php/symfony/configuration-options/) for the user to setup their particular configuration, it also defines the `resolver` object which gathers information that populates the `report` objects used in the notify method.
 
 The `ClientFactory` registers the default callbacks to the `pipeline` to extract data for the report, but also adds an additional callback specific to Symfony to extract a user identifier from the user specific `Token` object.
 
