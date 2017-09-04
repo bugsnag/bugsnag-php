@@ -132,7 +132,23 @@ The notifier wraps the PSR logger in a pair of classes, the `LaravelLogger` and 
 While deployment notifications can be sent through the client object, Laravel library also provided a deploy command through the `DeployCommand` class. This must be registered through the `commands` array in the `Kernel.php` Laravel file.
 
 ## [Bugsnag-Silex](https://github.com/bugsnag/bugsnag-silex)
-TODO
+The Bugsnag-Silex library adds Silex-specific methods and data-gathering for the [Silex micro-framework](silex.symfony.com).
+
+### Dependency Management
+Being based on Symfony, Silex uses a similar service provider system to Laravel and Symfony, where the provider is passed to the app using the `register` function in the app's main startup file.  The provider is an implementation of the `ServiceProviderInterface` class, with a `register` function that adds `client` and `resolver` objects to the Silex container.
+
+The provider is split into three classes, `AbstractServiceProvider` as a base class and `Silex1ServiceProvider` and `Silex2ServiceProvider` as extensions of this base.  The version specific provider classes operate in the same way except the `Silex1ServiceProvider` defines a required `boot` function that does nothing.
+
+Both classes call into their base class method `makeClient` to produce the `client` being registered.
+
+### Customizing the `Client` object
+Silex configuration options are added in an environment-specific file in the `config` folder.  These options are then automatically pulled into the app container when the environment is started.  In the `makeClient` function this config is pulled in and used to setup a newly created client object, along with the earlier created `resolver`.
+
+This `SilexResolver` is used to retrieve data for each report using the `SilexRequest` class in the previously mentioned `Resolver`-`Request` pattern.
+
+Standard default callbacks are registered along with an additional callback to detect the user if one isn't already configured.
+
+### Listening for events
+The Silex framework requires manual registering of error and exception handlers, which requires the user add a `notifyException` call into an error handler registered to the app container's `error` function.
 
 ## [Bugsnag-Magento](https://github.com/bugsnag/bugsnag-magento)
-TODO
