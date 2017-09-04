@@ -152,3 +152,4 @@ Standard default callbacks are registered along with an additional callback to d
 The Silex framework requires manual registering of error and exception handlers, which requires the user add a `notifyException` call into an error handler registered to the app container's `error` function.
 
 ## [Bugsnag-Magento](https://github.com/bugsnag/bugsnag-magento)
+THe Bugsnag-Magento module enables Bugsnag functionality through the Magento admin panel.  It uses an older version of the Bugsnag-PHP library packaged with the module and so some of the methods and features will likely have been refactored by later versions.
