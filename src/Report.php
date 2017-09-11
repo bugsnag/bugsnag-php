@@ -21,57 +21,57 @@ class Report
      *
      * @var string
      */
-     const EXCEPTION_HANDLER = 'exception_handler';
+    const EXCEPTION_HANDLER = 'exception_handler';
 
     /**
      * The middleware handler reason.
      *
      * @var string
      */
-     const MIDDLEWARE_HANDLER = 'middleware_handler';
+    const MIDDLEWARE_HANDLER = 'middleware_handler';
 
     /**
      * The log level reason.
      *
      * @var string
      */
-     const LOG_LEVEL = 'log_level';
+    const LOG_LEVEL = 'log_level';
 
     /**
      * The event listener reason.
      *
      * @var string
      */
-     const EVENT_LISTENER = 'event_listener';
+    const EVENT_LISTENER = 'event_listener';
 
     /**
      * The promise rejection reason.
      *
      * @var string
      */
-     const PROMISE_REJECTION = 'promise_rejection';
+    const PROMISE_REJECTION = 'promise_rejection';
 
     /**
      * The timer callback reason.
      *
      * @var string
      */
-     const TIMER_CALLBACK = 'timer_callback';
+    const TIMER_CALLBACK = 'timer_callback';
 
     /**
      * The window onerror reason.
      *
      * @var string
      */
-     const WINDOW_ONERROR = 'window_onerror';
+    const WINDOW_ONERROR = 'window_onerror';
 
     /**
      * The error class reason.
      *
      * @var string
      */
-     const ERROR_CLASS = 'error_class';
-    
+    const ERROR_CLASS = 'error_class';
+
     /**
      * The config object.
      *
@@ -157,21 +157,21 @@ class Report
     protected $time;
 
     /**
-     * Whether the error is handled or unhandled
+     * Whether the error is handled or unhandled.
      *
      * @var bool
      */
     protected $unhandled = false;
 
     /**
-     * Data for unhandled exceptions
+     * Data for unhandled exceptions.
      *
      * @var array[]
      */
     protected $unhandledPayload = [];
 
     /**
-     * Indicates the severity is unchanged
+     * Indicates the severity is unchanged.
      *
      * @var bool
      */
@@ -197,7 +197,7 @@ class Report
         $report = new static($config);
 
         $report->setPHPError($code, $message, $file, $line, $fatal);
-               
+
         if ($severityReason) {
             $report->setUnhandledData($severityReason, $attributes);
         }
@@ -337,23 +337,23 @@ class Report
     }
 
     /**
-     * Sets the unhandled payload
+     * Sets the unhandled payload.
      *
      * @return $this
      */
     protected function setUnhandledData(string $severityReason, array $attributes = null)
     {
         $this->unhandled = true;
-        $this->unhandledPayload["type"] = $severityReason;
-        $this->unhandledPayload["attributes"] = $attributes;
+        $this->unhandledPayload['type'] = $severityReason;
+        $this->unhandledPayload['attributes'] = $attributes;
+
         return $this;
     }
 
     /**
-     * Sets the defaultSeverity
+     * Sets the defaultSeverity.
      *
      * @return $this
-     *
      */
     public function setDefaultSeverity(bool $defaultSeverity)
     {
@@ -449,7 +449,7 @@ class Report
     {
         return $this->message;
     }
-    
+
     /**
      * Set the error severity.
      *
@@ -640,7 +640,7 @@ class Report
             'breadcrumbs' => $this->breadcrumbs,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
             'unhandled' => $this->unhandled,
-            'defaultSeverity' => $this->defaultSeverity
+            'defaultSeverity' => $this->defaultSeverity,
         ];
 
         if ($this->unhandled) {
