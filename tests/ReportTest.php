@@ -298,4 +298,32 @@ class ReportTest extends TestCase
 
         $this->assertSame(['message' => 'bar', 'severity' => 'warning'], $this->report->getSummary());
     }
+
+    /**
+     * Testing handled/unhandled
+     */
+    public function testDefaultsToHandled()
+    {
+        $data = $this->report->toArray();
+        $this->assertFalse($data['unhandled']);
+    }
+
+    public function testSetSeverityReason()
+    {
+        $exception = new Exception('exception');
+        $report = Report::fromPHPThrowable($this->config, $exception, Report::EXCEPTION_HANDLER);
+        $data = $report->toArray();
+        $this->assertTrue($data['unhandled']);
+        $this->assertSame($data['severityReason'], ['type' => Report::EXCEPTION_HANDLER]);
+    }
+
+    public function testAttributesAssigned()
+    {
+        $exception = new Exception('exception');
+        $report = Report::fromPHPThrowable($this->config,
+            $exception, Report::MIDDLEWARE_HANDLER, ['name' => 'laravel']);
+        $data = $report->toArray();
+        $this->assertSame($data['severityReason'],
+            ['type' => Report::MIDDLEWARE_HANDLER, 'attributes' => ['name' => 'laravel']]);
+    }
 }
