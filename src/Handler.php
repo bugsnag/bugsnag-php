@@ -136,7 +136,7 @@ class Handler
      */
     public function exceptionHandler($throwable)
     {
-        $report = Report::fromPHPThrowable($this->client->getConfig(), $throwable);
+        $report = Report::fromPHPThrowable($this->client->getConfig(), $throwable, Report::EXCEPTION_HANDLER);
 
         $report->setSeverity('error');
 
@@ -163,7 +163,7 @@ class Handler
     public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
         if (!$this->client->shouldIgnoreErrorCode($errno)) {
-            $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline);
+            $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline, false, Report::EXCEPTION_HANDLER);
 
             $this->client->notify($report);
         }

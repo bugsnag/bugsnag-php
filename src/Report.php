@@ -17,6 +17,62 @@ class Report
     const PAYLOAD_VERSION = '3';
 
     /**
+     * The exception handler reason.
+     *
+     * @var string
+     */
+     const EXCEPTION_HANDLER = 'exception_handler';
+
+    /**
+     * The middleware handler reason.
+     *
+     * @var string
+     */
+     const MIDDLEWARE_HANDLER = 'middleware_handler';
+
+    /**
+     * The log level reason.
+     *
+     * @var string
+     */
+     const LOG_LEVEL = 'log_level';
+
+    /**
+     * The event listener reason.
+     *
+     * @var string
+     */
+     const EVENT_LISTENER = 'event_listener';
+
+    /**
+     * The promise rejection reason.
+     *
+     * @var string
+     */
+     const PROMISE_REJECTION = 'promise_rejection';
+
+    /**
+     * The timer callback reason.
+     *
+     * @var string
+     */
+     const TIMER_CALLBACK = 'timer_callback';
+
+    /**
+     * The window onerror reason.
+     *
+     * @var string
+     */
+     const WINDOW_ONERROR = 'window_onerror';
+
+    /**
+     * The error class reason.
+     *
+     * @var string
+     */
+     const ERROR_CLASS = 'error_class';
+    
+    /**
      * The config object.
      *
      * @var \Bugsnag\Config
@@ -101,22 +157,50 @@ class Report
     protected $time;
 
     /**
+     * Whether the error is handled or unhandled
+     *
+     * @var bool
+     */
+    protected $unhandled = false;
+
+    /**
+     * Data for unhandled exceptions
+     *
+     * @var array[]
+     */
+    protected $unhandledPayload = [];
+
+    /**
+     * Indicates the severity is unchanged
+     *
+     * @var bool
+     */
+    protected $defaultSeverity = true;
+
+    /**
      * Create a new report from a PHP error.
      *
-     * @param \Bugsnag\Configuration $config  the config instance
-     * @param int                    $code    the error code
-     * @param string|null            $message the error message
-     * @param string                 $file    the error file
-     * @param int                    $line    the error line
-     * @param bool                   $fatal   if the error was fatal
+     * @param \Bugsnag\Configuration $config         the config instance
+     * @param int                    $code           the error code
+     * @param string|null            $message        the error message
+     * @param string                 $file           the error file
+     * @param int                    $line           the error line
+     * @param bool                   $fatal          if the error was fatal
+     * @param string                 $severityReason the severity reason
+     * @param array                  $attributes     the severity attributes
      *
      * @return static
      */
-    public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
+    public static function fromPHPError(Configuration $config, $code, $message, $file, $line,
+        $fatal = false, $severityReason = null, array $attributes = [])
     {
         $report = new static($config);
 
         $report->setPHPError($code, $message, $file, $line, $fatal);
+               
+        if ($severityReason) {
+            $report->setUnhandledData($severityReason, $attributes);
+        }
 
         return $report;
     }
@@ -124,16 +208,23 @@ class Report
     /**
      * Create a new report from a PHP throwable.
      *
-     * @param \Bugsnag\Configuration $config    the config instance
-     * @param \Throwable             $throwable the throwable instance
+     * @param \Bugsnag\Configuration $config         the config instance
+     * @param \Throwable             $throwable      the throwable instance
+     * @param string                 $severityReason the severity reason
+     * @param array                  $attributes     the severity attributes
      *
      * @return static
      */
-    public static function fromPHPThrowable(Configuration $config, $throwable)
+    public static function fromPHPThrowable(Configuration $config, $throwable, array $unhandledConfig = null,
+        $severityReason = null, array $attributes = [])
     {
         $report = new static($config);
 
         $report->setPHPThrowable($throwable);
+
+        if ($severityReason) {
+            $report->setUnhandledData($severityReason, $attributes);
+        }
 
         return $report;
     }
@@ -242,6 +333,32 @@ class Report
     protected function setStacktrace(Stacktrace $stacktrace)
     {
         $this->stacktrace = $stacktrace;
+
+        return $this;
+    }
+
+    /**
+     * Sets the unhandled payload
+     *
+     * @return $this
+     */
+    protected function setUnhandledData(string $severityReason, array $attributes = null)
+    {
+        $this->unhandled = true;
+        $this->unhandledPayload["type"] = $severityReason;
+        $this->unhandledPayload["attributes"] = $attributes;
+        return $this;
+    }
+
+    /**
+     * Sets the defaultSeverity
+     *
+     * @return $this
+     *
+     */
+    public function setDefaultSeverity(bool $defaultSeverity)
+    {
+        $this->defaultSeverity = $defaultSeverity;
 
         return $this;
     }
@@ -523,7 +640,13 @@ class Report
             'exceptions' => $this->exceptionArray(),
             'breadcrumbs' => $this->breadcrumbs,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
+            'unhandled' => $this->unhandled,
+            'defaultSeverity' => $this->defaultSeverity
         ];
+
+        if ($this->unhandled) {
+            $event['severityReason'] = $this->unhandledPayload;
+        }
 
         if ($hash = $this->getGroupingHash()) {
             $event['groupingHash'] = $hash;
