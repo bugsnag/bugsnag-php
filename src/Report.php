@@ -215,8 +215,7 @@ class Report
      *
      * @return static
      */
-    public static function fromPHPThrowable(Configuration $config, $throwable, array $unhandledConfig = null,
-        $severityReason = null, array $attributes = [])
+    public static function fromPHPThrowable(Configuration $config, $throwable, $severityReason = null, array $attributes = [])
     {
         $report = new static($config);
 
@@ -450,7 +449,7 @@ class Report
     {
         return $this->message;
     }
-
+    
     /**
      * Set the error severity.
      *

@@ -267,16 +267,16 @@ class Client
      */
     public function notify(Report $report, callable $callback = null)
     {
-        $initialSeverity = $report.severity;
-        $this->pipeline->execute($report, function ($report) use ($callback) {
+        $initialSeverity = $report->getSeverity();
+        $this->pipeline->execute($report, function ($report) use ($callback, $initialSeverity) {
             if ($callback) {
                 if ($callback($report) === false) {
                     return;
                 }
             }
 
-            if ($report.severity !== $initialSeverity) {
-                $report.setDefaultSeverity(false);
+            if ($report->getSeverity() !== $initialSeverity) {
+                $report->setDefaultSeverity(false);
             }
 
             $this->http->queue($report);
