@@ -300,7 +300,7 @@ class ReportTest extends TestCase
     }
 
     /**
-     * Testing handled/unhandled
+     * Testing handled/unhandled.
      */
     public function testDefaultsToHandled()
     {
