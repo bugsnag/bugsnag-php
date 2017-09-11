@@ -344,10 +344,11 @@ class Report
     protected function setUnhandledData(string $severityReason, array $attributes = null)
     {
         $this->unhandled = true;
-        $this->unhandledPayload["type"] = $severityReason;
+        $this->unhandledPayload['type'] = $severityReason;
         if ($attributes) {
-            $this->unhandledPayload["attributes"] = $attributes;
+            $this->unhandledPayload['attributes'] = $attributes;
         }
+
         return $this;
     }
 
