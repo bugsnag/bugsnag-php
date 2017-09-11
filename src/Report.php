@@ -192,7 +192,7 @@ class Report
      * @return static
      */
     public static function fromPHPError(Configuration $config, $code, $message, $file, $line,
-        $fatal = false, $severityReason = null, array $attributes = [])
+        $fatal = false, $severityReason = null, array $attributes = null)
     {
         $report = new static($config);
 
@@ -215,7 +215,7 @@ class Report
      *
      * @return static
      */
-    public static function fromPHPThrowable(Configuration $config, $throwable, $severityReason = null, array $attributes = [])
+    public static function fromPHPThrowable(Configuration $config, $throwable, $severityReason = null, array $attributes = null)
     {
         $report = new static($config);
 
@@ -345,7 +345,9 @@ class Report
     {
         $this->unhandled = true;
         $this->unhandledPayload["type"] = $severityReason;
-        $this->unhandledPayload["attributes"] = $attributes;
+        if ($attributes) {
+            $this->unhandledPayload["attributes"] = $attributes;
+        }
         return $this;
     }
 
