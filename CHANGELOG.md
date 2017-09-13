@@ -1,6 +1,19 @@
 Changelog
 =========
 
+## 3.7.0 (2017-09-13)
+
+### Enhancements
+
+* Added issue template to repository
+  [#401](https://github.com/bugsnag/bugsnag-php/pull/401)
+
+* Added Architecture guide to aid contributors
+  [#402](https://github.com/bugsnag/bugsnag-php/pull/402)
+
+* Added ConsoleRequest handler for extracting data out of console-run applications
+  [#398](https://github.com/bugsnag/bugsnag-php/pull/398)
+
 ## 3.6.0 (2017-08-10)
 
 ### Enhancements
