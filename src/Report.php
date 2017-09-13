@@ -341,7 +341,7 @@ class Report
      *
      * @return $this
      */
-    protected function setUnhandledData(string $severityReason, array $attributes = null)
+    protected function setUnhandledData($severityReason, array $attributes = null)
     {
         $this->unhandled = true;
         $this->unhandledPayload['type'] = $severityReason;
@@ -357,7 +357,7 @@ class Report
      *
      * @return $this
      */
-    public function setDefaultSeverity(bool $defaultSeverity)
+    public function setDefaultSeverity($defaultSeverity)
     {
         $this->defaultSeverity = $defaultSeverity;
 
