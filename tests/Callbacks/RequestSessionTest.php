@@ -6,6 +6,7 @@ use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Configuration;
 use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
+use Bugsnag\Request\NullRequest;
 use Exception;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -56,6 +57,29 @@ class RequestSessionTest extends TestCase
         $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
 
         $callback = new RequestSession($this->resolver);
+
+        $callback($report);
+
+        $this->assertSame(['bar' => 'baz'], $report->getMetaData());
+    }
+
+    public function testFallsBackToNullWithSessionHandlerError()
+    {
+        $request = $this->createMock(NullRequest::class);
+
+        $request->expects($this->any())
+            ->method('getSession')
+            ->willThrowException(new Exception('Encountered an exception opening the session'));
+
+        $resolver = $this->createMock(BasicResolver::class);
+
+        $resolver->expects($this->atLeastOnce())
+            ->method('resolve')
+            ->willReturn($request);
+
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+
+        $callback = new RequestSession($resolver);
 
         $callback($report);
 
