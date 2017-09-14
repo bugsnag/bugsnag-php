@@ -237,13 +237,17 @@ class Report
      *
      * @return static
      */
-    public static function fromNamedError(Configuration $config, $name, $message = null)
+    public static function fromNamedError(Configuration $config, $name, $message = null, $severityReason = null, array $attributes = null)
     {
         $report = new static($config);
 
         $report->setName($name)
               ->setMessage($message)
               ->setStacktrace(Stacktrace::generate($config));
+
+        if ($severityReason) {
+            $report->setUnhandledData($severityReason, $attributes);
+        }
 
         return $report;
     }

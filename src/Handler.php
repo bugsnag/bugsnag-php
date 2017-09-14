@@ -193,7 +193,15 @@ class Handler
 
         // Check if a fatal error caused this shutdown
         if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->client->shouldIgnoreErrorCode($lastError['type'])) {
-            $report = Report::fromPHPError($this->client->getConfig(), $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
+            $report = Report::fromPHPError(
+                $this->client->getConfig(),
+                $lastError['type'],
+                $lastError['message'],
+                $lastError['file'],
+                $lastError['line'],
+                true,
+                Report::EXCEPTION_HANDLER
+            );
             $report->setSeverity('error');
             $this->client->notify($report);
         }
