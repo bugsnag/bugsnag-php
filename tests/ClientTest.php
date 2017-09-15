@@ -443,4 +443,29 @@ class ClientTest extends TestCase
 
         $this->client->deploy('baz', 'develop', 'foo');
     }
+
+    public function testDefaultSeverityUnmodified()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $event = $report->toArray();
+
+        $this->assertTrue($event['defaultSeverity']);
+    }
+
+    public function testDefaultSeverityModifiedByCallback()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'), function ($report) {
+            $report->setSeverity('warning');
+        });
+
+        $event = $report->toArray();
+        
+        $this->assertSame($event['severity'], 'warning');
+        $this->assertTrue($event['defaultSeverity']);
+    }
 }

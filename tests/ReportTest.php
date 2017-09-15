@@ -306,6 +306,7 @@ class ReportTest extends TestCase
     {
         $data = $this->report->toArray();
         $this->assertFalse($data['unhandled']);
+        $this->assertFalse(isset($data['severityReason']));
     }
 
     public function testSetSeverityReason()
