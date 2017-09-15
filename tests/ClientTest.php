@@ -464,7 +464,7 @@ class ClientTest extends TestCase
         });
 
         $event = $report->toArray();
-        
+
         $this->assertSame($event['severity'], 'warning');
         $this->assertTrue($event['defaultSeverity']);
     }

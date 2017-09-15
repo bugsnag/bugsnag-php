@@ -172,7 +172,7 @@ class Handler
                 false,
                 Report::ERROR_CLASS,
                 [
-                    'error_class' => ErrorTypes::getName($errno)
+                    'error_class' => ErrorTypes::getName($errno),
                 ]
             );
 
