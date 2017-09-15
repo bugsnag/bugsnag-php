@@ -163,7 +163,18 @@ class Handler
     public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
         if (!$this->client->shouldIgnoreErrorCode($errno)) {
-            $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline, false, Report::EXCEPTION_HANDLER);
+            $report = Report::fromPHPError(
+                $this->client->getConfig(),
+                $errno,
+                $errstr,
+                $errfile,
+                $errline,
+                false,
+                Report::ERROR_CLASS,
+                [
+                    'error_class' => ErrorTypes::getName($errno)
+                ]
+            );
 
             $this->client->notify($report);
         }
