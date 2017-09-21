@@ -418,11 +418,6 @@ class Report
     {
         if (in_array($severity, ['error', 'warning', 'info', null], true)) {
             $this->severity = $severity;
-            if (!$this->unhandled) {
-                $this->setSeverityReason([
-                    'type' => 'userSpecifiedSeverity',
-                ]);
-            }
         } else {
             throw new InvalidArgumentException('The severity must be either "error", "warning", or "info".');
         }
