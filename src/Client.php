@@ -275,14 +275,14 @@ class Client
                     return;
                 }
             }
-            
+
             if ($report->getSeverity() != $initialSeverity) {
-                # Severity has been changed via callbacks -> severity reason should be userCallbackSetSeverity
+                // Severity has been changed via callbacks -> severity reason should be userCallbackSetSeverity
                 $report->setSeverityReason([
-                    'type' => 'userCallbackSetSeverity'
+                    'type' => 'userCallbackSetSeverity',
                 ]);
             } else {
-                # Otherwise we ensure the original severity reason is preserved
+                // Otherwise we ensure the original severity reason is preserved
                 $report->setSeverityReason($initialReason);
             }
 

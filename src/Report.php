@@ -274,7 +274,7 @@ class Report
     }
 
     /**
-     * Gets the severity reason
+     * Gets the severity reason.
      *
      * @return array
      */
@@ -296,7 +296,7 @@ class Report
     }
 
     /**
-     * Sets the unhandled flag
+     * Sets the unhandled flag.
      *
      * @return $this
      */
@@ -308,7 +308,7 @@ class Report
     }
 
     /**
-     * Returns the unhandled flag
+     * Returns the unhandled flag.
      *
      * @return bool
      */
@@ -420,9 +420,9 @@ class Report
             $this->severity = $severity;
             if (!$this->unhandled) {
                 $this->setSeverityReason([
-                    'type' => 'userSpecifiedSeverity'
+                    'type' => 'userSpecifiedSeverity',
                 ]);
-            } 
+            }
         } else {
             throw new InvalidArgumentException('The severity must be either "error", "warning", or "info".');
         }
@@ -600,7 +600,7 @@ class Report
             'breadcrumbs' => $this->breadcrumbs,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
             'unhandled' => $this->getUnhandled(),
-            'severityReason' => $this->getSeverityReason()
+            'severityReason' => $this->getSeverityReason(),
         ];
 
         if ($hash = $this->getGroupingHash()) {
