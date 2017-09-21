@@ -444,7 +444,7 @@ class ClientTest extends TestCase
         $this->client->deploy('baz', 'develop', 'foo');
     }
 
-    public function testDefaultSeverityUnmodified()
+    public function testSeverityReasonUnmodified()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -452,20 +452,37 @@ class ClientTest extends TestCase
 
         $event = $report->toArray();
 
-        $this->assertTrue($event['defaultSeverity']);
+        $this->assertSame($event['severityReason'], ['type' => 'handledError']);
     }
 
-    public function testDefaultSeverityModifiedByCallback()
+    public function testSeverityModifiedByCallback()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'), function ($report) {
-            $report->setSeverity('warning');
+        $report = Report::fromNamedError($this->config, 'Name');
+
+        $this->client->notify($report, function ($report) {
+            $report->setSeverity('info');
         });
 
         $event = $report->toArray();
 
-        $this->assertSame($event['severity'], 'warning');
-        $this->assertTrue($event['defaultSeverity']);
+        $this->assertSame($event['severity'], 'info');
+        $this->assertSame($event['severityReason'], ['type' => 'userCallbackSetSeverity']);
+    }
+
+    public function testSeverityReasonNotModifiedByCallback()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+        
+        $report = Report::fromNamedError($this->config, 'Name', null, false, ['type' => 'handledError']);
+
+        $this->client->notify($report, function ($report) {
+            $report->setSeverityReason(['type' => 'not a type']);
+        });
+
+        $event = $report->toArray();
+
+        $this->assertSame($event['severityReason'], ['type' => 'handledError']);
     }
 }

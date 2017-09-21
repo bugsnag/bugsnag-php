@@ -302,29 +302,43 @@ class ReportTest extends TestCase
     /**
      * Testing handled/unhandled.
      */
-    public function testDefaultsToHandled()
-    {
-        $data = $this->report->toArray();
-        $this->assertFalse($data['unhandled']);
-        $this->assertFalse(isset($data['severityReason']));
-    }
-
-    public function testSetSeverityReason()
+    public function testCorrectDefaultReasons()
     {
         $exception = new Exception('exception');
-        $report = Report::fromPHPThrowable($this->config, $exception, Report::EXCEPTION_HANDLER);
+        $throwableData = Report::fromPHPThrowable($this->config, $exception)->toArray();
+        $namedErrorData = Report::fromNamedError($this->config, 'E_ERROR', null)->toArray();
+        $phpErrorData = Report::fromPHPError($this->config, E_WARNING, null, 'file', 1, false)->toArray();
+        $this->assertFalse($throwableData['unhandled']);
+        $this->assertSame($throwableData['severityReason'], [
+            'type' => 'handledException'
+        ]);
+        $this->assertFalse($namedErrorData['unhandled']);
+        $this->assertSame($namedErrorData['severityReason'], [
+            'type' => 'handledError'
+        ]);
+        $this->assertFalse($phpErrorData['unhandled']);
+        $this->assertSame($phpErrorData['severityReason'], [
+            'type' => 'handledError'
+        ]);
+    }
+
+    public function testSettingSeverityReason()
+    {
+        $exception = new Exception('exception');
+        $report = Report::fromPHPThrowable($this->config, $exception, true,  ['type' => 'unhandledException']);
         $data = $report->toArray();
         $this->assertTrue($data['unhandled']);
-        $this->assertSame($data['severityReason'], ['type' => Report::EXCEPTION_HANDLER]);
+        $this->assertSame($data['severityReason'], ['type' => 'unhandledException']);
     }
 
-    public function testAttributesAssigned()
+    public function testOverridingSeverityChangedSeverityReason()
     {
         $exception = new Exception('exception');
-        $report = Report::fromPHPThrowable($this->config,
-            $exception, Report::MIDDLEWARE_HANDLER, ['name' => 'laravel']);
+        $report = Report::fromPHPThrowable($this->config, $exception);
+        $report->setSeverity('warning');
         $data = $report->toArray();
-        $this->assertSame($data['severityReason'],
-            ['type' => Report::MIDDLEWARE_HANDLER, 'attributes' => ['name' => 'laravel']]);
+        $this->assertSame($data['severity'], 'warning');
+        $this->assertSame($data['severityReason'], ['type' => 'userSpecifiedSeverity']);
     }
+
 }
