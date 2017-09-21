@@ -141,7 +141,7 @@ class Handler
             $throwable,
             true,
             [
-                'type' => 'unhandledException'
+                'type' => 'unhandledException',
             ]
         );
 
@@ -181,8 +181,8 @@ class Handler
                 [
                     'type' => 'unhandledError',
                     'attributes' => [
-                        'error§Type' => ErrorTypes::getName($errno)
-                    ]
+                        'error§Type' => ErrorTypes::getName($errno),
+                    ],
                 ]
             );
 
@@ -223,7 +223,7 @@ class Handler
                 true,
                 true,
                 [
-                    'type' => 'unhandledException'
+                    'type' => 'unhandledException',
                 ]
             );
             $report->setSeverity('error');

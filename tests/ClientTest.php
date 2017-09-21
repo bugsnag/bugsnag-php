@@ -474,7 +474,7 @@ class ClientTest extends TestCase
     public function testSeverityReasonNotModifiedByCallback()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
-        
+
         $report = Report::fromNamedError($this->config, 'Name', null, false, ['type' => 'handledError']);
 
         $this->client->notify($report, function ($report) {

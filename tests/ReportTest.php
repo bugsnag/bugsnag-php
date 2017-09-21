@@ -311,24 +311,24 @@ class ReportTest extends TestCase
         $this->assertFalse($throwableData['unhandled']);
         $this->assertSame($throwableData['severity'], 'warning');
         $this->assertSame($throwableData['severityReason'], [
-            'type' => 'handledException'
+            'type' => 'handledException',
         ]);
         $this->assertFalse($namedErrorData['unhandled']);
         $this->assertSame($namedErrorData['severity'], 'warning');
         $this->assertSame($namedErrorData['severityReason'], [
-            'type' => 'handledError'
+            'type' => 'handledError',
         ]);
         $this->assertFalse($phpErrorData['unhandled']);
         $this->assertSame($phpErrorData['severity'], 'warning');
         $this->assertSame($phpErrorData['severityReason'], [
-            'type' => 'handledError'
+            'type' => 'handledError',
         ]);
     }
 
     public function testSettingSeverityReason()
     {
         $exception = new Exception('exception');
-        $report = Report::fromPHPThrowable($this->config, $exception, true,  ['type' => 'unhandledException']);
+        $report = Report::fromPHPThrowable($this->config, $exception, true, ['type' => 'unhandledException']);
         $data = $report->toArray();
         $this->assertTrue($data['unhandled']);
         $this->assertSame($data['severityReason'], ['type' => 'unhandledException']);
@@ -343,5 +343,4 @@ class ReportTest extends TestCase
         $this->assertSame($data['severity'], 'warning');
         $this->assertSame($data['severityReason'], ['type' => 'userSpecifiedSeverity']);
     }
-
 }
