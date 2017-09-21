@@ -17,62 +17,6 @@ class Report
     const PAYLOAD_VERSION = '3';
 
     /**
-     * The exception handler reason.
-     *
-     * @var string
-     */
-    const EXCEPTION_HANDLER = 'exception_handler';
-
-    /**
-     * The middleware handler reason.
-     *
-     * @var string
-     */
-    const MIDDLEWARE_HANDLER = 'middleware_handler';
-
-    /**
-     * The log level reason.
-     *
-     * @var string
-     */
-    const LOG_LEVEL = 'log_level';
-
-    /**
-     * The event listener reason.
-     *
-     * @var string
-     */
-    const EVENT_LISTENER = 'event_listener';
-
-    /**
-     * The promise rejection reason.
-     *
-     * @var string
-     */
-    const PROMISE_REJECTION = 'promise_rejection';
-
-    /**
-     * The timer callback reason.
-     *
-     * @var string
-     */
-    const TIMER_CALLBACK = 'timer_callback';
-
-    /**
-     * The window onerror reason.
-     *
-     * @var string
-     */
-    const WINDOW_ONERROR = 'window_onerror';
-
-    /**
-     * The error class reason.
-     *
-     * @var string
-     */
-    const ERROR_CLASS = 'error_class';
-
-    /**
      * The config object.
      *
      * @var \Bugsnag\Config
@@ -164,18 +108,11 @@ class Report
     protected $unhandled = false;
 
     /**
-     * Data for unhandled exceptions.
+     * Identifies cause for severity.
      *
      * @var array[]
      */
-    protected $unhandledPayload = [];
-
-    /**
-     * Indicates the severity is unchanged.
-     *
-     * @var bool
-     */
-    protected $defaultSeverity = true;
+    protected $severityReason = [];
 
     /**
      * Create a new report from a PHP error.
@@ -186,21 +123,19 @@ class Report
      * @param string                 $file           the error file
      * @param int                    $line           the error line
      * @param bool                   $fatal          if the error was fatal
+     * @param bool                   $unhandled      if the error is unhandled or not
      * @param string                 $severityReason the severity reason
-     * @param array                  $attributes     the severity attributes
      *
      * @return static
      */
     public static function fromPHPError(Configuration $config, $code, $message, $file, $line,
-        $fatal = false, $severityReason = null, array $attributes = null)
+        $fatal = false, $unhandled = false, array $severityReason = ['type' => 'handledError'])
     {
         $report = new static($config);
 
-        $report->setPHPError($code, $message, $file, $line, $fatal);
-
-        if ($severityReason) {
-            $report->setUnhandledData($severityReason, $attributes);
-        }
+        $report->setPHPError($code, $message, $file, $line, $fatal)
+               ->setUnhandled($unhandled)
+               ->setSeverityReason($severityReason);
 
         return $report;
     }
@@ -210,20 +145,18 @@ class Report
      *
      * @param \Bugsnag\Configuration $config         the config instance
      * @param \Throwable             $throwable      the throwable instance
+     * @param bool                   $unhandled      if the error is unhandled or not
      * @param string                 $severityReason the severity reason
-     * @param array                  $attributes     the severity attributes
      *
      * @return static
      */
-    public static function fromPHPThrowable(Configuration $config, $throwable, $severityReason = null, array $attributes = null)
+    public static function fromPHPThrowable(Configuration $config, $throwable, $unhandled = false, array $severityReason = ['type' => 'handledException'])
     {
         $report = new static($config);
 
-        $report->setPHPThrowable($throwable);
-
-        if ($severityReason) {
-            $report->setUnhandledData($severityReason, $attributes);
-        }
+        $report->setPHPThrowable($throwable)
+               ->setUnhandled($unhandled)
+               ->setSeverityReason($severityReason);
 
         return $report;
     }
@@ -234,20 +167,20 @@ class Report
      * @param \Bugsnag\Configuration $config  the config instance
      * @param string                 $name    the error name
      * @param string|null            $message the error message
+     * @param bool                   $unhandled      if the error is unhandled or not
+     * @param string                 $severityReason the severity reason
      *
      * @return static
      */
-    public static function fromNamedError(Configuration $config, $name, $message = null, $severityReason = null, array $attributes = null)
+    public static function fromNamedError(Configuration $config, $name, $message = null, $unhandled = false, array $severityReason = ['type' => 'handledError'])
     {
         $report = new static($config);
 
         $report->setName($name)
               ->setMessage($message)
-              ->setStacktrace(Stacktrace::generate($config));
-
-        if ($severityReason) {
-            $report->setUnhandledData($severityReason, $attributes);
-        }
+              ->setStacktrace(Stacktrace::generate($config))
+              ->setUnhandled($unhandled)
+              ->setSeverityReason($severityReason);
 
         return $report;
     }
@@ -341,31 +274,47 @@ class Report
     }
 
     /**
+     * Gets the severity reason
+     *
+     * @return array
+     */
+    public function getSeverityReason()
+    {
+        return $this->severityReason;
+    }
+
+    /**
      * Sets the unhandled payload.
      *
      * @return $this
      */
-    protected function setUnhandledData($severityReason, array $attributes = null)
+    public function setSeverityReason(array $severityReason)
     {
-        $this->unhandled = true;
-        $this->unhandledPayload['type'] = $severityReason;
-        if ($attributes) {
-            $this->unhandledPayload['attributes'] = $attributes;
-        }
+        $this->severityReason = $severityReason;
 
         return $this;
     }
 
     /**
-     * Sets the defaultSeverity.
+     * Sets the unhandled flag
      *
      * @return $this
      */
-    public function setDefaultSeverity($defaultSeverity)
+    protected function setUnhandled(bool $unhandled)
     {
-        $this->defaultSeverity = $defaultSeverity;
+        $this->unhandled = $unhandled;
 
         return $this;
+    }
+
+    /**
+     * Returns the unhandled flag
+     *
+     * @return bool
+     */
+    public function getUnhandled()
+    {
+        return $this->unhandled;
     }
 
     /**
@@ -469,6 +418,11 @@ class Report
     {
         if (in_array($severity, ['error', 'warning', 'info', null], true)) {
             $this->severity = $severity;
+            if (!$this->unhandled) {
+                $this->setSeverityReason([
+                    'type' => 'userSpecifiedSeverity'
+                ]);
+            } 
         } else {
             throw new InvalidArgumentException('The severity must be either "error", "warning", or "info".');
         }
@@ -645,13 +599,9 @@ class Report
             'exceptions' => $this->exceptionArray(),
             'breadcrumbs' => $this->breadcrumbs,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
-            'unhandled' => $this->unhandled,
-            'defaultSeverity' => $this->defaultSeverity,
+            'unhandled' => $this->getUnhandled(),
+            'severityReason' => $this->getSeverityReason()
         ];
-
-        if ($this->unhandled) {
-            $event['severityReason'] = $this->unhandledPayload;
-        }
 
         if ($hash = $this->getGroupingHash()) {
             $event['groupingHash'] = $hash;

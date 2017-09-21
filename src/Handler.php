@@ -136,7 +136,14 @@ class Handler
      */
     public function exceptionHandler($throwable)
     {
-        $report = Report::fromPHPThrowable($this->client->getConfig(), $throwable, Report::EXCEPTION_HANDLER);
+        $report = Report::fromPHPThrowable(
+            $this->client->getConfig(),
+            $throwable,
+            true,
+            [
+                'type' => 'unhandledException'
+            ]
+        );
 
         $report->setSeverity('error');
 
@@ -170,9 +177,12 @@ class Handler
                 $errfile,
                 $errline,
                 false,
-                Report::ERROR_CLASS,
+                true,
                 [
-                    'error_class' => ErrorTypes::getName($errno),
+                    'type' => 'unhandledError',
+                    'attributes' => [
+                        'error§Type' => ErrorTypes::getName($errno)
+                    ]
                 ]
             );
 
@@ -211,7 +221,10 @@ class Handler
                 $lastError['file'],
                 $lastError['line'],
                 true,
-                Report::EXCEPTION_HANDLER
+                true,
+                [
+                    'type' => 'unhandledException'
+                ]
             );
             $report->setSeverity('error');
             $this->client->notify($report);
