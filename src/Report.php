@@ -300,7 +300,7 @@ class Report
      *
      * @return $this
      */
-    protected function setUnhandled(bool $unhandled)
+    protected function setUnhandled($unhandled)
     {
         $this->unhandled = $unhandled;
 
