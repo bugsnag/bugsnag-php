@@ -309,14 +309,17 @@ class ReportTest extends TestCase
         $namedErrorData = Report::fromNamedError($this->config, 'E_ERROR', null)->toArray();
         $phpErrorData = Report::fromPHPError($this->config, E_WARNING, null, 'file', 1, false)->toArray();
         $this->assertFalse($throwableData['unhandled']);
+        $this->assertSame($throwableData['severity'], 'warning');
         $this->assertSame($throwableData['severityReason'], [
             'type' => 'handledException'
         ]);
         $this->assertFalse($namedErrorData['unhandled']);
+        $this->assertSame($namedErrorData['severity'], 'warning');
         $this->assertSame($namedErrorData['severityReason'], [
             'type' => 'handledError'
         ]);
         $this->assertFalse($phpErrorData['unhandled']);
+        $this->assertSame($phpErrorData['severity'], 'warning');
         $this->assertSame($phpErrorData['severityReason'], [
             'type' => 'handledError'
         ]);
