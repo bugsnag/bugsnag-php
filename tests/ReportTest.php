@@ -333,14 +333,4 @@ class ReportTest extends TestCase
         $this->assertTrue($data['unhandled']);
         $this->assertSame($data['severityReason'], ['type' => 'unhandledException']);
     }
-
-    public function testOverridingSeverityChangedSeverityReason()
-    {
-        $exception = new Exception('exception');
-        $report = Report::fromPHPThrowable($this->config, $exception);
-        $report->setSeverity('warning');
-        $data = $report->toArray();
-        $this->assertSame($data['severity'], 'warning');
-        $this->assertSame($data['severityReason'], ['type' => 'userSpecifiedSeverity']);
-    }
 }
