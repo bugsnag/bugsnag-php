@@ -181,7 +181,7 @@ class Handler
                 [
                     'type' => 'unhandledError',
                     'attributes' => [
-                        'error§Type' => ErrorTypes::getName($errno),
+                        'errorType' => ErrorTypes::getName($errno),
                     ],
                 ]
             );
