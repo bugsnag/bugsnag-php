@@ -208,7 +208,7 @@ class Configuration
         }
 
         if ($this->notifyHostnames) {
-            if(!in_array($this->getAppData()['hostname'], $this->notifyHostnames, true)) {
+            if (!in_array($this->getAppData()['hostname'], $this->notifyHostnames, true)) {
                 return false;
             }
         }
