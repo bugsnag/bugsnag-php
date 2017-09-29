@@ -28,6 +28,13 @@ class Configuration
     protected $notifyReleaseStages;
 
     /**
+     * Which hostnames should be allowed to notify.
+     *
+     * @var string[]|null
+     */
+    protected $notifyHostnames;
+
+    /**
      * The strings to filter out from metaData.
      *
      * @var string[]
@@ -171,17 +178,41 @@ class Configuration
     }
 
     /**
+     * Set which hostnames should be allowed to notify Bugsnag.
+     *
+     * Eg ['example.com', 'www.example.com'].
+     *
+     * @param string[]|null $notifyReleaseStages array of release stages to notify for
+     *
+     * @return $this
+     */
+    public function setNotifyHostnames(array $notifyHostnames = null)
+    {
+        $this->notifyHostnames = $notifyHostnames;
+
+        return $this;
+    }
+
+    /**
      * Should we notify Bugsnag based on the current release stage?
      *
      * @return bool
      */
     public function shouldNotify()
     {
-        if (!$this->notifyReleaseStages) {
-            return true;
+        if ($this->notifyReleaseStages) {
+            if (!in_array($this->getAppData()['releaseStage'], $this->notifyReleaseStages, true)){
+                return false;
+            }
         }
 
-        return in_array($this->getAppData()['releaseStage'], $this->notifyReleaseStages, true);
+        if ($this->notifyHostnames) {
+            if(!in_array($this->getAppData()['hostname'], $this->notifyHostnames, true)){
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
