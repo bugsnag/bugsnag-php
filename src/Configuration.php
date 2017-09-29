@@ -179,7 +179,7 @@ class Configuration
 
     /**
      * Set which hostnames should be allowed to notify Bugsnag.
-     * Note: this represents the machine hostname, not website URI
+     * Note: this represents the machine hostname, not website URI.
      *
      * Eg ['example.com', 'www.example.com','my-mac'].
      *
@@ -202,13 +202,13 @@ class Configuration
     public function shouldNotify()
     {
         if ($this->notifyReleaseStages) {
-            if (!in_array($this->getAppData()['releaseStage'], $this->notifyReleaseStages, true)){
+            if (!in_array($this->getAppData()['releaseStage'], $this->notifyReleaseStages, true)) {
                 return false;
             }
         }
 
         if ($this->notifyHostnames) {
-            if(!in_array($this->getAppData()['hostname'], $this->notifyHostnames, true)){
+            if(!in_array($this->getAppData()['hostname'], $this->notifyHostnames, true)) {
                 return false;
             }
         }
