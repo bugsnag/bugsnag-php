@@ -179,8 +179,9 @@ class Configuration
 
     /**
      * Set which hostnames should be allowed to notify Bugsnag.
+     * Note: this represents the machine hostname, not website URI
      *
-     * Eg ['example.com', 'www.example.com'].
+     * Eg ['example.com', 'www.example.com','my-mac'].
      *
      * @param string[]|null $notifyReleaseStages array of release stages to notify for
      *
