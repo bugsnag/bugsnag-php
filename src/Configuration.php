@@ -183,7 +183,7 @@ class Configuration
      *
      * Eg ['example.com', 'www.example.com','my-mac'].
      *
-     * @param string[]|null $notifyReleaseStages array of release stages to notify for
+     * @param string[]|null $notifyHostnames array of hostnames to notify for
      *
      * @return $this
      */
