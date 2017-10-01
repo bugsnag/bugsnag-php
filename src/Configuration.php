@@ -179,9 +179,10 @@ class Configuration
 
     /**
      * Set which hostnames should be allowed to notify Bugsnag.
+     *
      * Note: this represents the machine hostname, not website URI.
      *
-     * Eg ['example.com', 'www.example.com','my-mac'].
+     * Eg ['example.com', 'www.example.com', 'my-mac'].
      *
      * @param string[]|null $notifyHostnames array of hostnames to notify for
      *
