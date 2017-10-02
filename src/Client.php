@@ -234,7 +234,7 @@ class Client
      */
     public function notifyException($throwable, callable $callback = null)
     {
-        $report = Report::fromPHPThrowable($this->config, $throwable, false, ['type' => 'handledException']);
+        $report = Report::fromPHPThrowable($this->config, $throwable);
 
         $this->notify($report, $callback);
     }
@@ -250,7 +250,7 @@ class Client
      */
     public function notifyError($name, $message, callable $callback = null)
     {
-        $report = Report::fromNamedError($this->config, $name, $message, false, ['type' => 'handledError']);
+        $report = Report::fromNamedError($this->config, $name, $message);
 
         $this->notify($report, $callback);
     }
@@ -267,15 +267,17 @@ class Client
      */
     public function notify(Report $report, callable $callback = null)
     {
+        $initialUnhandled = $report->getUnhandled();
         $initialSeverity = $report->getSeverity();
         $initialReason = $report->getSeverityReason();
-        $this->pipeline->execute($report, function ($report) use ($callback, $initialSeverity, $initialReason) {
+        $this->pipeline->execute($report, function ($report) use ($callback, $initialUnhandled, $initialSeverity, $initialReason) {
             if ($callback) {
                 if ($callback($report) === false) {
                     return;
                 }
             }
 
+            $report->setUnhandled($initialUnhandled);
             if ($report->getSeverity() != $initialSeverity) {
                 // Severity has been changed via callbacks -> severity reason should be userCallbackSetSeverity
                 $report->setSeverityReason([

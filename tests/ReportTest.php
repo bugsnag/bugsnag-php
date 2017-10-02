@@ -328,7 +328,9 @@ class ReportTest extends TestCase
     public function testSettingSeverityReason()
     {
         $exception = new Exception('exception');
-        $report = Report::fromPHPThrowable($this->config, $exception, true, ['type' => 'unhandledException']);
+        $report = Report::fromPHPThrowable($this->config, $exception);
+        $report->setUnhandled(true);
+        $report->setSeverityReason(['type' => 'unhandledException']);
         $data = $report->toArray();
         $this->assertTrue($data['unhandled']);
         $this->assertSame($data['severityReason'], ['type' => 'unhandledException']);

@@ -138,14 +138,14 @@ class Handler
     {
         $report = Report::fromPHPThrowable(
             $this->client->getConfig(),
-            $throwable,
-            true,
-            [
-                'type' => 'unhandledException',
-            ]
+            $throwable
         );
 
         $report->setSeverity('error');
+        $report->setUnhandled(true);
+        $report->setSeverityReason([
+            'type' => 'unhandledException',
+        ]);
 
         $this->client->notify($report);
 
@@ -176,15 +176,16 @@ class Handler
                 $errstr,
                 $errfile,
                 $errline,
-                false,
-                true,
-                [
-                    'type' => 'unhandledError',
-                    'attributes' => [
-                        'errorType' => ErrorTypes::getName($errno),
-                    ],
-                ]
+                false
             );
+
+            $report->setUnhandled(true);
+            $report->setSeverityReason([
+                'type' => 'unhandledError',
+                'attributes' => [
+                    'errorType' => ErrorTypes::getName($errno),
+                ],
+            ]);
 
             $this->client->notify($report);
         }
@@ -220,13 +221,13 @@ class Handler
                 $lastError['message'],
                 $lastError['file'],
                 $lastError['line'],
-                true,
-                true,
-                [
-                    'type' => 'unhandledException',
-                ]
+                true
             );
             $report->setSeverity('error');
+            $report->setUnhandled(true);
+            $report->setSeverityReason([
+                'type' => 'unhandledException',
+            ]);
             $this->client->notify($report);
         }
 

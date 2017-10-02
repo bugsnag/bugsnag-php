@@ -123,19 +123,16 @@ class Report
      * @param string                 $file           the error file
      * @param int                    $line           the error line
      * @param bool                   $fatal          if the error was fatal
-     * @param bool                   $unhandled      if the error is unhandled or not
-     * @param string                 $severityReason the severity reason
      *
      * @return static
      */
-    public static function fromPHPError(Configuration $config, $code, $message, $file, $line,
-        $fatal = false, $unhandled = false, array $severityReason = ['type' => 'handledError'])
+    public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
     {
         $report = new static($config);
 
         $report->setPHPError($code, $message, $file, $line, $fatal)
-               ->setUnhandled($unhandled)
-               ->setSeverityReason($severityReason);
+               ->setUnhandled(false)
+               ->setSeverityReason(['type' => 'handledError']);
 
         return $report;
     }
@@ -145,18 +142,16 @@ class Report
      *
      * @param \Bugsnag\Configuration $config         the config instance
      * @param \Throwable             $throwable      the throwable instance
-     * @param bool                   $unhandled      if the error is unhandled or not
-     * @param string                 $severityReason the severity reason
      *
      * @return static
      */
-    public static function fromPHPThrowable(Configuration $config, $throwable, $unhandled = false, array $severityReason = ['type' => 'handledException'])
+    public static function fromPHPThrowable(Configuration $config, $throwable)
     {
         $report = new static($config);
 
         $report->setPHPThrowable($throwable)
-               ->setUnhandled($unhandled)
-               ->setSeverityReason($severityReason);
+               ->setUnhandled(false)
+               ->setSeverityReason(['type' => 'handledException']);
 
         return $report;
     }
@@ -167,20 +162,18 @@ class Report
      * @param \Bugsnag\Configuration $config  the config instance
      * @param string                 $name    the error name
      * @param string|null            $message the error message
-     * @param bool                   $unhandled      if the error is unhandled or not
-     * @param string                 $severityReason the severity reason
      *
      * @return static
      */
-    public static function fromNamedError(Configuration $config, $name, $message = null, $unhandled = false, array $severityReason = ['type' => 'handledError'])
+    public static function fromNamedError(Configuration $config, $name, $message = null)
     {
         $report = new static($config);
 
         $report->setName($name)
               ->setMessage($message)
               ->setStacktrace(Stacktrace::generate($config))
-              ->setUnhandled($unhandled)
-              ->setSeverityReason($severityReason);
+              ->setUnhandled(false)
+              ->setSeverityReason(['type' => 'handledError']);
 
         return $report;
     }
@@ -300,7 +293,7 @@ class Report
      *
      * @return $this
      */
-    protected function setUnhandled($unhandled)
+    public function setUnhandled($unhandled)
     {
         $this->unhandled = $unhandled;
 
