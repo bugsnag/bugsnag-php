@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.8.0 (2017-10-02)
+
+### Enhancements
+
+* Added data acquisition for handled/unhandled feature
+  [#406](https://github.com/bugsnag/bugsnag-php/pull/406)
+
 ## 3.7.0 (2017-09-13)
 
 ### Enhancements
