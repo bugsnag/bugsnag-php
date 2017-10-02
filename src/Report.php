@@ -101,14 +101,28 @@ class Report
     protected $time;
 
     /**
+     * Whether the error is handled or unhandled.
+     *
+     * @var bool
+     */
+    protected $unhandled = false;
+
+    /**
+     * Identifies cause for severity.
+     *
+     * @var array[]
+     */
+    protected $severityReason = [];
+
+    /**
      * Create a new report from a PHP error.
      *
-     * @param \Bugsnag\Configuration $config  the config instance
-     * @param int                    $code    the error code
-     * @param string|null            $message the error message
-     * @param string                 $file    the error file
-     * @param int                    $line    the error line
-     * @param bool                   $fatal   if the error was fatal
+     * @param \Bugsnag\Configuration $config         the config instance
+     * @param int                    $code           the error code
+     * @param string|null            $message        the error message
+     * @param string                 $file           the error file
+     * @param int                    $line           the error line
+     * @param bool                   $fatal          if the error was fatal
      *
      * @return static
      */
@@ -116,7 +130,9 @@ class Report
     {
         $report = new static($config);
 
-        $report->setPHPError($code, $message, $file, $line, $fatal);
+        $report->setPHPError($code, $message, $file, $line, $fatal)
+               ->setUnhandled(false)
+               ->setSeverityReason(['type' => 'handledError']);
 
         return $report;
     }
@@ -124,8 +140,8 @@ class Report
     /**
      * Create a new report from a PHP throwable.
      *
-     * @param \Bugsnag\Configuration $config    the config instance
-     * @param \Throwable             $throwable the throwable instance
+     * @param \Bugsnag\Configuration $config         the config instance
+     * @param \Throwable             $throwable      the throwable instance
      *
      * @return static
      */
@@ -133,7 +149,9 @@ class Report
     {
         $report = new static($config);
 
-        $report->setPHPThrowable($throwable);
+        $report->setPHPThrowable($throwable)
+               ->setUnhandled(false)
+               ->setSeverityReason(['type' => 'handledException']);
 
         return $report;
     }
@@ -153,7 +171,9 @@ class Report
 
         $report->setName($name)
               ->setMessage($message)
-              ->setStacktrace(Stacktrace::generate($config));
+              ->setStacktrace(Stacktrace::generate($config))
+              ->setUnhandled(false)
+              ->setSeverityReason(['type' => 'handledError']);
 
         return $report;
     }
@@ -244,6 +264,50 @@ class Report
         $this->stacktrace = $stacktrace;
 
         return $this;
+    }
+
+    /**
+     * Gets the severity reason.
+     *
+     * @return array
+     */
+    public function getSeverityReason()
+    {
+        return $this->severityReason;
+    }
+
+    /**
+     * Sets the unhandled payload.
+     *
+     * @return $this
+     */
+    public function setSeverityReason(array $severityReason)
+    {
+        $this->severityReason = $severityReason;
+
+        return $this;
+    }
+
+    /**
+     * Sets the unhandled flag.
+     *
+     * @return $this
+     */
+    public function setUnhandled($unhandled)
+    {
+        $this->unhandled = $unhandled;
+
+        return $this;
+    }
+
+    /**
+     * Returns the unhandled flag.
+     *
+     * @return bool
+     */
+    public function getUnhandled()
+    {
+        return $this->unhandled;
     }
 
     /**
@@ -523,6 +587,8 @@ class Report
             'exceptions' => $this->exceptionArray(),
             'breadcrumbs' => $this->breadcrumbs,
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
+            'unhandled' => $this->getUnhandled(),
+            'severityReason' => $this->getSeverityReason(),
         ];
 
         if ($hash = $this->getGroupingHash()) {

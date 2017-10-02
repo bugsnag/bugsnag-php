@@ -443,4 +443,46 @@ class ClientTest extends TestCase
 
         $this->client->deploy('baz', 'develop', 'foo');
     }
+
+    public function testSeverityReasonUnmodified()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $event = $report->toArray();
+
+        $this->assertSame($event['severityReason'], ['type' => 'handledError']);
+    }
+
+    public function testSeverityModifiedByCallback()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $report = Report::fromNamedError($this->config, 'Name');
+
+        $this->client->notify($report, function ($report) {
+            $report->setSeverity('info');
+        });
+
+        $event = $report->toArray();
+
+        $this->assertSame($event['severity'], 'info');
+        $this->assertSame($event['severityReason'], ['type' => 'userCallbackSetSeverity']);
+    }
+
+    public function testSeverityReasonNotModifiedByCallback()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $report = Report::fromNamedError($this->config, 'Name', null, false, ['type' => 'handledError']);
+
+        $this->client->notify($report, function ($report) {
+            $report->setSeverityReason(['type' => 'not a type']);
+        });
+
+        $event = $report->toArray();
+
+        $this->assertSame($event['severityReason'], ['type' => 'handledError']);
+    }
 }

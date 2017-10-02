@@ -136,9 +136,16 @@ class Handler
      */
     public function exceptionHandler($throwable)
     {
-        $report = Report::fromPHPThrowable($this->client->getConfig(), $throwable);
+        $report = Report::fromPHPThrowable(
+            $this->client->getConfig(),
+            $throwable
+        );
 
         $report->setSeverity('error');
+        $report->setUnhandled(true);
+        $report->setSeverityReason([
+            'type' => 'unhandledException',
+        ]);
 
         $this->client->notify($report);
 
@@ -163,7 +170,22 @@ class Handler
     public function errorHandler($errno, $errstr, $errfile = '', $errline = 0)
     {
         if (!$this->client->shouldIgnoreErrorCode($errno)) {
-            $report = Report::fromPHPError($this->client->getConfig(), $errno, $errstr, $errfile, $errline);
+            $report = Report::fromPHPError(
+                $this->client->getConfig(),
+                $errno,
+                $errstr,
+                $errfile,
+                $errline,
+                false
+            );
+
+            $report->setUnhandled(true);
+            $report->setSeverityReason([
+                'type' => 'unhandledError',
+                'attributes' => [
+                    'errorType' => ErrorTypes::getName($errno),
+                ],
+            ]);
 
             $this->client->notify($report);
         }
@@ -193,8 +215,19 @@ class Handler
 
         // Check if a fatal error caused this shutdown
         if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->client->shouldIgnoreErrorCode($lastError['type'])) {
-            $report = Report::fromPHPError($this->client->getConfig(), $lastError['type'], $lastError['message'], $lastError['file'], $lastError['line'], true);
+            $report = Report::fromPHPError(
+                $this->client->getConfig(),
+                $lastError['type'],
+                $lastError['message'],
+                $lastError['file'],
+                $lastError['line'],
+                true
+            );
             $report->setSeverity('error');
+            $report->setUnhandled(true);
+            $report->setSeverityReason([
+                'type' => 'unhandledException',
+            ]);
             $this->client->notify($report);
         }
 
