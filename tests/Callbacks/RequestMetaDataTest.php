@@ -67,6 +67,21 @@ class RequestMetaDataTest extends TestCase
         ]], $report->getMetaData());
     }
 
+    public function testCanHandleEmptyConsoleArray()
+    {
+        $_SERVER['argv'] = [];
+
+        $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
+        
+        $callback = new RequestMetaData($this->resolver);
+
+        $callback($report);
+
+        $this->assertSame(['bar' => 'baz', 'console' => [
+            'Command' => 'Command could not be retreived',
+        ]], $report->getMetaData());
+    }
+
     public function testFallsBackToNull()
     {
         unset($_SERVER['argv']);
