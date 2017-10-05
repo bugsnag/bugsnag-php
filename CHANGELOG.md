@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.8.1 (2017-10-04)
+
+### Fixes
+
+* Ensured Console Requests can handle empty argument array
+  [#413](https://github.com/bugsnag/bugsnag-php/pull/413)
+
 ## 3.8.0 (2017-10-02)
 
 ### Enhancements
