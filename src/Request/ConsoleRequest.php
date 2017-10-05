@@ -62,7 +62,7 @@ class ConsoleRequest implements RequestInterface
     {
         if (count($this->command) == 0) {
             return ['console' => [
-                'Command' => 'Command could not be retreived']
+                'Command' => 'Command could not be retreived', ],
             ];
         }
         $commandString = implode(' ', $this->command);

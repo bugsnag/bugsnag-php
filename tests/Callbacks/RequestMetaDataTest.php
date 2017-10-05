@@ -72,7 +72,7 @@ class RequestMetaDataTest extends TestCase
         $_SERVER['argv'] = [];
 
         $report = Report::fromPHPThrowable($this->config, new Exception())->setMetaData(['bar' => 'baz']);
-        
+
         $callback = new RequestMetaData($this->resolver);
 
         $callback($report);
