@@ -78,7 +78,7 @@ class RequestMetaDataTest extends TestCase
         $callback($report);
 
         $this->assertSame(['bar' => 'baz', 'console' => [
-            'Command' => 'Command could not be retreived',
+            'Command' => 'Command could not be retrieved',
         ]], $report->getMetaData());
     }
 
