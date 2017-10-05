@@ -60,6 +60,11 @@ class ConsoleRequest implements RequestInterface
      */
     public function getMetaData()
     {
+        if (count($this->command) == 0) {
+            return ['console' => [
+                'Command' => 'Command could not be retrieved', ],
+            ];
+        }
         $commandString = implode(' ', $this->command);
         $primaryCommand = $this->command[0];
         $arguments = [];
