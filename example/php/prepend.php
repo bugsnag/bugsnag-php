@@ -2,9 +2,9 @@
 
 require_once 'vendor/autoload.php';
 
-register_shutdown_function(function() {
+register_shutdown_function(function () {
     $lastError = error_get_last();
-    
+
     if (!is_null($lastError)) {
         $client = Bugsnag\Client::make(getenv('BUGSNAG_API_KEY'));
         if ($client->shouldIgnoreErrorCode($lastError['type'])) {

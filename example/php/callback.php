@@ -9,9 +9,9 @@ Bugsnag\Handler::register($bugsnag);
 $bugsnag->registerCallback(function ($report) {
     $report->setMetaData([
         'account' => [
-            'name' => 'Test'
-        ]
+            'name' => 'Test',
+        ],
     ]);
 });
 
-throw new Exception("Something went wrong");
+throw new Exception('Something went wrong');
