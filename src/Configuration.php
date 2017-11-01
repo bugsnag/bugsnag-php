@@ -102,22 +102,22 @@ class Configuration
     protected $errorReportingLevel;
 
     /**
-     * The level logs must match or exceed to send a notification
-     * 
+     * The level logs must match or exceed to send a notification.
+     *
      * @var string|null
      */
     protected $logNotifyLevel;
 
     /**
-     * The level logs must match or exceed be set to a "warning" severity
-     * 
+     * The level logs must match or exceed be set to a "warning" severity.
+     *
      * @var string|null
      */
     protected $logWarningLevel;
 
     /**
-     * The level logs must match or exceed be set to an "error" severity
-     * 
+     * The level logs must match or exceed be set to an "error" severity.
+     *
      * @var string|null
      */
     protected $logErrorLevel;
@@ -509,12 +509,12 @@ class Configuration
     }
 
     /**
-     * Set the Level at which a bugsnag-logger will generate a notification to Bugsnag
-     * 
+     * Set the Level at which a bugsnag-logger will generate a notification to Bugsnag.
+     *
      * If this is not set, the logger will default to using the 'notice' level.
-     * 
+     *
      * @param string|null $logLevel the log-level to send notifications at
-     * 
+     *
      * @return $this
      */
     public function setLogNotifyLevel(string $logNotifyLevel)
@@ -527,11 +527,11 @@ class Configuration
     /**
      * Set the Level at which a bugsnag-logger generated notification will use the
      * 'warning' severity.
-     * 
+     *
      * If this is not set, the logger will default to using the 'warning' level.
-     * 
-     * @param string|null $logWarningLevel the log-level to send 
-     * 
+     *
+     * @param string|null $logWarningLevel the log-level to send
+     *
      * @return $this
      */
     public function setLogWarningLevel(string $logWarningLevel)
@@ -544,11 +544,11 @@ class Configuration
     /**
      * Set the Level at which a bugsnag-logger generated notification will use the
      * 'error' severity.
-     * 
+     *
      * If this is not set, the logger will default to using the 'error' level.
-     * 
+     *
      * @param string|null $logLevel the log-level to send notifications at
-     * 
+     *
      * @return $this
      */
     public function setLogErrorLevel(string $logErrorLevel)
@@ -559,16 +559,16 @@ class Configuration
     }
 
     /**
-     * Gets the log level settings to be used by the bugsnag-logger
-     * 
+     * Gets the log level settings to be used by the bugsnag-logger.
+     *
      * @return array
      */
     public function getLogLevels()
     {
         return [
-            "notifyLevel" => $this->logNotifyLevel,
-            "warningLevel" => $this->logWarningLevel,
-            "errorLevel" => $this->logErrorLevel
+            'notifyLevel' => $this->logNotifyLevel,
+            'warningLevel' => $this->logWarningLevel,
+            'errorLevel' => $this->logErrorLevel,
         ];
     }
 }
