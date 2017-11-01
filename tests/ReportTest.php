@@ -340,7 +340,6 @@ class ReportTest extends TestCase
     {
         $exception = new Exception('exception');
         $report = Report::fromPHPThrowable($this->config, $exception);
-        $report->setUnhandled(true);
         $report->setSeverityReason(['foo' => 'bar']);
         $data = $report->toArray();
         $this->assertSame($data['severityReason'], ['foo' => 'bar', 'type' => 'userSpecifiedSeverity']);
