@@ -273,6 +273,9 @@ class Report
      */
     public function getSeverityReason()
     {
+        if (!array_key_exists('type', $this->severityReason)) {
+            $this->severityReason['type'] = 'userSpecifiedSeverity';
+        }
         return $this->severityReason;
     }
 
