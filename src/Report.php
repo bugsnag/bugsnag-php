@@ -274,6 +274,7 @@ class Report
     public function getSeverityReason()
     {
         if (!array_key_exists('type', $this->severityReason)) {
+            syslog(LOG_WARNING, 'Severity reason should always have a "type" set');
             $this->severityReason['type'] = 'userSpecifiedSeverity';
         }
 
