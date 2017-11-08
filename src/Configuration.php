@@ -109,20 +109,6 @@ class Configuration
     protected $logNotifyLevel;
 
     /**
-     * The level logs must match or exceed be set to a "warning" severity.
-     *
-     * @var string|null
-     */
-    protected $logWarningLevel;
-
-    /**
-     * The level logs must match or exceed be set to an "error" severity.
-     *
-     * @var string|null
-     */
-    protected $logErrorLevel;
-
-    /**
      * Create a new config instance.
      *
      * @param string $apiKey your bugsnag api key
@@ -525,50 +511,12 @@ class Configuration
     }
 
     /**
-     * Set the Level at which a bugsnag-logger generated notification will use the
-     * 'warning' severity.
-     *
-     * If this is not set, the logger will default to using the 'warning' level.
-     *
-     * @param string|null $logWarningLevel the log-level to send
-     *
-     * @return $this
-     */
-    public function setLogWarningLevel(string $logWarningLevel)
-    {
-        $this->logWarningLevel = $logWarningLevel;
-
-        return $this;
-    }
-
-    /**
-     * Set the Level at which a bugsnag-logger generated notification will use the
-     * 'error' severity.
-     *
-     * If this is not set, the logger will default to using the 'error' level.
-     *
-     * @param string|null $logLevel the log-level to send notifications at
-     *
-     * @return $this
-     */
-    public function setLogErrorLevel(string $logErrorLevel)
-    {
-        $this->logErrorLevel = $logErrorLevel;
-
-        return $this;
-    }
-
-    /**
-     * Gets the log level settings to be used by the bugsnag-logger.
+     * Gets the log level to be used by the bugsnag-logger.
      *
      * @return array
      */
-    public function getLogLevels()
+    public function getLogNotifyLevel()
     {
-        return [
-            'notifyLevel' => $this->logNotifyLevel,
-            'warningLevel' => $this->logWarningLevel,
-            'errorLevel' => $this->logErrorLevel,
-        ];
+        return $this->logNotifyLevel;
     }
 }
