@@ -32,7 +32,7 @@ $hook['pre_system'] = function(){
 }
 ```
 
-#### You're done!
+### You're done!
 Cause an error in your application, you should see it appear on your Bugsnag dashboard. You can manually log an error with:  `$GLOBALS['bugsnag']->notifyError('ErrorType', 'A wild error appeared!');`
 
 #### Can't find your API key?
