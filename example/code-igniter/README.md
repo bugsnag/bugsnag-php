@@ -15,14 +15,14 @@ $ composer require "bugsnag/bugsnag:^3.0"
 Go to '/application/config/config.php'. Search for `$config['enable_hooks']`. Set it to true, so you have: `$config['enable_hooks'] = TRUE;`.
 
 #### 5. Load Bugsnag
-Paste this into your hooks.php file:
+Paste this into your /application/config/hooks.php file:
 
 ```
 $hook['pre_system'] = function(){
   require_once 'vendor/autoload.php';
 
   // Automatically send unhandled errors to your Bugsnag dashboard:
-  $GLOBALS['bugsnag'] = Bugsnag\Client::make("ceb57130c9b716304a9ff0632b1e4440");
+  $GLOBALS['bugsnag'] = Bugsnag\Client::make("my-secret-key");
   Bugsnag\Handler::register($GLOBALS['bugsnag']);
 
   // Manually send an error (you can use this to test your integration)
