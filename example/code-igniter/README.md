@@ -1,5 +1,7 @@
 # Set up Bugsnag with CodeIgniter
 
+You will need a Bugsnag account. If you don't have one, go make one [here](https://www.bugsnag.com/platforms/php/)!
+
 #### 1. Download CodeIgniter:
 You can download it here: https://codeigniter.com/download
 
@@ -26,6 +28,16 @@ $hook['pre_system'] = function(){
   Bugsnag\Handler::register($GLOBALS['bugsnag']);
 
   // Manually send an error (you can use this to test your integration)
-  // $GLOBALS['bugsnag']->notifyError('ErrorType', 'global Error');
+  // $GLOBALS['bugsnag']->notifyError('ErrorType', 'A wild error appeared!');
 }
 ```
+
+#### You're done!
+Cause an error in your application, you should see it appear on your Bugsnag dashboard. You can manually log an error with:  `$GLOBALS['bugsnag']->notifyError('ErrorType', 'A wild error appeared!');`
+
+#### Can't find your API key?
+Go to your dashboard: https://app.bugsnag.com. Be sure you're on the right project! Your project name is in the top-left corner.
+
+Then click "Settings" in the top left corner.
+
+You will see a section called "Notifier API Key". That is your API key.
