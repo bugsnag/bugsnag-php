@@ -10,8 +10,10 @@ If you're using MAMP, move it to htdocs, start MAMP, then go to localhost:8888.
 If you're not using MAMP, move the CodeIgniter folder to wherever your web server serves files from.
 
 #### 3. Use Composer to get Bugsnag
+```
 $ cd <your-projects-root-folder>
 $ composer require "bugsnag/bugsnag:^3.0"
+```
 
 #### 4. Enable 'hooks' in CodeIgniter
 Go to '/application/config/config.php'. Search for `$config['enable_hooks']`. Set it to true, so you have: `$config['enable_hooks'] = TRUE;`.
