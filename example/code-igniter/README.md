@@ -37,9 +37,27 @@ $hook['pre_system'] = function(){
 ### You're done!
 Cause an error in your application, you should see it appear on your Bugsnag dashboard. You can manually log an error with:  `$GLOBALS['bugsnag']->notifyError('ErrorType', 'A wild error appeared!');`
 
+## FAQ
 #### Can't find your API key?
 Go to your dashboard: https://app.bugsnag.com. Be sure you're on the right project! Your project name is in the top-left corner.
 
 Then click "Settings" in the top left corner.
 
 You will see a section called "Notifier API Key". That is your API key.
+
+#### Don't have Composer?
+Composer's website has install instructions [here](https://getcomposer.org/download/).
+
+For Mac, as of November 2017, you can run this to install Composer:
+```
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+
+mv composer.phar /usr/local/bin/composer
+```
+
+#### Getting an 'unexpected end of file' error?
+You may need to add a `?>` to your hook.php file.
+More specifically, you should check your `short_open_tag` setting: https://stackoverflow.com/questions/13990681/php-parse-error-syntax-error-unexpected-end-of-file-in-a-codeigniter-view
