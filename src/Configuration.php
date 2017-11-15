@@ -102,6 +102,13 @@ class Configuration
     protected $errorReportingLevel;
 
     /**
+     * The level logs must match or exceed to send a notification.
+     *
+     * @var string|null
+     */
+    protected $logNotifyLevel;
+
+    /**
      * Create a new config instance.
      *
      * @param string $apiKey your bugsnag api key
@@ -485,5 +492,31 @@ class Configuration
         }
 
         return !(error_reporting() & $code);
+    }
+
+    /**
+     * Set the Level at which a bugsnag-logger will generate a notification to Bugsnag.
+     *
+     * If this is not set, the logger will default to using the 'notice' level.
+     *
+     * @param string|null $logLevel the log-level to send notifications at
+     *
+     * @return $this
+     */
+    public function setLogNotifyLevel(string $logNotifyLevel)
+    {
+        $this->logNotifyLevel = $logNotifyLevel;
+
+        return $this;
+    }
+
+    /**
+     * Gets the log level to be used by the bugsnag-logger.
+     *
+     * @return array
+     */
+    public function getLogNotifyLevel()
+    {
+        return $this->logNotifyLevel;
     }
 }
