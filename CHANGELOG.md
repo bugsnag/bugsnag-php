@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## 3.9.0 (2017-11-23)
+
+### Enhancements
+
+* Added Codeigniter example
+  [Don Pinkus](https://github.com/donpinkus)
+  
+### Fixes
+
+* Ensured `severity_reason` has sensible defaults
+  [#421](https://github.com/bugsnag/bugsnag-php/pull/421)
+
 ## 3.8.1 (2017-10-04)
 
 ### Fixes

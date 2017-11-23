@@ -21,6 +21,6 @@ $hook['pre_system'] = function(){
 
   // Manually send an error (you can use this to test your integration)
   $GLOBALS['bugsnag']->notifyError('ErrorType', 'A wild error appeared!');
-}
+};
 
 ?>
