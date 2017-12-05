@@ -709,9 +709,9 @@ class Report
 
     /**
      * Recursively remove null elements.
-     * 
+     *
      * @param array $array  the array to remove null elements from
-     * 
+     *
      * @return array
      */
     protected function removeNullElements($array)
@@ -723,6 +723,7 @@ class Report
                 unset($array[$key]);
             }
         }
+
         return $array;
     }
 }
