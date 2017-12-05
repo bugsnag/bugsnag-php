@@ -62,11 +62,11 @@ class ReportTest extends TestCase
 
     public function testAddMetaDataDeletesIfNull()
     {
-        $this->report->setMetaData(['Testing' => ['globalArray' => 'hi'], 'Delete' => 'test']);
+        $this->report->setMetaData(['Testing' => ['globalArray' => 'hi', 'Delete' => 'test'], 'Delete' => 'test']);
 
-        $this->assertSame(['Testing' => ['globalArray' => 'hi'], 'Delete' => 'test'], $this->report->toArray()['metaData']);
+        $this->assertSame(['Testing' => ['globalArray' => 'hi', 'Delete' => 'test'], 'Delete' => 'test'], $this->report->toArray()['metaData']);
 
-        $this->report->addMetaData(['Delete' => null]);
+        $this->report->addMetaData(['Testing' => ['Delete' => null], 'Delete' => null]);
 
         $this->assertSame(['Testing' => ['globalArray' => 'hi']], $this->report->toArray()['metaData']);
     }

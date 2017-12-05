@@ -508,9 +508,7 @@ class Report
     public function addMetaData(array $metadata)
     {
         $this->metaData = array_replace_recursive($this->metaData, $metadata);
-        $this->metaData = array_filter($this->metaData, function ($val) {
-            return !is_null($val);
-        });
+        $this->metaData = $this->removeNullElements($this->metaData);
 
         return $this;
     }
@@ -707,5 +705,24 @@ class Report
         }
 
         return false;
+    }
+
+    /**
+     * Recursively remove null elements.
+     * 
+     * @param array $array  the array to remove null elements from
+     * 
+     * @return array
+     */
+    protected function removeNullElements($array)
+    {
+        foreach ($array as $key => $val) {
+            if (is_array($val)) {
+                $array[$key] = $this->removeNullElements($val);
+            } elseif (is_null($val)) {
+                unset($array[$key]);
+            }
+        }
+        return $array;
     }
 }
