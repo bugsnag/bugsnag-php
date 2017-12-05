@@ -511,6 +511,7 @@ class Report
         $this->metaData = array_filter($this->metaData, function($val) {
             return !is_null($val);
         });
+
         return $this;
     }
 
