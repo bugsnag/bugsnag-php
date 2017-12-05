@@ -500,15 +500,15 @@ class Report
      * Adds a tab to the meta data.
      * Conflicting keys will be merged if able, otherwise the new values will be accepted.
      * Null values will be deleted from the metadata.
-     * 
+     *
      * @param array[] $metadata an array of custom data to attach to the report
-     * 
+     *
      * @return $this
      */
     public function addMetaData(array $metadata)
     {
         $this->metaData = array_replace_recursive($this->metaData, $metadata);
-        $this->metaData = array_filter($this->metaData, function($val) {
+        $this->metaData = array_filter($this->metaData, function ($val) {
             return !is_null($val);
         });
 
