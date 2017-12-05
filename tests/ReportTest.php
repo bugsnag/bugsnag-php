@@ -52,7 +52,7 @@ class ReportTest extends TestCase
 
         $this->assertSame(['Testing' => ['globalArray' => 'hi']], $this->report->toArray()['metaData']);
     }
-    
+
     public function testAddMetaDataCreate()
     {
         $this->report->addMetaData(['Testing' => ['globalArray' => 'hi']]);
