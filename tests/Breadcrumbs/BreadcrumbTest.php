@@ -9,20 +9,17 @@ class BreadcrumbTest extends TestCase
 {
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The breadcrumb name must be a non-empty string.
+     * @expectedExceptionMessage The breadcrumb name must be a string.
      */
     public function testBadName()
     {
         new Breadcrumb(123, 'error');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The breadcrumb name must be a non-empty string.
-     */
     public function testEmptyName()
     {
-        new Breadcrumb('', 'error');
+        $breadcrumb = new Breadcrumb('', 'error');
+        $this->assertSame('', $breadcrumb->toArray()['name']);
     }
 
     /**
