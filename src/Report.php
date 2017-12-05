@@ -498,17 +498,18 @@ class Report
 
     /**
      * Adds a tab to the meta data.
-     * 
+     *
      * @param array[] $data an array of custom data to attach
-     * 
+     *
      * @return $this
      */
     public function addMetaData(array $tab)
     {
         $this->metaData = array_replace_recursive($this->metaData, $tab);
-        $this->metaData = array_filter($this->metaData, function($val) {
+        $this->metaData = array_filter($this->metaData, function ($val) {
             return !is_null($val);
         });
+
         return $this;
     }
 
