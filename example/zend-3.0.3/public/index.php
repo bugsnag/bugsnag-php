@@ -22,9 +22,6 @@ if (php_sapi_name() === 'cli-server') {
 // Composer autoloading
 include __DIR__ . '/../vendor/autoload.php';
 
-$GLOBALS['bugsnag'] = Bugsnag\Client::make("12312312312312312312312312312312", "http://localhost:62000");
-Bugsnag\Handler::register($GLOBALS['bugsnag']);
-
 if (! class_exists(Application::class)) {
     throw new RuntimeException(
         "Unable to load application.\n"
