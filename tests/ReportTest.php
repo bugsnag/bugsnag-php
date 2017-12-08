@@ -263,7 +263,7 @@ class ReportTest extends TestCase
     {
         $this->report->setMessage(null);
 
-        $this->assertSame(null, $this->report->getMessage());
+        $this->assertNull($this->report->getMessage());
     }
 
     public function testGetSummaryFull()
