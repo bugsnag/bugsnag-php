@@ -2,6 +2,7 @@
 
 use Zend\Mvc\Application;
 use Zend\Stdlib\ArrayUtils;
+use Zend\Zend_Controller_Front;
 
 /**
  * This makes our life easier when dealing with paths. Everything is relative
@@ -21,9 +22,8 @@ if (php_sapi_name() === 'cli-server') {
 // Composer autoloading
 include __DIR__ . '/../vendor/autoload.php';
 
-$GLOBALS['bugsnag'] = Bugsnag\Client::make("your-api-key-here");
+$GLOBALS['bugsnag'] = Bugsnag\Client::make("12312312312312312312312312312312", "http://localhost:62000");
 Bugsnag\Handler::register($GLOBALS['bugsnag']);
-$GLOBALS['bugsnag']->notifyError('ErrorType', 'A wild error appeared!');
 
 if (! class_exists(Application::class)) {
     throw new RuntimeException(

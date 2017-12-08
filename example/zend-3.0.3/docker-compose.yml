@@ -2,6 +2,6 @@ zf:
   build: .
   dockerfile: Dockerfile
   ports:
-   - "8080:80"
+   - "3000:80"
   volumes:
    - .:/var/www

@@ -24,6 +24,16 @@ return [
                     ],
                 ],
             ],
+            'crash' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'     => '/crash',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'crash'
+                    ]
+                ]
+            ],
             'application' => [
                 'type'    => Segment::class,
                 'options' => [

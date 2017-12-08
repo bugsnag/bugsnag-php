@@ -9,11 +9,17 @@ namespace Application\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
+use RuntimeException;
 
 class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
         return new ViewModel();
+    }
+
+    public function crashAction()
+    {
+        throw new RuntimeException("Zend crashed!  Go and check your Bugsnag dashboard for a notification!");
     }
 }

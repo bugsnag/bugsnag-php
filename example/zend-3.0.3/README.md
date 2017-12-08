@@ -1,4 +1,6 @@
-# Set up Bugsnag with CodeIgniter
+# Set up Bugsnag with Zend
+
+This example demonstrates how to set up Bugsnag with the Zend web framework for PHP.  Before test
 
 You will need a Bugsnag account. Create a new one [here](https://www.bugsnag.com/platforms/php/)!
 
@@ -13,30 +15,32 @@ You will need a Bugsnag account. Create a new one [here](https://www.bugsnag.com
 3. Add Bugsnag
 In `public/index.php`, add the following below `include __DIR__ . '/../vendor/autoload.php';`
 
-```
+```php
 $GLOBALS['bugsnag'] = Bugsnag\Client::make("your-api-key-here");
 Bugsnag\Handler::register($GLOBALS['bugsnag']);
-$GLOBALS['bugsnag']->notifyError('ErrorType', 'A wild error appeared!');
 ```
 
 ## Steps for running this example
 1. Use Composer to install dependencies
-```
+```php
 $ composer install
 ```
 
 2. Set your API key in `public/index.php`:
-```
+```php
 $GLOBALS['bugsnag'] = Bugsnag\Client::make("your-api-key-here");
 ```
 
 3. Start your webserver
 
-For [MAMP](https://www.mamp.info/en/documentation/):
-  1. Start MAMP
-  2. Move this directory to htdocs (on macOS this is `/Applications/MAMP/htdocs`):
+- Locally:
+  ```shell
+  php -S 0.0.0.0:3000 -t public/ public/index.php
   ```
-  cp -r code-igniter-3.1/* /Applications/MAMP/htdocs/
+
+- In docker with docker-composer:
+  ```shell
+  docker-composer up
   ```
-  3. Open http://localhost:8888.
-  4. You're done! You should see a new error on your Bugsnag dashboard.
+
+4. View the server by visiting `http://localhost:3000` in your browser
