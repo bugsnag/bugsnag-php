@@ -1,6 +1,7 @@
 <?php
 /**
  * @link      http://github.com/zendframework/ZendSkeletonApplication for the canonical source repository
+ *
  * @copyright Copyright (c) 2005-2016 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
@@ -17,70 +18,70 @@ return [
             'home' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'    => '/',
+                    'route' => '/',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
+                        'action' => 'index',
                     ],
                 ],
             ],
             'crash' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'    => '/crash',
+                    'route' => '/crash',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'crash'
-                    ]
-                ]
+                        'action' => 'crash',
+                    ],
+                ],
             ],
             'crashcallbacks' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'    => '/crashcallbacks',
+                    'route' => '/crashcallbacks',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'callback'
-                    ]
-                ]
+                        'action' => 'callback',
+                    ],
+                ],
             ],
             'notify' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'    => '/notify',
+                    'route' => '/notify',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'notify'
-                    ]
-                ]
+                        'action' => 'notify',
+                    ],
+                ],
             ],
             'notifymetadata' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'    => '/notifymetadata',
+                    'route' => '/notifymetadata',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'notifymetadata'
-                    ]
-                ]
+                        'action' => 'notifymetadata',
+                    ],
+                ],
             ],
             'notifyseverity' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'    => '/notifyseverity',
+                    'route' => '/notifyseverity',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'notifyseverity'
-                    ]
-                ]
+                        'action' => 'notifyseverity',
+                    ],
+                ],
             ],
             'application' => [
-                'type'    => Segment::class,
+                'type' => Segment::class,
                 'options' => [
-                    'route'    => '/application[/:action]',
+                    'route' => '/application[/:action]',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
-                        'action'     => 'index',
+                        'action' => 'index',
                     ],
                 ],
             ],
@@ -93,18 +94,18 @@ return [
     ],
     'view_manager' => [
         'display_not_found_reason' => true,
-        'display_exceptions'       => true,
-        'doctype'                  => 'HTML5',
-        'not_found_template'       => 'error/404',
-        'exception_template'       => 'error/index',
+        'display_exceptions' => true,
+        'doctype' => 'HTML5',
+        'not_found_template' => 'error/404',
+        'exception_template' => 'error/index',
         'template_map' => [
-            'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
-            'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
-            'error/404'               => __DIR__ . '/../view/error/404.phtml',
-            'error/index'             => __DIR__ . '/../view/error/index.phtml',
+            'layout/layout' => __DIR__.'/../view/layout/layout.phtml',
+            'application/index/index' => __DIR__.'/../view/application/index/index.phtml',
+            'error/404' => __DIR__.'/../view/error/404.phtml',
+            'error/index' => __DIR__.'/../view/error/index.phtml',
         ],
         'template_path_stack' => [
-            __DIR__ . '/../view',
+            __DIR__.'/../view',
         ],
     ],
 ];
