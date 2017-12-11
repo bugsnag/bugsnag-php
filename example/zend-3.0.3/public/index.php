@@ -22,6 +22,8 @@ if (php_sapi_name() === 'cli-server') {
 // Composer autoloading
 include __DIR__ . '/../vendor/autoload.php';
 
+$GLOBALS['bugsnag'] = Bugsnag\Client::make("YOUR_API_KEY");
+
 if (! class_exists(Application::class)) {
     throw new RuntimeException(
         "Unable to load application.\n"

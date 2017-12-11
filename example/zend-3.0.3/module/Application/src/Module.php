@@ -20,7 +20,7 @@ class Module
 
     public function onBootstrap(MvcEvent $event)
     {
-        $bugsnag = Client::make("YOUR_API_KEY");
+        $bugsnag = $GLOBALS['bugsnag'];
         $sharedManager = $event->getApplication()->getEventManager()->getSharedManager();
         $sharedManager->attach('Zend\Mvc\Application', 'dispatch.error', function($exception) use ($bugsnag) {
             if ($exception->getParam('exception')) {

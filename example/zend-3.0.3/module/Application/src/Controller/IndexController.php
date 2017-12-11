@@ -22,4 +22,47 @@ class IndexController extends AbstractActionController
     {
         throw new RuntimeException("Zend crashed!  Go and check your Bugsnag dashboard for a notification!");
     }
+
+    public function callbackAction()
+    {
+        $GLOBALS['bugsnag']->registerCallback(function($report) {
+            $report->setMetaData([
+                'account' => [
+                    'name' => 'Acme Co.',
+                    'paying_customer' => true
+                ]
+            ]);
+        });
+        throw new RuntimeException("Zend crashed!  Go and check your Bugsnag dashboard for a notification with meta data!");
+    }
+
+    public function notifyAction()
+    {
+        $GLOBALS['bugsnag']->notifyError('Broken', 'Something broke');
+        return new ViewModel();
+    }
+
+    public function notifymetadataAction()
+    {
+        $GLOBALS['bugsnag']->notifyError('Broken', 'Something broke', function($report) {
+            $report->setMetaData([
+                'account' => [
+                    'name' => 'Acme Co.',
+                    'paying_customer' => true
+                ],
+                'diagnostics' => [
+                    'status' => 'cool'
+                ]
+            ]);
+        });
+        return new ViewModel();
+    }
+
+    public function notifyseverityAction()
+    {
+        $GLOBALS['bugsnag']->notifyError('Broken', 'Something broke', function($report) {
+            $report->setSeverity('info');
+        });
+        return new ViewModel();
+    }
 }

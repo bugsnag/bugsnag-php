@@ -27,10 +27,50 @@ return [
             'crash' => [
                 'type' => Literal::class,
                 'options' => [
-                    'route'     => '/crash',
+                    'route'    => '/crash',
                     'defaults' => [
                         'controller' => Controller\IndexController::class,
                         'action'     => 'crash'
+                    ]
+                ]
+            ],
+            'crashcallbacks' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/crashcallbacks',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'callback'
+                    ]
+                ]
+            ],
+            'notify' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/notify',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'notify'
+                    ]
+                ]
+            ],
+            'notifymetadata' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/notifymetadata',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'notifymetadata'
+                    ]
+                ]
+            ],
+            'notifyseverity' => [
+                'type' => Literal::class,
+                'options' => [
+                    'route'    => '/notifyseverity',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'notifyseverity'
                     ]
                 ]
             ],
