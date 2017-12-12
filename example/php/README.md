@@ -17,7 +17,7 @@ This can be accomplished in one of two ways:
 
 1. Set the environment variable `BUGSNAG_API_KEY` to your api key before running the examples
 
-2. Pass your api key to the client make function:
+2. Pass your api key to the client `make` function:
 
     ```php
     $client = Bugsnag\Client::make('YOUR API KEY');
@@ -35,7 +35,7 @@ Bugsnag\Handler::register($client);
 
 Each example should be run individually and demonstrates some functionality of the Bugsnag PHP notifier and is fully commented.
 
-Run the examples with:
+Run the examples using `php {filename}`, for example:
 
 ```shell
 php crash.php
