@@ -3,7 +3,7 @@
 This example demonstrates how to set up and use Bugsnag with a plain PHP application.
 More information about using Bugsnag with PHP can be found [in the official documentation.](https://docs.bugsnag.com/platforms/php/other/)
 
-## Install dependancies
+## Install dependencies
 
 Bugsnag is most commonly installed using the [Composer](https://getcomposer.org/) dependency manager.
 
