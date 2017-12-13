@@ -8,8 +8,6 @@
 
 namespace Application;
 
-use Zend\Mvc\MvcEvent;
-
 class Module
 {
     const VERSION = '3.0.3-dev';
