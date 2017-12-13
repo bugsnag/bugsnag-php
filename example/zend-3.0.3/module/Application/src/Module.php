@@ -19,7 +19,7 @@ class Module
         return include __DIR__.'/../config/module.config.php';
     }
 
-    public function onBootstrap(MvcEvent $event)
+    public function onBootstrap(\Zend\Mvc\MvcEvent $event)
     {
         $bugsnag = $GLOBALS['bugsnag'];
         $sharedManager = $event->getApplication()->getEventManager()->getSharedManager();
