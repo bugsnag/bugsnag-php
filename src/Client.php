@@ -65,10 +65,10 @@ class Client
      * @var \Bugsnag\HttpClient
      */
     protected $http;
-    
+
     /**
      * The session tracker instance.
-     * 
+     *
      * @var \Bugsnag\SessionTracker
      */
     protected $sessionTracker;
