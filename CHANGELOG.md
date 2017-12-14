@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.10.0 (2017-12-14)
+
+### Enhancements
+
+* Add 'addMetaData' method to reports
+  [#430](https://github.com/bugsnag/bugsnag-php/pull/430)
+
 ## 3.9.0 (2017-11-23)
 
 ### Enhancements
