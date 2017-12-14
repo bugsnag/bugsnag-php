@@ -65,6 +65,13 @@ class Client
      * @var \Bugsnag\HttpClient
      */
     protected $http;
+    
+    /**
+     * The session tracker instance.
+     * 
+     * @var \Bugsnag\SessionTracker
+     */
+    protected $sessionTracker;
 
     /**
      * Make a new client instance.
@@ -107,6 +114,7 @@ class Client
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
+        $this->sessionTracker = new SessionTracker($config);
 
         $this->pipeline->pipe(new NotificationSkipper($config));
         $this->pipeline->pipe(new BreadcrumbData($this->recorder));

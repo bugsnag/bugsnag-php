@@ -3,9 +3,11 @@
 namespace Bugsnag;
 
 use InvalidArgumentException;
+use GuzzleHttp\ClientInterface;
 
 class Configuration
 {
+
     /**
      * The Bugnsag API Key.
      *
@@ -100,6 +102,20 @@ class Configuration
      * @var int|null
      */
     protected $errorReportingLevel;
+
+    /**
+     * Whether to track sessions.
+     * 
+     * @var bool
+     */
+    protected $trackSessions = false;
+
+    /**
+     * A client to use to send sessions
+     * 
+     * @var \Guzzle\ClientInterface
+     */
+    protected $sessionClient;
 
     /**
      * Create a new config instance.
@@ -485,5 +501,32 @@ class Configuration
         }
 
         return !(error_reporting() & $code);
+    }
+
+    /**
+     * Set session tracking state and pass in optional guzzle
+     * 
+     * @param bool $track whether to track sessions
+     * @param string $endpoint an optional session endpoint
+     * 
+     * @return $this
+     */
+    public function setSessionTracking($track, $endpoint) {
+        if (!$track) {
+            $this->trackSessions = false;
+            return;
+        }
+        $this->trackSessions = true;
+        $this->sessionClient = Client::makeGuzzle($endpoint);
+        return $this;
+    }
+
+    /**
+     * Get the session client
+     * 
+     * @return \Guzzle\ClientInterface
+     */
+    public function getSessionClient() {
+        return $this->sessionClient;
     }
 }

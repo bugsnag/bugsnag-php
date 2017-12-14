@@ -204,6 +204,7 @@ class SessionTracker
             "Bugsnag-Payload-Version" => SessionTracker::$SESSION_PAYLOAD_VERSION,
             "Bugsnag-Sent-At" => strftime('%Y-%m-%dT%H:%M:%S')
         ];
+        $lastSent = time();
         try {
             $http->post('', [
                 'json' => $payload,
