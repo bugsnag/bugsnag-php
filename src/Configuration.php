@@ -6,7 +6,6 @@ use InvalidArgumentException;
 
 class Configuration
 {
-
     /**
      * The default endpoint.
      *
@@ -517,14 +516,15 @@ class Configuration
      *
      * @return $this
      */
-    public function setSessionTracking($track, $endpoint=null)
+    public function setSessionTracking($track, $endpoint = null)
     {
         if (!$track) {
             $this->trackSessions = false;
+
             return;
         }
         if (is_null($endpoint)) {
-            $endpoint = Configuration::SESSION_ENDPOINT;
+            $endpoint = self::SESSION_ENDPOINT;
         }
         $this->trackSessions = true;
         $this->sessionClient = Client::makeGuzzle($endpoint);
