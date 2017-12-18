@@ -53,17 +53,17 @@ class SessionTracker
      * @var function
      */
     protected $retryFunction = null;
-    
+
     /**
      * A function to store the current session in.
-     * 
+     *
      * @var function
      */
     protected $storeFunction = null;
 
     /**
      * A function to use to retreive the current session.
-     * 
+     *
      * @var function
      */
     protected $retrieveFunction = null;
@@ -167,7 +167,8 @@ class SessionTracker
         }
     }
 
-    public function setStoreFunctions($store, $retrieve) {
+    public function setStoreFunctions($store, $retrieve)
+    {
         if (is_callable($store) && is_callable($retrieve)) {
             $this->storeFunction = $store;
             $this->retrieveFunction = $retrieve;
