@@ -211,6 +211,7 @@ class SessionTracker
             'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
         ];
         $this->lastSent = time();
+
         try {
             $http->post('', [
                 'json' => $payload,

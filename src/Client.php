@@ -346,7 +346,7 @@ class Client
 
     /**
      * Returns the session tracker.
-     * 
+     *
      * @return \Bugsnag\SessionTracker
      */
     public function getSessionTracker()
