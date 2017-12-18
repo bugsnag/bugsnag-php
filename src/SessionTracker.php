@@ -53,6 +53,20 @@ class SessionTracker
      * @var function
      */
     protected $retryFunction = null;
+    
+    /**
+     * A function to store the current session in.
+     * 
+     * @var function
+     */
+    protected $storeFunction = null;
+
+    /**
+     * A function to use to retreive the current session.
+     * 
+     * @var function
+     */
+    protected $retrieveFunction = null;
 
     /**
      * The last time the sessions were delivered.
@@ -62,11 +76,11 @@ class SessionTracker
     protected $lastSent;
 
     /**
-     * The time between each send attempt in seconds.
+     * The current session.
      *
-     * @var int
+     * @var array
      */
-    protected $sendInterval = 60;
+    protected $currentSession;
 
     /**
      * Create a session tracker instance.
@@ -88,7 +102,6 @@ class SessionTracker
 
     public function createSession()
     {
-        print_r("Creating\n");
         if (!$this->config->shouldTrackSessions()) {
             return;
         }
@@ -101,7 +114,21 @@ class SessionTracker
                 'unhandled' => 0,
             ],
         ];
+        if (!is_null($this->storeFunction) && !is_null($this->retrieveFunction)) {
+            call_user_func($this->storeFunction, $session);
+        } else {
+            $this->currentSession = $session;
+        }
         $this->incrementSessions($currentTime);
+    }
+
+    public function getCurrentSession()
+    {
+        if (!is_null($this->storeFunction) && !is_null($this->retrieveFunction)) {
+            return call_user_func($this->retrieveFunction);
+        } else {
+            return $this->currentSession;
+        }
     }
 
     public function sendSessions()
@@ -137,6 +164,15 @@ class SessionTracker
             $this->retryFunction = $retry;
         } else {
             throw new InvalidArgumentException('The retry function must be callable');
+        }
+    }
+
+    public function setStoreFunctions($store, $retrieve) {
+        if (is_callable($store) && is_callable($retrieve)) {
+            $this->storeFunction = $store;
+            $this->retrieveFunction = $retrieve;
+        } else {
+            throw new InvalidArgumentException('Both store and retrieve functions must be callable');
         }
     }
 
@@ -194,7 +230,6 @@ class SessionTracker
 
     protected function deliverSessions()
     {
-        print_r("delivering\n");
         if (!$this->config->shouldTrackSessions()) {
             return;
         }
