@@ -11,6 +11,7 @@ use Bugsnag\Callbacks\RequestCookies;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
+use Bugsnag\Middleware\SessionData;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
@@ -118,6 +119,7 @@ class Client
 
         $this->pipeline->pipe(new NotificationSkipper($config));
         $this->pipeline->pipe(new BreadcrumbData($this->recorder));
+        $this->pipeline->pipe(new SessionData($this));
 
         register_shutdown_function([$this, 'flush']);
     }
