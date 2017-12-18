@@ -38,7 +38,12 @@ class SessionData
         
         if ($this->client->shouldTrackSessions()) {
             $session = $this->client->getSessionTracker()->getCurrentSession();
-            $report->setSessionData($session);       
+            if ($report->getUnhandled()) {
+                $session['events']['unhandled'] += 1;
+            } else {
+                $session['events']['handled'] += 1;
+            }
+            $report->setSessionData($session);
         }
 
         $next($report);
