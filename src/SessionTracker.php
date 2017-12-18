@@ -91,6 +91,7 @@ class SessionTracker
 
     public function createSession()
     {
+        print_r("Creating\n");
         if (!$this->config->shouldTrackSessions()) {
             return;
         }
@@ -189,6 +190,7 @@ class SessionTracker
 
     protected function deliverSessions()
     {
+        print_r("delivering\n");
         if (!$this->config->shouldTrackSessions()) {
             return;
         }
@@ -204,7 +206,7 @@ class SessionTracker
             "Bugsnag-Payload-Version" => SessionTracker::$SESSION_PAYLOAD_VERSION,
             "Bugsnag-Sent-At" => strftime('%Y-%m-%dT%H:%M:%S')
         ];
-        $lastSent = time();
+        $this->lastSent = time();
         try {
             $http->post('', [
                 'json' => $payload,
