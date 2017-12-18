@@ -533,11 +533,12 @@ class Configuration
     }
 
     /**
-     * Whether should be tracking sessions
-     * 
+     * Whether should be tracking sessions.
+     *
      * @return bool
      */
-    public function shouldTrackSessions() {
+    public function shouldTrackSessions()
+    {
         return $this->trackSessions;
     }
 }
