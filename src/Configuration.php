@@ -6,6 +6,14 @@ use InvalidArgumentException;
 
 class Configuration
 {
+
+    /**
+     * The default endpoint.
+     *
+     * @var string
+     */
+    const SESSION_ENDPOINT = 'https://sessions.bugsnag.com';
+
     /**
      * The Bugnsag API Key.
      *
@@ -509,12 +517,14 @@ class Configuration
      *
      * @return $this
      */
-    public function setSessionTracking($track, $endpoint)
+    public function setSessionTracking($track, $endpoint=null)
     {
         if (!$track) {
             $this->trackSessions = false;
-
             return;
+        }
+        if (is_null($endpoint)) {
+            $endpoint = Configuration::SESSION_ENDPOINT;
         }
         $this->trackSessions = true;
         $this->sessionClient = Client::makeGuzzle($endpoint);
