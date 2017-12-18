@@ -18,6 +18,7 @@ class SessionData
      * Create a new breadcrumb data middleware instance.
      *
      * @param \Bugsnag\SessionTracker $client the client instance.
+     *
      * @return void
      */
     public function __construct(Client $client)
@@ -35,10 +36,9 @@ class SessionData
      */
     public function __invoke(Report $report, callable $next)
     {
-        
         if ($this->client->shouldTrackSessions()) {
             $session = $this->client->getSessionTracker()->getCurrentSession();
-            $report->setSessionData($session);       
+            $report->setSessionData($session);
         }
 
         $next($report);
