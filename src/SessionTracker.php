@@ -89,9 +89,9 @@ class SessionTracker
         $this->config = $config;
     }
 
-    public function addSession()
+    public function createSession()
     {
-        if (!$this->config->trackSessions) {
+        if (!$this->config->shouldTrackSessions()) {
             return;
         }
         $currentTime = strftime('%Y-%m-%dT%H:%M:00');
@@ -177,7 +177,7 @@ class SessionTracker
     protected function constructPayload($sessions) {
         $formattedSessions = [];
         foreach($sessions as $minute => $count) {
-            $formattedSessions[] = ["startedAt" => $minutes, "sessionsStarted" => $count];
+            $formattedSessions[] = ["startedAt" => $minute, "sessionsStarted" => $count];
         }
         return [
             "notifier" => $this->config->getNotifier(),
@@ -189,11 +189,11 @@ class SessionTracker
 
     protected function deliverSessions()
     {
-        if (!$this->config->trackSessions) {
+        if (!$this->config->shouldTrackSessions()) {
             return;
         }
-        $sessions = $sessionCounts;
-        $sessionCounts = [];
+        $sessions = $this->sessionCounts;
+        $this->sessionCounts = [];
         if (count($sessions) == 0) {
             return;
         }

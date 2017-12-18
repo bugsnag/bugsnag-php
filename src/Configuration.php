@@ -529,4 +529,13 @@ class Configuration
     public function getSessionClient() {
         return $this->sessionClient;
     }
+
+    /**
+     * Whether should be tracking sessions
+     * 
+     * @return bool
+     */
+    public function shouldTrackSessions() {
+        return $this->trackSessions;
+    }
 }

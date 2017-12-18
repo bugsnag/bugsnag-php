@@ -345,6 +345,16 @@ class Client
     }
 
     /**
+     * Returns the session tracker.
+     * 
+     * @return \Bugsnag\SessionTracker
+     */
+    public function getSessionTracker()
+    {
+        return $this->sessionTracker;
+    }
+
+    /**
      * Dynamically pass calls to the configuration.
      *
      * @param string $method
