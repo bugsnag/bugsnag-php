@@ -116,7 +116,7 @@ class Report
 
     /**
      * Attached session from SessionTracking.
-     * 
+     *
      * @var array
      */
     protected $session;
@@ -601,10 +601,11 @@ class Report
 
     /**
      * Sets the session data.
-     * 
+     *
      * @return $this
      */
-    public function setSessionData(array $session) {
+    public function setSessionData(array $session)
+    {
         $this->session = $session;
     }
 
