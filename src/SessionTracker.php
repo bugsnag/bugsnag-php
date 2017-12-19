@@ -69,6 +69,20 @@ class SessionTracker
     protected $retrieveFunction = null;
 
     /**
+     * A function to store the session counts in.
+     * 
+     * @var function
+     */
+    protected $sessionStore = null;
+
+    /**
+     * A function to retrieve the session counts from.
+     * 
+     * @var function
+     */
+    protected $sessionRetrieve = null;
+
+    /**
      * The last time the sessions were delivered.
      *
      * @var int
@@ -167,11 +181,21 @@ class SessionTracker
         }
     }
 
-    public function setStoreFunctions($store, $retrieve)
+    public function setSessionStorageFunctions($store, $retrieve)
     {
         if (is_callable($store) && is_callable($retrieve)) {
             $this->storeFunction = $store;
             $this->retrieveFunction = $retrieve;
+        } else {
+            throw new InvalidArgumentException('Both store and retrieve functions must be callable');
+        }
+    }
+
+    public function setCountStorageFunctions($store, $retrieve)
+    {
+        if (is_callable($store) && is_callable($retrieve)) {
+            $this->sessionStore = $store;
+            $this->sessionRetrieve = $retrieve;
         } else {
             throw new InvalidArgumentException('Both store and retrieve functions must be callable');
         }
@@ -186,12 +210,17 @@ class SessionTracker
         }
 
         try {
-            if (array_key_exists($minute, $this->sessionCounts)) {
-                $this->sessionCounts[$minute] += $count;
+            $sessionCounts = $this->getSessionCounts();
+
+            if (array_key_exists($minute, $sessionCounts)) {
+                $sessionCounts[$minute] += $count;
             } else {
-                $this->sessionCounts[$minute] = $count;
+                $sessionCounts[$minute] = $count;
             }
-            if (count($this->sessionCounts) > self::$MAX_SESSION_COUNT) {
+
+            $this->setSessionCounts($sessionCounts);
+
+            if (count($sessionCounts) > self::$MAX_SESSION_COUNT) {
                 $this->trimOldestSessions();
             }
             if ($deliver && ((time() - $this->lastSent) > self::$DELIVERY_INTERVAL)) {
@@ -204,14 +233,33 @@ class SessionTracker
         }
     }
 
+    protected function getSessionCounts()
+    {
+        if (!is_null($this->sessionStore) && !is_null($this->sessionRetrieve)) {
+            return call_user_func($this->sessionRetrieve);
+        } else {
+            return $this->sessionCounts;
+        }
+    }
+
+    protected function setSessionCounts(array $sessionCounts)
+    {
+        if (!is_null($this->sessionStore) && !is_null($this->sessionRetrieve)) {
+            return call_user_func($this->sessionStore, $sessionCounts);
+        } else {
+            $this->sessionCounts = $sessionCounts;
+        }
+    }
+
     protected function trimOldestSessions()
     {
-        $sessions = $this->sessionCounts;
+        $sessions = $this->getSessionCounts();
         uksort($sessions, function ($key) {
             return strtotime($key);
         });
         $sessions = array_reverse($sessions);
-        $this->sessionCounts = array_slice($sessions, 0, self::$MAX_SESSION_COUNT);
+        $sessionCounts = array_slice($sessions, 0, self::$MAX_SESSION_COUNT);
+        $this->setSessionCounts($sessionCounts);
     }
 
     protected function constructPayload($sessions)
@@ -234,8 +282,8 @@ class SessionTracker
         if (!$this->config->shouldTrackSessions()) {
             return;
         }
-        $sessions = $this->sessionCounts;
-        $this->sessionCounts = [];
+        $sessions = $this->getSessionCounts();
+        $this->setSessionCounts([]);
         if (count($sessions) == 0) {
             return;
         }

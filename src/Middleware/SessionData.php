@@ -8,14 +8,14 @@ use Bugsnag\Report;
 class SessionData
 {
     /**
-     * The recorder instance.
+     * The client instance.
      *
      * @var \Bugsnag\Client
      */
     protected $client;
 
     /**
-     * Create a new breadcrumb data middleware instance.
+     * Create a new session data middleware instance.
      *
      * @param \Bugsnag\SessionTracker $client the client instance.
      *
@@ -27,7 +27,7 @@ class SessionData
     }
 
     /**
-     * Execute the notification skipper middleware.
+     * Execute the session data middleware.
      *
      * @param \Bugsnag\Report $report the bugsnag report instance
      * @param callable        $next   the next stage callback
