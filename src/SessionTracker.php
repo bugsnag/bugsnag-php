@@ -70,14 +70,14 @@ class SessionTracker
 
     /**
      * A function to store the session counts in.
-     * 
+     *
      * @var function
      */
     protected $sessionStore = null;
 
     /**
      * A function to retrieve the session counts from.
-     * 
+     *
      * @var function
      */
     protected $sessionRetrieve = null;
