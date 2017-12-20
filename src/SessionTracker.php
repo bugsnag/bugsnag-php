@@ -317,7 +317,7 @@ class SessionTracker
 
     protected function getLastSent()
     {
-        if (!is_null($this->storeFustorageFunctionnction)) {
+        if (!is_null($this->storageFunction)) {
             return call_user_func($this->storageFunction, 'bugsnag-session-last-sent');
         } else {
             return $this->lastSent;
