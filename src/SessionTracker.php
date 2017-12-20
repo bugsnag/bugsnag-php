@@ -55,32 +55,18 @@ class SessionTracker
     protected $retryFunction = null;
 
     /**
-     * A function to store the current session in.
+     * A function to store data in.
      *
      * @var function
      */
     protected $storeFunction = null;
 
     /**
-     * A function to use to retreive the current session.
+     * A function to use to retreive data from.
      *
      * @var function
      */
     protected $retrieveFunction = null;
-
-    /**
-     * A function to store the session counts in.
-     *
-     * @var function
-     */
-    protected $sessionStore = null;
-
-    /**
-     * A function to retrieve the session counts from.
-     *
-     * @var function
-     */
-    protected $sessionRetrieve = null;
 
     /**
      * The last time the sessions were delivered.
@@ -128,18 +114,23 @@ class SessionTracker
                 'unhandled' => 0,
             ],
         ];
+        $this->setCurrentSession($session);
+        $this->incrementSessions($currentTime);
+    }
+
+    protected function setCurrentSession(array $session)
+    {
         if (!is_null($this->storeFunction) && !is_null($this->retrieveFunction)) {
-            call_user_func($this->storeFunction, $session);
+            call_user_func($this->storeFunction, 'bugsnag-current-session', $session);
         } else {
             $this->currentSession = $session;
         }
-        $this->incrementSessions($currentTime);
     }
 
     public function getCurrentSession()
     {
         if (!is_null($this->storeFunction) && !is_null($this->retrieveFunction)) {
-            return call_user_func($this->retrieveFunction);
+            return call_user_func($this->retrieveFunction, 'bugsnag-current-session');
         } else {
             return $this->currentSession;
         }
@@ -181,21 +172,11 @@ class SessionTracker
         }
     }
 
-    public function setSessionStorageFunctions($store, $retrieve)
+    public function setStorageFunctions($store, $retrieve)
     {
         if (is_callable($store) && is_callable($retrieve)) {
             $this->storeFunction = $store;
             $this->retrieveFunction = $retrieve;
-        } else {
-            throw new InvalidArgumentException('Both store and retrieve functions must be callable');
-        }
-    }
-
-    public function setCountStorageFunctions($store, $retrieve)
-    {
-        if (is_callable($store) && is_callable($retrieve)) {
-            $this->sessionStore = $store;
-            $this->sessionRetrieve = $retrieve;
         } else {
             throw new InvalidArgumentException('Both store and retrieve functions must be callable');
         }
@@ -223,7 +204,8 @@ class SessionTracker
             if (count($sessionCounts) > self::$MAX_SESSION_COUNT) {
                 $this->trimOldestSessions();
             }
-            if ($deliver && ((time() - $this->lastSent) > self::$DELIVERY_INTERVAL)) {
+            $lastSent = $this->getLastSent();
+            if ($deliver && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
                 $this->deliverSessions();
             }
         } finally {
@@ -235,8 +217,8 @@ class SessionTracker
 
     protected function getSessionCounts()
     {
-        if (!is_null($this->sessionStore) && !is_null($this->sessionRetrieve)) {
-            return call_user_func($this->sessionRetrieve);
+        if (!is_null($this->storeFunction) && !is_null($this->retrieveFunction)) {
+            return call_user_func($this->retrieveFunction, 'bugsnag-session-counts');
         } else {
             return $this->sessionCounts;
         }
@@ -244,8 +226,8 @@ class SessionTracker
 
     protected function setSessionCounts(array $sessionCounts)
     {
-        if (!is_null($this->sessionStore) && !is_null($this->sessionRetrieve)) {
-            return call_user_func($this->sessionStore, $sessionCounts);
+        if (!is_null($this->storeFunction) && !is_null($this->retrieveFunction)) {
+            return call_user_func($this->storeFunction, 'bugsnag-session-counts', $sessionCounts);
         } else {
             $this->sessionCounts = $sessionCounts;
         }
@@ -284,7 +266,9 @@ class SessionTracker
         }
         $sessions = $this->getSessionCounts();
         $this->setSessionCounts([]);
+        print_r("Sending sessions");
         if (count($sessions) == 0) {
+            print_r("No sessions to send");
             return;
         }
         $http = $this->config->getSessionClient();
@@ -294,7 +278,7 @@ class SessionTracker
             'Bugsnag-Payload-Version' => self::$SESSION_PAYLOAD_VERSION,
             'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
         ];
-        $this->lastSent = time();
+        $this->setLastSent();
 
         try {
             $http->post('', [
@@ -310,6 +294,25 @@ class SessionTracker
                     $this->incrementSessions($minute, $count, false);
                 }
             }
+        }
+    }
+
+    protected function setLastSent()
+    {
+        $time = time();
+        if (!is_null($this->storeFunction) && !is_null($this->retrieveFunction)) {
+            call_user_func($this->storeFunction, 'bugsnag-session-last-sent', $time);
+        } else {
+            $this->lastSent = $time;
+        }
+    }
+
+    protected function getLastSent()
+    {
+        if (!is_null($this->storeFunction) && !is_null($this->retrieveFunction)) {
+            return call_user_func($this->retrieveFunction, 'bugsnag-session-last-sent');
+        } else {
+            return $this->lastSent;
         }
     }
 }
