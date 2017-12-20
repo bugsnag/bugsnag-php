@@ -63,7 +63,7 @@ class SessionTracker
 
     /**
      * A function to store/get sessions.
-     * 
+     *
      * @var function
      */
     protected $sessionFunction = null;
