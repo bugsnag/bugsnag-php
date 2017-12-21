@@ -122,7 +122,7 @@ class Breadcrumb
         }
 
         if ($name === '') {
-            $name = "NULL name given";
+            $name = 'NULL name given';
         }
 
         if (strlen($name) > static::MAX_LENGTH) {
