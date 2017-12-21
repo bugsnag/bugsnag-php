@@ -121,6 +121,10 @@ class Breadcrumb
             throw new InvalidArgumentException('The breadcrumb name must be a string.');
         }
 
+        if ($name === '') {
+            $name = "NULL name given";
+        }
+
         if (strlen($name) > static::MAX_LENGTH) {
             throw new InvalidArgumentException(sprintf('The breadcrumb name must be at most %d characters in length.', static::MAX_LENGTH));
         }

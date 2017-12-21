@@ -19,7 +19,7 @@ class BreadcrumbTest extends TestCase
     public function testEmptyName()
     {
         $breadcrumb = new Breadcrumb('', 'error');
-        $this->assertSame('', $breadcrumb->toArray()['name']);
+        $this->assertSame('NULL name given', $breadcrumb->toArray()['name']);
     }
 
     /**
