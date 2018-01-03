@@ -38,10 +38,10 @@ class HttpClient
 
     /**
      * The current payload version.
-     * 
+     *
      * @var string
      */
-    const PAYLOAD_VERSION = "4.0";
+    const PAYLOAD_VERSION = '4.0';
 
     /**
      * Create a new http client instance.
@@ -132,7 +132,7 @@ class HttpClient
 
     /**
      * Builds the array of headers to send.
-     * 
+     *
      * @return array
      */
     protected function getHeaders()
@@ -140,7 +140,7 @@ class HttpClient
         return [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
             'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
-            'Bugsnag-Payload-Version' => self::PAYLOAD_VERSION
+            'Bugsnag-Payload-Version' => self::PAYLOAD_VERSION,
         ];
     }
 
@@ -177,7 +177,7 @@ class HttpClient
         try {
             $this->guzzle->post($url, [
                 'json' => $normalized,
-                'headers' => $this->getHeaders()
+                'headers' => $this->getHeaders(),
             ]);
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
