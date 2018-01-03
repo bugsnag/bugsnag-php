@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Client as GuzzleClient;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -132,8 +133,12 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame(GuzzleClient::class, get_class($client));
 
-        $baseUri = $client->getConfig('base_uri');
-        $clientUri =  $baseUri->getScheme() . '://' . $baseUri->getHost();
+        if (ClientInterface::VERSION[0] == '5') {
+            $clientUri = $client->getBaseUrl();
+        } else {
+            $baseUri = $client->getConfig('base_uri');
+            $clientUri =  $baseUri->getScheme() . '://' . $baseUri->getHost();
+        }
 
         $this->assertSame(Configuration::SESSION_ENDPOINT, $clientUri);
     }
@@ -152,9 +157,13 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame(GuzzleClient::class, get_class($client));
 
-        $baseUri = $client->getConfig('base_uri');
-        $clientUri =  $baseUri->getScheme() . '://' . $baseUri->getHost();
-
+        if (ClientInterface::VERSION[0] == '5') {
+            $clientUri = $client->getBaseUrl();
+        } else {
+            $baseUri = $client->getConfig('base_uri');
+            $clientUri =  $baseUri->getScheme() . '://' . $baseUri->getHost();
+        }
+        
         $this->assertSame($testUrl, $clientUri);
     }
 }
