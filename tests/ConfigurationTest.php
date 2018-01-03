@@ -116,7 +116,7 @@ class ConfigurationTest extends TestCase
     public function testSessionTrackingDefaults()
     {
         $this->assertFalse($this->config->shouldTrackSessions());
-        
+
         $this->assertSame(null, $this->config->getSessionClient());
     }
 
@@ -133,7 +133,7 @@ class ConfigurationTest extends TestCase
         $this->assertSame(GuzzleClient::class, get_class($client));
 
         $baseUri = $client->getConfig('base_uri');
-        $clientUri =  $baseUri->getScheme() . '://' . $baseUri->getHost();
+        $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
 
         $this->assertSame(Configuration::SESSION_ENDPOINT, $clientUri);
     }
@@ -153,7 +153,7 @@ class ConfigurationTest extends TestCase
         $this->assertSame(GuzzleClient::class, get_class($client));
 
         $baseUri = $client->getConfig('base_uri');
-        $clientUri =  $baseUri->getScheme() . '://' . $baseUri->getHost();
+        $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
 
         $this->assertSame($testUrl, $clientUri);
     }
