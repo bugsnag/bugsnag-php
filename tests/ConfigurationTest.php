@@ -117,7 +117,7 @@ class ConfigurationTest extends TestCase
     public function testSessionTrackingDefaults()
     {
         $this->assertFalse($this->config->shouldTrackSessions());
-        
+
         $this->assertSame(null, $this->config->getSessionClient());
     }
 
