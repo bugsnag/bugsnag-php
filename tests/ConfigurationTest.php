@@ -133,7 +133,7 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame(GuzzleClient::class, get_class($client));
 
-        if (ClientInterface::VERSION[0] == '5') {
+        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
             $clientUri = $client->getBaseUrl();
         } else {
             $baseUri = $client->getConfig('base_uri');
@@ -157,7 +157,7 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame(GuzzleClient::class, get_class($client));
 
-        if (ClientInterface::VERSION[0] == '5') {
+        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
             $clientUri = $client->getBaseUrl();
         } else {
             $baseUri = $client->getConfig('base_uri');
