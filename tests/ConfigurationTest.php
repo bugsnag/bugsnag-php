@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
+use GuzzleHttp\Client as GuzzleClient;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ConfigurationTest extends TestCase
@@ -110,5 +111,50 @@ class ConfigurationTest extends TestCase
         $this->config->setHostname('web1.example.com');
 
         $this->assertSame(['hostname' => 'web1.example.com'], $this->config->getDeviceData());
+    }
+
+    public function testSessionTrackingDefaults()
+    {
+        $this->assertFalse($this->config->shouldTrackSessions());
+        
+        $this->assertSame(null, $this->config->getSessionClient());
+    }
+
+    public function testSessionTrackingSetTrue()
+    {
+        $this->assertFalse($this->config->shouldTrackSessions());
+
+        $this->config->setSessionTracking(true);
+
+        $this->assertTrue($this->config->shouldTrackSessions());
+
+        $client = $this->config->getSessionClient();
+
+        $this->assertSame(GuzzleClient::class, get_class($client));
+
+        $baseUri = $client->getConfig('base_uri');
+        $clientUri =  $baseUri->getScheme() . '://' . $baseUri->getHost();
+
+        $this->assertSame(Configuration::SESSION_ENDPOINT, $clientUri);
+    }
+
+    public function testSessionTrackingSetWithEndpoint()
+    {
+        $testUrl = 'https://testurl.com';
+
+        $this->assertFalse($this->config->shouldTrackSessions());
+
+        $this->config->setSessionTracking(true, $testUrl);
+
+        $this->assertTrue($this->config->shouldTrackSessions());
+
+        $client = $this->config->getSessionClient();
+
+        $this->assertSame(GuzzleClient::class, get_class($client));
+
+        $baseUri = $client->getConfig('base_uri');
+        $clientUri =  $baseUri->getScheme() . '://' . $baseUri->getHost();
+
+        $this->assertSame($testUrl, $clientUri);
     }
 }
