@@ -2,18 +2,16 @@
 
 namespace Bugsnag\Tests\Middleware;
 
-use Bugsnag\Middleware\SessionData;
-use Bugsnag\SessionTracker;
 use Bugsnag\Client;
+use Bugsnag\Middleware\SessionData;
 use Bugsnag\Report;
-use Exception;
-use Mockery;
+use Bugsnag\SessionTracker;
 use GrahamCampbell\TestBenchCore\MockeryTrait;
+use Mockery;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class SessionDataTest extends TestCase
 {
-
     use MockeryTrait;
 
     public function testNoTracking()
@@ -22,9 +20,9 @@ class SessionDataTest extends TestCase
         $client->shouldReceive('shouldTrackSessions')->andReturn(false);
 
         $report = Mockery::mock(Report::class);
-        
+
         $middleware = new SessionData($client);
-        $middleware($report, function($var) use ($report) {
+        $middleware($report, function ($var) use ($report) {
             $this->assertSame($var, $report);
         });
     }
@@ -35,8 +33,8 @@ class SessionDataTest extends TestCase
         $sessionTracker->shouldReceive('getCurrentSession')->andReturn([
             'events' => [
                 'unhandled' => 0,
-                'handled' => 0
-            ]
+                'handled' => 0,
+            ],
         ]);
 
         $client = Mockery::mock(Client::class);
@@ -48,12 +46,12 @@ class SessionDataTest extends TestCase
         $report->shouldReceive('setSessionData')->with([
             'events' => [
                 'unhandled' => 1,
-                'handled' => 0
-            ]
+                'handled' => 0,
+            ],
         ]);
-        
+
         $middleware = new SessionData($client);
-        $middleware($report, function($var) use ($report) {
+        $middleware($report, function ($var) use ($report) {
             $this->assertSame($var, $report);
         });
     }
@@ -64,8 +62,8 @@ class SessionDataTest extends TestCase
         $sessionTracker->shouldReceive('getCurrentSession')->andReturn([
             'events' => [
                 'unhandled' => 0,
-                'handled' => 0
-            ]
+                'handled' => 0,
+            ],
         ]);
 
         $client = Mockery::mock(Client::class);
@@ -77,12 +75,12 @@ class SessionDataTest extends TestCase
         $report->shouldReceive('setSessionData')->with([
             'events' => [
                 'unhandled' => 0,
-                'handled' => 1
-            ]
+                'handled' => 1,
+            ],
         ]);
-        
+
         $middleware = new SessionData($client);
-        $middleware($report, function($var) use ($report) {
+        $middleware($report, function ($var) use ($report) {
             $this->assertSame($var, $report);
         });
     }
