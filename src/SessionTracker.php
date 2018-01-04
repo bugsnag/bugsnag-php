@@ -20,6 +20,16 @@ class SessionTracker
     protected static $SESSION_PAYLOAD_VERSION = '1.0';
 
     /**
+     * The key for storing session counts
+     */
+    protected static $SESSION_COUNTS_KEY = 'bugsnag-session-counts';
+
+    /**
+     * The key for storing last sent data
+     */
+    protected static $SESSIONS_LAST_SENT_KEY = 'bugsnag-sessions-last-sent';
+
+    /**
      * The current client configuration.
      *
      * @var Configuration
@@ -36,35 +46,35 @@ class SessionTracker
     /**
      * A locking function for synchronisation.
      *
-     * @var function
+     * @var callable|null
      */
     protected $lockFunction = null;
 
     /**
      * An unlocking function for synchronisation.
      *
-     * @var function
+     * @var callable|null
      */
     protected $unlockFunction = null;
 
     /**
      * A function to use when retrying a failed delivery.
      *
-     * @var function
+     * @var callable|null
      */
     protected $retryFunction = null;
 
     /**
      * A function to store/get data.
      *
-     * @var function
+     * @var callable|null
      */
     protected $storageFunction = null;
 
     /**
      * A function to store/get sessions.
      *
-     * @var function
+     * @var callable|null
      */
     protected $sessionFunction = null;
 
@@ -226,7 +236,7 @@ class SessionTracker
     protected function getSessionCounts()
     {
         if (!is_null($this->storageFunction)) {
-            return call_user_func($this->storageFunction, 'bugsnag-session-counts');
+            return call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY);
         } else {
             return $this->sessionCounts;
         }
@@ -235,7 +245,7 @@ class SessionTracker
     protected function setSessionCounts(array $sessionCounts)
     {
         if (!is_null($this->storageFunction)) {
-            return call_user_func($this->storageFunction, 'bugsnag-session-counts', $sessionCounts);
+            return call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY, $sessionCounts);
         } else {
             $this->sessionCounts = $sessionCounts;
         }
@@ -276,7 +286,6 @@ class SessionTracker
         $this->setSessionCounts([]);
         if (count($sessions) == 0) {
             print_r('No sessions to send');
-
             return;
         }
         $http = $this->config->getSessionClient();
@@ -309,7 +318,7 @@ class SessionTracker
     {
         $time = time();
         if (!is_null($this->storageFunction)) {
-            call_user_func($this->storageFunction, 'bugsnag-session-last-sent', $time);
+            call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY, $time);
         } else {
             $this->lastSent = $time;
         }
@@ -318,7 +327,7 @@ class SessionTracker
     protected function getLastSent()
     {
         if (!is_null($this->storageFunction)) {
-            return call_user_func($this->storageFunction, 'bugsnag-session-last-sent');
+            return call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY);
         } else {
             return $this->lastSent;
         }

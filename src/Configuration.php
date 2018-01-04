@@ -512,7 +512,7 @@ class Configuration
      * Set session tracking state and pass in optional guzzle.
      *
      * @param bool $track whether to track sessions
-     * @param string $endpoint an optional session endpoint
+     * @param string|null $endpoint an optional session endpoint
      *
      * @return $this
      */

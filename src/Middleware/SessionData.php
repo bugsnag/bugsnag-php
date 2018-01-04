@@ -17,7 +17,7 @@ class SessionData
     /**
      * Create a new session data middleware instance.
      *
-     * @param \Bugsnag\SessionTracker $client the client instance.
+     * @param \Bugsnag\Client $client the client instance.
      *
      * @return void
      */
