@@ -118,11 +118,15 @@ class Breadcrumb
     public function __construct($name, $type, array $metaData = [])
     {
         if (!is_string($name)) {
-            throw new InvalidArgumentException('The breadcrumb name must be a string.');
+            if (is_null($name)) {
+                $name = 'NULL breadcrumb name given';
+            } else {
+                $name = 'INVALID breadcrumb name given';
+            }
         }
 
         if ($name === '') {
-            $name = 'NULL name given';
+            $name = 'EMPTY breadcrumb name given';
         }
 
         if (strlen($name) > static::MAX_LENGTH) {

@@ -7,19 +7,22 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class BreadcrumbTest extends TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The breadcrumb name must be a string.
-     */
     public function testBadName()
     {
-        new Breadcrumb(123, 'error');
+        $breadcrumb = new Breadcrumb(123, 'error');
+        $this->assertSame('INVALID breadcrumb name given', $breadcrumb->toArray()['name']);
     }
 
     public function testEmptyName()
     {
         $breadcrumb = new Breadcrumb('', 'error');
-        $this->assertSame('NULL name given', $breadcrumb->toArray()['name']);
+        $this->assertSame('EMPTY breadcrumb name given', $breadcrumb->toArray()['name']);
+    }
+
+    public function testNullName()
+    {
+        $breadcrumb = new Breadcrumb(null, 'error');
+        $this->assertSame('NULL breadcrumb name given', $breadcrumb->toArray()['name']);
     }
 
     /**
