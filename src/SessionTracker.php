@@ -20,12 +20,12 @@ class SessionTracker
     protected static $SESSION_PAYLOAD_VERSION = '1.0';
 
     /**
-     * The key for storing session counts
+     * The key for storing session counts.
      */
     protected static $SESSION_COUNTS_KEY = 'bugsnag-session-counts';
 
     /**
-     * The key for storing last sent data
+     * The key for storing last sent data.
      */
     protected static $SESSIONS_LAST_SENT_KEY = 'bugsnag-sessions-last-sent';
 
@@ -286,6 +286,7 @@ class SessionTracker
         $this->setSessionCounts([]);
         if (count($sessions) == 0) {
             print_r('No sessions to send');
+
             return;
         }
         $http = $this->config->getSessionClient();
