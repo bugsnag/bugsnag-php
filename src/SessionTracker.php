@@ -103,6 +103,7 @@ class SessionTracker
     {
         $this->config = $config;
         $this->lastSent = 0;
+        register_shutdown_function([$this, 'sendSessions']);
     }
 
     public function setConfig(Configuration $config)
