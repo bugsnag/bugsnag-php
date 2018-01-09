@@ -347,6 +347,16 @@ class Client
     }
 
     /**
+     * Start tracking a session.
+     *
+     * @return void
+     */
+    public function startSession()
+    {
+        $this->sessionTracker->startSession();
+    }
+
+    /**
      * Returns the session tracker.
      *
      * @return \Bugsnag\SessionTracker
