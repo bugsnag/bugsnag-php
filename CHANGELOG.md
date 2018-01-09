@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 3.11.0 (2018-01-09)
+
+### Enhancements
+
+* Add support for tracking sessions and overall crash rate by setting
+  `autoCaptureSessions` in configuration options. In addition, sessions can be
+  indicated manually using `Client->startSession()`
+
 ## 3.10.0 (2017-12-14)
 
 ### Enhancements
