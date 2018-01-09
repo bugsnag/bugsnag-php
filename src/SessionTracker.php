@@ -286,8 +286,6 @@ class SessionTracker
         $sessions = $this->getSessionCounts();
         $this->setSessionCounts([]);
         if (count($sessions) == 0) {
-            print_r('No sessions to send');
-
             return;
         }
         $http = $this->config->getSessionClient();
