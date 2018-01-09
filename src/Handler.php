@@ -233,10 +233,5 @@ class Handler
 
         // Flush any buffered errors
         $this->client->flush();
-
-        // Send any outstanding sessions
-        if ($this->client->shouldTrackSessions()) {
-            $this->client->getSessionTracker()->sendSessions();
-        }
     }
 }

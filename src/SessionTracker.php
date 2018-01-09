@@ -7,7 +7,7 @@ class SessionTracker
     /**
      * The amount of time between each sending attempt.
      */
-    protected static $DELIVERY_INTERVAL = 60;
+    protected static $DELIVERY_INTERVAL = 30;
 
     /**
      * The maximum amount of sessions to hold onto.
@@ -103,7 +103,6 @@ class SessionTracker
     {
         $this->config = $config;
         $this->lastSent = 0;
-        register_shutdown_function([$this, 'sendSessions']);
     }
 
     public function setConfig(Configuration $config)
