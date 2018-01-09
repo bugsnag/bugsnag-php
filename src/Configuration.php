@@ -552,9 +552,6 @@ class Configuration
      */
     public function getSessionClient()
     {
-        if (!$this->autoCaptureSessions) {
-            return;
-        }
         if (is_null($this->sessionClient)) {
             $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
         }
