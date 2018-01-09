@@ -124,10 +124,10 @@ class Configuration
 
     /**
      * The endpoint to deliver sessions to.
-     * 
+     *
      * @var string
      */
-    protected $sessionEndpoint = Configuration::SESSION_ENDPOINT;
+    protected $sessionEndpoint = self::SESSION_ENDPOINT;
 
     /**
      * Create a new config instance.
@@ -531,9 +531,9 @@ class Configuration
 
     /**
      * Set session delivery endpoint.
-     * 
+     *
      * @param string $endpoint the session endpoint
-     * 
+     *
      * @return $this
      */
     public function setSessionEndpoint($endpoint)
@@ -553,11 +553,12 @@ class Configuration
     public function getSessionClient()
     {
         if (!$this->autoCaptureSessions) {
-            return null;
+            return;
         }
         if (is_null($this->sessionClient)) {
             $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
         }
+
         return $this->sessionClient;
     }
 
