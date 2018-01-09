@@ -14,6 +14,7 @@ use Bugsnag\Callbacks\RequestUser;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
+use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
 use Composer\CaBundle\CaBundle;
@@ -67,6 +68,13 @@ class Client
     protected $http;
 
     /**
+     * The session tracker instance.
+     *
+     * @var \Bugsnag\SessionTracker
+     */
+    protected $sessionTracker;
+
+    /**
      * Make a new client instance.
      *
      * If you don't pass in a key, we'll try to read it from the env variables.
@@ -107,9 +115,11 @@ class Client
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
+        $this->sessionTracker = new SessionTracker($config);
 
         $this->pipeline->pipe(new NotificationSkipper($config));
         $this->pipeline->pipe(new BreadcrumbData($this->recorder));
+        $this->pipeline->pipe(new SessionData($this));
 
         register_shutdown_function([$this, 'flush']);
     }
@@ -334,6 +344,26 @@ class Client
     public function flush()
     {
         $this->http->send();
+    }
+
+    /**
+     * Start tracking a session.
+     *
+     * @return void
+     */
+    public function startSession()
+    {
+        $this->sessionTracker->startSession();
+    }
+
+    /**
+     * Returns the session tracker.
+     *
+     * @return \Bugsnag\SessionTracker
+     */
+    public function getSessionTracker()
+    {
+        return $this->sessionTracker;
     }
 
     /**

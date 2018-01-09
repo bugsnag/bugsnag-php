@@ -115,6 +115,13 @@ class Report
     protected $severityReason = [];
 
     /**
+     * Attached session from SessionTracking.
+     *
+     * @var array
+     */
+    protected $session;
+
+    /**
      * Create a new report from a PHP error.
      *
      * @param \Bugsnag\Configuration $config         the config instance
@@ -593,6 +600,16 @@ class Report
     }
 
     /**
+     * Sets the session data.
+     *
+     * @return $this
+     */
+    public function setSessionData(array $session)
+    {
+        $this->session = $session;
+    }
+
+    /**
      * Get the array representation.
      *
      * @return array
@@ -615,6 +632,10 @@ class Report
 
         if ($hash = $this->getGroupingHash()) {
             $event['groupingHash'] = $hash;
+        }
+
+        if (isset($this->session)) {
+            $event['session'] = $this->session;
         }
 
         return $event;

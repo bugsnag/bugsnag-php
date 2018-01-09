@@ -37,6 +37,13 @@ class HttpClient
     const MAX_SIZE = 500000;
 
     /**
+     * The current payload version.
+     *
+     * @var string
+     */
+    const PAYLOAD_VERSION = '4.0';
+
+    /**
      * Create a new http client instance.
      *
      * @param \Bugsnag\Configuration      $config the configuration instance
@@ -118,9 +125,22 @@ class HttpClient
         }
 
         return [
-            'apiKey' => $this->config->getApiKey(),
             'notifier' => $this->config->getNotifier(),
             'events' => $events,
+        ];
+    }
+
+    /**
+     * Builds the array of headers to send.
+     *
+     * @return array
+     */
+    protected function getHeaders()
+    {
+        return [
+            'Bugsnag-Api-Key' => $this->config->getApiKey(),
+            'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
+            'Bugsnag-Payload-Version' => self::PAYLOAD_VERSION,
         ];
     }
 
@@ -155,7 +175,10 @@ class HttpClient
 
         // Send via guzzle and log any failures
         try {
-            $this->guzzle->post($url, ['json' => $normalized]);
+            $this->guzzle->post($url, [
+                'json' => $normalized,
+                'headers' => $this->getHeaders(),
+            ]);
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
         }

@@ -43,11 +43,15 @@ class HttpClientTest extends TestCase
         $this->assertCount(2, $params);
         $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);
-        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);
         $this->assertSame([], $params[1]['json']['events'][0]['user']);
         $this->assertSame(['foo' => 'bar'], $params[1]['json']['events'][0]['metaData']);
+
+        $headers = $params[1]['headers'];
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
+        $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
+        $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
     }
 
     public function testHttpClientMultipleSend()
@@ -81,11 +85,15 @@ class HttpClientTest extends TestCase
         $this->assertCount(2, $params);
         $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);
-        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);
         $this->assertSame([], $params[1]['json']['events'][0]['user']);
         $this->assertArrayNotHasKey('metaData', $params[1]['json']['events'][0]);
+
+        $headers = $params[1]['headers'];
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
+        $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
+        $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
     }
 
     public function testMassiveUserHttpClient()
@@ -123,11 +131,15 @@ class HttpClientTest extends TestCase
         $this->assertCount(2, $params);
         $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);
-        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);
         $this->assertSame(['foo' => 'bar'], $params[1]['json']['events'][0]['user']);
         $this->assertSame([], $params[1]['json']['events'][0]['metaData']);
+
+        $headers = $params[1]['headers'];
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
+        $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
+        $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
     }
 
     public function testHttpClientFails()
