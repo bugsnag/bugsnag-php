@@ -112,9 +112,6 @@ class SessionTracker
 
     public function startSession()
     {
-        if (!$this->config->shouldCaptureSessions()) {
-            return;
-        }
         $currentTime = strftime('%Y-%m-%dT%H:%M:00');
         $session = [
             'id' => uniqid('', true),
@@ -211,6 +208,10 @@ class SessionTracker
         try {
             $sessionCounts = $this->getSessionCounts();
 
+            if (is_null($sessionCounts)) {
+                $sessionCounts = [];
+            }
+
             if (array_key_exists($minute, $sessionCounts)) {
                 $sessionCounts[$minute] += $count;
             } else {
@@ -279,9 +280,6 @@ class SessionTracker
 
     protected function deliverSessions()
     {
-        if (!$this->config->shouldCaptureSessions()) {
-            return;
-        }
         $sessions = $this->getSessionCounts();
         $this->setSessionCounts([]);
         if (count($sessions) == 0) {

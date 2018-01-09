@@ -563,7 +563,7 @@ class Configuration
     }
 
     /**
-     * Whether should be tracking sessions.
+     * Whether should be auto-capturing sessions.
      *
      * @return bool
      */

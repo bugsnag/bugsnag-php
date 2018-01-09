@@ -36,16 +36,14 @@ class SessionData
      */
     public function __invoke(Report $report, callable $next)
     {
-        if ($this->client->shouldCaptureSessions()) {
-            $session = $this->client->getSessionTracker()->getCurrentSession();
-            if (!is_null($session) && isset($session['events'])) {
-                if ($report->getUnhandled()) {
-                    $session['events']['unhandled'] += 1;
-                } else {
-                    $session['events']['handled'] += 1;
-                }
-                $report->setSessionData($session);
+        $session = $this->client->getSessionTracker()->getCurrentSession();
+        if (!is_null($session) && isset($session['events'])) {
+            if ($report->getUnhandled()) {
+                $session['events']['unhandled'] += 1;
+            } else {
+                $session['events']['handled'] += 1;
             }
+            $report->setSessionData($session);
         }
 
         $next($report);

@@ -14,19 +14,6 @@ class SessionDataTest extends TestCase
 {
     use MockeryTrait;
 
-    public function testNoTracking()
-    {
-        $client = Mockery::mock(Client::class);
-        $client->shouldReceive('shouldCaptureSessions')->andReturn(false);
-
-        $report = Mockery::mock(Report::class);
-
-        $middleware = new SessionData($client);
-        $middleware($report, function ($var) use ($report) {
-            $this->assertSame($var, $report);
-        });
-    }
-
     public function testUnhandledError()
     {
         $sessionTracker = Mockery::mock(SessionTracker::class);
@@ -38,7 +25,6 @@ class SessionDataTest extends TestCase
         ]);
 
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('shouldCaptureSessions')->andReturn(true);
         $client->shouldReceive('getSessionTracker')->andReturn($sessionTracker);
 
         $report = Mockery::mock(Report::class);
@@ -67,7 +53,6 @@ class SessionDataTest extends TestCase
         ]);
 
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('shouldCaptureSessions')->andReturn(true);
         $client->shouldReceive('getSessionTracker')->andReturn($sessionTracker);
 
         $report = Mockery::mock(Report::class);
@@ -78,6 +63,22 @@ class SessionDataTest extends TestCase
                 'handled' => 1,
             ],
         ]);
+
+        $middleware = new SessionData($client);
+        $middleware($report, function ($var) use ($report) {
+            $this->assertSame($var, $report);
+        });
+    }
+
+    public function testNullSession()
+    {
+        $sessionTracker = Mockery::mock(SessionTracker::class);
+        $sessionTracker->shouldReceive('getCurrentSession')->andReturn(null);
+
+        $client = Mockery::mock(Client::class);
+        $client->shouldReceive('getSessionTracker')->andReturn($sessionTracker);
+
+        $report = Mockery::mock(Report::class);
 
         $middleware = new SessionData($client);
         $middleware($report, function ($var) use ($report) {
