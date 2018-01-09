@@ -17,7 +17,7 @@ class SessionDataTest extends TestCase
     public function testNoTracking()
     {
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('shouldTrackSessions')->andReturn(false);
+        $client->shouldReceive('shouldCaptureSessions')->andReturn(false);
 
         $report = Mockery::mock(Report::class);
 
@@ -38,7 +38,7 @@ class SessionDataTest extends TestCase
         ]);
 
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('shouldTrackSessions')->andReturn(true);
+        $client->shouldReceive('shouldCaptureSessions')->andReturn(true);
         $client->shouldReceive('getSessionTracker')->andReturn($sessionTracker);
 
         $report = Mockery::mock(Report::class);
@@ -67,7 +67,7 @@ class SessionDataTest extends TestCase
         ]);
 
         $client = Mockery::mock(Client::class);
-        $client->shouldReceive('shouldTrackSessions')->andReturn(true);
+        $client->shouldReceive('shouldCaptureSessions')->andReturn(true);
         $client->shouldReceive('getSessionTracker')->andReturn($sessionTracker);
 
         $report = Mockery::mock(Report::class);

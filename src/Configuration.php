@@ -113,7 +113,7 @@ class Configuration
      *
      * @var bool
      */
-    protected $trackSessions = false;
+    protected $autoCaptureSessions = false;
 
     /**
      * A client to use to send sessions.
@@ -121,6 +121,13 @@ class Configuration
      * @var \Guzzle\ClientInterface
      */
     protected $sessionClient;
+
+    /**
+     * The endpoint to deliver sessions to.
+     * 
+     * @var string
+     */
+    protected $sessionEndpoint = Configuration::SESSION_ENDPOINT;
 
     /**
      * Create a new config instance.
@@ -512,22 +519,28 @@ class Configuration
      * Set session tracking state and pass in optional guzzle.
      *
      * @param bool $track whether to track sessions
-     * @param string|null $endpoint an optional session endpoint
      *
      * @return $this
      */
-    public function setSessionTracking($track, $endpoint = null)
+    public function setAutoCaptureSessions($track)
     {
-        if (!$track) {
-            $this->trackSessions = false;
+        $this->autoCaptureSessions = $track;
 
-            return;
-        }
-        if (is_null($endpoint)) {
-            $endpoint = self::SESSION_ENDPOINT;
-        }
-        $this->trackSessions = true;
-        $this->sessionClient = Client::makeGuzzle($endpoint);
+        return $this;
+    }
+
+    /**
+     * Set session delivery endpoint.
+     * 
+     * @param string $endpoint the session endpoint
+     * 
+     * @return $this
+     */
+    public function setSessionEndpoint($endpoint)
+    {
+        $this->sessionEndpoint = $endpoint;
+
+        $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
 
         return $this;
     }
@@ -539,6 +552,12 @@ class Configuration
      */
     public function getSessionClient()
     {
+        if (!$this->autoCaptureSessions) {
+            return null;
+        }
+        if (is_null($this->sessionClient)) {
+            $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
+        }
         return $this->sessionClient;
     }
 
@@ -547,8 +566,8 @@ class Configuration
      *
      * @return bool
      */
-    public function shouldTrackSessions()
+    public function shouldCaptureSessions()
     {
-        return $this->trackSessions;
+        return $this->autoCaptureSessions;
     }
 }

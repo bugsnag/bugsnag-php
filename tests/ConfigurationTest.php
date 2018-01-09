@@ -116,18 +116,18 @@ class ConfigurationTest extends TestCase
 
     public function testSessionTrackingDefaults()
     {
-        $this->assertFalse($this->config->shouldTrackSessions());
+        $this->assertFalse($this->config->shouldCaptureSessions());
 
         $this->assertSame(null, $this->config->getSessionClient());
     }
 
     public function testSessionTrackingSetTrue()
     {
-        $this->assertFalse($this->config->shouldTrackSessions());
+        $this->assertFalse($this->config->shouldCaptureSessions());
 
-        $this->config->setSessionTracking(true);
+        $this->config->setAutoCaptureSessions(true);
 
-        $this->assertTrue($this->config->shouldTrackSessions());
+        $this->assertTrue($this->config->shouldCaptureSessions());
 
         $client = $this->config->getSessionClient();
 
@@ -143,15 +143,17 @@ class ConfigurationTest extends TestCase
         $this->assertSame(Configuration::SESSION_ENDPOINT, $clientUri);
     }
 
-    public function testSessionTrackingSetWithEndpoint()
+    public function testSessionTrackingSetEndpoint()
     {
         $testUrl = 'https://testurl.com';
 
-        $this->assertFalse($this->config->shouldTrackSessions());
+        $this->assertFalse($this->config->shouldCaptureSessions());
 
-        $this->config->setSessionTracking(true, $testUrl);
+        $this->config->setAutoCaptureSessions(true);
 
-        $this->assertTrue($this->config->shouldTrackSessions());
+        $this->assertTrue($this->config->shouldCaptureSessions());
+
+        $this->config->setSessionEndpoint($testUrl);
 
         $client = $this->config->getSessionClient();
 

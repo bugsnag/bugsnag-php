@@ -110,9 +110,9 @@ class SessionTracker
         $this->config = $config;
     }
 
-    public function createSession()
+    public function startSession()
     {
-        if (!$this->config->shouldTrackSessions()) {
+        if (!$this->config->shouldCaptureSessions()) {
             return;
         }
         $currentTime = strftime('%Y-%m-%dT%H:%M:00');
@@ -279,7 +279,7 @@ class SessionTracker
 
     protected function deliverSessions()
     {
-        if (!$this->config->shouldTrackSessions()) {
+        if (!$this->config->shouldCaptureSessions()) {
             return;
         }
         $sessions = $this->getSessionCounts();
