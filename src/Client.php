@@ -333,7 +333,7 @@ class Client
      *
      * @return void
      */
-    public function build($repository = null, $revision = null, $provider = null, $builderName = null)
+    public function build($repository = null, $revision = null, $provider = null, $builderName = null, $buildTool = null)
     {
         $data = [];
 
@@ -351,6 +351,10 @@ class Client
 
         if ($builderName) {
             $data['builder'] = $builderName;
+        }
+
+        if ($buildTool) {
+            $data['buildTool'] = $buildTool;
         }
 
         $this->http->sendBuildReport($data);

@@ -134,6 +134,12 @@ class HttpClient
             $data['builderName'] = $buildInfo['builder'];
         }
 
+        if (isset($buildInfo['buildTool'])) {
+            $data['buildTool'] = $buildInfo['buildTool'];
+        } else {
+            $data['buildTool'] = 'bugsnag-php';
+        }
+
         $data['releaseStage'] = $app['releaseStage'];
 
         if (isset($app['version'])) {
