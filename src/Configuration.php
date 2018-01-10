@@ -607,6 +607,7 @@ class Configuration
         if (isset($this->buildEndpoint)) {
             return $this->buildEndpoint;
         }
+
         return self::BUILD_ENDPOINT;
     }
 }
