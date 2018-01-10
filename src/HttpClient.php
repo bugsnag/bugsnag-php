@@ -71,6 +71,7 @@ class HttpClient
 
     /**
      * Notify Bugsnag of a deployment.
+     * This method should no longer be used in favour of sendBuildReport.
      *
      * @param array $data the deployment information
      *
@@ -89,6 +90,45 @@ class HttpClient
         $data['apiKey'] = $this->config->getApiKey();
 
         $this->guzzle->post('deploy', ['json' => $data]);
+    }
+
+    /**
+     * Notify Bugsnag of a build.
+     *
+     * @param array $data the build information
+     *
+     * @return void
+     */
+    public function sendBuildReport(array $sourceControl)
+    {
+        $app = $this->config->getAppData();
+
+        if (isset($sourceControl['repository']) && !isset($sourceControl['provider'])) {
+            $url = $sourceControl['repository'];
+            if (strpos($url, 'github.com') != false) {
+                $sourceControl['provider'] = 'github';
+            } elseif (strpos($url, 'bitbucket.com') != false) {
+                $sourceControl['provider'] = 'bitbucket';
+            } elseif (strpos($url, 'gitlab.com')) {
+                $sourceControl['provider'] = 'gitlab';
+            }
+        }
+
+        if (!empty($sourceControl)) {
+            $data['sourceControl'] = $sourceControl;
+        }
+
+        $data['releaseStage'] = $app['releaseStage'];
+
+        if (isset($app['version'])) {
+            $data['appVersion'] = $app['version'];
+        }
+
+        $data['apiKey'] = $this->config->getApiKey();
+
+        $endpoint = $this->config->getBuildEndpoint();
+
+        $this->guzzle->post($endpoint, ['json' => $data]);
     }
 
     /**
