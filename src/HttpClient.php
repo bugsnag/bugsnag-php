@@ -148,7 +148,7 @@ class HttpClient
     }
 
     /**
-     * Checks whether the function is available
+     * Checks whether the function is available.
      *
      * @param string $func function name
      *
@@ -157,6 +157,7 @@ class HttpClient
     protected function functionAvailable($func)
     {
         $disabled = explode(',', ini_get('disable_functions'));
+
         return function_exists($func) && !in_array($func, $disabled);
     }
 
