@@ -71,7 +71,7 @@ class HttpClient
 
     /**
      * Notify Bugsnag of a deployment.
-     * This method should no longer be used in favour of sendBuildReport.
+     * @deprecated This method should no longer be used in favour of sendBuildReport.
      *
      * @param array $data the deployment information
      *

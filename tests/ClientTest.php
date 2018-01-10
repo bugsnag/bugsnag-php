@@ -523,7 +523,19 @@ class ClientTest extends TestCase
         $this->client->build('baz', 'foo', 'github', 'me');
     }
 
-    public function testBuildAutoDetectsProvider()
+    public function testBuildAutoDetectsProviderGithub()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['repository' => 'http://test.github.com', 'provider' => 'github'], 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->config->setReleaseStage('development');
+        $this->config->setAppVersion('1.3.1');
+
+        $this->client->build('http://test.github.com');
+    }
+
+    public function testBuildAutoDetectsProviderGitlab()
     {
         $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['repository' => 'http://test.gitlab.com', 'provider' => 'gitlab'], 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key']]));
 
@@ -533,6 +545,18 @@ class ClientTest extends TestCase
         $this->config->setAppVersion('1.3.1');
 
         $this->client->build('http://test.gitlab.com');
+    }
+
+    public function testBuildAutoDetectsProviderBitbucket()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['repository' => 'http://test.bitbucket.com', 'provider' => 'bitbucket'], 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->config->setReleaseStage('development');
+        $this->config->setAppVersion('1.3.1');
+
+        $this->client->build('http://test.bitbucket.com');
     }
 
     public function testSeverityReasonUnmodified()

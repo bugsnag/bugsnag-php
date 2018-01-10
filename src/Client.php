@@ -309,7 +309,8 @@ class Client
     }
 
     /**
-     * Notify Bugsnag of a deployment. This function is being deprecated in favour of `build`.
+     * Notify Bugsnag of a deployment.
+     * @deprecated This function is being deprecated in favour of `build`.
      *
      * @param string|null $repository the repository from which you are deploying the code
      * @param string|null $branch     the source control branch from which you are deploying
