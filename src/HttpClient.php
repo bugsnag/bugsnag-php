@@ -112,15 +112,6 @@ class HttpClient
 
         if (isset($buildInfo['provider'])) {
             $sourceControl['provider'] = $buildInfo['provider'];
-        } elseif (isset($buildInfo['repository'])) {
-            $url = $buildInfo['repository'];
-            if (strpos($url, 'github.com') != false) {
-                $sourceControl['provider'] = 'github';
-            } elseif (strpos($url, 'bitbucket.com') != false) {
-                $sourceControl['provider'] = 'bitbucket';
-            } elseif (strpos($url, 'gitlab.com')) {
-                $sourceControl['provider'] = 'gitlab';
-            }
         }
 
         if (isset($buildInfo['revision'])) {
@@ -133,6 +124,8 @@ class HttpClient
 
         if (isset($buildInfo['builder'])) {
             $data['builderName'] = $buildInfo['builder'];
+        } else {
+            $data['builderName'] = exec('whoami');
         }
 
         if (isset($buildInfo['buildTool'])) {
