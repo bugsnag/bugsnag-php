@@ -99,12 +99,20 @@ class HttpClient
      *
      * @return void
      */
-    public function sendBuildReport(array $sourceControl)
+    public function sendBuildReport(array $buildInfo)
     {
         $app = $this->config->getAppData();
 
-        if (isset($sourceControl['repository']) && !isset($sourceControl['provider'])) {
-            $url = $sourceControl['repository'];
+        $data = [];
+        $sourceControl = [];
+        if (isset($buildInfo['repository'])) {
+            $sourceControl['repository'] = $buildInfo['repository'];
+        }
+
+        if (isset($buildInfo['provider'])) {
+            $sourceControl['provider'] = $buildInfo['provider'];
+        } elseif (isset($buildInfo['repository'])) {
+            $url = $buildInfo['repository'];
             if (strpos($url, 'github.com') != false) {
                 $sourceControl['provider'] = 'github';
             } elseif (strpos($url, 'bitbucket.com') != false) {
@@ -114,8 +122,16 @@ class HttpClient
             }
         }
 
+        if (isset($buildInfo['revision'])) {
+            $sourceControl['revision'] = $buildInfo['revision'];
+        }
+
         if (!empty($sourceControl)) {
             $data['sourceControl'] = $sourceControl;
+        }
+
+        if (isset($buildInfo['builder'])) {
+            $data['builderName'] = $buildInfo['builder'];
         }
 
         $data['releaseStage'] = $app['releaseStage'];

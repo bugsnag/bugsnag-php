@@ -325,29 +325,34 @@ class Client
     /**
      * Notify Bugsnag of a build.
      *
-     * @param string|null $repository the repository from which you are deploying the code
-     * @param string|null $revision   the source control revision you are currently deploying
-     * @param string|null $provider   the provider of the source control for the build
+     * @param string|null $repository  the repository from which you are deploying the code
+     * @param string|null $revision    the source control revision you are currently deploying
+     * @param string|null $provider    the provider of the source control for the build
+     * @param string|null $builderName the name of who or what is making the build
      *
      * @return void
      */
-    public function build($repository = null, $revision = null, $provider = null)
+    public function build($repository = null, $revision = null, $provider = null, $builderName = null)
     {
-        $sourceControl = [];
+        $data = [];
 
         if ($repository) {
-            $sourceControl['repository'] = $repository;
+            $data['repository'] = $repository;
         }
 
         if ($revision) {
-            $sourceControl['revision'] = $revision;
+            $data['revision'] = $revision;
         }
 
         if ($provider) {
-            $sourceControl['provider'] = $provider;
+            $data['provider'] = $provider;
         }
 
-        $this->http->sendBuildReport($sourceControl);
+        if ($builderName) {
+            $data['builder'] = $builderName;
+        }
+
+        $this->http->sendBuildReport($data);
     }
 
     /**
