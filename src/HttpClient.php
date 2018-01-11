@@ -3,7 +3,6 @@
 namespace Bugsnag;
 
 use Exception;
-use Bugsnag\Utils;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
 
@@ -125,7 +124,7 @@ class HttpClient
 
         if (isset($buildInfo['builder'])) {
             $data['builderName'] = $buildInfo['builder'];
-        } else{
+        } else {
             $data['builderName'] = Utils::getBuilderName();
         }
 
