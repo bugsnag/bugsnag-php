@@ -14,6 +14,7 @@ class Utils
     public static function functionAvailable($func)
     {
         $disabled = explode(',', ini_get('disable_functions'));
+
         return function_exists($func) && !in_array($func, $disabled);
     }
 
@@ -25,7 +26,7 @@ class Utils
     public static function getBuilderName()
     {
         $builderName = null;
-        if (Utils::functionAvailable('exec')) {
+        if (self::functionAvailable('exec')) {
             $output = [];
             $success = 0;
             exec('whoami', $output, $success);
@@ -36,6 +37,7 @@ class Utils
         if (is_null($builderName)) {
             $builderName = get_current_user();
         }
+
         return $builderName;
     }
 }
