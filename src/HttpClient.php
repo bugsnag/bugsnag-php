@@ -3,6 +3,7 @@
 namespace Bugsnag;
 
 use Exception;
+use Bugsnag\Utils;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
 
@@ -124,8 +125,8 @@ class HttpClient
 
         if (isset($buildInfo['builder'])) {
             $data['builderName'] = $buildInfo['builder'];
-        } elseif ($this->functionAvailable('exec')) {
-            $data['builderName'] = exec('whoami');
+        } else{
+            $data['builderName'] = Utils::getBuilderName();
         }
 
         if (isset($buildInfo['buildTool'])) {
@@ -145,19 +146,6 @@ class HttpClient
         $endpoint = $this->config->getBuildEndpoint();
 
         $this->guzzle->post($endpoint, ['json' => $data]);
-    }
-
-    /**
-     * Checks whether the function is available
-     *
-     * @param string $func function name
-     *
-     * @return bool
-     */
-    protected function functionAvailable($func)
-    {
-        $disabled = explode(',', ini_get('disable_functions'));
-        return function_exists($func) && !in_array($func, $disabled);
     }
 
     /**
