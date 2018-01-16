@@ -2,13 +2,10 @@
 
 namespace Bugsnag\Tests;
 
-use Bugsnag\Client;
 use Bugsnag\Configuration;
-use Bugsnag\Middleware\SessionData;
-use GuzzleHttp\Client as GuzzleClient;
-use Bugsnag\Report;
 use Bugsnag\SessionTracker;
 use GrahamCampbell\TestBenchCore\MockeryTrait;
+use GuzzleHttp\Client as GuzzleClient;
 use Mockery;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -18,7 +15,8 @@ class SessionTrackerTest extends TestCase
 
     protected $sessions = [];
 
-    protected function store($key, $value = null) {
+    protected function store($key, $value = null)
+    {
         if (is_null($value)) {
             switch ($key) {
                 case 'bugsnag-sessions-last-sent':
@@ -45,12 +43,12 @@ class SessionTrackerTest extends TestCase
     {
         $config = Mockery::mock(Configuration::class);
         $sessionTracker = new SessionTracker($config);
-        $sessionTracker->setStorageFunction(function($key, $value=null) {
+        $sessionTracker->setStorageFunction(function ($key, $value = null) {
             return $this->store($key, $value);
         });
         $this->assertSame([], $this->sessions);
         $sessionTracker->startSession();
-        $this->assertSame(1, sizeof($this->sessions));
+        $this->assertSame(1, count($this->sessions));
         $key = array_keys($this->sessions)[0];
         $this->assertSame(1, $this->sessions[$key]);
     }
@@ -59,7 +57,7 @@ class SessionTrackerTest extends TestCase
     {
         $config = Mockery::mock(Configuration::class);
         $sessionTracker = new SessionTracker($config);
-        $sessionTracker->setStorageFunction(function($key, $value=null) {
+        $sessionTracker->setStorageFunction(function ($key, $value = null) {
             return $this->store($key, $value);
         });
         $session = $sessionTracker->getCurrentSession();
@@ -72,7 +70,7 @@ class SessionTrackerTest extends TestCase
         $this->assertArrayHasKey('events', $session);
         $this->assertSame([
             'handled' => 0,
-            'unhandled' => 0
+            'unhandled' => 0,
         ], $session['events']);
     }
 
@@ -80,7 +78,7 @@ class SessionTrackerTest extends TestCase
     {
         $config = Mockery::mock(Configuration::class);
         $sessionTracker = new SessionTracker($config);
-        $sessionTracker->setStorageFunction(function($key, $value=null) {
+        $sessionTracker->setStorageFunction(function ($key, $value = null) {
             return $this->store($key, $value);
         });
         $session = $sessionTracker->getCurrentSession();
@@ -98,7 +96,7 @@ class SessionTrackerTest extends TestCase
     {
         $config = Mockery::mock(Configuration::class);
         $sessionTracker = new SessionTracker($config);
-        $sessionTracker->setStorageFunction(function($key, $value=null) {
+        $sessionTracker->setStorageFunction(function ($key, $value = null) {
             return $this->store($key, $value);
         });
 
@@ -120,8 +118,7 @@ class SessionTrackerTest extends TestCase
             ->andReturn('app_data');
         $httpClient->shouldReceive('post')
             ->once()
-            ->with('', \Mockery::on(function($options) {
-
+            ->with('', \Mockery::on(function ($options) {
                 $testApiKey = $options['headers']['Bugsnag-Api-Key'] == 'api_key';
                 $testPayloadVersion = $options['headers']['Bugsnag-Payload-Version'] == '1.0';
                 $testSentAt = array_key_exists('Bugsnag-Sent-At', $options['headers']);
@@ -131,7 +128,7 @@ class SessionTrackerTest extends TestCase
                 $testDevice = $options['json']['device'] == 'device_data';
                 $testApp = $options['json']['app'] == 'app_data';
 
-                $testSessionCounts = sizeof($options['json']['sessionCounts']) == 1;
+                $testSessionCounts = count($options['json']['sessionCounts']) == 1;
                 $testSessionStartedAt = array_key_exists('startedAt', $options['json']['sessionCounts'][0]);
                 $testSessionSessionsStarted = $options['json']['sessionCounts'][0]['sessionsStarted'] == 1;
                 $testSessions = $testSessionCounts && $testSessionStartedAt && $testSessionSessionsStarted;
@@ -143,6 +140,5 @@ class SessionTrackerTest extends TestCase
 
         $sessionTracker->startSession();
         $sessionTracker->sendSessions();
-
     }
 }
