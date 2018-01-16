@@ -96,7 +96,7 @@ class HttpClient
     /**
      * Notify Bugsnag of a build.
      *
-     * @param array $data the build information
+     * @param array $buildInfo the build information
      *
      * @return void
      */
