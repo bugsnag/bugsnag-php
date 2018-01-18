@@ -376,16 +376,16 @@ class ClientTest extends TestCase
 
     public function testDeployWorksOutOfTheBox()
     {
-        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
         $this->client->deploy();
     }
 
-    public function testDeployWorksWithgReleaseStage()
+    public function testDeployWorksWithReleaseStage()
     {
-        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -396,7 +396,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithAppVersion()
     {
-        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['releaseStage' => 'production', 'appVersion' => '1.1.0', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'appVersion' => '1.1.0', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -407,7 +407,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithRepository()
     {
-        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['repository' => 'foo', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['repository' => 'foo'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -416,7 +416,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithBranch()
     {
-        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['branch' => 'master', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -425,7 +425,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithRevision()
     {
-        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['revision' => 'bar', 'releaseStage' => 'production', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['revision' => 'bar'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -434,7 +434,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithEverything()
     {
-        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('deploy'), $this->equalTo(['json' => ['repository' => 'baz', 'branch' => 'develop', 'revision' => 'foo', 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key']]));
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['repository' => 'baz', 'revision' => 'foo'], 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
 
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -442,6 +442,94 @@ class ClientTest extends TestCase
         $this->config->setAppVersion('1.3.1');
 
         $this->client->deploy('baz', 'develop', 'foo');
+    }
+
+    public function testBuildWorksOutOfTheBox()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->build();
+    }
+
+    public function testBuildWorksWithReleaseStage()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->config->setReleaseStage('staging');
+
+        $this->client->build();
+    }
+
+    public function testBuildWorksWithAppVersion()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'appVersion' => '1.1.0', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->config->setAppVersion('1.1.0');
+
+        $this->client->build();
+    }
+
+    public function testBuildWorksWithRepository()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['repository' => 'foo'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->build('foo');
+    }
+
+    public function testBuildWorksWithProvider()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['provider' => 'github'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->build(null, null, 'github');
+    }
+
+    public function testBuildWorksWithRevision()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['revision' => 'bar'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->build(null, 'bar');
+    }
+
+    public function testBuildWorksWithBuilderName()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['builderName' => 'me', 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->build(null, null, null, 'me');
+    }
+
+    public function testBuildWorksWithBuildTool()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami')]]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->build(null, null, null, null);
+    }
+
+    public function testBuildWorksWithEverything()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['builderName' => 'me', 'sourceControl' => ['repository' => 'baz', 'revision' => 'foo', 'provider' => 'github'], 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->config->setReleaseStage('development');
+        $this->config->setAppVersion('1.3.1');
+
+        $this->client->build('baz', 'foo', 'github', 'me');
     }
 
     public function testSeverityReasonUnmodified()

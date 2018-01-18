@@ -72,6 +72,8 @@ class HttpClient
     /**
      * Notify Bugsnag of a deployment.
      *
+     * @deprecated This method should no longer be used in favour of sendBuildReport.
+     *
      * @param array $data the deployment information
      *
      * @return void
@@ -89,6 +91,60 @@ class HttpClient
         $data['apiKey'] = $this->config->getApiKey();
 
         $this->guzzle->post('deploy', ['json' => $data]);
+    }
+
+    /**
+     * Notify Bugsnag of a build.
+     *
+     * @param array $buildInfo the build information
+     *
+     * @return void
+     */
+    public function sendBuildReport(array $buildInfo)
+    {
+        $app = $this->config->getAppData();
+
+        $data = [];
+        $sourceControl = [];
+        if (isset($buildInfo['repository'])) {
+            $sourceControl['repository'] = $buildInfo['repository'];
+        }
+
+        if (isset($buildInfo['provider'])) {
+            $sourceControl['provider'] = $buildInfo['provider'];
+        }
+
+        if (isset($buildInfo['revision'])) {
+            $sourceControl['revision'] = $buildInfo['revision'];
+        }
+
+        if (!empty($sourceControl)) {
+            $data['sourceControl'] = $sourceControl;
+        }
+
+        if (isset($buildInfo['builder'])) {
+            $data['builderName'] = $buildInfo['builder'];
+        } else {
+            $data['builderName'] = Utils::getBuilderName();
+        }
+
+        if (isset($buildInfo['buildTool'])) {
+            $data['buildTool'] = $buildInfo['buildTool'];
+        } else {
+            $data['buildTool'] = 'bugsnag-php';
+        }
+
+        $data['releaseStage'] = $app['releaseStage'];
+
+        if (isset($app['version'])) {
+            $data['appVersion'] = $app['version'];
+        }
+
+        $data['apiKey'] = $this->config->getApiKey();
+
+        $endpoint = $this->config->getBuildEndpoint();
+
+        $this->guzzle->post($endpoint, ['json' => $data]);
     }
 
     /**
