@@ -181,6 +181,7 @@ class HttpClient
         }
 
         return [
+            'apiKey' => $this->config->getApiKey(),
             'notifier' => $this->config->getNotifier(),
             'events' => $events,
         ];
