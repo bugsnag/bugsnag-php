@@ -106,6 +106,14 @@ class HttpClient
 
         $data = [];
         $sourceControl = [];
+
+        if (isset($app['version'])) {
+            $data['appVersion'] = $app['version'];
+        } else {
+            error_log('Bugsnag Warning: App version is not set. Unable to send build report.');
+            return;
+        }
+
         if (isset($buildInfo['repository'])) {
             $sourceControl['repository'] = $buildInfo['repository'];
         }
@@ -135,10 +143,6 @@ class HttpClient
         }
 
         $data['releaseStage'] = $app['releaseStage'];
-
-        if (isset($app['version'])) {
-            $data['appVersion'] = $app['version'];
-        }
 
         $data['apiKey'] = $this->config->getApiKey();
 
