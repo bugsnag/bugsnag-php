@@ -111,6 +111,7 @@ class HttpClient
             $data['appVersion'] = $app['version'];
         } else {
             error_log('Bugsnag Warning: App version is not set. Unable to send build report.');
+
             return;
         }
 
