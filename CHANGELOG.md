@@ -1,6 +1,19 @@
 Changelog
 =========
 
+## 3.12.0 (2018-01-24)
+
+### Enhancements
+
+* Deprecated the deploy API in favor of the build API
+  Calls to `deploy` will now redirect to `build`.
+  [#454](https://github.com/bugsnag/bugsnag-php/pull/454)
+
+### Fixes
+
+* Re-added apiKey parameter to payload for older API versions
+  [#459](https://github.com/bugsnag/bugsnag-php/pull/459)
+
 ## 3.11.0 (2018-01-09)
 
 ### Enhancements
