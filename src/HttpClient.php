@@ -37,6 +37,13 @@ class HttpClient
     const MAX_SIZE = 500000;
 
     /**
+     * The current payload version.
+     *
+     * @var string
+     */
+    const PAYLOAD_VERSION = '4.0';
+
+    /**
      * Create a new http client instance.
      *
      * @param \Bugsnag\Configuration      $config the configuration instance
@@ -65,6 +72,8 @@ class HttpClient
     /**
      * Notify Bugsnag of a deployment.
      *
+     * @deprecated This method should no longer be used in favour of sendBuildReport.
+     *
      * @param array $data the deployment information
      *
      * @return void
@@ -82,6 +91,65 @@ class HttpClient
         $data['apiKey'] = $this->config->getApiKey();
 
         $this->guzzle->post('deploy', ['json' => $data]);
+    }
+
+    /**
+     * Notify Bugsnag of a build.
+     *
+     * @param array $buildInfo the build information
+     *
+     * @return void
+     */
+    public function sendBuildReport(array $buildInfo)
+    {
+        $app = $this->config->getAppData();
+
+        $data = [];
+        $sourceControl = [];
+
+        if (isset($app['version'])) {
+            $data['appVersion'] = $app['version'];
+        } else {
+            error_log('Bugsnag Warning: App version is not set. Unable to send build report.');
+
+            return;
+        }
+
+        if (isset($buildInfo['repository'])) {
+            $sourceControl['repository'] = $buildInfo['repository'];
+        }
+
+        if (isset($buildInfo['provider'])) {
+            $sourceControl['provider'] = $buildInfo['provider'];
+        }
+
+        if (isset($buildInfo['revision'])) {
+            $sourceControl['revision'] = $buildInfo['revision'];
+        }
+
+        if (!empty($sourceControl)) {
+            $data['sourceControl'] = $sourceControl;
+        }
+
+        if (isset($buildInfo['builder'])) {
+            $data['builderName'] = $buildInfo['builder'];
+        } else {
+            $data['builderName'] = Utils::getBuilderName();
+        }
+
+        if (isset($buildInfo['buildTool'])) {
+            $data['buildTool'] = $buildInfo['buildTool'];
+        } else {
+            $data['buildTool'] = 'bugsnag-php';
+        }
+
+        $data['releaseStage'] = $app['releaseStage'];
+
+        $data['apiKey'] = $this->config->getApiKey();
+
+        $endpoint = $this->config->getBuildEndpoint();
+
+        $this->guzzle->post($endpoint, ['json' => $data]);
     }
 
     /**
@@ -125,6 +193,20 @@ class HttpClient
     }
 
     /**
+     * Builds the array of headers to send.
+     *
+     * @return array
+     */
+    protected function getHeaders()
+    {
+        return [
+            'Bugsnag-Api-Key' => $this->config->getApiKey(),
+            'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
+            'Bugsnag-Payload-Version' => self::PAYLOAD_VERSION,
+        ];
+    }
+
+    /**
      * Post the given data to Bugsnag in json form.
      *
      * @param string $url  the url to hit
@@ -155,7 +237,10 @@ class HttpClient
 
         // Send via guzzle and log any failures
         try {
-            $this->guzzle->post($url, ['json' => $normalized]);
+            $this->guzzle->post($url, [
+                'json' => $normalized,
+                'headers' => $this->getHeaders(),
+            ]);
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
         }

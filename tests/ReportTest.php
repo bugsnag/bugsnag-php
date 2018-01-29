@@ -53,6 +53,35 @@ class ReportTest extends TestCase
         $this->assertSame(['Testing' => ['globalArray' => 'hi']], $this->report->toArray()['metaData']);
     }
 
+    public function testAddMetaDataCreate()
+    {
+        $this->report->addMetaData(['Testing' => ['globalArray' => 'hi']]);
+
+        $this->assertSame(['Testing' => ['globalArray' => 'hi']], $this->report->toArray()['metaData']);
+    }
+
+    public function testAddMetaDataDeletesIfNull()
+    {
+        $this->report->setMetaData(['Testing' => ['globalArray' => 'hi', 'Delete' => 'test'], 'Delete' => 'test']);
+
+        $this->assertSame(['Testing' => ['globalArray' => 'hi', 'Delete' => 'test'], 'Delete' => 'test'], $this->report->toArray()['metaData']);
+
+        $this->report->addMetaData(['Testing' => ['Delete' => null], 'Delete' => null]);
+
+        $this->assertSame(['Testing' => ['globalArray' => 'hi']], $this->report->toArray()['metaData']);
+    }
+
+    public function testAddMetaDataMerge()
+    {
+        $this->report->setMetaData(['Testing' => ['array' => 'hi'], 'Replace' => 'Scalar']);
+
+        $this->assertSame(['Testing' => ['array' => 'hi'], 'Replace' => 'Scalar'], $this->report->toArray()['metaData']);
+
+        $this->report->addMetaData(['Testing' => ['second' => 'array'], 'Replace' => ['array' => 'replacement']]);
+
+        $this->assertSame(['Testing' => ['array' => 'hi', 'second' => 'array'], 'Replace' => ['array' => 'replacement']], $this->report->toArray()['metaData']);
+    }
+
     public function testUser()
     {
         $this->report->setUser(['foo' => 'bar']);
@@ -263,7 +292,7 @@ class ReportTest extends TestCase
     {
         $this->report->setMessage(null);
 
-        $this->assertSame(null, $this->report->getMessage());
+        $this->assertNull($this->report->getMessage());
     }
 
     public function testGetSummaryFull()

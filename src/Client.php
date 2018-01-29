@@ -14,6 +14,7 @@ use Bugsnag\Callbacks\RequestUser;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
+use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
 use Composer\CaBundle\CaBundle;
@@ -67,6 +68,13 @@ class Client
     protected $http;
 
     /**
+     * The session tracker instance.
+     *
+     * @var \Bugsnag\SessionTracker
+     */
+    protected $sessionTracker;
+
+    /**
      * Make a new client instance.
      *
      * If you don't pass in a key, we'll try to read it from the env variables.
@@ -107,9 +115,11 @@ class Client
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
+        $this->sessionTracker = new SessionTracker($config);
 
         $this->pipeline->pipe(new NotificationSkipper($config));
         $this->pipeline->pipe(new BreadcrumbData($this->recorder));
+        $this->pipeline->pipe(new SessionData($this));
 
         register_shutdown_function([$this, 'flush']);
     }
@@ -301,6 +311,8 @@ class Client
     /**
      * Notify Bugsnag of a deployment.
      *
+     * @deprecated This function is being deprecated in favour of `build`.
+     *
      * @param string|null $repository the repository from which you are deploying the code
      * @param string|null $branch     the source control branch from which you are deploying
      * @param string|null $revision   the source control revision you are currently deploying
@@ -309,21 +321,40 @@ class Client
      */
     public function deploy($repository = null, $branch = null, $revision = null)
     {
+        $this->build($repository, $revision);
+    }
+
+    /**
+     * Notify Bugsnag of a build.
+     *
+     * @param string|null $repository  the repository from which you are deploying the code
+     * @param string|null $revision    the source control revision you are currently deploying
+     * @param string|null $provider    the provider of the source control for the build
+     * @param string|null $builderName the name of who or what is making the build
+     *
+     * @return void
+     */
+    public function build($repository = null, $revision = null, $provider = null, $builderName = null)
+    {
         $data = [];
 
         if ($repository) {
             $data['repository'] = $repository;
         }
 
-        if ($branch) {
-            $data['branch'] = $branch;
-        }
-
         if ($revision) {
             $data['revision'] = $revision;
         }
 
-        $this->http->deploy($data);
+        if ($provider) {
+            $data['provider'] = $provider;
+        }
+
+        if ($builderName) {
+            $data['builder'] = $builderName;
+        }
+
+        $this->http->sendBuildReport($data);
     }
 
     /**
@@ -334,6 +365,26 @@ class Client
     public function flush()
     {
         $this->http->send();
+    }
+
+    /**
+     * Start tracking a session.
+     *
+     * @return void
+     */
+    public function startSession()
+    {
+        $this->sessionTracker->startSession();
+    }
+
+    /**
+     * Returns the session tracker.
+     *
+     * @return \Bugsnag\SessionTracker
+     */
+    public function getSessionTracker()
+    {
+        return $this->sessionTracker;
     }
 
     /**

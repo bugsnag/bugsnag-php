@@ -46,7 +46,7 @@ class RequestContextTest extends TestCase
 
         $callback($report);
 
-        $this->assertSame(null, $report->getContext());
+        $this->assertNull($report->getContext());
     }
 
     public function testCanConsoleContext()
@@ -72,6 +72,6 @@ class RequestContextTest extends TestCase
 
         $callback($report);
 
-        $this->assertSame(null, $report->getContext());
+        $this->assertNull($report->getContext());
     }
 }

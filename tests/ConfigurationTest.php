@@ -3,6 +3,8 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ConfigurationTest extends TestCase
@@ -110,5 +112,58 @@ class ConfigurationTest extends TestCase
         $this->config->setHostname('web1.example.com');
 
         $this->assertSame(['hostname' => 'web1.example.com'], $this->config->getDeviceData());
+    }
+
+    public function testSessionTrackingDefaults()
+    {
+        $this->assertFalse($this->config->shouldCaptureSessions());
+    }
+
+    public function testSessionTrackingSetTrue()
+    {
+        $this->assertFalse($this->config->shouldCaptureSessions());
+
+        $this->config->setAutoCaptureSessions(true);
+
+        $this->assertTrue($this->config->shouldCaptureSessions());
+
+        $client = $this->config->getSessionClient();
+
+        $this->assertSame(GuzzleClient::class, get_class($client));
+
+        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
+            $clientUri = $client->getBaseUrl();
+        } else {
+            $baseUri = $client->getConfig('base_uri');
+            $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
+        }
+
+        $this->assertSame(Configuration::SESSION_ENDPOINT, $clientUri);
+    }
+
+    public function testSessionTrackingSetEndpoint()
+    {
+        $testUrl = 'https://testurl.com';
+
+        $this->assertFalse($this->config->shouldCaptureSessions());
+
+        $this->config->setAutoCaptureSessions(true);
+
+        $this->assertTrue($this->config->shouldCaptureSessions());
+
+        $this->config->setSessionEndpoint($testUrl);
+
+        $client = $this->config->getSessionClient();
+
+        $this->assertSame(GuzzleClient::class, get_class($client));
+
+        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
+            $clientUri = $client->getBaseUrl();
+        } else {
+            $baseUri = $client->getConfig('base_uri');
+            $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
+        }
+
+        $this->assertSame($testUrl, $clientUri);
     }
 }
