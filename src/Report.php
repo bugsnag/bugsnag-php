@@ -361,7 +361,7 @@ class Report
     {
         if (is_scalar($name) || method_exists($name, '__toString')) {
             $this->name = (string) $name;
-        } else if ($name === '') {
+        } elseif ($name === '') {
             $this->name = 'Error';
         } else {
             throw new InvalidArgumentException('The name must be a string.');
