@@ -301,7 +301,7 @@ class Client
             $this->http->queue($report);
         });
 
-        $this->leaveBreadcrumb($report->getName(), Breadcrumb::ERROR_TYPE, $report->getSummary());
+        $this->leaveBreadcrumb($report->getName() ?: 'Error', Breadcrumb::ERROR_TYPE, $report->getSummary());
 
         if (!$this->config->isBatchSending()) {
             $this->flush();
