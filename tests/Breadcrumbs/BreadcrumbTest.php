@@ -10,19 +10,22 @@ class BreadcrumbTest extends TestCase
     public function testBadName()
     {
         $breadcrumb = new Breadcrumb(123, 'error');
-        $this->assertSame('INVALID breadcrumb name given', $breadcrumb->toArray()['name']);
+        $this->assertSame('<no name>', $breadcrumb->toArray()['name']);
+        $this->assertSame('Breadcrumb name must be a string - integer provided instead', $breadcrumb->getMetaData()['BreadcrumbError']);
     }
 
     public function testEmptyName()
     {
         $breadcrumb = new Breadcrumb('', 'error');
-        $this->assertSame('EMPTY breadcrumb name given', $breadcrumb->toArray()['name']);
+        $this->assertSame('<no name>', $breadcrumb->toArray()['name']);
+        $this->assertSame('Empty string provided as the breadcrumb name', $breadcrumb->getMetaData()['BreadcrumbError']);
     }
 
     public function testNullName()
     {
         $breadcrumb = new Breadcrumb(null, 'error');
-        $this->assertSame('NULL breadcrumb name given', $breadcrumb->toArray()['name']);
+        $this->assertSame('<no name>', $breadcrumb->toArray()['name']);
+        $this->assertSame('NULL provided as the breadcrumb name', $breadcrumb->getMetaData()['BreadcrumbError']);
     }
 
     /**

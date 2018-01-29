@@ -119,14 +119,15 @@ class Breadcrumb
     {
         if (!is_string($name)) {
             if (is_null($name)) {
-                $name = 'NULL breadcrumb name given';
+                $metaData['BreadcrumbError'] = 'NULL provided as the breadcrumb name';
+                $name = '<no name>';
             } else {
-                $name = 'INVALID breadcrumb name given';
+                $metaData['BreadcrumbError'] = 'Breadcrumb name must be a string - '.gettype($name).' provided instead';
+                $name = '<no name>';
             }
-        }
-
-        if ($name === '') {
-            $name = 'EMPTY breadcrumb name given';
+        } elseif ($name === '') {
+            $metaData['BreadcrumbError'] = 'Empty string provided as the breadcrumb name';
+            $name = '<no name>';
         }
 
         if (strlen($name) > static::MAX_LENGTH) {
