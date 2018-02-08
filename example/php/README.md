@@ -23,20 +23,17 @@ In the examples included the API KEY is being explicitly set in the client, but 
 
 More configuration options can be found in the [official documentation](https://docs.bugsnag.com/platforms/php/other/configuration-options/).
 
+## Install dependencies
 
-## Running the examples
+Bugsnag is most commonly installed using the [Composer](https://getcomposer.org/) dependency manager.
 
-### Installing dependencies
+```shell
+composer install
+```
 
--   Install composer
+## Set your API key
 
-    <http://getcomposer.org/doc/01-basic-usage.md>
-
--   Install bugsnag using composer
-
-    ```shell
-    composer install
-    ```
+This can be accomplished in one of two ways:
 
 ### Running the examples
 

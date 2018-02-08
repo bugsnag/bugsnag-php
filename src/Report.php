@@ -115,6 +115,13 @@ class Report
     protected $severityReason = [];
 
     /**
+     * Attached session from SessionTracking.
+     *
+     * @var array
+     */
+    protected $session;
+
+    /**
      * Create a new report from a PHP error.
      *
      * @param \Bugsnag\Configuration $config         the config instance
@@ -273,6 +280,11 @@ class Report
      */
     public function getSeverityReason()
     {
+        if (!array_key_exists('type', $this->severityReason)) {
+            syslog(LOG_WARNING, 'Severity reason should always have a "type" set');
+            $this->severityReason['type'] = 'userSpecifiedSeverity';
+        }
+
         return $this->severityReason;
     }
 
@@ -492,6 +504,23 @@ class Report
     }
 
     /**
+     * Adds a tab to the meta data.
+     * Conflicting keys will be merged if able, otherwise the new values will be accepted.
+     * Null values will be deleted from the metadata.
+     *
+     * @param array[] $metadata an array of custom data to attach to the report
+     *
+     * @return $this
+     */
+    public function addMetaData(array $metadata)
+    {
+        $this->metaData = array_replace_recursive($this->metaData, $metadata);
+        $this->metaData = $this->removeNullElements($this->metaData);
+
+        return $this;
+    }
+
+    /**
      * Get the error meta data.
      *
      * @return array[]
@@ -571,6 +600,16 @@ class Report
     }
 
     /**
+     * Sets the session data.
+     *
+     * @return $this
+     */
+    public function setSessionData(array $session)
+    {
+        $this->session = $session;
+    }
+
+    /**
      * Get the array representation.
      *
      * @return array
@@ -593,6 +632,10 @@ class Report
 
         if ($hash = $this->getGroupingHash()) {
             $event['groupingHash'] = $hash;
+        }
+
+        if (isset($this->session)) {
+            $event['session'] = $this->session;
         }
 
         return $event;
@@ -683,5 +726,25 @@ class Report
         }
 
         return false;
+    }
+
+    /**
+     * Recursively remove null elements.
+     *
+     * @param array $array  the array to remove null elements from
+     *
+     * @return array
+     */
+    protected function removeNullElements($array)
+    {
+        foreach ($array as $key => $val) {
+            if (is_array($val)) {
+                $array[$key] = $this->removeNullElements($val);
+            } elseif (is_null($val)) {
+                unset($array[$key]);
+            }
+        }
+
+        return $array;
     }
 }

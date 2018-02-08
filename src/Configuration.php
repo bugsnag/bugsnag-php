@@ -7,6 +7,20 @@ use InvalidArgumentException;
 class Configuration
 {
     /**
+     * The default endpoint.
+     *
+     * @var string
+     */
+    const SESSION_ENDPOINT = 'https://sessions.bugsnag.com';
+
+    /**
+     * The default build endpoint.
+     *
+     * @var string
+     */
+    const BUILD_ENDPOINT = 'https://build.bugsnag.com';
+
+    /**
      * The Bugnsag API Key.
      *
      * @var string
@@ -62,7 +76,7 @@ class Configuration
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.8.1',
+        'version' => '3.12.0',
         'url' => 'https://bugsnag.com',
     ];
 
@@ -100,6 +114,34 @@ class Configuration
      * @var int|null
      */
     protected $errorReportingLevel;
+
+    /**
+     * Whether to track sessions.
+     *
+     * @var bool
+     */
+    protected $autoCaptureSessions = false;
+
+    /**
+     * A client to use to send sessions.
+     *
+     * @var \Guzzle\ClientInterface
+     */
+    protected $sessionClient;
+
+    /**
+     * The endpoint to deliver sessions to.
+     *
+     * @var string
+     */
+    protected $sessionEndpoint = self::SESSION_ENDPOINT;
+
+    /**
+     * The endpoint to deliver build notifications to.
+     *
+     * @var string
+     */
+    protected $buildEndpoint;
 
     /**
      * Create a new config instance.
@@ -485,5 +527,87 @@ class Configuration
         }
 
         return !(error_reporting() & $code);
+    }
+
+    /**
+     * Set session tracking state and pass in optional guzzle.
+     *
+     * @param bool $track whether to track sessions
+     *
+     * @return $this
+     */
+    public function setAutoCaptureSessions($track)
+    {
+        $this->autoCaptureSessions = $track;
+
+        return $this;
+    }
+
+    /**
+     * Set session delivery endpoint.
+     *
+     * @param string $endpoint the session endpoint
+     *
+     * @return $this
+     */
+    public function setSessionEndpoint($endpoint)
+    {
+        $this->sessionEndpoint = $endpoint;
+
+        $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
+
+        return $this;
+    }
+
+    /**
+     * Get the session client.
+     *
+     * @return \Guzzle\ClientInterface
+     */
+    public function getSessionClient()
+    {
+        if (is_null($this->sessionClient)) {
+            $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
+        }
+
+        return $this->sessionClient;
+    }
+
+    /**
+     * Whether should be auto-capturing sessions.
+     *
+     * @return bool
+     */
+    public function shouldCaptureSessions()
+    {
+        return $this->autoCaptureSessions;
+    }
+
+    /**
+     * Sets the build endpoint.
+     *
+     * @param string $endpoint the build endpoint
+     *
+     * @return $this
+     */
+    public function setBuildEndpoint($endpoint)
+    {
+        $this->buildEndpoint = $endpoint;
+
+        return $this;
+    }
+
+    /**
+     * Returns the build endpoint.
+     *
+     * @return string
+     */
+    public function getBuildEndpoint()
+    {
+        if (isset($this->buildEndpoint)) {
+            return $this->buildEndpoint;
+        }
+
+        return self::BUILD_ENDPOINT;
     }
 }

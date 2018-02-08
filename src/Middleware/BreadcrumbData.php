@@ -27,7 +27,7 @@ class BreadcrumbData
     }
 
     /**
-     * Execute the notification skipper middleware.
+     * Execute the breadcrumb data middleware.
      *
      * @param \Bugsnag\Report $report the bugsnag report instance
      * @param callable        $next   the next stage callback
