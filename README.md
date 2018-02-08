@@ -16,9 +16,9 @@ The Bugsnag error reporter for PHP gives you instant notification of errors and 
 
 1. [Create a Bugsnag account](https://bugsnag.com)
 1. Complete the instructions in the integration guide for your framework:
-    * [Laravel](http://docs.bugsnag.com/platforms/php/laravel)
-    * [Lumen](http://docs.bugsnag.com/platforms/php/lumen)
-    * [Other PHP apps](http://docs.bugsnag.com/platforms/php/other)
+    * [Laravel](https://docs.bugsnag.com/platforms/php/laravel)
+    * [Lumen](https://docs.bugsnag.com/platforms/php/lumen)
+    * [Other PHP apps](https://docs.bugsnag.com/platforms/php/other)
 1. Relax!
 
 ## php.ini usage
@@ -32,9 +32,9 @@ More information on how to achieve this can be found in the `example/php` folder
 ## Support
 
 * Read the configuration reference:
-  * [Laravel](http://docs.bugsnag.com/platforms/php/laravel/configuration-options)
-  * [Lumen](http://docs.bugsnag.com/platforms/php/lumen/configuration-options)
-  * [Other PHP apps](http://docs.bugsnag.com/platforms/php/other/configuration-options)
+  * [Laravel](https://docs.bugsnag.com/platforms/php/laravel/configuration-options)
+  * [Lumen](https://docs.bugsnag.com/platforms/php/lumen/configuration-options)
+  * [Other PHP apps](https://docs.bugsnag.com/platforms/php/other/configuration-options)
 * [Search open and closed issues](https://github.com/bugsnag/bugsnag-php/issues?utf8=✓&q=is%3Aissue) for similar problems
 * [Report a bug or request a feature](https://github.com/bugsnag/bugsnag-php/issues/new)
 
