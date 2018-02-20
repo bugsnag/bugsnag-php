@@ -117,8 +117,17 @@ class Breadcrumb
      */
     public function __construct($name, $type, array $metaData = [])
     {
-        if (!is_string($name) || $name === '') {
-            throw new InvalidArgumentException('The breadcrumb name must be a non-empty string.');
+        if (!is_string($name)) {
+            if (is_null($name)) {
+                $metaData['BreadcrumbError'] = 'NULL provided as the breadcrumb name';
+                $name = '<no name>';
+            } else {
+                $metaData['BreadcrumbError'] = 'Breadcrumb name must be a string - '.gettype($name).' provided instead';
+                $name = '<no name>';
+            }
+        } elseif ($name === '') {
+            $metaData['BreadcrumbError'] = 'Empty string provided as the breadcrumb name';
+            $name = '<no name>';
         }
 
         if (strlen($name) > static::MAX_LENGTH) {
