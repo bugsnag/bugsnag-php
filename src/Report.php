@@ -365,6 +365,10 @@ class Report
             throw new InvalidArgumentException('The name must be a string.');
         }
 
+        if ($this->name === '') {
+            $this->name = 'Error';
+        }
+
         return $this;
     }
 

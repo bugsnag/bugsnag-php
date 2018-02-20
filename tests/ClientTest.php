@@ -208,6 +208,27 @@ class ClientTest extends TestCase
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
     }
 
+    public function testBreadcrumbsNoName()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        // notify with an empty report name
+        $this->client->notify(Report::fromNamedError($this->config, ''));
+
+        // then notify again to pickup the previous breadcrumb
+        $this->client->notify($report = Report::fromNamedError($this->config, 'foo'));
+
+        $breadcrumbs = $report->toArray()['breadcrumbs'];
+
+        $this->assertCount(1, $breadcrumbs);
+
+        $this->assertCount(4, $breadcrumbs[0]);
+        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        $this->assertSame('Error', $breadcrumbs[0]['name']);
+        $this->assertSame('error', $breadcrumbs[0]['type']);
+        $this->assertTrue(isset($breadcrumbs[0]['metaData']));
+    }
+
     public function testBreadcrumbsGetShortNameClass()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
