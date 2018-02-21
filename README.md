@@ -21,14 +21,6 @@ The Bugsnag error reporter for PHP gives you instant notification of errors and 
     * [Other PHP apps](https://docs.bugsnag.com/platforms/php/other)
 1. Relax!
 
-## php.ini usage
-
-Setting up Bugsnag using the instructions above will capture and report all errors and exceptions raised after Bugsnag is initialised.  For capturing errors that may occur before the initialisation occurs, such as `E_COMPILE_ERROR` or `E_PARSE`, a shutdown handler can be registered before the application starts using the application's `php.ini` file.
-
-A sample file for prepending can be found at `utility/bugsnag-prepend.php`, or attached to the latest release.
-
-More information on how to achieve this can be found in the `example/php` folder.
-
 ## Support
 
 * Read the configuration reference:
