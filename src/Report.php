@@ -9,7 +9,6 @@ use Throwable;
 
 class Report
 {
-
     /**
      * The payload version.
      *
