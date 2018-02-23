@@ -14,7 +14,7 @@ class Report
      *
      * @var string
      */
-    const PAYLOAD_VERSION = '3';
+    const PAYLOAD_VERSION = HttpClient::PAYLOAD_VERSION;
 
     /**
      * The config object.
@@ -625,7 +625,7 @@ class Report
             'device' => array_merge(['time' => $this->time], $this->config->getDeviceData()),
             'user' => $this->getUser(),
             'context' => $this->getContext(),
-            'payloadVersion' => static::PAYLOAD_VERSION,
+            'payloadVersion' => HttpClient::PAYLOAD_VERSION,
             'severity' => $this->getSeverity(),
             'exceptions' => $this->exceptionArray(),
             'breadcrumbs' => $this->breadcrumbs,
