@@ -1,6 +1,20 @@
 Changelog
 =========
 
+## 3.12.1 (2018-02-28)
+
+### Fixes
+
+* Updated the payload body version to 4.0
+  [#467](https://github.com/bugsnag/bugsnag-php/pull/467)
+
+* Ensured reports always have a valid name
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#463](https://github.com/bugsnag/bugsnag-php/pull/463)
+
+* Better name handling in breadcrumbs
+  [#427](https://github.com/bugsnag/bugsnag-php/pull/427)
+
 ## 3.12.0 (2018-01-24)
 
 ### Enhancements
@@ -35,7 +49,7 @@ Changelog
 
 * Added Codeigniter example
   [Don Pinkus](https://github.com/donpinkus)
-  
+
 ### Fixes
 
 * Ensured `severity_reason` has sensible defaults
