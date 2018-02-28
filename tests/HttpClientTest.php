@@ -48,6 +48,7 @@ class HttpClientTest extends TestCase
         $this->assertSame([], $params[1]['json']['events'][0]['user']);
         $this->assertSame(['foo' => 'bar'], $params[1]['json']['events'][0]['metaData']);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
+        $this->assertSame('4.0', $params[1]['json']['events'][0]['payloadVersion']);
 
         $headers = $params[1]['headers'];
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
@@ -91,6 +92,7 @@ class HttpClientTest extends TestCase
         $this->assertSame([], $params[1]['json']['events'][0]['user']);
         $this->assertArrayNotHasKey('metaData', $params[1]['json']['events'][0]);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
+        $this->assertSame('4.0', $params[1]['json']['events'][0]['payloadVersion']);
 
         $headers = $params[1]['headers'];
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
@@ -138,6 +140,7 @@ class HttpClientTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $params[1]['json']['events'][0]['user']);
         $this->assertSame([], $params[1]['json']['events'][0]['metaData']);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
+        $this->assertSame('4.0', $params[1]['json']['events'][0]['payloadVersion']);
 
         $headers = $params[1]['headers'];
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
