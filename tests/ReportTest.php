@@ -82,6 +82,17 @@ class ReportTest extends TestCase
         $this->assertSame(['Testing' => ['array' => 'hi', 'second' => 'array'], 'Replace' => ['array' => 'replacement']], $this->report->toArray()['metaData']);
     }
 
+    public function testSingularMetaDataOverwritten()
+    {
+        $this->report->setMetaData(['Testing' => ['keep' => 'hi', 'replace' => 'bye']]);
+
+        $this->assertSame(['Testing' => ['keep' => 'hi', 'replace' => 'bye']], $this->report->toArray()['metaData']);
+
+        $this->report->addMetaData(['Testing' => ['replace' => false]]);
+
+        $this->assertSame(['Testing' => ['keep' => 'hi', 'replace' => false]], $this->report->toArray()['metaData']);
+    }
+
     public function testUser()
     {
         $this->report->setUser(['foo' => 'bar']);
