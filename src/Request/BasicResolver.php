@@ -16,7 +16,7 @@ class BasicResolver implements ResolverInterface
                 empty($_SESSION) ? [] : $_SESSION,
                 empty($_COOKIE) ? [] : $_COOKIE,
                 static::getRequestHeaders($_SERVER),
-                static::getInputParams($_SERVER, $_POST));
+                static::getInputParams($_SERVER));
         }
 
         if (PHP_SAPI === 'cli' && isset($_SERVER['argv'])) {
@@ -71,11 +71,10 @@ class BasicResolver implements ResolverInterface
      * request resolver.
      *
      * @param array $server the server variables
-     * @param array $post   the post variables
      *
      * @return array|null
      */
-    protected static function getInputParams(array $server, array $post)
+    protected static function getInputParams(array $server)
     {
         static $result;
 
@@ -83,7 +82,11 @@ class BasicResolver implements ResolverInterface
             return $result ?: null;
         }
 
-        $result = $post ?: static::parseInput($server, static::readInput());
+        if (isset($server['REQUEST_METHOD']) && strtoupper($server['REQUEST_METHOD']) === 'GET') {
+            $result = $_GET;
+        } else {
+            $result = $_POST ?: static::parseInput($server, static::readInput());
+        }
 
         return $result ?: null;
     }
@@ -114,11 +117,8 @@ class BasicResolver implements ResolverInterface
 
         if (isset($server['CONTENT_TYPE']) && stripos($server['CONTENT_TYPE'], 'application/json') === 0) {
             return (array) json_decode($input, true) ?: null;
-        }
-
-        if (isset($server['REQUEST_METHOD']) && strtoupper($server['REQUEST_METHOD']) === 'PUT') {
+        } else {
             parse_str($input, $params);
-
             return (array) $params ?: null;
         }
     }
