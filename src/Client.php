@@ -211,10 +211,12 @@ class Client
      */
     public function leaveBreadcrumb($name, $type = null, array $metaData = [])
     {
-        try {
-            $name = (new ReflectionClass($name))->getShortName();
-        } catch (ReflectionException $e) {
-            //
+        if (class_exists($name)) {
+            try {
+                $name = (new ReflectionClass($name))->getShortName();
+            } catch (ReflectionException $e) {
+                //
+            }
         }
 
         $name = substr((string) $name, 0, Breadcrumb::MAX_LENGTH);
