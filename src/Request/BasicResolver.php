@@ -119,6 +119,7 @@ class BasicResolver implements ResolverInterface
             return (array) json_decode($input, true) ?: null;
         } else {
             parse_str($input, $params);
+
             return (array) $params ?: null;
         }
     }
