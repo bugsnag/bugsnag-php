@@ -103,6 +103,23 @@ class RequestTest extends TestCase
         $this->assertSame(['request' => $data], $this->resolver->resolve()->getMetaData());
     }
 
+    public function testGetMetaDataWithGet()
+    {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_GET['foo'] = 'foo';
+        $_GET['bar'] = 'bar';
+        $data = [
+            'url' => 'http://example.com/blah/blah.php?some=param',
+            'httpMethod' => 'GET',
+            'params' => ['foo' => 'foo', 'bar' => 'bar'],
+            'clientIp' => '123.45.67.8',
+            'userAgent' => 'Example Browser 1.2.3',
+            'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3'],
+        ];
+
+        $this->assertSame(['request' => $data], $this->resolver->resolve()->getMetaData());
+    }
+
     public function testGetMetaDataWithJsonInput()
     {
         $_SERVER['CONTENT_TYPE'] = 'application/json';
