@@ -605,4 +605,24 @@ class ClientTest extends TestCase
 
         $this->assertSame($event['severityReason'], ['type' => 'handledError']);
     }
+
+    public function testUrlModifiableByCallback()
+    {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REMOTE_ADDR'] = '123.45.67.8';
+        $_SERVER['HTTP_HOST'] = 'test.com';
+        $_SERVER['REQUEST_URI'] = '/blah/blah.php?user=anon&password=hunter2';
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+        $this->client->registerDefaultCallbacks();
+
+        $report = Report::fromNamedError($this->config, 'Name');
+
+        $this->client->notify($report, function ($report) {
+            $this->assertSame('http://test.com/blah/blah.php?user=anon&password=hunter2', $report->getMetaData()['request']['url']);
+            $report->addMetaData(['request' => ['url' => 'REDACTED']]);
+        });
+
+        $this->assertSame('REDACTED', $report->getMetaData()['request']['url']);
+    }
 }
