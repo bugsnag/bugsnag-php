@@ -30,4 +30,5 @@ Releasing
     git push origin master && git push --tags
     ```
 5. Build a new phar package by running `make package` and attach it to the GitHub release.
-6. Update the setup guides for PHP (and its frameworks) with any new content.
+6. Ensure `utility/bugsnag-prepend.php` works with the example php project and attach it to the Github release.
+7. Update the setup guides for PHP (and its frameworks) with any new content.

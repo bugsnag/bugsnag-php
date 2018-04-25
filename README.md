@@ -37,7 +37,6 @@ Includes error monitoring and error reporting support for [Laravel](https://www.
 * [Search open and closed issues](https://github.com/bugsnag/bugsnag-php/issues?utf8=✓&q=is%3Aissue) for similar problems
 * [Report a bug or request a feature](https://github.com/bugsnag/bugsnag-php/issues/new)
 
-
 ## Contributing
 
 All contributors are welcome! For information on how to build, test and release, see our [contributing guide](CONTRIBUTING.md). Feel free to comment on [existing issues](https://github.com/bugsnag/bugsnag-php/issues) for clarification or starting points.
