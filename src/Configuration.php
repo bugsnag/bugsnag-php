@@ -163,7 +163,7 @@ class Configuration
     }
 
     /**
-     * Get the Bugnsag API Key.
+     * Get the Bugsnag API Key.
      *
      * @var string
      */
