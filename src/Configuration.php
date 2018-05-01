@@ -21,7 +21,7 @@ class Configuration
     const BUILD_ENDPOINT = 'https://build.bugsnag.com';
 
     /**
-     * The Bugnsag API Key.
+     * The Bugsnag API Key.
      *
      * @var string
      */
@@ -163,7 +163,7 @@ class Configuration
     }
 
     /**
-     * Get the Bugnsag API Key.
+     * Get the Bugsnag API Key.
      *
      * @var string
      */
