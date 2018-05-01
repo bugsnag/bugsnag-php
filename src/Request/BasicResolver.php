@@ -17,6 +17,7 @@ class BasicResolver implements ResolverInterface
             } else {
                 $params = static::getInputParams($_SERVER, $_POST, false);
             }
+
             return new PhpRequest($_SERVER,
                 empty($_SESSION) ? [] : $_SESSION,
                 empty($_COOKIE) ? [] : $_COOKIE,
@@ -80,7 +81,7 @@ class BasicResolver implements ResolverInterface
      *
      * @return array|null
      */
-    protected static function getInputParams(array $server, array $params, bool $is_get=false)
+    protected static function getInputParams(array $server, array $params, bool $is_get = false)
     {
         static $result;
 
