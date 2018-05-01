@@ -12,11 +12,16 @@ class BasicResolver implements ResolverInterface
     public function resolve()
     {
         if (isset($_SERVER['REQUEST_METHOD'])) {
+            if (strtoupper($_SERVER['REQUEST_METHOD']) === 'GET') {
+                $params = static::getInputParams($_SERVER, $_GET, true);
+            } else {
+                $params = static::getInputParams($_SERVER, $_POST, false);
+            }
             return new PhpRequest($_SERVER,
                 empty($_SESSION) ? [] : $_SESSION,
                 empty($_COOKIE) ? [] : $_COOKIE,
                 static::getRequestHeaders($_SERVER),
-                static::getInputParams($_SERVER));
+                $params);
         }
 
         if (PHP_SAPI === 'cli' && isset($_SERVER['argv'])) {
@@ -71,10 +76,11 @@ class BasicResolver implements ResolverInterface
      * request resolver.
      *
      * @param array $server the server variables
+     * @param array $params the array of parameters for this request type
      *
      * @return array|null
      */
-    protected static function getInputParams(array $server)
+    protected static function getInputParams(array $server, array $params, bool $is_get=false)
     {
         static $result;
 
@@ -82,10 +88,10 @@ class BasicResolver implements ResolverInterface
             return $result ?: null;
         }
 
-        if (isset($server['REQUEST_METHOD']) && strtoupper($server['REQUEST_METHOD']) === 'GET') {
-            $result = $_GET;
-        } else {
-            $result = $_POST ?: static::parseInput($server, static::readInput());
+        $result = $params;
+
+        if ($is_get == false) {
+            $result = $result ?: static::parseInput($server, static::readInput());
         }
 
         return $result ?: null;
