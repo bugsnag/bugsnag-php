@@ -78,10 +78,11 @@ class BasicResolver implements ResolverInterface
      *
      * @param array $server the server variables
      * @param array $params the array of parameters for this request type
+     * @param bool  $isGet  whether this is a get request
      *
      * @return array|null
      */
-    protected static function getInputParams(array $server, array $params, bool $is_get = false)
+    protected static function getInputParams(array $server, array $params, $isGet = false)
     {
         static $result;
 
@@ -91,7 +92,7 @@ class BasicResolver implements ResolverInterface
 
         $result = $params;
 
-        if ($is_get == false) {
+        if ($isGet == false) {
             $result = $result ?: static::parseInput($server, static::readInput());
         }
 
