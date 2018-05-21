@@ -174,7 +174,7 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->registerMiddleware(function($report) {
+        $this->client->registerMiddleware(function ($report) {
             $report->setMetaData(['middleware' => 'registered']);
         });
 
@@ -187,7 +187,7 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->registerMiddleware(function($report) {
+        $this->client->registerMiddleware(function ($report) {
             $report->setSeverity('info');
         });
 

@@ -214,6 +214,7 @@ class Client
         } else {
             syslog(LOG_WARNING, 'Middleware '.get_class($middleware).' could not be added to the pipeline');
         }
+
         return $this;
     }
 
@@ -296,11 +297,10 @@ class Client
     {
         $this->pipeline->execute($report, function ($report) use ($callback) {
             if ($callback) {
-
                 $resolvedReport = null;
 
                 $bridge = new CallbackBridge($callback);
-                $bridge($report, function($report) use ($resolvedReport) {
+                $bridge($report, function ($report) use ($resolvedReport) {
                     $resolvedReport = $report;
                 });
                 if ($resolvedReport) {

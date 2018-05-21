@@ -48,23 +48,23 @@ class CallbackBridgeTest extends TestCase
     {
         $report = Report::fromPHPThrowable(
             $this->config,
-            new Exception("Oh no")
+            new Exception('Oh no')
         );
         $report->setSeverity('error');
         $report->setUnhandled(true);
         $report->setSeverityReason([
-            'type' => 'unhandledException'
+            'type' => 'unhandledException',
         ]);
 
         $middleware = new CallbackBridge(function ($report) {
             $report->setSeverity('info');
             $report->setUnhandled(false);
             $report->setSeverityReason([
-                'type' => 'not my'
+                'type' => 'not my',
             ]);
         });
 
-        $middleware($report, function($report) {
+        $middleware($report, function ($report) {
             $this->assertSame('error', $report->getSeverity());
             $this->assertSame(true, $report->getUnhandled());
             $this->assertSame(['type' => 'unhandledException'], $report->getSeverityReason());
