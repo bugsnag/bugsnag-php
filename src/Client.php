@@ -294,25 +294,20 @@ class Client
      */
     public function notify(Report $report, callable $callback = null)
     {
-        $initialUnhandled = $report->getUnhandled();
-        $initialSeverity = $report->getSeverity();
-        $initialReason = $report->getSeverityReason();
-        $this->pipeline->execute($report, function ($report) use ($callback, $initialUnhandled, $initialSeverity, $initialReason) {
+        $this->pipeline->execute($report, function ($report) use ($callback) {
             if ($callback) {
-                if ($callback($report) === false) {
+
+                $resolvedReport = null;
+
+                $bridge = new CallbackBridge($callback);
+                $bridge($report, function($report) use ($resolvedReport) {
+                    $resolvedReport = $report;
+                });
+                if ($resolvedReport) {
+                    $report = $resolvedReport;
+                } else {
                     return;
                 }
-            }
-
-            $report->setUnhandled($initialUnhandled);
-            if ($report->getSeverity() != $initialSeverity) {
-                // Severity has been changed via callbacks -> severity reason should be userCallbackSetSeverity
-                $report->setSeverityReason([
-                    'type' => 'userCallbackSetSeverity',
-                ]);
-            } else {
-                // Otherwise we ensure the original severity reason is preserved
-                $report->setSeverityReason($initialReason);
             }
 
             $this->http->queue($report);
