@@ -170,6 +170,20 @@ class ClientTest extends TestCase
         $this->assertSame(['foo' => 'baz'], $report->getMetaData());
     }
 
+    public function testCustomMiddlewareWorks()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware(function($report) {
+            $report->setMetaData(['middleware' => 'registered']);
+        });
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $this->assertSame(['middleware' => 'registered'], $report->getMetaData());
+    }
+
+
     public function testBreadcrumbsWorks()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
