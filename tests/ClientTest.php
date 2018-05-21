@@ -183,6 +183,21 @@ class ClientTest extends TestCase
         $this->assertSame(['middleware' => 'registered'], $report->getMetaData());
     }
 
+    public function testMiddlewareCanModifySeverity()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware(function($report) {
+            $report->setSeverity('info');
+        });
+
+        $report = Report::fromNamedError($this->config, 'Name');
+        $report->setSeverity('error');
+
+        $this->client->notify($report);
+
+        $this->assertSame('info', $report->getSeverity());
+    }
 
     public function testBreadcrumbsWorks()
     {
