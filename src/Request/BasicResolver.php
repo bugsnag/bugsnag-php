@@ -13,9 +13,9 @@ class BasicResolver implements ResolverInterface
     {
         if (isset($_SERVER['REQUEST_METHOD'])) {
             if (strtoupper($_SERVER['REQUEST_METHOD']) === 'GET') {
-                $params = static::getInputParams($_SERVER, $_GET, true);
+                $params = static::getInputParams($_SERVER, $_GET, false);
             } else {
-                $params = static::getInputParams($_SERVER, $_POST, false);
+                $params = static::getInputParams($_SERVER, $_POST, true);
             }
 
             return new PhpRequest($_SERVER,
@@ -76,13 +76,13 @@ class BasicResolver implements ResolverInterface
      * their own request objects, thus will need to implement their own bugsnag
      * request resolver.
      *
-     * @param array $server the server variables
-     * @param array $params the array of parameters for this request type
-     * @param bool  $isGet  whether this is a get request
+     * @param array $server           the server variables
+     * @param array $params           the array of parameters for this request type
+     * @param bool  $fallbackToInput  if true, uses input when params is null
      *
      * @return array|null
      */
-    protected static function getInputParams(array $server, array $params, $isGet = false)
+    protected static function getInputParams(array $server, array $params, $fallbackToInput = false)
     {
         static $result;
 
@@ -92,7 +92,7 @@ class BasicResolver implements ResolverInterface
 
         $result = $params;
 
-        if ($isGet == false) {
+        if ($fallbackToInput === true) {
             $result = $result ?: static::parseInput($server, static::readInput());
         }
 
