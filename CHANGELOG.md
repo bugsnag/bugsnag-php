@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## 3.13.0 (2018-06-06)
+
+### Enhancements
+
+* Added `GET` parameter support
+  [#472](https://github.com/bugsnag/bugsnag-php/pull/472)
+
+### Fixes
+
+* Speed up error handler
+  [#476](https://github.com/bugsnag/bugsnag-php/pull/476)
+
 ## 3.12.1 (2018-02-28)
 
 ### Fixes

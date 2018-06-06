@@ -12,11 +12,17 @@ class BasicResolver implements ResolverInterface
     public function resolve()
     {
         if (isset($_SERVER['REQUEST_METHOD'])) {
+            if (strtoupper($_SERVER['REQUEST_METHOD']) === 'GET') {
+                $params = static::getInputParams($_SERVER, $_GET, false);
+            } else {
+                $params = static::getInputParams($_SERVER, $_POST, true);
+            }
+
             return new PhpRequest($_SERVER,
                 empty($_SESSION) ? [] : $_SESSION,
                 empty($_COOKIE) ? [] : $_COOKIE,
                 static::getRequestHeaders($_SERVER),
-                static::getInputParams($_SERVER, $_POST));
+                $params);
         }
 
         if (PHP_SAPI === 'cli' && isset($_SERVER['argv'])) {
@@ -70,12 +76,13 @@ class BasicResolver implements ResolverInterface
      * their own request objects, thus will need to implement their own bugsnag
      * request resolver.
      *
-     * @param array $server the server variables
-     * @param array $post   the post variables
+     * @param array $server           the server variables
+     * @param array $params           the array of parameters for this request type
+     * @param bool  $fallbackToInput  if true, uses input when params is null
      *
      * @return array|null
      */
-    protected static function getInputParams(array $server, array $post)
+    protected static function getInputParams(array $server, array $params, $fallbackToInput = false)
     {
         static $result;
 
@@ -83,7 +90,11 @@ class BasicResolver implements ResolverInterface
             return $result ?: null;
         }
 
-        $result = $post ?: static::parseInput($server, static::readInput());
+        $result = $params;
+
+        if ($fallbackToInput === true) {
+            $result = $result ?: static::parseInput($server, static::readInput());
+        }
 
         return $result ?: null;
     }
@@ -114,9 +125,7 @@ class BasicResolver implements ResolverInterface
 
         if (isset($server['CONTENT_TYPE']) && stripos($server['CONTENT_TYPE'], 'application/json') === 0) {
             return (array) json_decode($input, true) ?: null;
-        }
-
-        if (isset($server['REQUEST_METHOD']) && strtoupper($server['REQUEST_METHOD']) === 'PUT') {
+        } else {
             parse_str($input, $params);
 
             return (array) $params ?: null;
