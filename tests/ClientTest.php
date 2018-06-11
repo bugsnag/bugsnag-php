@@ -205,7 +205,7 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->registerMiddleware(function($report, callable $next) {
+        $this->client->registerMiddleware(function ($report, callable $next) {
             $report->setUnhandled(true);
             $next($report);
         });
@@ -222,16 +222,16 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->registerMiddleware(function($report, callable $next) {
+        $this->client->registerMiddleware(function ($report, callable $next) {
             $report->setSeverityReason([
-                'type' => 'right'
+                'type' => 'right',
             ]);
             $next($report);
         });
 
         $report = Report::fromNamedError($this->config, 'Name');
         $report->setSeverityReason([
-            'type' => 'wrong'
+            'type' => 'wrong',
         ]);
 
         $this->client->notify($report);
@@ -243,10 +243,10 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->registerMiddleware(function($report, callable $next) {
+        $this->client->registerMiddleware(function ($report, callable $next) {
             $report->setUnhandled(true);
             $report->setSeverityReason([
-                'type' => 'right'
+                'type' => 'right',
             ]);
             $next($report);
         });
@@ -254,13 +254,13 @@ class ClientTest extends TestCase
         $report = Report::fromNamedError($this->config, 'Name');
         $report->setUnhandled(false);
         $report->setSeverityReason([
-            'type' => 'wrong'
+            'type' => 'wrong',
         ]);
 
-        $this->client->notify($report, function($report) {
+        $this->client->notify($report, function ($report) {
             $report->setUnhandled(false);
             $report->setSeverityReason([
-                'type' => 'wrong'
+                'type' => 'wrong',
             ]);
         });
 
