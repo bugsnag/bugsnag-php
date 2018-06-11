@@ -268,6 +268,16 @@ class ClientTest extends TestCase
         $this->assertSame(true, $report->getUnhandled());
     }
 
+    /**
+     * @expectedException \TypeError
+     */
+    public function testNonCallableMiddlewareErrors()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware("hello");
+    }
+
     public function testBreadcrumbsWorks()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);

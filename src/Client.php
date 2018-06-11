@@ -209,11 +209,7 @@ class Client
      */
     public function registerMiddleware(callable $middleware)
     {
-        if (is_callable($middleware)) {
-            $this->pipeline->pipe($middleware);
-        } else {
-            syslog(LOG_WARNING, 'Middleware '.get_class($middleware).' could not be added to the pipeline');
-        }
+        $this->pipeline->pipe($middleware);
 
         return $this;
     }
