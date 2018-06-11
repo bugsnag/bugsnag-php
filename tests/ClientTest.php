@@ -275,7 +275,7 @@ class ClientTest extends TestCase
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
-        $this->client->registerMiddleware("hello");
+        $this->client->registerMiddleware('hello');
     }
 
     public function testBreadcrumbsWorks()
