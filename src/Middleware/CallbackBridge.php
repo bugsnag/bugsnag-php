@@ -35,9 +35,24 @@ class CallbackBridge
      */
     public function __invoke(Report $report, callable $next)
     {
+        $initialUnhandled = $report->getUnhandled();
+        $initialSeverity = $report->getSeverity();
+        $initialReason = $report->getSeverityReason();
+
         $callback = $this->callback;
 
         if ($callback($report) !== false) {
+            $report->setUnhandled($initialUnhandled);
+            if ($report->getSeverity() != $initialSeverity) {
+                // Severity has been changed via callbacks -> severity reason should be userCallbackSetSeverity
+                $report->setSeverityReason([
+                    'type' => 'userCallbackSetSeverity',
+                ]);
+            } else {
+                // Otherwise we ensure the original severity reason is preserved
+                $report->setSeverityReason($initialReason);
+            }
+
             $next($report);
         }
     }
