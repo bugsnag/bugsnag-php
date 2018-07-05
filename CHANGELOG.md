@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## 3.14.0 (2018-0)
+
+* Added `registerMiddleware` method for external middleware additions
+  [#478](https://github.com/bugsnag/bugsnag-php/pull/478)
+
 ## 3.13.0 (2018-06-06)
 
 ### Enhancements
