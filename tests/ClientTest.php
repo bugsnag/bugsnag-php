@@ -170,6 +170,104 @@ class ClientTest extends TestCase
         $this->assertSame(['foo' => 'baz'], $report->getMetaData());
     }
 
+    public function testCustomMiddlewareWorks()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware(function ($report, callable $next) {
+            $report->setMetaData(['middleware' => 'registered']);
+            $next($report);
+        });
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+
+        $this->assertSame(['middleware' => 'registered'], $report->getMetaData());
+    }
+
+    public function testMiddlewareCanModifySeverity()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware(function ($report, callable $next) {
+            $report->setSeverity('info');
+            $next($report);
+        });
+
+        $report = Report::fromNamedError($this->config, 'Name');
+        $report->setSeverity('error');
+
+        $this->client->notify($report);
+
+        $this->assertSame('info', $report->getSeverity());
+    }
+
+    public function testMiddlewareCanModifyUnhandled()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware(function ($report, callable $next) {
+            $report->setUnhandled(true);
+            $next($report);
+        });
+
+        $report = Report::fromNamedError($this->config, 'Name');
+        $report->setUnhandled(false);
+
+        $this->client->notify($report);
+
+        $this->assertSame(true, $report->getUnhandled());
+    }
+
+    public function testMiddlewareCanModifySeverityReason()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware(function ($report, callable $next) {
+            $report->setSeverityReason([
+                'type' => 'right',
+            ]);
+            $next($report);
+        });
+
+        $report = Report::fromNamedError($this->config, 'Name');
+        $report->setSeverityReason([
+            'type' => 'wrong',
+        ]);
+
+        $this->client->notify($report);
+
+        $this->assertSame(['type' => 'right'], $report->getSeverityReason());
+    }
+
+    public function testNotOverriddenByCallbacks()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->registerMiddleware(function ($report, callable $next) {
+            $report->setUnhandled(true);
+            $report->setSeverityReason([
+                'type' => 'right',
+            ]);
+            $next($report);
+        });
+
+        $report = Report::fromNamedError($this->config, 'Name');
+        $report->setUnhandled(false);
+        $report->setSeverityReason([
+            'type' => 'wrong',
+        ]);
+
+        $this->client->notify($report, function ($report) {
+            $report->setUnhandled(false);
+            $report->setSeverityReason([
+                'type' => 'wrong',
+            ]);
+        });
+
+        $this->assertSame(['type' => 'right'], $report->getSeverityReason());
+        $this->assertSame(true, $report->getUnhandled());
+    }
+
     public function testBreadcrumbsWorks()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);

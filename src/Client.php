@@ -117,9 +117,9 @@ class Client
         $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
         $this->sessionTracker = new SessionTracker($config);
 
-        $this->pipeline->pipe(new NotificationSkipper($config));
-        $this->pipeline->pipe(new BreadcrumbData($this->recorder));
-        $this->pipeline->pipe(new SessionData($this));
+        $this->registerMiddleware(new NotificationSkipper($config));
+        $this->registerMiddleware(new BreadcrumbData($this->recorder));
+        $this->registerMiddleware(new SessionData($this));
 
         register_shutdown_function([$this, 'flush']);
     }
@@ -178,7 +178,7 @@ class Client
      */
     public function registerCallback(callable $callback)
     {
-        $this->pipeline->pipe(new CallbackBridge($callback));
+        $this->registerMiddleware(new CallbackBridge($callback));
 
         return $this;
     }
@@ -196,6 +196,20 @@ class Client
              ->registerCallback(new RequestSession($this->resolver))
              ->registerCallback(new RequestUser($this->resolver))
              ->registerCallback(new RequestContext($this->resolver));
+
+        return $this;
+    }
+
+    /**
+     * Register a middleware object to the pipeline.
+     *
+     * @param callable $middleware
+     *
+     * @return $this
+     */
+    public function registerMiddleware(callable $middleware)
+    {
+        $this->pipeline->pipe($middleware);
 
         return $this;
     }
@@ -277,25 +291,19 @@ class Client
      */
     public function notify(Report $report, callable $callback = null)
     {
-        $initialUnhandled = $report->getUnhandled();
-        $initialSeverity = $report->getSeverity();
-        $initialReason = $report->getSeverityReason();
-        $this->pipeline->execute($report, function ($report) use ($callback, $initialUnhandled, $initialSeverity, $initialReason) {
+        $this->pipeline->execute($report, function ($report) use ($callback) {
             if ($callback) {
-                if ($callback($report) === false) {
+                $resolvedReport = null;
+
+                $bridge = new CallbackBridge($callback);
+                $bridge($report, function ($report) use ($resolvedReport) {
+                    $resolvedReport = $report;
+                });
+                if ($resolvedReport) {
+                    $report = $resolvedReport;
+                } else {
                     return;
                 }
-            }
-
-            $report->setUnhandled($initialUnhandled);
-            if ($report->getSeverity() != $initialSeverity) {
-                // Severity has been changed via callbacks -> severity reason should be userCallbackSetSeverity
-                $report->setSeverityReason([
-                    'type' => 'userCallbackSetSeverity',
-                ]);
-            } else {
-                // Otherwise we ensure the original severity reason is preserved
-                $report->setSeverityReason($initialReason);
             }
 
             $this->http->queue($report);
