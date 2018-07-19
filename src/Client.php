@@ -296,7 +296,7 @@ class Client
                 $resolvedReport = null;
 
                 $bridge = new CallbackBridge($callback);
-                $bridge($report, function ($report) use ($resolvedReport) {
+                $bridge($report, function ($report) use (&$resolvedReport) {
                     $resolvedReport = $report;
                 });
                 if ($resolvedReport) {
