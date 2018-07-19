@@ -4,6 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use Bugsnag\Configuration;
+use Bugsnag\HttpClient;
 use Bugsnag\Report;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
@@ -42,9 +43,23 @@ class ClientTest extends TestCase
 
     public function testManualErrorNotificationWithSeverity()
     {
-        $this->client->expects($this->once())->method('notify');
+        $client = new Client($this->config, null, $this->guzzle);
+        $prop = (new ReflectionClass($client))->getProperty('http');
+        $prop->setAccessible(true);
 
-        $this->client->notifyError('SomeError', 'Some message', function ($report) {
+        $http = $this->getMockBuilder(HttpClient::class)
+                     ->setMethods(['queue'])
+                     ->setConstructorArgs([$this->config, $this->guzzle])
+                     ->getMock();
+        $prop->setValue($client, $http);
+
+        $http->expects($this->once())
+             ->method('queue')
+             ->with($this->callback(function($subject) {
+                 return $subject->getSeverity() === 'info';
+             }));
+
+        $client->notifyError('SomeError', 'Some message', function ($report) {
             $report->setSeverity('info');
         });
     }
