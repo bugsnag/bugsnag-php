@@ -55,7 +55,7 @@ class ClientTest extends TestCase
 
         $http->expects($this->once())
              ->method('queue')
-             ->with($this->callback(function($subject) {
+             ->with($this->callback(function ($subject) {
                  return $subject->getSeverity() === 'info';
              }));
 
