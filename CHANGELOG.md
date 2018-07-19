@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Bug Fixes
+
+* Fix `notifyError(name, message, callback)` and `notifyException(ex, callback)`
+  to ensure that reports are sent when callback != null
+
 ## 3.14.0 (2018-0)
 
 * Added `registerMiddleware` method for external middleware additions
