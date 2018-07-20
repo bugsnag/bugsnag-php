@@ -1,14 +1,16 @@
 Changelog
 =========
 
-## TBD
+## 3.14.1 (2018-07-20)
 
 ### Bug Fixes
 
 * Fix `notifyError(name, message, callback)` and `notifyException(ex, callback)`
   to ensure that reports are sent when callback != null
 
-## 3.14.0 (2018-0)
+## 3.14.0 (2018-07-06)
+
+### Enhancements
 
 * Added `registerMiddleware` method for external middleware additions
   [#478](https://github.com/bugsnag/bugsnag-php/pull/478)
