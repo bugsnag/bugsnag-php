@@ -35,7 +35,16 @@ class RequestSession
      */
     public function __invoke(Report $report)
     {
-        if ($data = $this->resolver->resolve()->getSession()) {
+        $request = $this->resolver->resolve();
+        $data = null;
+
+        try {
+            $data = $request->getSession();
+        } catch (\Exception $e) {
+            // Cannot obtain session data
+        }
+
+        if ($data) {
             $report->setMetaData(['session' => $data]);
         }
     }
