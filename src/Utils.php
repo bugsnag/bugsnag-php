@@ -31,11 +31,11 @@ class Utils
         $strLen = strlen($string);
         $subLen = strlen($sub);
         $searchLength = $strLen - $subLen;
-        if ($searchLength < 0)
-        {
+        if ($searchLength < 0) {
             return false;
         }
         $endsIn = substr_compare($string, $sub, $searchLength, $subLen);
+
         return $endsIn === 0;
     }
 

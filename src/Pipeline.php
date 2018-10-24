@@ -2,8 +2,6 @@
 
 namespace Bugsnag;
 
-use Bugsnag\Utils;
-
 class Pipeline
 {
     /**
@@ -60,8 +58,9 @@ class Pipeline
         if ($beforePosition === null) {
             $this->pipes[] = $pipe;
         } else {
-            array_splice($this->pipes, $beforePosition, 0, array($pipe));
+            array_splice($this->pipes, $beforePosition, 0, [$pipe]);
         }
+
         return $this;
     }
 
