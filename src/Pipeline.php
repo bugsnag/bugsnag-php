@@ -47,7 +47,7 @@ class Pipeline
      *
      * @return $this
      */
-    public function insertBefore(callable $pipe, string $beforeClass)
+    public function insertBefore(callable $pipe, $beforeClass)
     {
         $beforePosition = null;
         foreach ($this->pipes as $index => $callable) {

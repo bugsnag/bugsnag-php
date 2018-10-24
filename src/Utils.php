@@ -26,7 +26,7 @@ class Utils
      *
      * @return bool
      */
-    public static function stringEndsIn(string $string, string $sub)
+    public static function stringEndsIn($string, $sub)
     {
         $strLen = strlen($string);
         $subLen = strlen($sub);
