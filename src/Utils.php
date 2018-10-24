@@ -19,6 +19,27 @@ class Utils
     }
 
     /**
+     * Check a string ends in a substring.
+     *
+     * @param string $string The parent string
+     * @param string $sub The substring
+     *
+     * @return bool
+     */
+    public static function stringEndsIn(string $string, string $sub)
+    {
+        $strLen = strlen($string);
+        $subLen = strlen($sub);
+        $searchLength = $strLen - $subLen;
+        if ($searchLength < 0)
+        {
+            return false;
+        }
+        $endsIn = substr_compare($string, $sub, $searchLength, $subLen);
+        return $endsIn === 0;
+    }
+
+    /**
      * Gets the current user's identity for build reporting.
      *
      * @return string

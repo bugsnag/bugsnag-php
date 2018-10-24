@@ -58,7 +58,7 @@ class Client
      *
      * @var \Bugsnag\Pipeline
      */
-    protected $pipeline;
+    public $pipeline;
 
     /**
      * The http client instance.
