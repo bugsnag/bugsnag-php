@@ -4,14 +4,14 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Pipeline;
 use PHPUnit_Framework_TestCase as TestCase;
-use phpmock\phpunit\PHPMock;
 
 class TestCallbackA
 {
-    public function __invoke($item, $next) {
+    public function __invoke($item, $next)
+    {
         $payload = [
             'B' => array_key_exists('B', $item),
-            'C' => array_key_exists('C', $item)
+            'C' => array_key_exists('C', $item),
         ];
         $item['A'] = $payload;
         $next($item);
@@ -20,10 +20,11 @@ class TestCallbackA
 
 class TestCallbackB
 {
-    public function __invoke($item, $next) {
+    public function __invoke($item, $next)
+    {
         $payload = [
             'A' => array_key_exists('A', $item),
-            'C' => array_key_exists('C', $item)
+            'C' => array_key_exists('C', $item),
         ];
         $item['B'] = $payload;
         $next($item);
@@ -32,10 +33,11 @@ class TestCallbackB
 
 class TestCallbackC
 {
-    public function __invoke($item, $next) {
+    public function __invoke($item, $next)
+    {
         $payload = [
             'A' => array_key_exists('A', $item),
-            'B' => array_key_exists('B', $item)
+            'B' => array_key_exists('B', $item),
         ];
         $item['C'] = $payload;
         $next($item);
@@ -44,7 +46,6 @@ class TestCallbackC
 
 class PipelineTest extends TestCase
 {
-
     public function testCallableAddedToPipeline()
     {
         $pipeline = new Pipeline();
@@ -74,7 +75,7 @@ class PipelineTest extends TestCase
         $pipeline = new Pipeline();
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
-        $pipeline->insertBefore(new TestCallbackB(), "TestCallbackA");
+        $pipeline->insertBefore(new TestCallbackB(), 'TestCallbackA');
         $pipeline->execute([], function ($item) {
             $this->assertCount(3, $item);
             $this->assertSame(['B' => true, 'C' => false], $item['A']);
@@ -88,7 +89,7 @@ class PipelineTest extends TestCase
         $pipeline = new Pipeline();
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
-        $pipeline->insertBefore(new TestCallbackB(), "NotPresent");
+        $pipeline->insertBefore(new TestCallbackB(), 'NotPresent');
         $pipeline->execute([], function ($item) {
             $this->assertCount(3, $item);
             $this->assertSame(['B' => false, 'C' => false], $item['A']);
