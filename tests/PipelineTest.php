@@ -9,11 +9,7 @@ class TestCallbackA
 {
     public function __invoke($item, $next)
     {
-        $payload = [
-            'B' => array_key_exists('B', $item),
-            'C' => array_key_exists('C', $item),
-        ];
-        $item['A'] = $payload;
+        $item .= "A";
         $next($item);
     }
 }
@@ -22,11 +18,7 @@ class TestCallbackB
 {
     public function __invoke($item, $next)
     {
-        $payload = [
-            'A' => array_key_exists('A', $item),
-            'C' => array_key_exists('C', $item),
-        ];
-        $item['B'] = $payload;
+        $item .= "B";
         $next($item);
     }
 }
@@ -35,11 +27,7 @@ class TestCallbackC
 {
     public function __invoke($item, $next)
     {
-        $payload = [
-            'A' => array_key_exists('A', $item),
-            'B' => array_key_exists('B', $item),
-        ];
-        $item['C'] = $payload;
+        $item .= "C";
         $next($item);
     }
 }
@@ -50,9 +38,9 @@ class PipelineTest extends TestCase
     {
         $pipeline = new Pipeline();
         $pipeline->pipe(new TestCallbackA());
-        $pipeline->execute([], function ($item) {
-            $this->assertCount(1, $item);
-            $this->assertSame(['A' => ['B' => false, 'C' => false]], $item);
+        $pipeline->execute("", function ($item) {
+            $this->assertSame(1, strlen($item));
+            $this->assertSame("A", $item);
         });
     }
 
@@ -62,11 +50,9 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackB());
         $pipeline->pipe(new TestCallbackC());
-        $pipeline->execute([], function ($item) {
-            $this->assertCount(3, $item);
-            $this->assertSame(['B' => false, 'C' => false], $item['A']);
-            $this->assertSame(['A' => true, 'C' => false], $item['B']);
-            $this->assertSame(['A' => true, 'B' => true], $item['C']);
+        $pipeline->execute("", function ($item) {
+            $this->assertSame(3, strlen($item));
+            $this->assertSame("ABC", $item);
         });
     }
 
@@ -76,11 +62,9 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'TestCallbackA');
-        $pipeline->execute([], function ($item) {
-            $this->assertCount(3, $item);
-            $this->assertSame(['B' => true, 'C' => false], $item['A']);
-            $this->assertSame(['A' => false, 'C' => false], $item['B']);
-            $this->assertSame(['A' => true, 'B' => true], $item['C']);
+        $pipeline->execute("", function ($item) {
+            $this->assertSame(3, strlen($item));
+            $this->assertSame("BAC", $item);
         });
     }
 
@@ -90,11 +74,9 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'NotPresent');
-        $pipeline->execute([], function ($item) {
-            $this->assertCount(3, $item);
-            $this->assertSame(['B' => false, 'C' => false], $item['A']);
-            $this->assertSame(['A' => true, 'C' => true], $item['B']);
-            $this->assertSame(['A' => true, 'B' => false], $item['C']);
+        $pipeline->execute("", function ($item) {
+            $this->assertSame(3, strlen($item));
+            $this->assertSame("ACB", $item);
         });
     }
 }
