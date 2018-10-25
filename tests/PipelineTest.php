@@ -9,7 +9,7 @@ class TestCallbackA
 {
     public function __invoke($item, $next)
     {
-        $item .= "A";
+        $item .= 'A';
         $next($item);
     }
 }
@@ -18,7 +18,7 @@ class TestCallbackB
 {
     public function __invoke($item, $next)
     {
-        $item .= "B";
+        $item .= 'B';
         $next($item);
     }
 }
@@ -27,7 +27,7 @@ class TestCallbackC
 {
     public function __invoke($item, $next)
     {
-        $item .= "C";
+        $item .= 'C';
         $next($item);
     }
 }
@@ -38,9 +38,9 @@ class PipelineTest extends TestCase
     {
         $pipeline = new Pipeline();
         $pipeline->pipe(new TestCallbackA());
-        $pipeline->execute("", function ($item) {
+        $pipeline->execute('', function ($item) {
             $this->assertSame(1, strlen($item));
-            $this->assertSame("A", $item);
+            $this->assertSame('A', $item);
         });
     }
 
@@ -50,9 +50,9 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackB());
         $pipeline->pipe(new TestCallbackC());
-        $pipeline->execute("", function ($item) {
+        $pipeline->execute('', function ($item) {
             $this->assertSame(3, strlen($item));
-            $this->assertSame("ABC", $item);
+            $this->assertSame('ABC', $item);
         });
     }
 
@@ -62,9 +62,9 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'TestCallbackA');
-        $pipeline->execute("", function ($item) {
+        $pipeline->execute('', function ($item) {
             $this->assertSame(3, strlen($item));
-            $this->assertSame("BAC", $item);
+            $this->assertSame('BAC', $item);
         });
     }
 
@@ -74,9 +74,9 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'NotPresent');
-        $pipeline->execute("", function ($item) {
+        $pipeline->execute('', function ($item) {
             $this->assertSame(3, strlen($item));
-            $this->assertSame("ACB", $item);
+            $this->assertSame('ACB', $item);
         });
     }
 }
