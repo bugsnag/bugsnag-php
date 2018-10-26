@@ -9,7 +9,7 @@ class TestCallbackA
 {
     public function __invoke($item, $next)
     {
-        $item .= "A";
+        $item .= 'A';
         $next($item);
     }
 }
@@ -18,7 +18,7 @@ class TestCallbackB
 {
     public function __invoke($item, $next)
     {
-        $item .= "B";
+        $item .= 'B';
         $next($item);
     }
 }
@@ -27,7 +27,7 @@ class TestCallbackC
 {
     public function __invoke($item, $next)
     {
-        $item .= "C";
+        $item .= 'C';
         $next($item);
     }
 }
