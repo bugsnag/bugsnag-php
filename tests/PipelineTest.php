@@ -38,8 +38,8 @@ class PipelineTest extends TestCase
     {
         $pipeline = new Pipeline();
         $pipeline->pipe(new TestCallbackA());
-        $pipeline->execute("", function ($item) {
-            $this->assertSame("A", $item);
+        $pipeline->execute('', function ($item) {
+            $this->assertSame('A', $item);
         });
     }
 
@@ -49,8 +49,8 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackB());
         $pipeline->pipe(new TestCallbackC());
-        $pipeline->execute("", function ($item) {
-            $this->assertSame("ABC", $item);
+        $pipeline->execute('', function ($item) {
+            $this->assertSame('ABC', $item);
         });
     }
 
@@ -60,8 +60,8 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'TestCallbackA');
-        $pipeline->execute("", function ($item) {
-            $this->assertSame("BAC", $item);
+        $pipeline->execute('', function ($item) {
+            $this->assertSame('BAC', $item);
         });
     }
 
@@ -71,8 +71,8 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'NotPresent');
-        $pipeline->execute("", function ($item) {
-            $this->assertSame("ACB", $item);
+        $pipeline->execute('', function ($item) {
+            $this->assertSame('ACB', $item);
         });
     }
 }
