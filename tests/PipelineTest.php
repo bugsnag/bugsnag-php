@@ -59,7 +59,7 @@ class PipelineTest extends TestCase
         $pipeline = new Pipeline();
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
-        $pipeline->insertBefore(new TestCallbackB(), 'TestCallbackA');
+        $pipeline->insertBefore(new TestCallbackB(), 'Bugsnag\\Tests\\TestCallbackA');
         $pipeline->execute('', function ($item) {
             $this->assertSame('BAC', $item);
         });

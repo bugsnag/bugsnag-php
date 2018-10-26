@@ -50,7 +50,7 @@ class Pipeline
         $beforePosition = null;
         foreach ($this->pipes as $index => $callable) {
             $class = get_class($callable);
-            if (Utils::stringEndsIn($class, $beforeClass)) {
+            if ($class == $beforeClass) {
                 $beforePosition = $index;
                 break;
             }

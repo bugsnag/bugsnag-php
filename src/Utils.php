@@ -19,19 +19,6 @@ class Utils
     }
 
     /**
-     * Check a string ends in a substring.
-     *
-     * @param string $haystack The parent string
-     * @param string $sneedle The substring
-     *
-     * @return bool
-     */
-    public static function stringEndsIn($haystack, $needle)
-    {
-        return substr($haystack, -strlen($needle)) === $needle;
-    }
-
-    /**
      * Gets the current user's identity for build reporting.
      *
      * @return string
