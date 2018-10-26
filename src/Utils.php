@@ -21,22 +21,14 @@ class Utils
     /**
      * Check a string ends in a substring.
      *
-     * @param string $string The parent string
-     * @param string $sub The substring
+     * @param string $haystack The parent string
+     * @param string $sneedle The substring
      *
      * @return bool
      */
-    public static function stringEndsIn($string, $sub)
+    public static function stringEndsIn($haystack, $needle)
     {
-        $strLen = strlen($string);
-        $subLen = strlen($sub);
-        $searchLength = $strLen - $subLen;
-        if ($searchLength < 0) {
-            return false;
-        }
-        $endsIn = substr_compare($string, $sub, $searchLength, $subLen);
-
-        return $endsIn === 0;
+        return substr($haystack, -strlen($needle)) === $needle;
     }
 
     /**
