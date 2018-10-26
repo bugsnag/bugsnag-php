@@ -44,7 +44,8 @@ class PipelineTest extends TestCase
         $pipeline = new Pipeline();
         $pipeline->pipe(new TestCallbackA());
         $returnItem = new ReturnObject();
-        $pipeline->execute($returnItem, function ($item) {});
+        $pipeline->execute($returnItem, function ($item) {
+        });
         $this->assertSame('A', $returnItem->result);
     }
 
@@ -55,7 +56,8 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackB());
         $pipeline->pipe(new TestCallbackC());
         $returnItem = new ReturnObject();
-        $pipeline->execute($returnItem, function ($item) {});
+        $pipeline->execute($returnItem, function ($item) {
+        });
         $this->assertSame('ABC', $returnItem->result);
     }
 
@@ -66,7 +68,8 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'Bugsnag\\Tests\\TestCallbackA');
         $returnItem = new ReturnObject();
-        $pipeline->execute($returnItem, function ($item) {});
+        $pipeline->execute($returnItem, function ($item) {
+        });
         $this->assertSame('BAC', $returnItem->result);
     }
 
@@ -77,7 +80,8 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'NotPresent');
         $returnItem = new ReturnObject();
-        $pipeline->execute($returnItem, function ($item) {});
+        $pipeline->execute($returnItem, function ($item) {
+        });
         $this->assertSame('ACB', $returnItem->result);
     }
 }
