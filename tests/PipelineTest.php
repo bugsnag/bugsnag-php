@@ -5,11 +5,16 @@ namespace Bugsnag\Tests;
 use Bugsnag\Pipeline;
 use PHPUnit_Framework_TestCase as TestCase;
 
+class ReturnObject
+{
+    public $result = '';
+}
+
 class TestCallbackA
 {
     public function __invoke($item, $next)
     {
-        $item .= 'A';
+        $item->result .= 'A';
         $next($item);
     }
 }
@@ -18,7 +23,7 @@ class TestCallbackB
 {
     public function __invoke($item, $next)
     {
-        $item .= 'B';
+        $item->result .= 'B';
         $next($item);
     }
 }
@@ -27,7 +32,7 @@ class TestCallbackC
 {
     public function __invoke($item, $next)
     {
-        $item .= 'C';
+        $item->result .= 'C';
         $next($item);
     }
 }
@@ -38,9 +43,9 @@ class PipelineTest extends TestCase
     {
         $pipeline = new Pipeline();
         $pipeline->pipe(new TestCallbackA());
-        $pipeline->execute('', function ($item) {
-            $this->assertSame('A', $item);
-        });
+        $returnItem = new ReturnObject();
+        $pipeline->execute($returnItem, function ($item) {});
+        $this->assertSame('A', $returnItem->result);
     }
 
     public function testCallableAddedInOrder()
@@ -49,9 +54,9 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackB());
         $pipeline->pipe(new TestCallbackC());
-        $pipeline->execute('', function ($item) {
-            $this->assertSame('ABC', $item);
-        });
+        $returnItem = new ReturnObject();
+        $pipeline->execute($returnItem, function ($item) {});
+        $this->assertSame('ABC', $returnItem->result);
     }
 
     public function testInsertBeforeAddedCorrectly()
@@ -60,9 +65,9 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'Bugsnag\\Tests\\TestCallbackA');
-        $pipeline->execute('', function ($item) {
-            $this->assertSame('BAC', $item);
-        });
+        $returnItem = new ReturnObject();
+        $pipeline->execute($returnItem, function ($item) {});
+        $this->assertSame('BAC', $returnItem->result);
     }
 
     public function testInsertBeforeNoClass()
@@ -71,8 +76,8 @@ class PipelineTest extends TestCase
         $pipeline->pipe(new TestCallbackA());
         $pipeline->pipe(new TestCallbackC());
         $pipeline->insertBefore(new TestCallbackB(), 'NotPresent');
-        $pipeline->execute('', function ($item) {
-            $this->assertSame('ACB', $item);
-        });
+        $returnItem = new ReturnObject();
+        $pipeline->execute($returnItem, function ($item) {});
+        $this->assertSame('ACB', $returnItem->result);
     }
 }
