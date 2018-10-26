@@ -38,6 +38,33 @@ class Pipeline
     }
 
     /**
+     * Add a pipe to the pipeline before a given class.
+     *
+     * @param callable $pipe a new pipe to pass through
+     * @param string $beforeClass to class to insert the pipe before
+     *
+     * @return $this
+     */
+    public function insertBefore(callable $pipe, $beforeClass)
+    {
+        $beforePosition = null;
+        foreach ($this->pipes as $index => $callable) {
+            $class = get_class($callable);
+            if ($class === $beforeClass) {
+                $beforePosition = $index;
+                break;
+            }
+        }
+        if ($beforePosition === null) {
+            $this->pipes[] = $pipe;
+        } else {
+            array_splice($this->pipes, $beforePosition, 0, [$pipe]);
+        }
+
+        return $this;
+    }
+
+    /**
      * Run the pipeline.
      *
      * @param mixed    $passable    the item to send through the pipeline

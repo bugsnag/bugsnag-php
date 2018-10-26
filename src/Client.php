@@ -170,6 +170,16 @@ class Client
     }
 
     /**
+     * Get the pipeline instance.
+     *
+     * @return \Bugsnag\Pipeline
+     */
+    public function getPipeline()
+    {
+        return $this->pipeline;
+    }
+
+    /**
      * Regsier a new notification callback.
      *
      * @param callable $callback
