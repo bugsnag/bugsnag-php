@@ -58,7 +58,7 @@ class Client
      *
      * @var \Bugsnag\Pipeline
      */
-    public $pipeline;
+    protected $pipeline;
 
     /**
      * The http client instance.
@@ -167,6 +167,16 @@ class Client
     public function getConfig()
     {
         return $this->config;
+    }
+
+    /**
+     * Get the pipeline instance.
+     *
+     * @return \Bugsnag\Pipeline
+     */
+    public function getPipeline()
+    {
+        return $this->pipeline;
     }
 
     /**
