@@ -17,7 +17,7 @@
     },
     "require-dev": {
         "graham-campbell/testbench-core": "^1.1",
-        "mockery/mockery": "^0.9.4|^1.0",
+        "mockery/mockery": "^0.9.4|~1.1.0",
         "mtdowling/burgomaster": "dev-master#72151eddf5f0cf101502b94bf5031f9c53501a04",
         "phpunit/phpunit": "^4.8|^5.0",
         "php-mock/php-mock-phpunit": "^1.1"
