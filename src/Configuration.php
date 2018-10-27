@@ -269,6 +269,22 @@ class Configuration
     }
 
     /**
+     * Set the project root regex.
+     *
+     * @param string|null $projectRootRegex the project root path
+     *
+     * @return void
+     */
+    public function setProjectRootRegex($projectRootRegex)
+    {
+        if (@preg_match($projectRootRegex, null) === false) {
+            throw new InvalidArgumentException('Invalid project root regex: '.$projectRootRegex);
+        }
+
+        $this->projectRootRegex = $projectRootRegex;
+    }
+
+    /**
      * Is the given file in the project?
      *
      * @param string $file
