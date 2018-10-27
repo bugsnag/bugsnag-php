@@ -78,7 +78,7 @@ class ConfigurationTest extends TestCase
     {
         $this->assertFalse($this->config->isInProject('/root/dir/app/afile.php'));
 
-        $this->config->setProjectRootRegex("/^(".preg_quote("/root/dir/app", '/')."|".preg_quote("/root/dir/lib", '/').")[\\/]?/i");
+        $this->config->setProjectRootRegex('/^('.preg_quote('/root/dir/app', '/').'|'.preg_quote('/root/dir/lib', '/').')[\\/]?/i');
 
         $this->assertTrue($this->config->isInProject('/root/dir/app/afile.php'));
         $this->assertTrue($this->config->isInProject('/root/dir/lib/afile.php'));
@@ -86,7 +86,7 @@ class ConfigurationTest extends TestCase
         $this->assertFalse($this->config->isInProject('/root/dir/other-directory/afile.php'));
         $this->assertFalse($this->config->isInProject('/base/root/dir/app/afile.php'));
 
-        $this->config->setProjectRootRegex("/^(".preg_quote("/root/dir/app/", '/')."|".preg_quote("/root/dir/lib/", '/').")[\\/]?/i");
+        $this->config->setProjectRootRegex('/^('.preg_quote('/root/dir/app/', '/').'|'.preg_quote('/root/dir/lib/', '/').')[\\/]?/i');
 
         $this->assertTrue($this->config->isInProject('/root/dir/app/afile.php'));
         $this->assertTrue($this->config->isInProject('/root/dir/lib/afile.php'));
