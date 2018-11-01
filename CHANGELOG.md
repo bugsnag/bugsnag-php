@@ -1,6 +1,14 @@
 Changelog
 =========
 
+## 3.15.0 (2018-11-1)
+
+### Enhancements
+
+* Added `insertBefore` to `Pipeline` and `getPipeline` to `Client` to facilitate
+  callback ordering
+  [#495](https://github.com/bugsnag/bugsnag-php/pull/495)
+
 ## 3.14.1 (2018-07-20)
 
 ### Bug Fixes
