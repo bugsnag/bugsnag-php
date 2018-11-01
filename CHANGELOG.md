@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## 3.15.1 (Alpha)
+## 3.15.0 (2018-11-1)
 
 ### Enhancements
 
