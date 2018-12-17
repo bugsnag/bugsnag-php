@@ -159,6 +159,28 @@ class ClientTest extends TestCase
         $this->client->notify(Report::fromNamedError($this->config, 'SkipMe', 'Message'));
     }
 
+    public function testBeforeNotifyCanModifyReportFrames()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->setBatchSending(false);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Magic', 'oh no'));
+
+        $this->assertFalse($report->getStacktrace()->getFrames()[0]['inProject']);
+
+        $this->client->registerCallback(function (Report $report) {
+            $frames = &$report->getStacktrace()->getFrames();
+            $frames[0]['inProject'] = true;
+
+            return true;
+        });
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Magic', 'oh no'));
+
+        $this->assertTrue($report->getStacktrace()->getFrames()[0]['inProject']);
+    }
+
     public function testDirectCallbackSkipsError()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);

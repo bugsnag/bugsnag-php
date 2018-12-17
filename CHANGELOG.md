@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## TBD
+
+### Bug Fixes
+
+* Allow modifying stack frame values by reference
+
 ## 3.15.0 (2018-11-1)
 
 ### Enhancements
