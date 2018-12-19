@@ -1,11 +1,12 @@
 Changelog
 =========
 
-## TBD
+## 3.15.1 (2018-12-19)
 
 ### Bug Fixes
 
 * Allow modifying stack frame values by reference
+  [#507](https://github.com/bugsnag/bugsnag-php/pull/507)
 
 ## 3.15.0 (2018-11-1)
 
