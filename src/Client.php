@@ -405,26 +405,428 @@ class Client
         return $this->sessionTracker;
     }
 
+    // Forward calls to Configuration:
+
     /**
-     * Dynamically pass calls to the configuration.
+     * Get the Bugsnag API Key.
      *
-     * @param string $method
-     * @param array  $parameters
-     *
-     * @throws \BadMethodCallException
-     *
-     * @return mixed
+     * @var string
      */
-    public function __call($method, $parameters)
+    public function getApiKey()
     {
-        $callable = [$this->config, $method];
+        return $this->config->getApiKey();
+    }
 
-        if (!is_callable($callable)) {
-            throw new BadMethodCallException("The method '{$method}' does not exist.");
-        }
+    /**
+     * Sets whether errors should be batched together and send at the end of each request.
+     *
+     * @param bool $batchSending whether to batch together errors
+     *
+     * @return $this
+     */
+    public function setBatchSending($batchSending)
+    {
+        $this->config->setBatchSending($batchSending);
 
-        $value = call_user_func_array($callable, $parameters);
+        return $this;
+    }
 
-        return stripos($method, 'set') === 0 ? $this : $value;
+    /**
+     * Is batch sending is enabled?
+     *
+     * @return bool
+     */
+    public function isBatchSending()
+    {
+        return $this->config->isBatchSending();
+    }
+
+    /**
+     * Set which release stages should be allowed to notify Bugsnag.
+     *
+     * Eg ['production', 'development'].
+     *
+     * @param string[]|null $notifyReleaseStages array of release stages to notify for
+     *
+     * @return $this
+     */
+    public function setNotifyReleaseStages(array $notifyReleaseStages = null)
+    {
+        $this->config->setNotifyReleaseStages($notifyReleaseStages);
+
+        return $this;
+    }
+
+    /**
+     * Should we notify Bugsnag based on the current release stage?
+     *
+     * @return bool
+     */
+    public function shouldNotify()
+    {
+        return $this->config->shouldNotify();
+    }
+
+    /**
+     * Set the strings to filter out from metaData arrays before sending then.
+     *
+     * Eg. ['password', 'credit_card'].
+     *
+     * @param string[] $filters an array of metaData filters
+     *
+     * @return $this
+     */
+    public function setFilters(array $filters)
+    {
+        $this->config->setFilters($filters);
+
+        return $this;
+    }
+
+    /**
+     * Get the array of metaData filters.
+     *
+     * @var string
+     */
+    public function getFilters()
+    {
+        return $this->config->getFilters();
+    }
+
+    /**
+     * Set the project root.
+     *
+     * @param string|null $projectRoot the project root path
+     *
+     * @return void
+     */
+    public function setProjectRoot($projectRoot)
+    {
+        $this->config->setProjectRoot($projectRoot);
+    }
+
+    /**
+     * Is the given file in the project?
+     *
+     * @param string $file
+     *
+     * @return string
+     */
+    public function isInProject($file)
+    {
+        return $this->config->isInProject($file);
+    }
+
+    /**
+     * Set the strip path.
+     *
+     * @param string|null $stripPath the absolute strip path
+     *
+     * @return void
+     */
+    public function setStripPath($stripPath)
+    {
+        $this->config->setStripPath($stripPath);
+    }
+
+    /**
+     * Set the regular expression used to strip paths from stacktraces.
+     *
+     * @param string|null $stripPathRegex
+     *
+     * @return void
+     */
+    public function setStripPathRegex($stripPathRegex)
+    {
+        $this->config->setStripPathRegex($stripPathRegex);
+    }
+
+    /**
+     * Get the stripped file path.
+     *
+     * @param string $file
+     *
+     * @return string
+     */
+    public function getStrippedFilePath($file)
+    {
+        return $this->config->getStrippedFilePath($file);
+    }
+
+    /**
+     * Set if we should we send a small snippet of the code that crashed.
+     *
+     * This can help you diagnose even faster from within your dashboard.
+     *
+     * @param bool $sendCode whether to send code to Bugsnag
+     *
+     * @return $this
+     */
+    public function setSendCode($sendCode)
+    {
+        $this->config->setSendCode($sendCode);
+
+        return $this;
+    }
+
+    /**
+     * Should we send a small snippet of the code that crashed?
+     *
+     * @return bool
+     */
+    public function shouldSendCode()
+    {
+        return $this->config->shouldSendCode();
+    }
+
+    /**
+     * Sets the notifier to report as to Bugsnag.
+     *
+     * This should only be set by other notifier libraries.
+     *
+     * @param string[] $notifier an array of name, version, url.
+     *
+     * @return $this
+     */
+    public function setNotifier(array $notifier)
+    {
+        $this->config->setNotifier($notifier);
+
+        return $this;
+    }
+
+    /**
+     * Get the notifier to report as to Bugsnag.
+     *
+     * @var string[]
+     */
+    public function getNotifier()
+    {
+        return $this->config->getNotifier();
+    }
+
+    /**
+     * Set your app's semantic version, eg "1.2.3".
+     *
+     * @param string|null $appVersion the app's version
+     *
+     * @return $this
+     */
+    public function setAppVersion($appVersion)
+    {
+        $this->config->setAppVersion($appVersion);
+
+        return $this;
+    }
+
+    /**
+     * Set your release stage, eg "production" or "development".
+     *
+     * @param string|null $releaseStage the app's current release stage
+     *
+     * @return $this
+     */
+    public function setReleaseStage($releaseStage)
+    {
+        $this->config->setReleaseStage($releaseStage);
+
+        return $this;
+    }
+
+    /**
+     * Set the type of application executing the code.
+     *
+     * This is usually used to represent if you are running plain PHP code
+     * "php", via a framework, eg "laravel", or executing through delayed
+     * worker code, eg "resque".
+     *
+     * @param string|null $type the current type
+     *
+     * @return $this
+     */
+    public function setAppType($type)
+    {
+        $this->config->setAppType($type);
+
+        return $this;
+    }
+
+    /**
+     * Set the fallback application type.
+     *
+     * This is should be used only by libraries to set an fallback app type.
+     *
+     * @param string|null $type the fallback type
+     *
+     * @return $this
+     */
+    public function setFallbackType($type)
+    {
+        $this->config->setFallbackType($type);
+
+        return $this;
+    }
+
+    /**
+     * Get the application data.
+     *
+     * @return array
+     */
+    public function getAppData()
+    {
+        return $this->config->getAppData();
+    }
+
+    /**
+     * Set the hostname.
+     *
+     * @param string|null $hostname the hostname
+     *
+     * @return $this
+     */
+    public function setHostname($hostname)
+    {
+        $this->config->setHostname($hostname);
+
+        return $this;
+    }
+
+    /**
+     * Get the device data.
+     *
+     * @return array
+     */
+    public function getDeviceData()
+    {
+        return $this->config->getDeviceData();
+    }
+
+    /**
+     * Set custom metadata to send to Bugsnag.
+     *
+     * You can use this to add custom tabs of data to each error on your
+     * Bugsnag dashboard.
+     *
+     * @param array[] $metaData an array of arrays of custom data
+     * @param bool    $merge    should we merge the meta data
+     *
+     * @return $this
+     */
+    public function setMetaData(array $metaData, $merge = true)
+    {
+        $this->config->setMetaData($metaData, $merge);
+
+        return $this;
+    }
+
+    /**
+     * Get the custom metadata to send to Bugsnag.
+     *
+     * @return array[]
+     */
+    public function getMetaData()
+    {
+        return $this->config->getMetaData();
+    }
+
+    /**
+     * Set Bugsnag's error reporting level.
+     *
+     * If this is not set, we'll use your current PHP error_reporting value
+     * from your ini file or error_reporting(...) calls.
+     *
+     * @param int|null $errorReportingLevel the error reporting level integer
+     *
+     * @return $this
+     */
+    public function setErrorReportingLevel($errorReportingLevel)
+    {
+        $this->config->setErrorReportingLevel($errorReportingLevel);
+
+        return $this;
+    }
+
+    /**
+     * Should we ignore the given error code?
+     *
+     * @param int $code the error code
+     *
+     * @return bool
+     */
+    public function shouldIgnoreErrorCode($code)
+    {
+        return $this->config->shouldIgnoreErrorCode($code);
+    }
+
+    /**
+     * Set session tracking state and pass in optional guzzle.
+     *
+     * @param bool $track whether to track sessions
+     *
+     * @return $this
+     */
+    public function setAutoCaptureSessions($track)
+    {
+        $this->config->setAutoCaptureSessions($track);
+
+        return $this;
+    }
+
+    /**
+     * Set session delivery endpoint.
+     *
+     * @param string $endpoint the session endpoint
+     *
+     * @return $this
+     */
+    public function setSessionEndpoint($endpoint)
+    {
+        $this->config->setSessionEndpoint($endpoint);
+
+        return $this;
+    }
+
+    /**
+     * Get the session client.
+     *
+     * @return \Guzzle\ClientInterface
+     */
+    public function getSessionClient()
+    {
+        return $this->config->getSessionClient();
+    }
+
+    /**
+     * Whether should be auto-capturing sessions.
+     *
+     * @return bool
+     */
+    public function shouldCaptureSessions()
+    {
+        return $this->config->shouldCaptureSessions();
+    }
+
+    /**
+     * Sets the build endpoint.
+     *
+     * @param string $endpoint the build endpoint
+     *
+     * @return $this
+     */
+    public function setBuildEndpoint($endpoint)
+    {
+        $this->config->setBuildEndpoint($endpoint);
+
+        return $this;
+    }
+
+    /**
+     * Returns the build endpoint.
+     *
+     * @return string
+     */
+    public function getBuildEndpoint()
+    {
+        return $this->config->getBuildEndpoint();
     }
 }
