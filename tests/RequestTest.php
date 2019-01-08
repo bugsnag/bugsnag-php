@@ -138,6 +138,8 @@ class RequestTest extends TestCase
 
     public function testGetMetaDataWithPutInput()
     {
+        $_SERVER['REQUEST_METHOD'] = 'PUT';
+
         $data = [
             'url' => 'http://example.com/blah/blah.php?some=param',
             'httpMethod' => 'PUT',
