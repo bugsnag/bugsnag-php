@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.15.2 (TBA)
+
+### Bug Fixes
+
+* Prevent automatic collection of POST form data
+  [#]()
+
 ## 3.15.1 (2018-12-19)
 
 ### Bug Fixes
