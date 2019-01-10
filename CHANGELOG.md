@@ -1,12 +1,15 @@
 Changelog
 =========
 
-## 3.15.2 (TBA)
+## 3.15.2 (2019-01-10)
 
-### Bug Fixes
+### Fixes
+
+* Improve performance by removing reflection calls from Client to Configuration
+  [#510](https://github.com/bugsnag/bugsnag-php/pull/510)
 
 * Prevent automatic collection of POST form data
-  [#]()
+  [#511](https://github.com/bugsnag/bugsnag-php/pull/511)
 
 ## 3.15.1 (2018-12-19)
 
