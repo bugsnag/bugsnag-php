@@ -137,7 +137,7 @@ class Stacktrace
      *
      * @return array[]
      */
-    public function toArray()
+    public function &toArray()
     {
         return $this->frames;
     }
@@ -149,7 +149,7 @@ class Stacktrace
      *
      * @return array[]
      */
-    public function getFrames()
+    public function &getFrames()
     {
         return $this->frames;
     }

@@ -16,3 +16,4 @@
 /Makefile export-ignore
 /packager.php export-ignore
 /phpunit.xml.dist export-ignore
+/.github export-ignore

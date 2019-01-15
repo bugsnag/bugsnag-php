@@ -1,6 +1,23 @@
 Changelog
 =========
 
+## 3.15.2 (2019-01-10)
+
+### Fixes
+
+* Improve performance by removing reflection calls from Client to Configuration
+  [#510](https://github.com/bugsnag/bugsnag-php/pull/510)
+
+* Prevent automatic collection of POST form data
+  [#511](https://github.com/bugsnag/bugsnag-php/pull/511)
+
+## 3.15.1 (2018-12-19)
+
+### Bug Fixes
+
+* Allow modifying stack frame values by reference
+  [#507](https://github.com/bugsnag/bugsnag-php/pull/507)
+
 ## 3.15.0 (2018-11-1)
 
 ### Enhancements

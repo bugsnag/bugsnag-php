@@ -125,7 +125,9 @@ class BasicResolver implements ResolverInterface
 
         if (isset($server['CONTENT_TYPE']) && stripos($server['CONTENT_TYPE'], 'application/json') === 0) {
             return (array) json_decode($input, true) ?: null;
-        } else {
+        }
+
+        if (strtoupper($server['REQUEST_METHOD']) === 'PUT') {
             parse_str($input, $params);
 
             return (array) $params ?: null;
