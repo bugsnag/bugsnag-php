@@ -465,7 +465,27 @@ class Configuration
      */
     public function getDeviceData()
     {
-        return array_merge(['hostname' => php_uname('n')], array_filter($this->deviceData));
+        return array_merge($this->getHostname(), array_filter($this->deviceData));
+    }
+
+    /**
+     * Get the hostname if possible.
+     *
+     * @return array
+     */
+    protected function getHostname()
+    {
+        $disabled = explode(',', ini_get('disable_functions'));
+
+        if (function_exists('php_uname') && !in_array('php_uname', $disabled, true)) {
+            return ['hostname' => php_uname('n')];
+        }
+
+        if (function_exists('gethostname') && !in_array('gethostname', $disabled, true)) {
+            return ['hostname' => gethostname()];
+        }
+
+        return [];
     }
 
     /**
