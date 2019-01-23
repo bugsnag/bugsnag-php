@@ -95,6 +95,15 @@ class ConfigurationTest extends TestCase
         $this->assertFalse($this->config->isInProject('/base/root/dir/afile.php'));
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExpcetionMessage Invalid project root regex: [thisisnotavalidregex
+     */
+    public function testInvalidRootPathRegexThrows()
+    {
+        $this->config->setProjectRootRegex('[thisisnotavalidregex');
+    }
+
     public function testAppData()
     {
         $this->assertSame(['type' => 'cli', 'releaseStage' => 'production'], $this->config->getAppData());
