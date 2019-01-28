@@ -74,6 +74,15 @@ class ConfigurationTest extends TestCase
         $this->assertFalse($this->config->isInProject('/base/root/dir/afile.php'));
     }
 
+    public function testRootPathSetsStripPath()
+    {
+        $this->config->setProjectRoot('/foo/bar');
+
+        $this->assertSame('src/thing.php', $this->config->getStrippedFilePath('/foo/bar/src/thing.php'));
+        $this->assertSame('/foo/src/thing.php', $this->config->getStrippedFilePath('/foo/src/thing.php'));
+        $this->assertSame('x/src/thing.php', $this->config->getStrippedFilePath('x/src/thing.php'));
+    }
+
     public function testRootPathRegex()
     {
         $this->assertFalse($this->config->isInProject('/root/dir/app/afile.php'));
@@ -93,6 +102,35 @@ class ConfigurationTest extends TestCase
         $this->assertFalse($this->config->isInProject('/root'));
         $this->assertFalse($this->config->isInProject('/root/dir/other-directory/afile.php'));
         $this->assertFalse($this->config->isInProject('/base/root/dir/afile.php'));
+    }
+
+    public function testRootPathRegexSetsStripPathRegex()
+    {
+        $this->config->setProjectRootRegex('/^\\/(foo|bar)\\//');
+
+        $this->assertSame('src/thing.php', $this->config->getStrippedFilePath('/foo/src/thing.php'));
+        $this->assertSame('src/thing.php', $this->config->getStrippedFilePath('/bar/src/thing.php'));
+        $this->assertSame('/baz/src/thing.php', $this->config->getStrippedFilePath('/baz/src/thing.php'));
+        $this->assertSame('x/foo/thing.php', $this->config->getStrippedFilePath('x/foo/thing.php'));
+    }
+
+    public function testStripPath()
+    {
+        $this->config->setStripPath('/foo/bar');
+
+        $this->assertSame('src/thing.php', $this->config->getStrippedFilePath('/foo/bar/src/thing.php'));
+        $this->assertSame('/foo/src/thing.php', $this->config->getStrippedFilePath('/foo/src/thing.php'));
+        $this->assertSame('x/src/thing.php', $this->config->getStrippedFilePath('x/src/thing.php'));
+    }
+
+    public function testStripPathRegex()
+    {
+        $this->config->setStripPathRegex('/^\\/(foo|bar)\\//');
+
+        $this->assertSame('src/thing.php', $this->config->getStrippedFilePath('/foo/src/thing.php'));
+        $this->assertSame('src/thing.php', $this->config->getStrippedFilePath('/bar/src/thing.php'));
+        $this->assertSame('/baz/src/thing.php', $this->config->getStrippedFilePath('/baz/src/thing.php'));
+        $this->assertSame('x/foo/thing.php', $this->config->getStrippedFilePath('x/foo/thing.php'));
     }
 
     /**

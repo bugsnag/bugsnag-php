@@ -282,6 +282,7 @@ class Configuration
         }
 
         $this->projectRootRegex = $projectRootRegex;
+        $this->setStripPathRegex($projectRootRegex);
     }
 
     /**
