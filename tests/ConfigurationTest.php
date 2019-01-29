@@ -74,6 +74,16 @@ class ConfigurationTest extends TestCase
         $this->assertFalse($this->config->isInProject('/base/root/dir/afile.php'));
     }
 
+    public function testRootPathNull()
+    {
+        $this->config->setProjectRoot('/root/dir');
+        $this->config->setProjectRoot(null);
+
+        $this->assertFalse($this->config->isInProject('/root/dir/afile.php'));
+        $this->assertFalse($this->config->isInProject('/root'));
+        $this->assertFalse($this->config->isInProject('/base/root/dir/afile.php'));
+    }
+
     public function testRootPathSetsStripPath()
     {
         $this->config->setProjectRoot('/foo/bar');
@@ -104,6 +114,18 @@ class ConfigurationTest extends TestCase
         $this->assertFalse($this->config->isInProject('/base/root/dir/afile.php'));
     }
 
+    public function testRootPathRegexNull()
+    {
+        $this->config->setProjectRootRegex('/^('.preg_quote('/root/dir/app', '/').'|'.preg_quote('/root/dir/lib', '/').')[\\/]?/i');
+        $this->config->setProjectRootRegex(null);
+
+        $this->assertFalse($this->config->isInProject('/root/dir/app/afile.php'));
+        $this->assertFalse($this->config->isInProject('/root/dir/lib/afile.php'));
+        $this->assertFalse($this->config->isInProject('/root'));
+        $this->assertFalse($this->config->isInProject('/root/dir/other-directory/afile.php'));
+        $this->assertFalse($this->config->isInProject('/base/root/dir/app/afile.php'));
+    }
+
     public function testRootPathRegexSetsStripPathRegex()
     {
         $this->config->setProjectRootRegex('/^\\/(foo|bar)\\//');
@@ -123,12 +145,33 @@ class ConfigurationTest extends TestCase
         $this->assertSame('x/src/thing.php', $this->config->getStrippedFilePath('x/src/thing.php'));
     }
 
+    public function testStripPathNull()
+    {
+        $this->config->setStripPath('/foo/bar');
+        $this->config->setStripPath(null);
+
+        $this->assertSame('/foo/bar/src/thing.php', $this->config->getStrippedFilePath('/foo/bar/src/thing.php'));
+        $this->assertSame('/foo/src/thing.php', $this->config->getStrippedFilePath('/foo/src/thing.php'));
+        $this->assertSame('x/src/thing.php', $this->config->getStrippedFilePath('x/src/thing.php'));
+    }
+
     public function testStripPathRegex()
     {
         $this->config->setStripPathRegex('/^\\/(foo|bar)\\//');
 
         $this->assertSame('src/thing.php', $this->config->getStrippedFilePath('/foo/src/thing.php'));
         $this->assertSame('src/thing.php', $this->config->getStrippedFilePath('/bar/src/thing.php'));
+        $this->assertSame('/baz/src/thing.php', $this->config->getStrippedFilePath('/baz/src/thing.php'));
+        $this->assertSame('x/foo/thing.php', $this->config->getStrippedFilePath('x/foo/thing.php'));
+    }
+
+    public function testStripPathRegexNull()
+    {
+        $this->config->setStripPathRegex('/^\\/(foo|bar)\\//');
+        $this->config->setStripPathRegex(null);
+
+        $this->assertSame('/foo/src/thing.php', $this->config->getStrippedFilePath('/foo/src/thing.php'));
+        $this->assertSame('/bar/src/thing.php', $this->config->getStrippedFilePath('/bar/src/thing.php'));
         $this->assertSame('/baz/src/thing.php', $this->config->getStrippedFilePath('/baz/src/thing.php'));
         $this->assertSame('x/foo/thing.php', $this->config->getStrippedFilePath('x/foo/thing.php'));
     }
