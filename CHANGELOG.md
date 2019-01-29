@@ -1,6 +1,20 @@
 Changelog
 =========
 
+## 3.16.0 (2019-01-29)
+
+### Enhancements
+
+* Add `setProjectRootRegex` to enable directly setting the Project Root regex
+  [Javier Pérez Cid](https://github.com/jpcid)
+  [#514](https://github.com/bugsnag/bugsnag-php/pull/514)
+
+### Fixes
+
+* Check `php_uname` isn't disabled before attempting to retrieve hostname
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#513](https://github.com/bugsnag/bugsnag-php/pull/513)
+
 ## 3.15.2 (2019-01-10)
 
 ### Fixes
