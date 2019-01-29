@@ -506,6 +506,18 @@ class Client
     }
 
     /**
+     * Set the project root regex.
+     *
+     * @param string|null $projectRootRegex the project root path
+     *
+     * @return void
+     */
+    public function setProjectRootRegex($projectRootRegex)
+    {
+        $this->config->setProjectRootRegex($projectRootRegex);
+    }
+
+    /**
      * Is the given file in the project?
      *
      * @param string $file

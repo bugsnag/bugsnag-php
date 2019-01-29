@@ -785,6 +785,15 @@ class ClientTest extends TestCase
         $this->assertFalse($client->isInProject('/foo'));
     }
 
+    public function testSetProjectRootRegex()
+    {
+        $client = Client::make('foo');
+        $client->setProjectRootRegex('/^\/foo\/bar/i');
+        $this->assertTrue($client->isInProject('/foo/bar/z'));
+        $this->assertFalse($client->isInProject('/foo/baz'));
+        $this->assertFalse($client->isInProject('/foo'));
+    }
+
     public function testSetStripPath()
     {
         $client = Client::make('foo');
