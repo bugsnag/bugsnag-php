@@ -1,11 +1,12 @@
 Changelog
 =========
 
-## 3.16.0 (TBD)
+## 3.16.0 (2019-01-29)
 
 ### Enhancements
 
 * Add `setProjectRootRegex` to enable directly setting the Project Root regex
+  [Javier Pérez Cid](https://github.com/jpcid)
   [#514](https://github.com/bugsnag/bugsnag-php/pull/514)
 
 ### Fixes
