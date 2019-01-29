@@ -261,11 +261,25 @@ class Configuration
      */
     public function setProjectRoot($projectRoot)
     {
-        $this->projectRootRegex = $projectRoot ? '/^'.preg_quote($projectRoot, '/').'[\\/]?/i' : null;
+        $projectRootRegex = $projectRoot ? '/^'.preg_quote($projectRoot, '/').'[\\/]?/i' : null;
+        $this->setProjectRootRegex($projectRootRegex);
+    }
 
-        if ($projectRoot && !$this->stripPathRegex) {
-            $this->setStripPath($projectRoot);
+    /**
+     * Set the project root regex.
+     *
+     * @param string|null $projectRootRegex the project root path
+     *
+     * @return void
+     */
+    public function setProjectRootRegex($projectRootRegex)
+    {
+        if ($projectRootRegex && @preg_match($projectRootRegex, null) === false) {
+            throw new InvalidArgumentException('Invalid project root regex: '.$projectRootRegex);
         }
+
+        $this->projectRootRegex = $projectRootRegex;
+        $this->setStripPathRegex($projectRootRegex);
     }
 
     /**
@@ -289,7 +303,8 @@ class Configuration
      */
     public function setStripPath($stripPath)
     {
-        $this->stripPathRegex = $stripPath ? '/^'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
+        $stripPathRegex = $stripPath ? '/^'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
+        $this->setStripPathRegex($stripPathRegex);
     }
 
     /**
@@ -301,7 +316,7 @@ class Configuration
      */
     public function setStripPathRegex($stripPathRegex)
     {
-        if (@preg_match($stripPathRegex, null) === false) {
+        if ($stripPathRegex && @preg_match($stripPathRegex, null) === false) {
             throw new InvalidArgumentException('Invalid strip path regex: '.$stripPathRegex);
         }
 
