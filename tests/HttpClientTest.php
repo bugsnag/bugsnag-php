@@ -56,6 +56,25 @@ class HttpClientTest extends TestCase
         $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
     }
 
+    public function testHttpClientUsesConfigSettings()
+    {
+        $config = $this->getMockBuilder(Configuration::class)
+                       ->disableOriginalConstructor()
+                       ->setMethods(['getNotifyEndpoint', 'getGuzzleClient'])
+                       ->getMock();
+
+        // Expect Client to get the guzzleClient and endpoint from Config
+        $config->expects($this->once())->method('getGuzzleClient')->willReturn($this->guzzle);
+        $config->expects($this->once())->method('getNotifyEndpoint')->willReturn('foo');
+
+        // Expect post to be called
+        $this->guzzle->expects($this->any())->method('post');
+
+        $http = new HttpClient($config);
+        $http->queue(Report::fromNamedError($this->config, 'Name'));
+        $http->send();
+    }
+
     public function testHttpClientMultipleSend()
     {
         // Expect request to be called
