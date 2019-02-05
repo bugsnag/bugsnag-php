@@ -2,6 +2,9 @@
 
 namespace Bugsnag;
 
+use Composer\CaBundle\CaBundle;
+use GuzzleHttp\Client as Guzzle;
+
 class Utils
 {
     /**
@@ -39,5 +42,35 @@ class Utils
         }
 
         return $builderName;
+    }
+
+    /**
+     * Make a new guzzle client instance.
+     *
+     * @param array       $options
+     *
+     * @return \GuzzleHttp\ClientInterface
+     */
+    public static function makeGuzzle(array $options = [])
+    {
+        if ($path = static::getCaBundlePath()) {
+            $options['verify'] = $path;
+        }
+
+        return new Guzzle($options);
+    }
+
+    /**
+     * Get the ca bundle path if one exists.
+     *
+     * @return string|false
+     */
+    protected static function getCaBundlePath()
+    {
+        if (!class_exists(CaBundle::class)) {
+            return false;
+        }
+
+        return realpath(CaBundle::getSystemCaRootBundlePath());
     }
 }

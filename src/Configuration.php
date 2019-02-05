@@ -3,6 +3,7 @@
 namespace Bugsnag;
 
 use InvalidArgumentException;
+use Bugsnag\Utils;
 
 class Configuration
 {
@@ -688,7 +689,7 @@ class Configuration
     public function getGuzzleClient()
     {
         if (!$this->guzzleClient) {
-            $this->guzzleClient = Client::makeGuzzle();
+            $this->guzzleClient = Utils::makeGuzzle();
         }
         return $this->guzzleClient;
     }

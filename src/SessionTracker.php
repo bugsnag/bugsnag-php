@@ -285,7 +285,7 @@ class SessionTracker
         if (count($sessions) == 0) {
             return;
         }
-        $http = $this->config->getSessionClient();
+        $guzzle = $this->config->getGuzzleClient();
         $payload = $this->constructPayload($sessions);
         $headers = [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
@@ -295,7 +295,7 @@ class SessionTracker
         $this->setLastSent();
 
         try {
-            $http->post('', [
+            $guzzle->post($this->config->getSessionEndpoint(), [
                 'json' => $payload,
                 'headers' => $headers,
             ]);

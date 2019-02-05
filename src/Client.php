@@ -17,7 +17,7 @@ use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
-use Composer\CaBundle\CaBundle;
+use Bugsnag\Utils;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
 use ReflectionClass;
@@ -80,18 +80,18 @@ class Client
      * If you don't pass in a key, we'll try to read it from the env variables.
      *
      * @param string|null $apiKey   your bugsnag api key
-     * @param string|null $endpoint your bugsnag endpoint
      * @param bool        $default  if we should register our default callbacks
      *
      * @return static
      */
-    public static function make($apiKey = null, $endpoint = null, $defaults = true)
+    public static function make($apiKey = null, $defaults = true)
     {
         $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
-        $guzzle = static::makeGuzzle($endpoint ?: getenv('BUGSNAG_ENDPOINT'));
+        if (($notifyEndpoint = getenv('BUGSNAG_NOTIFY_ENDPOINT')) && ($sessionEndpoint = getenv('BUGSNAG_SESSION_ENDPOINT'))) {
+            $config->setEndpoints($notifyEndpoint, $sessionEndpoint);
+        }
 
-        $client = new static($config, null, $guzzle);
-
+        $client = new static($config, null);
         if ($defaults) {
             $client->registerDefaultCallbacks();
         }
@@ -104,17 +104,16 @@ class Client
      *
      * @param \Bugsnag\Configuration                  $config
      * @param \Bugsnag\Request\ResolverInterface|null $resolver
-     * @param \GuzzleHttp\ClientInterface|null        $guzzle
      *
      * @return void
      */
-    public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
+    public function __construct(Configuration $config, ResolverInterface $resolver = null)
     {
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
-        $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
+        $this->http = new HttpClient($config);
         $this->sessionTracker = new SessionTracker($config);
 
         $this->registerMiddleware(new NotificationSkipper($config));
@@ -124,40 +123,7 @@ class Client
         register_shutdown_function([$this, 'flush']);
     }
 
-    /**
-     * Make a new guzzle client instance.
-     *
-     * @param string|null $base
-     * @param array       $options
-     *
-     * @return \GuzzleHttp\ClientInterface
-     */
-    public static function makeGuzzle($base = null, array $options = [])
-    {
-        $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
-
-        $options[$key] = $base ?: static::ENDPOINT;
-
-        if ($path = static::getCaBundlePath()) {
-            $options['verify'] = $path;
-        }
-
-        return new Guzzle($options);
-    }
-
-    /**
-     * Get the ca bundle path if one exists.
-     *
-     * @return string|false
-     */
-    protected static function getCaBundlePath()
-    {
-        if (!class_exists(CaBundle::class)) {
-            return false;
-        }
-
-        return realpath(CaBundle::getSystemCaRootBundlePath());
-    }
+    
 
     /**
      * Get the config instance.

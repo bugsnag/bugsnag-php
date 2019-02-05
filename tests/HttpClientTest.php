@@ -20,13 +20,13 @@ class HttpClientTest extends TestCase
 
     protected function setUp()
     {
-        $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
-
         $this->guzzle = $this->getMockBuilder(Client::class)
                              ->setMethods(['post'])
                              ->getMock();
+        $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
+        $this->config->setGuzzleClient($this->guzzle);
 
-        $this->http = new HttpClient($this->config, $this->guzzle);
+        $this->http = new HttpClient($this->config);
     }
 
     public function testHttpClient()
@@ -41,7 +41,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_NOTIFY_ENDPOINT, $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);
@@ -85,7 +85,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_NOTIFY_ENDPOINT, $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);
@@ -133,7 +133,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_NOTIFY_ENDPOINT, $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);

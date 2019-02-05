@@ -16,13 +16,6 @@ class HttpClient
     protected $config;
 
     /**
-     * The guzzle client instance.
-     *
-     * @var \GuzzleHttp\ClientInterface
-     */
-    protected $guzzle;
-
-    /**
      * The queue of reports to send.
      *
      * @var \Bugsnag\Report[]
@@ -47,14 +40,12 @@ class HttpClient
      * Create a new http client instance.
      *
      * @param \Bugsnag\Configuration      $config the configuration instance
-     * @param \GuzzleHttp\ClientInterface $guzzle the guzzle client instance
      *
      * @return void
      */
-    public function __construct(Configuration $config, ClientInterface $guzzle)
+    public function __construct(Configuration $config)
     {
         $this->config = $config;
-        $this->guzzle = $guzzle;
     }
 
     /**
@@ -67,30 +58,6 @@ class HttpClient
     public function queue(Report $report)
     {
         $this->queue[] = $report;
-    }
-
-    /**
-     * Notify Bugsnag of a deployment.
-     *
-     * @deprecated This method should no longer be used in favour of sendBuildReport.
-     *
-     * @param array $data the deployment information
-     *
-     * @return void
-     */
-    public function deploy(array $data)
-    {
-        $app = $this->config->getAppData();
-
-        $data['releaseStage'] = $app['releaseStage'];
-
-        if (isset($app['version'])) {
-            $data['appVersion'] = $app['version'];
-        }
-
-        $data['apiKey'] = $this->config->getApiKey();
-
-        $this->guzzle->post('deploy', ['json' => $data]);
     }
 
     /**
@@ -149,7 +116,9 @@ class HttpClient
 
         $endpoint = $this->config->getBuildEndpoint();
 
-        $this->guzzle->post($endpoint, ['json' => $data]);
+        $guzzleClient = $this->config->getGuzzleClient();
+
+        $guzzleClient->post($endpoint, ['json' => $data]);
     }
 
     /**
@@ -163,7 +132,7 @@ class HttpClient
             return;
         }
 
-        $this->postJson('', $this->build());
+        $this->postJson($this->config->getNotifyEndpoint(), $this->build());
 
         $this->queue = [];
     }
@@ -236,8 +205,9 @@ class HttpClient
         }
 
         // Send via guzzle and log any failures
+        $guzzleClient = $this->config->getGuzzleClient();
         try {
-            $this->guzzle->post($url, [
+            $guzzleClient->post($url, [
                 'json' => $normalized,
                 'headers' => $this->getHeaders(),
             ]);
