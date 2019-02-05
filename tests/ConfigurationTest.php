@@ -301,7 +301,7 @@ class ConfigurationTest extends TestCase
     public function testGetGuzzleClientCreation()
     {
         $guzzle = $this->config->getGuzzleClient();
-        $this->assertInstanceOf("GuzzleHttp\Client", $guzzle);
+        $this->assertInstanceOf(GuzzleClient::class, $guzzle);
     }
 
 }

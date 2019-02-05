@@ -830,30 +830,13 @@ class ClientTest extends TestCase
         $this->assertSame('https://example', $client->getBuildEndpoint());
     }
 
-    public function testSessionClient()
-    {
-        $client = Client::make('foo');
-        $this->assertSame($client, $client->setSessionEndpoint('https://example'));
-        $sessionClient = $client->getSessionClient();
-        $this->assertSame(Guzzle::class, get_class($sessionClient));
-
-        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
-            $clientUri = $sessionClient->getBaseUrl();
-        } else {
-            $baseUri = $sessionClient->getConfig('base_uri');
-            $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
-        }
-
-        $this->assertSame('https://example', $clientUri);
-    }
-
     public function testSetAutoCaptureSessions()
     {
         $client = Client::make('foo');
         $this->assertSame($client, $client->setAutoCaptureSessions(false));
-        $this->assertFalse($client->shouldCaptureSessions());
+        $this->assertFalse($client->shouldAutoCaptureSessions());
         $this->assertSame($client, $client->setAutoCaptureSessions(true));
-        $this->assertTrue($client->shouldCaptureSessions());
+        $this->assertTrue($client->shouldAutoCaptureSessions());
     }
 
     public function testErrorReportingLevel()
@@ -898,5 +881,40 @@ class ClientTest extends TestCase
         $client = Client::make('foo');
         $this->assertSame($client, $client->setNotifier(['foo' => 'bar']));
         $this->assertSame(['foo' => 'bar'], $client->getNotifier());
+    }
+
+    public function testSetEndpoints()
+    {
+        $client = Client::make('foo');
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_NOTIFY_ENDPOINT, $client->getNotifyEndpoint());
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_SESSION_ENDPOINT, $client->getSessionEndpoint());
+
+        $notify = "notify";
+        $session = "session";
+        $this->assertSame($client, $client->setEndpoints($notify, $session));
+
+        $this->assertSame($notify, $client->getNotifyEndpoint());
+        $this->assertSame($session, $client->getSessionEndpoint());
+    }
+
+    public function testSessionsEnabled()
+    {
+        $client = Client::make('foo');
+        $this->assertTrue($client->sessionsEnabled());
+
+        $client->setEndpoints("notify", null);
+
+        $this->assertFalse($client->sessionsEnabled());
+        $this->assertFalse($client->shouldAutoCaptureSessions());
+    }
+
+    public function testSetGuzzleClient()
+    {
+        $client = Client::make('foo');
+        $this->assertInstanceOf(Guzzle::class, $client->getGuzzleClient());
+
+        $guzzle = new Guzzle();
+        $this->assertSame($client, $client->setGuzzleClient($guzzle));
+        $this->assertSame($guzzle, $client->getGuzzleClient());
     }
 }

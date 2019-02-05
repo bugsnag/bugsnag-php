@@ -785,27 +785,73 @@ class Client
     }
 
     /**
-     * Set session delivery endpoint.
+     * Sets the notify and session endpoints
      *
-     * @param string $endpoint the session endpoint
+     * @param string $notifyEndpoint the notify endpoint
+     * @param string $sessionEndpoint the session endpoint
      *
      * @return $this
      */
-    public function setSessionEndpoint($endpoint)
+    public function setEndpoints($notifyEndpoint, $sessionEndpoint)
     {
-        $this->config->setSessionEndpoint($endpoint);
+        $this->config->setEndpoints($notifyEndpoint, $sessionEndpoint);
 
         return $this;
     }
 
     /**
-     * Get the session client.
+     * Gets the notify endpoint
      *
-     * @return \Guzzle\ClientInterface
+     * @return string
      */
-    public function getSessionClient()
+    public function getNotifyEndpoint()
     {
-        return $this->config->getSessionClient();
+        return $this->config->getNotifyEndpoint();
+    }
+
+    /**
+     * Gets the session endpoint
+     *
+     * @return string
+     */
+    public function getSessionEndpoint()
+    {
+        return $this->config->getSessionEndpoint();
+    }
+
+    /**
+     * Gets the current guzzle client.
+     *
+     * @return GuzzleHttp\ClientInterface
+     */
+    public function getGuzzleClient()
+    {
+        return $this->config->getGuzzleClient();
+    }
+
+    /**
+     * Sets the guzzle client
+     *
+     * Delivery URLs should be set using the "setEndpoints" method
+     *
+     * @param GuzzleHttp\ClientInterface $guzzleClient the new guzzle client
+     *
+     * @return $this
+     */
+    public function setGuzzleClient($guzzleClient)
+    {
+        $this->config->setGuzzleClient($guzzleClient);
+        return $this;
+    }
+
+    /**
+     * Whether any sessions are enabled.
+     *
+     * @return bool
+     */
+    public function sessionsEnabled()
+    {
+        return $this->config->sessionsEnabled();
     }
 
     /**
@@ -813,9 +859,9 @@ class Client
      *
      * @return bool
      */
-    public function shouldCaptureSessions()
+    public function shouldAutoCaptureSessions()
     {
-        return $this->config->shouldCaptureSessions();
+        return $this->config->shouldAutoCaptureSessions();
     }
 
     /**
