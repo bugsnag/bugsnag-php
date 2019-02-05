@@ -227,54 +227,81 @@ class ConfigurationTest extends TestCase
 
     public function testSessionTrackingDefaults()
     {
-        $this->assertFalse($this->config->shouldCaptureSessions());
+        $this->assertTrue($this->config->shouldAutoCaptureSessions());
+        $this->assertTrue($this->config->sessionsEnabled());
     }
 
-    public function testSessionTrackingSetTrue()
+    public function testSessionTrackingSetFalse()
     {
-        $this->assertFalse($this->config->shouldCaptureSessions());
+        $this->assertTrue($this->config->shouldAutoCaptureSessions());
 
-        $this->config->setAutoCaptureSessions(true);
+        $this->config->setAutoCaptureSessions(false);
 
-        $this->assertTrue($this->config->shouldCaptureSessions());
-
-        $client = $this->config->getSessionClient();
-
-        $this->assertSame(GuzzleClient::class, get_class($client));
-
-        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
-            $clientUri = $client->getBaseUrl();
-        } else {
-            $baseUri = $client->getConfig('base_uri');
-            $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
-        }
-
-        $this->assertSame(Configuration::SESSION_ENDPOINT, $clientUri);
+        $this->assertFalse($this->config->shouldAutoCaptureSessions());
     }
 
-    public function testSessionTrackingSetEndpoint()
+    public function testEndpointDefaults()
     {
-        $testUrl = 'https://testurl.com';
-
-        $this->assertFalse($this->config->shouldCaptureSessions());
-
-        $this->config->setAutoCaptureSessions(true);
-
-        $this->assertTrue($this->config->shouldCaptureSessions());
-
-        $this->config->setSessionEndpoint($testUrl);
-
-        $client = $this->config->getSessionClient();
-
-        $this->assertSame(GuzzleClient::class, get_class($client));
-
-        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
-            $clientUri = $client->getBaseUrl();
-        } else {
-            $baseUri = $client->getConfig('base_uri');
-            $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
-        }
-
-        $this->assertSame($testUrl, $clientUri);
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_NOTIFY_ENDPOINT, $this->config->getNotifyEndpoint());
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_SESSION_ENDPOINT, $this->config->getSessionEndpoint());
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_BUILD_ENDPOINT, $this->config->getBuildEndpoint());
     }
+
+    public function testSetEndpointsBothValid()
+    {
+        $notifyUrl = 'notify';
+        $sessionUrl = 'session';
+
+        $this->config->setEndpoints($notifyUrl, $sessionUrl);
+
+        $this->assertSame($notifyUrl, $this->config->getNotifyEndpoint());
+        $this->assertSame($sessionUrl, $this->config->getSessionEndpoint());
+    }
+
+    public function testSetEndpointsNoChange()
+    {
+        // If this throws or logs, something has gone wrong
+        $this->config->setEndpoints(null, null);
+
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_NOTIFY_ENDPOINT, $this->config->getNotifyEndpoint());
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_SESSION_ENDPOINT, $this->config->getSessionEndpoint());
+    }
+
+    public function testSetEndpointsNotifyNotSession()
+    {
+        $notifyUrl = 'notify';
+
+        $this->config->setEndpoints($notifyUrl, null);
+
+        $this->assertSame($notifyUrl, $this->config->getNotifyEndpoint());
+        $this->assertSame(\Bugsnag\Configuration::DEFAULT_SESSION_ENDPOINT, $this->config->getSessionEndpoint());
+        $this->assertFalse($this->config->sessionsEnabled());
+        $this->assertFalse($this->config->shouldAutoCaptureSessions());
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The session endpoint cannot be modified without the notify endpoint
+     */
+    public function testSetEndpointsSessionNotNotify()
+    {
+        $sessionUrl = 'session';
+
+        $this->config->setEndpoints(null, $sessionUrl);
+    }
+
+    public function testSetGuzzleClient()
+    {
+        $guzzleClient = new GuzzleClient();
+
+        $this->config->setGuzzleClient($guzzleClient);
+        $this->assertSame($guzzleClient, $this->config->getGuzzleClient());
+    }
+
+    public function testGetGuzzleClientCreation()
+    {
+        $guzzle = $this->config->getGuzzleClient();
+        $this->assertInstanceOf("GuzzleHttp\Client", $guzzle);
+    }
+
 }
