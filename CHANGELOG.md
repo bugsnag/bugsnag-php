@@ -1,6 +1,37 @@
 Changelog
 =========
 
+## 3.16.0 (2019-01-29)
+
+### Enhancements
+
+* Add `setProjectRootRegex` to enable directly setting the Project Root regex
+  [Javier Pérez Cid](https://github.com/jpcid)
+  [#514](https://github.com/bugsnag/bugsnag-php/pull/514)
+
+### Fixes
+
+* Check `php_uname` isn't disabled before attempting to retrieve hostname
+  [Graham Campbell](https://github.com/GrahamCampbell)
+  [#513](https://github.com/bugsnag/bugsnag-php/pull/513)
+
+## 3.15.2 (2019-01-10)
+
+### Fixes
+
+* Improve performance by removing reflection calls from Client to Configuration
+  [#510](https://github.com/bugsnag/bugsnag-php/pull/510)
+
+* Prevent automatic collection of POST form data
+  [#511](https://github.com/bugsnag/bugsnag-php/pull/511)
+
+## 3.15.1 (2018-12-19)
+
+### Bug Fixes
+
+* Allow modifying stack frame values by reference
+  [#507](https://github.com/bugsnag/bugsnag-php/pull/507)
+
 ## 3.15.0 (2018-11-1)
 
 ### Enhancements

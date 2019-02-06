@@ -131,17 +131,6 @@ class ClientTest extends TestCase
         }
     }
 
-    public function testDynamicConfigSetting()
-    {
-        $client = Client::make('foo');
-
-        $this->assertTrue($client->isBatchSending());
-
-        $this->assertSame($client, $client->setBatchSending(false));
-
-        $this->assertFalse($client->isBatchSending());
-    }
-
     public function testBeforeNotifySkipsError()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
@@ -157,6 +146,28 @@ class ClientTest extends TestCase
         $this->guzzle->expects($this->never())->method('post');
 
         $this->client->notify(Report::fromNamedError($this->config, 'SkipMe', 'Message'));
+    }
+
+    public function testBeforeNotifyCanModifyReportFrames()
+    {
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->setBatchSending(false);
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Magic', 'oh no'));
+
+        $this->assertFalse($report->getStacktrace()->getFrames()[0]['inProject']);
+
+        $this->client->registerCallback(function (Report $report) {
+            $frames = &$report->getStacktrace()->getFrames();
+            $frames[0]['inProject'] = true;
+
+            return true;
+        });
+
+        $this->client->notify($report = Report::fromNamedError($this->config, 'Magic', 'oh no'));
+
+        $this->assertTrue($report->getStacktrace()->getFrames()[0]['inProject']);
     }
 
     public function testDirectCallbackSkipsError()
@@ -457,16 +468,6 @@ class ClientTest extends TestCase
         $this->assertArrayNotHasKey('Environment', $report->getMetaData());
     }
 
-    /**
-     * @expectedException \BadMethodCallException
-     */
-    public function testBadMethodCall()
-    {
-        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
-
-        $this->client->foo();
-    }
-
     public function testBatchingDoesNotFlush()
     {
         $this->client = $this->getMockBuilder(Client::class)
@@ -737,5 +738,165 @@ class ClientTest extends TestCase
         });
 
         $this->assertSame('REDACTED', $report->getMetaData()['request']['url']);
+    }
+
+    public function testBatchSending()
+    {
+        $client = Client::make('foo');
+
+        $this->assertTrue($client->isBatchSending());
+
+        $this->assertSame($client, $client->setBatchSending(false));
+
+        $this->assertFalse($client->isBatchSending());
+    }
+
+    public function testGetApiKey()
+    {
+        $client = Client::make('foo');
+        $this->assertSame('foo', $client->getApiKey());
+    }
+
+    public function testNotifyReleaseStages()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setNotifyReleaseStages(null));
+        $this->assertSame($client, $client->setReleaseStage('beta'));
+        $this->assertTrue($client->shouldNotify());
+        $this->assertSame($client, $client->setNotifyReleaseStages(['prod']));
+        $this->assertFalse($client->shouldNotify());
+        $this->assertSame($client, $client->setNotifyReleaseStages(['prod', 'beta']));
+        $this->assertTrue($client->shouldNotify());
+    }
+
+    public function testFilters()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setFilters(['pass']));
+        $this->assertSame(['pass'], $client->getFilters());
+    }
+
+    public function testSetProjectRoot()
+    {
+        $client = Client::make('foo');
+        $client->setProjectRoot('/foo/bar');
+        $this->assertTrue($client->isInProject('/foo/bar/z'));
+        $this->assertFalse($client->isInProject('/foo/baz'));
+        $this->assertFalse($client->isInProject('/foo'));
+    }
+
+    public function testSetProjectRootRegex()
+    {
+        $client = Client::make('foo');
+        $client->setProjectRootRegex('/^\/foo\/bar/i');
+        $this->assertTrue($client->isInProject('/foo/bar/z'));
+        $this->assertFalse($client->isInProject('/foo/baz'));
+        $this->assertFalse($client->isInProject('/foo'));
+    }
+
+    public function testSetStripPath()
+    {
+        $client = Client::make('foo');
+        $client->setStripPath('/foo/bar/');
+        $this->assertSame('src/thing.php', $client->getStrippedFilePath('/foo/bar/src/thing.php'));
+        $this->assertSame('/foo/src/thing.php', $client->getStrippedFilePath('/foo/src/thing.php'));
+        $this->assertSame('x/src/thing.php', $client->getStrippedFilePath('x/src/thing.php'));
+    }
+
+    public function testSetStripPathRegex()
+    {
+        $client = Client::make('foo');
+        $client->setStripPathRegex('/^\\/(foo|bar)\\//');
+        $this->assertSame('src/thing.php', $client->getStrippedFilePath('/foo/src/thing.php'));
+        $this->assertSame('src/thing.php', $client->getStrippedFilePath('/bar/src/thing.php'));
+        $this->assertSame('/baz/src/thing.php', $client->getStrippedFilePath('/baz/src/thing.php'));
+        $this->assertSame('x/foo/thing.php', $client->getStrippedFilePath('x/foo/thing.php'));
+    }
+
+    public function testSendCode()
+    {
+        $client = Client::make('foo');
+        $this->assertTrue($client->shouldSendCode());
+        $this->assertSame($client, $client->setSendCode(true));
+        $this->assertTrue($client->shouldSendCode());
+        $this->assertSame($client, $client->setSendCode(false));
+        $this->assertFalse($client->shouldSendCode());
+    }
+
+    public function testBuildEndpoint()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setBuildEndpoint('https://example'));
+        $this->assertSame('https://example', $client->getBuildEndpoint());
+    }
+
+    public function testSessionClient()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setSessionEndpoint('https://example'));
+        $sessionClient = $client->getSessionClient();
+        $this->assertSame(Guzzle::class, get_class($sessionClient));
+
+        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
+            $clientUri = $sessionClient->getBaseUrl();
+        } else {
+            $baseUri = $sessionClient->getConfig('base_uri');
+            $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
+        }
+
+        $this->assertSame('https://example', $clientUri);
+    }
+
+    public function testSetAutoCaptureSessions()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setAutoCaptureSessions(false));
+        $this->assertFalse($client->shouldCaptureSessions());
+        $this->assertSame($client, $client->setAutoCaptureSessions(true));
+        $this->assertTrue($client->shouldCaptureSessions());
+    }
+
+    public function testErrorReportingLevel()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setErrorReportingLevel(E_ALL));
+        $this->assertFalse($client->shouldIgnoreErrorCode(E_NOTICE));
+        $this->assertSame($client, $client->setErrorReportingLevel(E_ALL && ~E_NOTICE));
+        $this->assertTrue($client->shouldIgnoreErrorCode(E_NOTICE));
+    }
+
+    public function testMetaData()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setMetaData(['foo' => ['bar' => 'baz']]));
+        $this->assertSame(['foo' => ['bar' => 'baz']], $client->getMetaData());
+        $this->assertSame($client, $client->setMetaData(['foo' => ['bear' => 4]]));
+        $this->assertSame(['foo' => ['bar' => 'baz', 'bear' => 4]], $client->getMetaData());
+        $this->assertSame($client, $client->setMetaData(['baz' => ['bar' => 9]], false));
+        $this->assertSame(['baz' => ['bar' => 9]], $client->getMetaData());
+    }
+
+    public function testDeviceData()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setHostname('web1.example.com'));
+        $this->assertSame('web1.example.com', $client->getDeviceData()['hostname']);
+    }
+
+    public function testAppData()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setAppVersion('34.2.1-beta2'));
+        $data = $client->getAppData();
+        $this->assertSame('34.2.1-beta2', $client->getAppData()['version']);
+        $client->setFallbackType('foo-app');
+        $this->assertSame('foo-app', $client->getAppData()['type']);
+    }
+
+    public function testNotifier()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setNotifier(['foo' => 'bar']));
+        $this->assertSame(['foo' => 'bar'], $client->getNotifier());
     }
 }

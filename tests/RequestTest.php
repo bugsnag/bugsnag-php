@@ -138,10 +138,28 @@ class RequestTest extends TestCase
 
     public function testGetMetaDataWithPutInput()
     {
+        $_SERVER['REQUEST_METHOD'] = 'PUT';
+
         $data = [
             'url' => 'http://example.com/blah/blah.php?some=param',
             'httpMethod' => 'PUT',
             'params' => ['test' => 'foo'],
+            'clientIp' => '123.45.67.8',
+            'userAgent' => 'Example Browser 1.2.3',
+            'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3'],
+        ];
+
+        $this->assertSame(['request' => $data], $this->resolver->resolve()->getMetaData());
+    }
+
+    public function testGetMetaDataWithPostFormInput()
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+
+        $data = [
+            'url' => 'http://example.com/blah/blah.php?some=param',
+            'httpMethod' => 'POST',
+            'params' => null,
             'clientIp' => '123.45.67.8',
             'userAgent' => 'Example Browser 1.2.3',
             'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3'],

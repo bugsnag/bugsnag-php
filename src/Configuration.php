@@ -76,7 +76,7 @@ class Configuration
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.15.0',
+        'version' => '3.16.0',
         'url' => 'https://bugsnag.com',
     ];
 
@@ -261,11 +261,25 @@ class Configuration
      */
     public function setProjectRoot($projectRoot)
     {
-        $this->projectRootRegex = $projectRoot ? '/^'.preg_quote($projectRoot, '/').'[\\/]?/i' : null;
+        $projectRootRegex = $projectRoot ? '/^'.preg_quote($projectRoot, '/').'[\\/]?/i' : null;
+        $this->setProjectRootRegex($projectRootRegex);
+    }
 
-        if ($projectRoot && !$this->stripPathRegex) {
-            $this->setStripPath($projectRoot);
+    /**
+     * Set the project root regex.
+     *
+     * @param string|null $projectRootRegex the project root path
+     *
+     * @return void
+     */
+    public function setProjectRootRegex($projectRootRegex)
+    {
+        if ($projectRootRegex && @preg_match($projectRootRegex, null) === false) {
+            throw new InvalidArgumentException('Invalid project root regex: '.$projectRootRegex);
         }
+
+        $this->projectRootRegex = $projectRootRegex;
+        $this->setStripPathRegex($projectRootRegex);
     }
 
     /**
@@ -289,7 +303,8 @@ class Configuration
      */
     public function setStripPath($stripPath)
     {
-        $this->stripPathRegex = $stripPath ? '/^'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
+        $stripPathRegex = $stripPath ? '/^'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
+        $this->setStripPathRegex($stripPathRegex);
     }
 
     /**
@@ -301,7 +316,7 @@ class Configuration
      */
     public function setStripPathRegex($stripPathRegex)
     {
-        if (@preg_match($stripPathRegex, null) === false) {
+        if ($stripPathRegex && @preg_match($stripPathRegex, null) === false) {
             throw new InvalidArgumentException('Invalid strip path regex: '.$stripPathRegex);
         }
 
@@ -465,7 +480,27 @@ class Configuration
      */
     public function getDeviceData()
     {
-        return array_merge(['hostname' => php_uname('n')], array_filter($this->deviceData));
+        return array_merge($this->getHostname(), array_filter($this->deviceData));
+    }
+
+    /**
+     * Get the hostname if possible.
+     *
+     * @return array
+     */
+    protected function getHostname()
+    {
+        $disabled = explode(',', ini_get('disable_functions'));
+
+        if (function_exists('php_uname') && !in_array('php_uname', $disabled, true)) {
+            return ['hostname' => php_uname('n')];
+        }
+
+        if (function_exists('gethostname') && !in_array('gethostname', $disabled, true)) {
+            return ['hostname' => gethostname()];
+        }
+
+        return [];
     }
 
     /**
