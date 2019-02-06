@@ -21,7 +21,7 @@ class RetryMock
 
 class StorageMock
 {
-    public function store($key=null, $item=null) {}
+    public function store($key, $item=null) {}
 }
 
 class SessionMock
