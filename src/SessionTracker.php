@@ -105,13 +105,11 @@ class SessionTracker
         $this->lastSent = 0;
     }
 
-    public function setConfig(Configuration $config)
-    {
-        $this->config = $config;
-    }
-
     public function startSession()
     {
+        if (!$this->config->sessionsEnabled()) {
+            return;
+        }
         $currentTime = strftime('%Y-%m-%dT%H:%M:00');
         $session = [
             'id' => uniqid('', true),
@@ -166,7 +164,7 @@ class SessionTracker
             $this->lockFunction = $lock;
             $this->unlockFunction = $unlock;
         } else {
-            throw new InvalidArgumentException('Both lock and unlock functions must be callable');
+            throw new \InvalidArgumentException('Both lock and unlock functions must be callable');
         }
     }
 
@@ -175,7 +173,7 @@ class SessionTracker
         if (is_callable($retry)) {
             $this->retryFunction = $retry;
         } else {
-            throw new InvalidArgumentException('The retry function must be callable');
+            throw new \InvalidArgumentException('The retry function must be callable');
         }
     }
 
@@ -184,7 +182,7 @@ class SessionTracker
         if (is_callable($function)) {
             $this->storageFunction = $function;
         } else {
-            throw new InvalidArgumentException('Storage function must be callable');
+            throw new \InvalidArgumentException('Storage function must be callable');
         }
     }
 
@@ -193,7 +191,7 @@ class SessionTracker
         if (is_callable($function)) {
             $this->sessionFunction = $function;
         } else {
-            throw new InvalidArgumentException('Session function must be callable');
+            throw new \InvalidArgumentException('Session function must be callable');
         }
     }
 
@@ -299,7 +297,7 @@ class SessionTracker
                 'json' => $payload,
                 'headers' => $headers,
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
             if (!is_null($this->retryFunction)) {
                 call_user_func($this->retryFunction, $sessions);
