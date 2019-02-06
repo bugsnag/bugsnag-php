@@ -149,7 +149,7 @@ class SessionTrackerTest extends TestCase
                 $this->equalTo('bugsnag-session-counts'),
                 $this->equalTo([])
             ]
-        );
+        )->will($this->onConsecutiveCalls([], null, 0, [], []));
         $this->sessionTracker->setStorageFunction([$storageStub, 'store']);
 
         $this->sessionTracker->startSession();
