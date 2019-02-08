@@ -43,6 +43,24 @@ $bugsnag->setGuzzleClient($myCustomGuzzle);
 
 The `deploy` method has been removed, so in order to report a new version build to bugsnag you should use the `build` method, [as described here.](https://docs.bugsnag.com/platforms/php/other/#tracking-releases)
 
+```
+$bugsnag->deploy(
+    "https://github.com/owner/repo",           // Your repository
+    "master",                                  // The branch being deployed from, this has been removed from the build API
+    "52097f461bf76a824212eb11de53467c094d0cd4" // The revision, or commit hash, of the deployment
+);
+```
+
+will become:
+
+```
+$bugsnag->build(
+    "https://github.com/owner/repo",            // Your repository
+    "52097f461bf76a824212eb11de53467c094d0cd4", // The revision, or commit hash, of the build
+    "github",                                   // The provider of the source control repository
+    "Joe Summer"                                // The name of the person or machine making the build
+);
+
 ## 2.x to 3.x
 
 *Our PHP library has gone through some major improvements, and there are some small changes you'll need to make to get onto the new version.*
