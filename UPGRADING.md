@@ -1,6 +1,19 @@
 Upgrading
 =========
 
+## 3.x to 4.x
+
+#### Setting Endpoints
+
+The way endpoints will be configured has been change slightly, in order to make sure all of your requests get send to the correct place.  You'll no longer be able to pass the `endpoint` parameter to your `Bugsnag\Client::make` calls, and should instead use the [`setEndpoints` configuration option](https://docs.bugsnag.com/platforms/php/other/configuration-options/#endpoints).  If you've previously used the `BUGSNAG_ENDPOINT` environment variable, it's now been renamed to `BUGSNAG_NOTIFY_ENDPOINT`, and will only work in conjunction with the `BUGSNAG_SESSION_ENDPOINT` environment variable, to make sure that both endpoints are being used correctly.
+
+#### Configuring the GuzzleHttp Client
+
+If you've previously customized the GuzzleHttp Client we use to deliver notifications, you'll no longer be able to pass it in to a `new Bugsnag\Client` call. Instead you'll need to add it to Bugsnag using the [`setGuzzleClient` configuration option.](https://docs.bugsnag.com/platforms/php/other/configuration-options/#guzzle-client)
+
+#### Deprecation
+
+The `deploy` method has been removed, so in order to report a new version build to bugsnag you should use the `build` method, [as described here.](https://docs.bugsnag.com/platforms/php/other/#tracking-releases)
 
 ## 2.x to 3.x
 
@@ -8,7 +21,7 @@ Upgrading
 
 #### PHP 5.5+
 
-We now require PHP 5.5 or higher. If you're using an older version of PHP, you can still use v2. We will containue to maintain v2 along side v3. For more information, see the [legacy PHP integration guide](https://docs.bugsnag.com/platforms/php/other/legacy/).
+We now require PHP 5.5 or higher. If you're using an older version of PHP, you can still use v2. We will continue to maintain v2 along side v3. For more information, see the [legacy PHP integration guide](https://docs.bugsnag.com/platforms/php/other/legacy/).
 
 #### Namespaces
 
@@ -22,7 +35,7 @@ The method for setting the application type (`setType`) has also been removed in
 
 #### Configuration
 
-We've changed how our configuration system works. You can now build up our config object in a similar way to how you configured the client in v2, and then pass that as the first paramater when you construct the client object. In addition, we've removed some configuration options in favour of using our new notification pipeline system. Now you can register multiple callbacks to have maximum flexibility. We've also switched to using [Guzzle](http://guzzlephp.org), so you can change the base URI and proxy details by directly interacting with guzzle. For more information, see the [advanced configuration guide](https://docs.bugsnag.com/platforms/php/other/advanced-client-configuration).
+We've changed how our configuration system works. You can now build up our config object in a similar way to how you configured the client in v2, and then pass that as the first parameter when you construct the client object. In addition, we've removed some configuration options in favour of using our new notification pipeline system. Now you can register multiple callbacks to have maximum flexibility. We've also switched to using [Guzzle](http://guzzlephp.org), so you can change the base URI and proxy details by directly interacting with guzzle. For more information, see the [advanced configuration guide](https://docs.bugsnag.com/platforms/php/other/advanced-client-configuration).
 
 #### Customizing handled errors
 
