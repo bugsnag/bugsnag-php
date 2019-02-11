@@ -5,14 +5,16 @@ Upgrading
 
 #### Setting Endpoints
 
-The way endpoints will be configured has been change slightly, in order to make sure all of your requests get send to the correct place.  You'll no longer be able to pass the `endpoint` parameter to your `Bugsnag\Client::make` calls, and should instead use the [`setEndpoints` configuration option](https://docs.bugsnag.com/platforms/php/other/configuration-options/#endpoints).  If you've previously used the `BUGSNAG_ENDPOINT` environment variable, it's now been renamed to `BUGSNAG_NOTIFY_ENDPOINT`, and will only work in conjunction with the `BUGSNAG_SESSION_ENDPOINT` environment variable, to make sure that both endpoints are being used correctly.  For example:
+The way endpoints will be configured has been change slightly, in order to make sure all of your requests get send to the correct place.  You'll no longer be able to pass the `endpoint` parameter to your `Bugsnag\Client::make` calls, and should instead use the [`setEndpoints` configuration option](https://docs.bugsnag.com/platforms/php/other/configuration-options/#endpoints).  If you've previously used the `BUGSNAG_ENDPOINT` environment variable, it's now been renamed to `BUGSNAG_NOTIFY_ENDPOINT`, and will only work in conjunction with the `BUGSNAG_SESSION_ENDPOINT` environment variable, to make sure that both endpoints are being used correctly.
+
+Old way:
 
 ```
 $bugsnag = Bugsnag\Client::make("YOUR_API_KEY", "http://bugsnag-notify.example.com);
 $bugsnag->setSessionEndpoint("http://bugsnag-session.example.com);
 ```
 
-Would now become:
+New way:
 
 ```
 $bugnsag = Bugsnag\Client::make("YOUR_API_KEY");
@@ -26,13 +28,13 @@ $bugsnag->setEndpoints(
 
 If you've previously customized the GuzzleHttp Client we use to deliver notifications, you'll no longer be able to pass it in to a `new Bugsnag\Client` call. Instead you'll need to add it to Bugsnag using the [`setGuzzleClient` configuration option.](https://docs.bugsnag.com/platforms/php/other/configuration-options/#guzzle-client)
 
-For example:
+Old way:
 
 ```
 $bugsnag = new Bugsnag\Client(new Bugsnag\Configuration("YOUR_API_KEY"), null, $myCustomGuzzle);
 ```
 
-Would become:
+New way:
 
 ```
 $bugsnag = new Bugsnag\Client::make("YOUR_API_KEY");
@@ -43,6 +45,8 @@ $bugsnag->setGuzzleClient($myCustomGuzzle);
 
 The `deploy` method has been removed, so in order to report a new version build to bugsnag you should use the `build` method, [as described here.](https://docs.bugsnag.com/platforms/php/other/#tracking-releases)
 
+Old way:
+
 ```
 $bugsnag->deploy(
     "https://github.com/owner/repo",           // Your repository
@@ -51,7 +55,7 @@ $bugsnag->deploy(
 );
 ```
 
-will become:
+New way:
 
 ```
 $bugsnag->build(
