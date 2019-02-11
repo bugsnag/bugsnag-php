@@ -64,6 +64,7 @@ $bugsnag->build(
     "github",                                   // The provider of the source control repository
     "Joe Summer"                                // The name of the person or machine making the build
 );
+```
 
 ## 2.x to 3.x
 
