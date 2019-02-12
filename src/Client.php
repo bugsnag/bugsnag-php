@@ -123,8 +123,6 @@ class Client
         register_shutdown_function([$this, 'flush']);
     }
 
-    
-
     /**
      * Get the config instance.
      *
