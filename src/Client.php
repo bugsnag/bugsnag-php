@@ -293,6 +293,22 @@ class Client
     }
 
     /**
+     * Notify Bugsnag of a deployment.
+     *
+     * @deprecated This function is being deprecated in favour of `build`.
+     *
+     * @param string|null $repository the repository from which you are deploying the code
+     * @param string|null $branch     the source control branch from which you are deploying
+     * @param string|null $revision   the source control revision you are currently deploying
+     *
+     * @return void
+     */
+    public function deploy($repository = null, $branch = null, $revision = null)
+    {
+        $this->build($repository, $revision);
+    }
+
+    /**
      * Notify Bugsnag of a build.
      *
      * @param string|null $repository  the repository from which you are deploying the code
