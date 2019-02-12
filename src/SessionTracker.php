@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use InvalidArgumentException;
+
 class SessionTracker
 {
     /**
@@ -164,7 +166,7 @@ class SessionTracker
             $this->lockFunction = $lock;
             $this->unlockFunction = $unlock;
         } else {
-            throw new \InvalidArgumentException('Both lock and unlock functions must be callable');
+            throw new InvalidArgumentException('Both lock and unlock functions must be callable');
         }
     }
 
@@ -173,7 +175,7 @@ class SessionTracker
         if (is_callable($retry)) {
             $this->retryFunction = $retry;
         } else {
-            throw new \InvalidArgumentException('The retry function must be callable');
+            throw new InvalidArgumentException('The retry function must be callable');
         }
     }
 
@@ -182,7 +184,7 @@ class SessionTracker
         if (is_callable($function)) {
             $this->storageFunction = $function;
         } else {
-            throw new \InvalidArgumentException('Storage function must be callable');
+            throw new InvalidArgumentException('Storage function must be callable');
         }
     }
 
@@ -191,7 +193,7 @@ class SessionTracker
         if (is_callable($function)) {
             $this->sessionFunction = $function;
         } else {
-            throw new \InvalidArgumentException('Session function must be callable');
+            throw new InvalidArgumentException('Session function must be callable');
         }
     }
 
