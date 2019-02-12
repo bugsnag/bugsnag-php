@@ -848,9 +848,9 @@ class Client
      *
      * @return bool
      */
-    public function shouldAutoCaptureSessions()
+    public function shouldCaptureSessions()
     {
-        return $this->config->shouldAutoCaptureSessions();
+        return $this->config->shouldCaptureSessions();
     }
 
     /**

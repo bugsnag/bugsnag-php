@@ -227,17 +227,17 @@ class ConfigurationTest extends TestCase
 
     public function testSessionTrackingDefaults()
     {
-        $this->assertTrue($this->config->shouldAutoCaptureSessions());
+        $this->assertTrue($this->config->shouldCaptureSessions());
         $this->assertTrue($this->config->sessionsEnabled());
     }
 
     public function testSessionTrackingSetFalse()
     {
-        $this->assertTrue($this->config->shouldAutoCaptureSessions());
+        $this->assertTrue($this->config->shouldCaptureSessions());
 
         $this->config->setAutoCaptureSessions(false);
 
-        $this->assertFalse($this->config->shouldAutoCaptureSessions());
+        $this->assertFalse($this->config->shouldCaptureSessions());
     }
 
     public function testEndpointDefaults()
@@ -276,7 +276,7 @@ class ConfigurationTest extends TestCase
         $this->assertSame($notifyUrl, $this->config->getNotifyEndpoint());
         $this->assertSame(\Bugsnag\Configuration::DEFAULT_SESSION_ENDPOINT, $this->config->getSessionEndpoint());
         $this->assertFalse($this->config->sessionsEnabled());
-        $this->assertFalse($this->config->shouldAutoCaptureSessions());
+        $this->assertFalse($this->config->shouldCaptureSessions());
     }
 
     /**

@@ -762,9 +762,9 @@ class ClientTest extends TestCase
     {
         $client = Client::make('foo');
         $this->assertSame($client, $client->setAutoCaptureSessions(false));
-        $this->assertFalse($client->shouldAutoCaptureSessions());
+        $this->assertFalse($client->shouldCaptureSessions());
         $this->assertSame($client, $client->setAutoCaptureSessions(true));
-        $this->assertTrue($client->shouldAutoCaptureSessions());
+        $this->assertTrue($client->shouldCaptureSessions());
     }
 
     public function testErrorReportingLevel()
@@ -833,7 +833,7 @@ class ClientTest extends TestCase
         $client->setEndpoints("notify", null);
 
         $this->assertFalse($client->sessionsEnabled());
-        $this->assertFalse($client->shouldAutoCaptureSessions());
+        $this->assertFalse($client->shouldCaptureSessions());
     }
 
     public function testSetGuzzleClient()

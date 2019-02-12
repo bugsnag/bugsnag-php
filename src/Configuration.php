@@ -625,7 +625,7 @@ class Configuration
      *
      * @return bool
      */
-    public function shouldAutoCaptureSessions()
+    public function shouldCaptureSessions()
     {
         return $this->sessionsEnabled() && $this->autoCaptureSessions;
     }
