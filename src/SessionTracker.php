@@ -2,8 +2,6 @@
 
 namespace Bugsnag;
 
-use InvalidArgumentException;
-
 class SessionTracker
 {
     /**
@@ -299,7 +297,7 @@ class SessionTracker
                 'json' => $payload,
                 'headers' => $headers,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
             if (!is_null($this->retryFunction)) {
                 call_user_func($this->retryFunction, $sessions);
