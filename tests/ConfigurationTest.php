@@ -288,6 +288,7 @@ class ConfigurationTest extends TestCase
         $sessionUrl = 'session';
 
         $this->config->setEndpoints(null, $sessionUrl);
+        $this->config->sessionsEnabled();
     }
 
     public function testSetGuzzleClient()

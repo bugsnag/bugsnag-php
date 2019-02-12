@@ -607,6 +607,16 @@ class Configuration
      */
     public function sessionsEnabled()
     {
+        if ($this->enableSessions) {
+            $notifyEndpointSet = $this->notifyEndpoint !== static::DEFAULT_NOTIFY_ENDPOINT;
+            $sessionEndpointSet = $this->sessionEndpoint !== static::DEFAULT_SESSION_ENDPOINT;
+            if ($notifyEndpointSet && !$sessionEndpointSet) {
+                syslog(LOG_WARNING, 'The session endpoint has not been set, all further session capturing will be disabled');
+                $this->enableSessions = false;
+            } elseif (!$notifyEndpointSet && $sessionEndpointSet) {
+                throw new InvalidArgumentException('The session endpoint cannot be modified without the notify endpoint');
+            }
+        }
         return $this->enableSessions;
     }
 
@@ -630,18 +640,11 @@ class Configuration
      */
     public function setEndpoints($notifyEndpoint, $sessionEndpoint)
     {
-        $notifyEndpointSet = $notifyEndpoint && ($notifyEndpoint !== static::DEFAULT_NOTIFY_ENDPOINT);
-        $sessionEndpointSet = $sessionEndpoint && ($sessionEndpoint !== static::DEFAULT_SESSION_ENDPOINT);
-        if ($notifyEndpointSet) {
+        if ($notifyEndpoint) {
             $this->notifyEndpoint = $notifyEndpoint;
-            if ($sessionEndpoint) {
-                $this->sessionEndpoint = $sessionEndpoint;
-            } else {
-                syslog(LOG_WARNING, 'The session endpoint has not been set, all further session capturing will be disabled');
-                $this->enableSessions = false;
-            }
-        } elseif ($sessionEndpointSet) {
-            throw new InvalidArgumentException('The session endpoint cannot be modified without the notify endpoint');
+        }
+        if ($sessionEndpoint) {
+            $this->sessionEndpoint = $sessionEndpoint;
         }
         return $this;
     }

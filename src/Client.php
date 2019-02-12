@@ -30,7 +30,7 @@ class Client
      *
      * @var string
      */
-    const ENDPOINT = 'https://notify.bugsnag.com';
+    const ENDPOINT = Configuration::DEFAULT_NOTIFY_ENDPOINT;
 
     /**
      * The config instance.
@@ -80,18 +80,21 @@ class Client
      * If you don't pass in a key, we'll try to read it from the env variables.
      *
      * @param string|null $apiKey   your bugsnag api key
+     * @param string|null $endpoint your bugsnag endpoint
      * @param bool        $default  if we should register our default callbacks
      *
      * @return static
      */
-    public static function make($apiKey = null, $defaults = true)
+    public static function make($apiKey = null, $endpoint = null, $defaults = true)
     {
         $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
-        if (($notifyEndpoint = getenv('BUGSNAG_NOTIFY_ENDPOINT')) && ($sessionEndpoint = getenv('BUGSNAG_SESSION_ENDPOINT'))) {
-            $config->setEndpoints($notifyEndpoint, $sessionEndpoint);
+
+        if ($endpoint = $endpoint ?: getenv('BUGSNAG_ENDPOINT')) {
+            $sessionEndpoint = getenv('BUGSNAG_SESSION_ENDPOINT');
+            $config->setEndpoints($endpoint, $sessionEndpoint);
         }
 
-        $client = new static($config, null);
+        $client = new static($config, null, null);
         if ($defaults) {
             $client->registerDefaultCallbacks();
         }
@@ -107,9 +110,16 @@ class Client
      *
      * @return void
      */
-    public function __construct(Configuration $config, ResolverInterface $resolver = null)
+    public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
     {
         $this->config = $config;
+        if ($guzzle) {
+            $this->config->setGuzzleClient($guzzle);
+            $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
+            $endpoint = $guzzle->getConfig($key);
+            $this->config->setEndpoints($endpoint, null);
+        }
+
         $this->resolver = $resolver ?: new BasicResolver();
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
@@ -121,6 +131,21 @@ class Client
         $this->registerMiddleware(new SessionData($this));
 
         register_shutdown_function([$this, 'flush']);
+    }
+
+    /**
+     * Make a new guzzle client instance.
+     *
+     * @param string|null $base
+     * @param array       $options
+     *
+     * @return \GuzzleHttp\ClientInterface
+     */
+    public static function makeGuzzle(array $options = [])
+    {
+        $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
+        $options[$key] = $base ?: static::ENDPOINT;
+        return Utils::makeGuzzle($options);
     }
 
     /**
