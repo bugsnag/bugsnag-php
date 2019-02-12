@@ -61,6 +61,26 @@ class HttpClient
     }
 
     /**
+     * Notify Bugsnag of a deployment.
+     *
+     * @deprecated This method should no longer be used in favour of sendBuildReport.
+     *
+     * @param array $data the deployment information
+     *
+     * @return void
+     */
+    public function deploy(array $data)
+    {
+        $app = $this->config->getAppData();
+         $data['releaseStage'] = $app['releaseStage'];
+         if (isset($app['version'])) {
+            $data['appVersion'] = $app['version'];
+        }
+         $data['apiKey'] = $this->config->getApiKey();
+         $this->guzzle->post('deploy', ['json' => $data]);
+    }
+
+    /**
      * Notify Bugsnag of a build.
      *
      * @param array $buildInfo the build information
