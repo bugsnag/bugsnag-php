@@ -809,6 +809,28 @@ class Client
     }
 
     /**
+     * Set session delivery endpoint.
+     *
+     * @param string $endpoint the session endpoint
+     *
+     * @return $this
+     */
+    public function setSessionEndpoint($endpoint)
+    {
+        $this->config->setSessionEndpoint($endpoint);
+        return $this;
+    }
+    /**
+     * Get the session client.
+     *
+     * @return \Guzzle\ClientInterface
+     */
+    public function getSessionClient()
+    {
+        return $this->config->getSessionClient();
+    }
+
+    /**
      * Gets the current guzzle client.
      *
      * @return GuzzleHttp\ClientInterface

@@ -670,6 +670,28 @@ class Configuration
     }
 
     /**
+     * Set session delivery endpoint.
+     *
+     * @param string $endpoint the session endpoint
+     *
+     * @return $this
+     */
+    public function setSessionEndpoint($endpoint)
+    {
+        $this->setEndpoints(null, $endpoint);
+        return $this;
+    }
+    /**
+     * Get the session client.
+     *
+     * @return \Guzzle\ClientInterface
+     */
+    public function getSessionClient()
+    {
+        return $this->getGuzzleClient();
+    }
+
+    /**
      * Sets the guzzle client
      *
      * Delivery URLs should be set using the "setEndpoints" method
