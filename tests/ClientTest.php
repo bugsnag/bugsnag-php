@@ -80,11 +80,20 @@ class ClientTest extends TestCase
         });
     }
 
-    public function testCanMake()
+    public function testDefaultSetup()
     {
         $client = Client::make('123');
 
+        $this->assertEquals(Configuration::DEFAULT_NOTIFY_ENDPOINT, $client->getNotifyEndpoint());
+        $this->assertEquals(Configuration::DEFAULT_SESSION_ENDPOINT, $client->getSessionEndpoint());
+    }
+
+    public function testCanMake()
+    {
+        $client = Client::make('123', 'https://example.com');
+
         $this->assertInstanceOf(Client::class, $client);
+        $this->assertEquals('https://example.com', $client->getNotifyEndpoint());
     }
 
     public function testCanMakeFromEnv()
@@ -98,6 +107,31 @@ class ClientTest extends TestCase
         $this->assertInstanceOf(Client::class, $client);
         $this->assertSame($endpoint, $client->getNotifyEndpoint());
         $this->assertSame($endpoint, $client->getSessionEndpoint());
+    }
+
+    public function testCanConstructWithGuzzle()
+    {
+        $guzzle = Client::makeGuzzle("https://example.com");
+
+        $this->assertSame(Guzzle::class, get_class($guzzle));
+
+        $client = new Client(new Configuration('123'), null, $guzzle);
+
+        $this->assertSame($guzzle, $client->getGuzzleClient());
+        $this->assertEquals('https://example.com', $client->getNotifyEndpoint());
+    }
+
+    public function testCanSetEndpointsIndependently()
+    {
+        $guzzle = Client::makeGuzzle("https://example.com");
+
+        $client = new Client(new Configuration('123'), null, $guzzle);
+
+        $client->setSessionEndpoint("https://sessions-example.com");
+
+        $this->assertEquals('https://example.com', $client->getNotifyEndpoint());
+        $this->assertEquals('https://sessions-example.com', $client->getSessionEndpoint());
+        $this->assertTrue($client->sessionsEnabled());
     }
 
     public function testBeforeNotifySkipsError()
@@ -498,6 +532,58 @@ class ClientTest extends TestCase
         $this->client->flush();
     }
 
+    public function testDeployWorksOutOfTheBox()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
+         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+        $this->config->setAppVersion('1.3.1');
+         $this->client->deploy();
+    }
+     public function testDeployWorksWithReleaseStage()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
+         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+        $this->config->setAppVersion('1.3.1');
+         $this->config->setReleaseStage('staging');
+         $this->client->deploy();
+    }
+     public function testDeployWorksWithAppVersion()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'appVersion' => '1.1.0', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
+         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+        $this->config->setAppVersion('1.3.1');
+         $this->client->deploy();
+    }
+     public function testDeployWorksWithRepository()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['repository' => 'foo'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
+         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+        $this->config->setAppVersion('1.3.1');
+         $this->client->deploy('foo');
+    }
+     public function testDeployWorksWithBranch()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
+         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+        $this->config->setAppVersion('1.3.1');
+         $this->client->deploy(null, 'master');
+    }
+     public function testDeployWorksWithRevision()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['revision' => 'bar'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
+         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+        $this->config->setAppVersion('1.3.1');
+         $this->client->deploy(null, null, 'bar');
+    }
+     public function testDeployWorksWithEverything()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['sourceControl' => ['repository' => 'baz', 'revision' => 'foo'], 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
+         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+         $this->config->setReleaseStage('development');
+        $this->config->setAppVersion('1.3.1');
+         $this->client->deploy('baz', 'develop', 'foo');
+    }
+
     public function testBuildWorksOutOfTheBox()
     {
         $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
@@ -756,6 +842,16 @@ class ClientTest extends TestCase
         $client = Client::make('foo');
         $this->assertSame($client, $client->setBuildEndpoint('https://example'));
         $this->assertSame('https://example', $client->getBuildEndpoint());
+    }
+
+    public function testSessionClient()
+    {
+        $client = Client::make('foo');
+        $this->assertSame($client, $client->setSessionEndpoint('https://example'));
+        $sessionClient = $client->getSessionClient();
+        $this->assertSame(Guzzle::class, get_class($sessionClient));
+        $this->assertSame($client->getGuzzleClient(), $sessionClient);
+        $this->assertSame('https://example', $client->getSessionEndpoint());
     }
 
     public function testSetAutoCaptureSessions()

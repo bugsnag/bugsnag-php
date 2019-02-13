@@ -5,10 +5,14 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
+use phpmock\phpunit\PHPMock;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class ConfigurationTest extends TestCase
 {
+
+    use PHPMock;
+
     protected $config;
 
     protected function setUp()
@@ -240,6 +244,14 @@ class ConfigurationTest extends TestCase
         $this->assertFalse($this->config->shouldCaptureSessions());
     }
 
+    public function testSessionTrackingSetEndpoint()
+    {
+        $testUrl = 'https://testurl.com';
+        $this->config->setSessionEndpoint($testUrl);
+
+        $this->assertSame($testUrl, $this->config->getSessionEndpoint());
+    }
+
     public function testEndpointDefaults()
     {
         $this->assertSame(\Bugsnag\Configuration::DEFAULT_NOTIFY_ENDPOINT, $this->config->getNotifyEndpoint());
@@ -270,6 +282,9 @@ class ConfigurationTest extends TestCase
     public function testSetEndpointsNotifyNotSession()
     {
         $notifyUrl = 'notify';
+
+        $env = $this->getFunctionMock('Bugsnag', 'syslog');
+        $env->expects($this->once())->with(LOG_WARNING, 'The session endpoint has not been set, all further session capturing will be disabled');
 
         $this->config->setEndpoints($notifyUrl, null);
 
