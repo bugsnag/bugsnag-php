@@ -107,6 +107,7 @@ class Client
      *
      * @param \Bugsnag\Configuration                  $config
      * @param \Bugsnag\Request\ResolverInterface|null $resolver
+     * @param \GuzzleHttp\ClientInterface|null        $guzzle
      *
      * @return void
      */
@@ -144,7 +145,7 @@ class Client
      *
      * @return \GuzzleHttp\ClientInterface
      */
-    public static function makeGuzzle($base, array $options = [])
+    public static function makeGuzzle($base = null, array $options = [])
     {
         $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
         $options[$key] = $base ?: static::ENDPOINT;
