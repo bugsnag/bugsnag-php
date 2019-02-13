@@ -116,11 +116,11 @@ class Client
         if ($guzzle) {
             $this->config->setGuzzleClient($guzzle);
             if (version_compare(ClientInterface::VERSION, '6') === 1) {
-                $endpoint = (string) $guzzle->getConfig($key);
+                $endpoint = $guzzle->getConfig('base_uri');
             } else {
                 $endpoint = $guzzle->getBaseUrl();
             }
-            $this->config->setEndpoints($endpoint, null);
+            $this->config->setEndpoints((string) $endpoint, null);
         }
 
         $this->resolver = $resolver ?: new BasicResolver();
@@ -144,7 +144,7 @@ class Client
      *
      * @return \GuzzleHttp\ClientInterface
      */
-    public static function makeGuzzle(array $options = [])
+    public static function makeGuzzle($base, array $options = [])
     {
         $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
         $options[$key] = $base ?: static::ENDPOINT;
