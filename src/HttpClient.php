@@ -72,12 +72,16 @@ class HttpClient
     public function deploy(array $data)
     {
         $app = $this->config->getAppData();
-         $data['releaseStage'] = $app['releaseStage'];
-         if (isset($app['version'])) {
+
+        $data['releaseStage'] = $app['releaseStage'];
+
+        if (isset($app['version'])) {
             $data['appVersion'] = $app['version'];
         }
-         $data['apiKey'] = $this->config->getApiKey();
-         $this->guzzle->post('deploy', ['json' => $data]);
+
+        $data['apiKey'] = $this->config->getApiKey();
+
+        $this->guzzle->post('deploy', ['json' => $data]);
     }
 
     /**

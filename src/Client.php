@@ -18,7 +18,6 @@ use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
 use Bugsnag\Utils;
-use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
 use ReflectionClass;
 use ReflectionException;
@@ -822,8 +821,10 @@ class Client
     public function setSessionEndpoint($endpoint)
     {
         $this->config->setSessionEndpoint($endpoint);
+
         return $this;
     }
+
     /**
      * Get the session client.
      *

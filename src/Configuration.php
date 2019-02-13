@@ -679,8 +679,10 @@ class Configuration
     public function setSessionEndpoint($endpoint)
     {
         $this->setEndpoints(null, $endpoint);
+
         return $this;
     }
+
     /**
      * Get the session client.
      *
