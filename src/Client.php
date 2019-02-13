@@ -115,8 +115,11 @@ class Client
         $this->config = $config;
         if ($guzzle) {
             $this->config->setGuzzleClient($guzzle);
-            $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
-            $endpoint = $guzzle->getConfig($key);
+            if (version_compare(ClientInterface::VERSION, '6') === 1) {
+                $endpoint = (string) $guzzle->getConfig($key);
+            } else {
+                $endpoint = $guzzle->getBaseUrl();
+            }
             $this->config->setEndpoints($endpoint, null);
         }
 
