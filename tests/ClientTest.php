@@ -845,6 +845,7 @@ class ClientTest extends TestCase
         }
 
         $this->assertSame('https://example', $clientUri);
+        $this->assertSame('https://example', $client->getSessionEndpoint());
     }
 
     public function testSetAutoCaptureSessions()

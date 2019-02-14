@@ -125,6 +125,8 @@ class Configuration
     /**
      * A client to use to send sessions.
      *
+     * @deprecated No longer used
+     *
      * @var \Guzzle\ClientInterface
      */
     protected $sessionClient;
@@ -595,7 +597,19 @@ class Configuration
     }
 
     /**
+     * Get session delivery endpoint.
+     *
+     * @return string
+     */
+    public function getSessionEndpoint()
+    {
+        return $this->sessionEndpoint;
+    }
+
+    /**
      * Get the session client.
+     *
+     * @deprecated All deliveries are made through the HttpClient
      *
      * @return \Guzzle\ClientInterface
      */

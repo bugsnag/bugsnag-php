@@ -115,7 +115,7 @@ class Client
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
-        $this->sessionTracker = new SessionTracker($config);
+        $this->sessionTracker = new SessionTracker($config, $this->http);
 
         $this->registerMiddleware(new NotificationSkipper($config));
         $this->registerMiddleware(new BreadcrumbData($this->recorder));
@@ -800,7 +800,9 @@ class Client
 
     /**
      * Get the session client.
-     *
+     * 
+     * @deprecated All deliveries are made through the HttpClient
+     * 
      * @return \Guzzle\ClientInterface
      */
     public function getSessionClient()
@@ -840,5 +842,15 @@ class Client
     public function getBuildEndpoint()
     {
         return $this->config->getBuildEndpoint();
+    }
+
+    /**
+     * Get session delivery endpoint.
+     *
+     * @return string
+     */
+    public function getSessionEndpoint()
+    {
+        return $this->config->getSessionEndpoint();
     }
 }

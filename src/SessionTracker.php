@@ -93,15 +93,23 @@ class SessionTracker
     protected $currentSession;
 
     /**
+     * The HttpClient, to be used for delivery.
+     *
+     * @var \Bugsnag\HttpClient
+     */
+    protected $httpClient;
+
+    /**
      * Create a session tracker instance.
      *
      * @param Configuration $config the initial client configuration
      *
      * @return void
      */
-    public function __construct(Configuration $config)
+    public function __construct(Configuration $config, \Bugsnag\HttpClient $httpClient)
     {
         $this->config = $config;
+        $this->httpClient = $httpClient;
         $this->lastSent = 0;
     }
 
@@ -285,7 +293,6 @@ class SessionTracker
         if (count($sessions) == 0) {
             return;
         }
-        $http = $this->config->getSessionClient();
         $payload = $this->constructPayload($sessions);
         $headers = [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
@@ -295,10 +302,7 @@ class SessionTracker
         $this->setLastSent();
 
         try {
-            $http->post('', [
-                'json' => $payload,
-                'headers' => $headers,
-            ]);
+            $this->httpClient->deliverPayload($this->config->getSessionEndpoint(), $payload, $headers);
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
             if (!is_null($this->retryFunction)) {

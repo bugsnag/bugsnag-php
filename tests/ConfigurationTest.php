@@ -276,5 +276,7 @@ class ConfigurationTest extends TestCase
         }
 
         $this->assertSame($testUrl, $clientUri);
+
+        $this->assertSame($testUrl, $this->config->getSessionEndpoint());
     }
 }
