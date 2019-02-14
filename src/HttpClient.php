@@ -149,7 +149,7 @@ class HttpClient
 
         $endpoint = $this->config->getBuildEndpoint();
 
-        $this->guzzle->post($endpoint, ['json' => $data]);
+        $this->deliverPayload($endpoint, $data, []);
     }
 
     /**
