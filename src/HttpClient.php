@@ -235,14 +235,26 @@ class HttpClient
             return;
         }
 
+        $this->deliverPayload($url, $normalized, $this->getHeaders());
+    }
+
+    /**
+     * Attempts to deliver a payload via guzzle and logs any failures
+     *
+     * @param string $url the url to deliver to
+     * @param array $payload the payload array
+     * @param array $headers the header array
+     */
+    public function deliverPayload($url, $payload, $headers)
+    {
         // Send via guzzle and log any failures
         try {
             $this->guzzle->post($url, [
-                'json' => $normalized,
-                'headers' => $this->getHeaders(),
+                'json' => $payload,
+                'headers' => $headers,
             ]);
         } catch (Exception $e) {
-            error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
+            error_log('Bugsnag Warning: Couldn\'t deliver payload. '.$e->getMessage());
         }
     }
 

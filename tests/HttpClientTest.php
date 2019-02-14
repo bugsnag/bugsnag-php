@@ -152,7 +152,7 @@ class HttpClientTest extends TestCase
     {
         // Setup error_log mocking
         $log = $this->getFunctionMock('Bugsnag', 'error_log');
-        $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Couldn\'t notify. Guzzle exception thrown!'));
+        $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Couldn\'t deliver payload. Guzzle exception thrown!'));
 
         // Expect request to be called
         $this->guzzle->method('post')->will($this->throwException(new Exception('Guzzle exception thrown!')));
@@ -160,5 +160,22 @@ class HttpClientTest extends TestCase
         // Add a report to the http and deliver it
         $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
         $this->http->send();
+    }
+
+    public function testDeliverPayload()
+    {
+        $url = "testUrl";
+        $payload = [
+            "foo" => 1,
+            "bar" => 2
+        ];
+        $headers = [
+            "test-header" => "set"
+        ];
+        $this->guzzle->expects($this->once())->method('post')->with($url, [
+            'json' => $payload,
+            'headers' => $headers
+        ]);
+        $this->http->deliverPayload($url, $payload, $headers);
     }
 }
