@@ -74,6 +74,10 @@ class SessionTrackerTest extends TestCase
         $this->assertSame(['handled' => 0, 'unhandled' => 0], $storedSession['events']);
     }
 
+    /**
+     * Tests that custom locking functions can be added for synchronisation in frameworks
+     * where synchronisation is necessary, such as Laravel/Symfony
+     */
     public function testCanAddCustomLockFunctions()
     {
         $this->guzzleClient->expects($this->once())->method('post');
@@ -122,17 +126,32 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->setRetryFunction('retry');
     }
 
+    /**
+     * Tests that a custom storage function for sessions can be added, which caches
+     * the current sessions started counts over a longer period of time.
+     */
     public function testCanAddCustomStorageFunction()
     {
         $storageStub = $this->getMockBuilder(StorageMock::class)
                          ->setMethods(['store'])
                          ->getMock();
 
+        // With a custom storage function added, the expected calls would be:
         $storageStub->expects($this->exactly(5))->method('store')->withConsecutive(
+            /**
+             * - Check if session counts are currently stored with:
+             *   - Key 'bugsnag-session-counts'
+             *   - null value, as retrieving
+             */
             [
                 $this->equalTo('bugsnag-session-counts'),
                 $this->equalTo(null)
             ],
+            /**
+             * - Set the current session counts with:
+             *   - Key 'bugsnag-session-counts'
+             *   - [$current_time => 1]
+             */
             [
                 $this->equalTo('bugsnag-session-counts'),
                 $this->callback(function($session) {
@@ -140,14 +159,29 @@ class SessionTrackerTest extends TestCase
                         array_values($session)[0] == 1;
                 })
             ],
+            /**
+             * - Check when the sessions were last sent with:
+             *   - Key 'bugsnag-sessions-last-sent'
+             *   - null value, as retrieving
+             */
             [
                 $this->equalTo('bugsnag-sessions-last-sent'),
                 $this->equalTo(null)
             ],
+            /**
+             * - In `deliverSessions`, first retrieve the current SessionCounts with:
+             *   - Key 'bugsnag-session-counts'
+             *   - null value, as retrieving
+             */
             [
                 $this->equalTo('bugsnag-session-counts'),
                 $this->equalTo(null)
             ],
+            /**
+             * - Set the current sessionCounts to 0 due to delivery with:
+             *   - Key 'bugsnag-session-counts'
+             *   - []
+             */
             [
                 $this->equalTo('bugsnag-session-counts'),
                 $this->equalTo([])
@@ -167,6 +201,10 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->setStorageFunction('storage');
     }
 
+    /**
+     * Tests that custom sessions functions can be added, that store the current
+     * session event counts within short-term caching
+     */
     public function testCanAddCustomSessionFunction()
     {
         $this->guzzleClient->expects($this->once())->method('post');
@@ -175,6 +213,17 @@ class SessionTrackerTest extends TestCase
                          ->setMethods(['storeSession'])
                          ->getMock();
         $sessionStub->expects($this->exactly(2))->method('storeSession')->withConsecutive(
+            /**
+             * - Set the current session with:
+             *   [
+             *       'id' => uniqid('', true),
+             *       'startedAt' => $currentTime,
+             *       'events' => [
+             *           'handled' => 0,
+             *           'unhandled' => 0,
+             *       ],
+             *   ]
+             */
             [
                 $this->callback(function($session) {
                     return $session['id'] != null &&
@@ -183,6 +232,10 @@ class SessionTrackerTest extends TestCase
                         $session['events']['unhandled'] == 0;
                 })
             ],
+            /**
+             * - Retrieve the current session as we're testing getCurrentSession method with:
+             *   null as we're retrieving the currently set value
+             */
             [
                 null
             ]
