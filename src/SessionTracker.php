@@ -2,6 +2,9 @@
 
 namespace Bugsnag;
 
+use Exception;
+use InvalidArgumentException;
+
 class SessionTracker
 {
     /**
