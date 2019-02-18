@@ -4,7 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\SessionTracker;
 use Bugsnag\Configuration;
-use GuzzleHttp\Client as GuzzleClient;
+use Bugsnag\HttpClient;
 use phpmock\phpunit\PHPMock;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -34,7 +34,7 @@ class SessionTrackerTest extends TestCase
     use PHPMock;
 
     protected $config;
-    protected $guzzleClient;
+    protected $httpClient;
     protected $sessionTracker;
 
     protected function setUp()
@@ -43,26 +43,26 @@ class SessionTrackerTest extends TestCase
                              ->setMethods(['getSessionClient', 'setSessionEndpoint'])
                              ->setConstructorArgs(['example_key'])
                              ->getMock();
-        $this->guzzleClient = $this->getMockBuilder(GuzzleClient::class)
-                                   ->setMethods(['post'])
+        $this->httpClient = $this->getMockBuilder(HttpClient::class)
+                                   ->setMethods(['deliverPayload'])
+                                   ->disableOriginalConstructor()
                                    ->getMock();
-        $this->config->method('getSessionClient')->willReturn($this->guzzleClient);
-        $this->sessionTracker = new SessionTracker($this->config);
+        $this->sessionTracker = new SessionTracker($this->config, $this->httpClient);
     }
 
     public function testCanStartAndDeliverSession()
     {
         $config = $this->config;
-        $this->guzzleClient->expects($this->once())->method('post')->with(
-            '',
-            $this->callback(function($subject) use ($config) {
-                $json = $subject['json'];
-                $headers = $subject['headers'];
+        $this->httpClient->expects($this->once())->method('deliverPayload')->with(
+            $this->config->getSessionEndpoint(),
+            $this->callback(function($json) use ($config) {
                 return ($json['notifier'] == $config->getNotifier()) &&
                     ($json['device'] == $config->getDeviceData()) &&
                     ($json['app'] == $config->getAppData()) &&
-                    ($json['sessionCounts'][0]['sessionsStarted'] == 1) &&
-                    ($headers['Bugsnag-Api-Key'] == 'example_key') &&
+                    ($json['sessionCounts'][0]['sessionsStarted'] == 1);
+            }),
+            $this->callback(function($headers) {
+                return ($headers['Bugsnag-Api-Key'] == 'example_key') &&
                     ($headers['Bugsnag-Sent-At'] != null);
             })
         );
@@ -80,7 +80,7 @@ class SessionTrackerTest extends TestCase
      */
     public function testCanAddCustomLockFunctions()
     {
-        $this->guzzleClient->expects($this->once())->method('post');
+        $this->httpClient->expects($this->once())->method('deliverPayload');
 
         $lockStub = $this->getMockBuilder(LockMock::class)
                          ->setMethods(['lock', 'unlock'])
@@ -103,7 +103,7 @@ class SessionTrackerTest extends TestCase
 
     public function testCanAddCustomRetryFunction()
     {
-        $this->guzzleClient->expects($this->once())->method('post')->will($this->throwException(new \Exception("delivery failed")));
+        $this->httpClient->expects($this->once())->method('deliverPayload')->will($this->throwException(new \Exception("delivery failed")));
 
         $log = $this->getFunctionMock('Bugsnag', 'error_log');
         $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Couldn\'t notify. delivery failed'));
@@ -207,7 +207,7 @@ class SessionTrackerTest extends TestCase
      */
     public function testCanAddCustomSessionFunction()
     {
-        $this->guzzleClient->expects($this->once())->method('post');
+        $this->httpClient->expects($this->once())->method('deliverPayload');
 
         $sessionStub = $this->getMockBuilder(SessionMock::class)
                          ->setMethods(['storeSession'])
