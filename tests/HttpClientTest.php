@@ -41,7 +41,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
+        $this->assertSame($this->config->getNotifyEndpoint(), $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);
@@ -85,7 +85,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
+        $this->assertSame($this->config->getNotifyEndpoint(), $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);
@@ -133,7 +133,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = $invocations[0]->parameters;
         $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
+        $this->assertSame($this->config->getNotifyEndpoint(), $params[0]);
         $this->assertInternalType('array', $params[1]);
         $this->assertInternalType('array', $params[1]['json']['notifier']);
         $this->assertInternalType('array', $params[1]['json']['events']);
@@ -177,5 +177,36 @@ class HttpClientTest extends TestCase
             'headers' => $headers
         ]);
         $this->http->deliverPayload($url, $payload, $headers);
+    }
+
+    public function testCustomNotifyEndpoint()
+    {
+        // Expect request to be called
+        $this->guzzle->expects($spy = $this->any())->method('post');
+
+        // Set a custom notify endpoint
+        $endpoint = 'http://example.com';
+        $this->config->setNotifyEndpoint($endpoint);
+
+        // Add a report to the http and deliver it
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
+        $this->http->send();
+
+        $this->assertCount(1, $invocations = $spy->getInvocations());
+        $params = $invocations[0]->parameters;
+        $this->assertCount(2, $params);
+        $this->assertSame($endpoint, $params[0]);
+        $this->assertInternalType('array', $params[1]);
+        $this->assertInternalType('array', $params[1]['json']['notifier']);
+        $this->assertInternalType('array', $params[1]['json']['events']);
+        $this->assertSame([], $params[1]['json']['events'][0]['user']);
+        $this->assertSame(['foo' => 'bar'], $params[1]['json']['events'][0]['metaData']);
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
+        $this->assertSame('4.0', $params[1]['json']['events'][0]['payloadVersion']);
+
+        $headers = $params[1]['headers'];
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
+        $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
+        $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
     }
 }

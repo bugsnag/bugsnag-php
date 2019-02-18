@@ -88,9 +88,11 @@ class Client
     public static function make($apiKey = null, $endpoint = null, $defaults = true)
     {
         $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
-        $guzzle = static::makeGuzzle($endpoint ?: getenv('BUGSNAG_ENDPOINT'));
+        if ($endpoint = $endpoint ?: getenv('BUGSNAG_ENDPOINT')) {
+            $config->setNotifyEndpoint($endpoint);
+        }
 
-        $client = new static($config, null, $guzzle);
+        $client = new static($config, null, null);
 
         if ($defaults) {
             $client->registerDefaultCallbacks();
@@ -111,6 +113,16 @@ class Client
     public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
     {
         $this->config = $config;
+
+        if ($guzzle) {
+            if (version_compare(Guzzle::VERSION, '6') === 1) {
+                $endpoint = $guzzle->getConfig('base_uri');
+            } else {
+                $endpoint = $guzzle->getBaseUrl();
+            }
+            $this->config->setNotifyEndpoint($endpoint);
+        }
+
         $this->resolver = $resolver ?: new BasicResolver();
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
@@ -800,9 +812,9 @@ class Client
 
     /**
      * Get the session client.
-     * 
+     *
      * @deprecated All deliveries are made through the HttpClient
-     * 
+     *
      * @return \Guzzle\ClientInterface
      */
     public function getSessionClient()
@@ -852,5 +864,29 @@ class Client
     public function getSessionEndpoint()
     {
         return $this->config->getSessionEndpoint();
+    }
+
+    /**
+     * Sets the notification endpoint.
+     *
+     * @param string $endpoint the notification endpoint
+     *
+     * @return $this
+     */
+    public function setNotifyEndpoint($endpoint)
+    {
+        $this->config->setNotifyEndpoint($endpoint);
+
+        return $this;
+    }
+
+    /**
+     * Gets the notification endpoint.
+     *
+     * @return string
+     */
+    public function getNotifyEndpoint()
+    {
+        return $this->config->getNotifyEndpoint();
     }
 }

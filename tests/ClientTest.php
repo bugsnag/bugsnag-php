@@ -108,11 +108,7 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf(Client::class, $client);
 
-        if (version_compare(ClientInterface::VERSION, '6') === 1) {
-            $this->assertEquals(new Uri('https://example.com'), $this->getGuzzle($client)->getConfig('base_uri'));
-        } else {
-            $this->assertSame('https://example.com', $this->getGuzzle($client)->getBaseUrl());
-        }
+        $this->assertEquals("https://example.com", $client->getNotifyEndpoint());
     }
 
     public function testCanMakeFromEnv()
@@ -124,11 +120,17 @@ class ClientTest extends TestCase
 
         $this->assertInstanceOf(Client::class, $client);
 
-        if (version_compare(ClientInterface::VERSION, '6') === 1) {
-            $this->assertEquals(new Uri('http://foo.com'), $this->getGuzzle($client)->getConfig('base_uri'));
-        } else {
-            $this->assertSame('http://foo.com', $this->getGuzzle($client)->getBaseUrl());
-        }
+        $this->assertEquals("http://foo.com", $client->getNotifyEndpoint());
+    }
+
+    public function testCanMakeWithGuzzle()
+    {
+        $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
+        $guzzle = new Guzzle([$key => 'https://bar.com']);
+
+        $client = new Client(new Configuration('123'), null, $guzzle);
+
+        $this->assertEquals('https://bar.com', $client->getNotifyEndpoint());
     }
 
     public function testBeforeNotifySkipsError()
@@ -899,5 +901,16 @@ class ClientTest extends TestCase
         $client = Client::make('foo');
         $this->assertSame($client, $client->setNotifier(['foo' => 'bar']));
         $this->assertSame(['foo' => 'bar'], $client->getNotifier());
+    }
+
+    public function testSetNotifyEndpoint()
+    {
+        $client = Client::make('foo');
+
+        $this->assertEquals(Client::ENDPOINT, $client->getNotifyEndpoint());
+
+        $client->setNotifyEndpoint('http://test.com');
+
+        $this->assertEquals('http://test.com', $client->getNotifyEndpoint());
     }
 }

@@ -139,6 +139,13 @@ class Configuration
     protected $sessionEndpoint = self::SESSION_ENDPOINT;
 
     /**
+     * The endpoint to deliver event notifications to.
+     *
+     * @var string
+     */
+    protected $notifyEndpoint = Client::ENDPOINT;
+
+    /**
      * The endpoint to deliver build notifications to.
      *
      * @var string
@@ -658,5 +665,29 @@ class Configuration
         }
 
         return self::BUILD_ENDPOINT;
+    }
+
+    /**
+     * Sets the notification endpoint.
+     *
+     * @param string $endpoint the notification endpoint
+     *
+     * @return $this
+     */
+    public function setNotifyEndpoint($endpoint)
+    {
+        $this->notifyEndpoint = $endpoint;
+
+        return $this;
+    }
+
+    /**
+     * Gets the notification endpoint.
+     *
+     * @return string
+     */
+    public function getNotifyEndpoint()
+    {
+        return $this->notifyEndpoint;
     }
 }

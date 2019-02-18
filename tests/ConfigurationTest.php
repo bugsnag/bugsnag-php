@@ -279,4 +279,11 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame($testUrl, $this->config->getSessionEndpoint());
     }
+
+    public function testSetNotifyEndpoint()
+    {
+        $this->config->setNotifyEndpoint('http://test.com');
+
+        $this->assertSame('http://test.com', $this->config->getNotifyEndpoint());
+    }
 }

@@ -163,7 +163,7 @@ class HttpClient
             return;
         }
 
-        $this->postJson('', $this->build());
+        $this->postJson($this->config->getNotifyEndpoint(), $this->build());
 
         $this->queue = [];
     }
