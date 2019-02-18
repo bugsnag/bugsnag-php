@@ -80,26 +80,10 @@ class ClientTest extends TestCase
         });
     }
 
-    protected function getGuzzle(Client $client)
-    {
-        $prop = (new ReflectionClass($client))->getProperty('http');
-        $prop->setAccessible(true);
-
-        $http = $prop->getValue($client);
-
-        $prop = (new ReflectionClass($http))->getProperty('guzzle');
-        $prop->setAccessible(true);
-
-        return $prop->getValue($http);
-    }
-
     public function testDefaultSetup()
     {
-        if (version_compare(ClientInterface::VERSION, '6') === 1) {
-            $this->assertEquals(new Uri('https://notify.bugsnag.com'), $this->getGuzzle(Client::make('123'))->getConfig('base_uri'));
-        } else {
-            $this->assertSame('https://notify.bugsnag.com', $this->getGuzzle(Client::make('123'))->getBaseUrl());
-        }
+        $client = Client::make('123');
+        $this->assertEquals(Client::ENDPOINT, $client->getNotifyEndpoint());
     }
 
     public function testCanMake()

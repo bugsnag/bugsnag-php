@@ -95,7 +95,7 @@ class SessionTracker
     /**
      * The HttpClient, to be used for delivery.
      *
-     * @var \Bugsnag\HttpClient
+     * @var HttpClient
      */
     protected $httpClient;
 
@@ -106,7 +106,7 @@ class SessionTracker
      *
      * @return void
      */
-    public function __construct(Configuration $config, \Bugsnag\HttpClient $httpClient)
+    public function __construct(Configuration $config, HttpClient $httpClient)
     {
         $this->config = $config;
         $this->httpClient = $httpClient;
@@ -302,7 +302,11 @@ class SessionTracker
         $this->setLastSent();
 
         try {
-            $this->httpClient->deliverPayload($this->config->getSessionEndpoint(), $payload, $headers);
+            $this->httpClient->deliverPayload(
+                $this->config->getSessionEndpoint(),
+                $payload,
+                $headers
+            );
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
             if (!is_null($this->retryFunction)) {
