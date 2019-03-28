@@ -121,7 +121,9 @@ class Client
         $this->registerMiddleware(new BreadcrumbData($this->recorder));
         $this->registerMiddleware(new SessionData($this));
 
-        register_shutdown_function([$this, 'flush']);
+        if ($this->config->isBatchSending()) {
+            register_shutdown_function([$this, 'flush']);
+        }
     }
 
     /**
