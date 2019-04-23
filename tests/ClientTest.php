@@ -645,6 +645,15 @@ class ClientTest extends TestCase
         $this->client->build(null, null, null, 'me');
     }
 
+    public function testBuildWorksWithAppVersionInBuild()
+    {
+        $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
+
+        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
+
+        $this->client->build(null, null, null, null, '1.3.1');
+    }
+
     public function testBuildWorksWithBuildTool()
     {
         $this->guzzle->expects($this->once())->method('post')->with($this->equalTo('https://build.bugsnag.com'), $this->equalTo(['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]));
@@ -652,7 +661,7 @@ class ClientTest extends TestCase
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
         $this->config->setAppVersion('1.3.1');
 
-        $this->client->build(null, null, null, null);
+        $this->client->build(null, null, null, null, null);
     }
 
     public function testBuildWorksWithEverything()
@@ -664,7 +673,7 @@ class ClientTest extends TestCase
         $this->config->setReleaseStage('development');
         $this->config->setAppVersion('1.3.1');
 
-        $this->client->build('baz', 'foo', 'github', 'me');
+        $this->client->build('baz', 'foo', 'github', 'me', '1.3.1');
     }
 
     public function testBuildFailsWithoutAPIKey()

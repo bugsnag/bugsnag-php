@@ -349,10 +349,11 @@ class Client
      * @param string|null $revision    the source control revision you are currently deploying
      * @param string|null $provider    the provider of the source control for the build
      * @param string|null $builderName the name of who or what is making the build
+     * @param string|null $appVersion  the version for this build
      *
      * @return void
      */
-    public function build($repository = null, $revision = null, $provider = null, $builderName = null)
+    public function build($repository = null, $revision = null, $provider = null, $builderName = null, $appVersion = null)
     {
         $data = [];
 
@@ -370,6 +371,11 @@ class Client
 
         if ($builderName) {
             $data['builder'] = $builderName;
+        }
+
+        //Allowing the appVersion to be passed to the build function in the event semVer is not used(Timestamp, hash, etc.)
+        if ($appVersion) {
+            $this->getConfig()->setAppVersion($appVersion);
         }
 
         $this->http->sendBuildReport($data);
