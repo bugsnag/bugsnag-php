@@ -160,6 +160,8 @@ class Configuration
 
         $this->apiKey = $apiKey;
         $this->fallbackType = php_sapi_name();
+
+        // Add PHP runtime version to device data
         $this->mergeDeviceData(['runtimeVersions' => ['php' => phpversion()]]);
     }
 
