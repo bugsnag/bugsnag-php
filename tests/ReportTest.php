@@ -26,9 +26,10 @@ class ReportTest extends TestCase
     {
         $data = $this->report->toArray();
 
-        $this->assertCount(2, $data['device']);
+        $this->assertCount(3, $data['device']);
         $this->assertInternalType('string', $data['device']['time']);
         $this->assertSame(php_uname('n'), $data['device']['hostname']);
+        $this->assertSame(phpversion(), $data['device']['runtimeVersions']['php']);
     }
 
     public function testMetaData()
