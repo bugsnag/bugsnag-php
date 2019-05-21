@@ -477,15 +477,15 @@ class Configuration
     }
 
     /**
-     * Merges new data fields to the device data collection.
+     * Adds new data fields to the device data collection.
      *
-     * @param array the data to add
+     * @param array $data an associative array containing the new data to be added
      *
      * @return this
      */
-    public function mergeDeviceData($deviceData)
+    public function mergeDeviceData($data)
     {
-        $this->deviceData = array_merge_recursive($this->deviceData, $deviceData);
+        $this->deviceData = array_merge_recursive($this->deviceData, $data);
 
         return $this;
     }
