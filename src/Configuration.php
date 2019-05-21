@@ -160,6 +160,7 @@ class Configuration
 
         $this->apiKey = $apiKey;
         $this->fallbackType = php_sapi_name();
+        $this->mergeDeviceData(['runtimeVersions' => ['php' => phpversion()]]);
     }
 
     /**
@@ -469,6 +470,20 @@ class Configuration
     public function setHostname($hostname)
     {
         $this->deviceData['hostname'] = $hostname;
+
+        return $this;
+    }
+
+    /**
+     * Merges new data fields to the device data collection.
+     *
+     * @param array the data to add
+     *
+     * @return this
+     */
+    public function mergeDeviceData($deviceData)
+    {
+        $this->deviceData = array_merge_recursive($this->deviceData, $deviceData);
 
         return $this;
     }
