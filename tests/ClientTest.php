@@ -880,8 +880,6 @@ class ClientTest extends TestCase
     {
         $client = Client::make('foo');
         $this->assertSame($client, $client->setHostname('web1.example.com'));
-        $this->assertSame('web1.example.com', $client->getDeviceData()['hostname']);
-        $this->assertSame(phpversion(), $client->getDeviceData()['runtimeVersions']['php']);
     }
 
     public function testAppData()
