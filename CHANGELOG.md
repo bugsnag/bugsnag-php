@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Add PHP version string to report and session payloads (device.runtimeVersions)
+  [#525](https://github.com/bugsnag/bugsnag-php/pull/525)
+
 ## 3.16.0 (2019-01-29)
 
 ### Enhancements
