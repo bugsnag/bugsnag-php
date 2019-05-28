@@ -23,12 +23,13 @@ Releasing
 1. Commit all outstanding changes
 2. Bump the version in `src/Configuration.php`.
 3. Update the CHANGELOG.md, and README if appropriate.
-4. Commit, tag push
+4. Check out a new branch and commit your changes
+5. Open a pull request for the release
+6. Once merged, pull the latest changes and then tag the release:
     ```
-    git commit -am v3.x.x
     git tag v3.x.x
-    git push origin master && git push --tags
+    git push --tags
     ```
-5. Build a new phar package by running `make package` and attach it to the GitHub release.
-6. Ensure `utility/bugsnag-prepend.php` works with the example php project and attach it to the Github release.
-7. Update the setup guides for PHP (and its frameworks) with any new content.
+7. Build a new phar package by running `make package` and attach it to the GitHub release.
+8. Ensure `utility/bugsnag-prepend.php` works with the example php project and attach it to the Github release.
+9. Update the setup guides for PHP (and its frameworks) with any new content.
