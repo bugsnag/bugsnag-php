@@ -1,7 +1,9 @@
 Changelog
 =========
 
-## TBD
+## 3.17.0 (2019-05-28)
+
+Add the version of PHP to report information to allow easier diagnosis of version-specific issues.
 
 ### Enhancements
 
