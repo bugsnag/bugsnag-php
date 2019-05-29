@@ -105,13 +105,11 @@ class SessionTracker
         $this->lastSent = 0;
     }
 
-    public function setConfig(Configuration $config)
-    {
-        $this->config = $config;
-    }
-
     public function startSession()
     {
+        if (!$this->config->sessionsEnabled()) {
+            return;
+        }
         $currentTime = strftime('%Y-%m-%dT%H:%M:00');
         $session = [
             'id' => uniqid('', true),
@@ -285,7 +283,7 @@ class SessionTracker
         if (count($sessions) == 0) {
             return;
         }
-        $http = $this->config->getSessionClient();
+        $guzzle = $this->config->getGuzzleClient();
         $payload = $this->constructPayload($sessions);
         $headers = [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
@@ -295,7 +293,7 @@ class SessionTracker
         $this->setLastSent();
 
         try {
-            $http->post('', [
+            $guzzle->post($this->config->getSessionEndpoint(), [
                 'json' => $payload,
                 'headers' => $headers,
             ]);

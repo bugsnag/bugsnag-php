@@ -17,8 +17,7 @@ use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
-use Composer\CaBundle\CaBundle;
-use GuzzleHttp\Client as Guzzle;
+use Bugsnag\Utils;
 use GuzzleHttp\ClientInterface;
 use ReflectionClass;
 use ReflectionException;
@@ -30,7 +29,7 @@ class Client
      *
      * @var string
      */
-    const ENDPOINT = 'https://notify.bugsnag.com';
+    const ENDPOINT = Configuration::DEFAULT_NOTIFY_ENDPOINT;
 
     /**
      * The config instance.
@@ -88,10 +87,13 @@ class Client
     public static function make($apiKey = null, $endpoint = null, $defaults = true)
     {
         $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
-        $guzzle = static::makeGuzzle($endpoint ?: getenv('BUGSNAG_ENDPOINT'));
 
-        $client = new static($config, null, $guzzle);
+        if ($endpoint = $endpoint ?: getenv('BUGSNAG_ENDPOINT')) {
+            $sessionEndpoint = getenv('BUGSNAG_SESSION_ENDPOINT');
+            $config->setEndpoints($endpoint, $sessionEndpoint);
+        }
 
+        $client = new static($config, null, null);
         if ($defaults) {
             $client->registerDefaultCallbacks();
         }
@@ -111,10 +113,20 @@ class Client
     public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
     {
         $this->config = $config;
+        if ($guzzle) {
+            $this->config->setGuzzleClient($guzzle);
+            if (version_compare(ClientInterface::VERSION, '6') === 1) {
+                $endpoint = $guzzle->getConfig('base_uri');
+            } else {
+                $endpoint = $guzzle->getBaseUrl();
+            }
+            $this->config->setEndpoints((string) $endpoint, null);
+        }
+
         $this->resolver = $resolver ?: new BasicResolver();
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
-        $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
+        $this->http = new HttpClient($config);
         $this->sessionTracker = new SessionTracker($config);
 
         $this->registerMiddleware(new NotificationSkipper($config));
@@ -135,28 +147,8 @@ class Client
     public static function makeGuzzle($base = null, array $options = [])
     {
         $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
-
         $options[$key] = $base ?: static::ENDPOINT;
-
-        if ($path = static::getCaBundlePath()) {
-            $options['verify'] = $path;
-        }
-
-        return new Guzzle($options);
-    }
-
-    /**
-     * Get the ca bundle path if one exists.
-     *
-     * @return string|false
-     */
-    protected static function getCaBundlePath()
-    {
-        if (!class_exists(CaBundle::class)) {
-            return false;
-        }
-
-        return realpath(CaBundle::getSystemCaRootBundlePath());
+        return Utils::makeGuzzle($options);
     }
 
     /**
@@ -785,6 +777,41 @@ class Client
     }
 
     /**
+     * Sets the notify and session endpoints
+     *
+     * @param string $notifyEndpoint the notify endpoint
+     * @param string $sessionEndpoint the session endpoint
+     *
+     * @return $this
+     */
+    public function setEndpoints($notifyEndpoint, $sessionEndpoint)
+    {
+        $this->config->setEndpoints($notifyEndpoint, $sessionEndpoint);
+
+        return $this;
+    }
+
+    /**
+     * Gets the notify endpoint
+     *
+     * @return string
+     */
+    public function getNotifyEndpoint()
+    {
+        return $this->config->getNotifyEndpoint();
+    }
+
+    /**
+     * Gets the session endpoint
+     *
+     * @return string
+     */
+    public function getSessionEndpoint()
+    {
+        return $this->config->getSessionEndpoint();
+    }
+
+    /**
      * Set session delivery endpoint.
      *
      * @param string $endpoint the session endpoint
@@ -806,6 +833,41 @@ class Client
     public function getSessionClient()
     {
         return $this->config->getSessionClient();
+    }
+
+    /**
+     * Gets the current guzzle client.
+     *
+     * @return GuzzleHttp\ClientInterface
+     */
+    public function getGuzzleClient()
+    {
+        return $this->config->getGuzzleClient();
+    }
+
+    /**
+     * Sets the guzzle client
+     *
+     * Delivery URLs should be set using the "setEndpoints" method
+     *
+     * @param GuzzleHttp\ClientInterface $guzzleClient the new guzzle client
+     *
+     * @return $this
+     */
+    public function setGuzzleClient($guzzleClient)
+    {
+        $this->config->setGuzzleClient($guzzleClient);
+        return $this;
+    }
+
+    /**
+     * Whether any sessions are enabled.
+     *
+     * @return bool
+     */
+    public function sessionsEnabled()
+    {
+        return $this->config->sessionsEnabled();
     }
 
     /**

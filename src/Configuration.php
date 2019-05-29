@@ -3,22 +3,30 @@
 namespace Bugsnag;
 
 use InvalidArgumentException;
+use Bugsnag\Utils;
 
 class Configuration
 {
     /**
-     * The default endpoint.
+     * The default notification endpoint.
      *
      * @var string
      */
-    const SESSION_ENDPOINT = 'https://sessions.bugsnag.com';
+    const DEFAULT_NOTIFY_ENDPOINT = 'https://notify.bugsnag.com';
+
+    /**
+     * The default session endpoint.
+     *
+     * @var string
+     */
+    const DEFAULT_SESSION_ENDPOINT = 'https://sessions.bugsnag.com';
 
     /**
      * The default build endpoint.
      *
      * @var string
      */
-    const BUILD_ENDPOINT = 'https://build.bugsnag.com';
+    const DEFAULT_BUILD_ENDPOINT = 'https://build.bugsnag.com';
 
     /**
      * The Bugsnag API Key.
@@ -116,25 +124,39 @@ class Configuration
     protected $errorReportingLevel;
 
     /**
-     * Whether to track sessions.
+     * Whether to track sessions automatically.
      *
      * @var bool
      */
-    protected $autoCaptureSessions = false;
+    protected $autoCaptureSessions = true;
 
     /**
-     * A client to use to send sessions.
+     * Whether to allow any sessions to be tracked.
      *
-     * @var \Guzzle\ClientInterface
+     * @var bool
      */
-    protected $sessionClient;
+    protected $enableSessions = true;
+
+    /**
+     * The client for making http requests
+     *
+     * @var GuzzleHttp\ClientInterface|null
+     */
+    protected $guzzleClient = null;
+
+    /**
+     * The endpoint to deliver notifications to.
+     *
+     * @var string
+     */
+    protected $notifyEndpoint = self::DEFAULT_NOTIFY_ENDPOINT;
 
     /**
      * The endpoint to deliver sessions to.
      *
      * @var string
      */
-    protected $sessionEndpoint = self::SESSION_ENDPOINT;
+    protected $sessionEndpoint = self::DEFAULT_SESSION_ENDPOINT;
 
     /**
      * The endpoint to deliver build notifications to.
@@ -596,6 +618,75 @@ class Configuration
     }
 
     /**
+     * Whether any sessions are enabled.
+     *
+     * @return bool
+     */
+    public function sessionsEnabled()
+    {
+        if ($this->enableSessions) {
+            $notifyEndpointSet = $this->notifyEndpoint !== static::DEFAULT_NOTIFY_ENDPOINT;
+            $sessionEndpointSet = $this->sessionEndpoint !== static::DEFAULT_SESSION_ENDPOINT;
+            if ($notifyEndpointSet && !$sessionEndpointSet) {
+                syslog(LOG_WARNING, 'The session endpoint has not been set, all further session capturing will be disabled');
+                $this->enableSessions = false;
+            } elseif (!$notifyEndpointSet && $sessionEndpointSet) {
+                throw new InvalidArgumentException('The session endpoint cannot be modified without the notify endpoint');
+            }
+        }
+        return $this->enableSessions;
+    }
+
+    /**
+     * Whether should be auto-capturing sessions.
+     *
+     * @return bool
+     */
+    public function shouldCaptureSessions()
+    {
+        return $this->autoCaptureSessions && $this->sessionsEnabled();
+    }
+
+    /**
+     * Sets the notify and session endpoints
+     *
+     * @param string $notifyEndpoint the notify endpoint
+     * @param string $sessionEndpoint the session endpoint
+     *
+     * @return $this
+     */
+    public function setEndpoints($notifyEndpoint, $sessionEndpoint)
+    {
+        if ($notifyEndpoint) {
+            $this->notifyEndpoint = $notifyEndpoint;
+        }
+        if ($sessionEndpoint) {
+            $this->sessionEndpoint = $sessionEndpoint;
+        }
+        return $this;
+    }
+
+    /**
+     * Gets the notify endpoint
+     *
+     * @return string
+     */
+    public function getNotifyEndpoint()
+    {
+        return $this->notifyEndpoint;
+    }
+
+    /**
+     * Gets the session endpoint
+     *
+     * @return string
+     */
+    public function getSessionEndpoint()
+    {
+        return $this->sessionEndpoint;
+    }
+
+    /**
      * Set session delivery endpoint.
      *
      * @param string $endpoint the session endpoint
@@ -604,9 +695,7 @@ class Configuration
      */
     public function setSessionEndpoint($endpoint)
     {
-        $this->sessionEndpoint = $endpoint;
-
-        $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
+        $this->setEndpoints(null, $endpoint);
 
         return $this;
     }
@@ -618,21 +707,35 @@ class Configuration
      */
     public function getSessionClient()
     {
-        if (is_null($this->sessionClient)) {
-            $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
-        }
-
-        return $this->sessionClient;
+        return $this->getGuzzleClient();
     }
 
     /**
-     * Whether should be auto-capturing sessions.
+     * Sets the guzzle client
      *
-     * @return bool
+     * Delivery URLs should be set using the "setEndpoints" method
+     *
+     * @param GuzzleHttp\ClientInterface $guzzleClient the new guzzle client
+     *
+     * @return $this
      */
-    public function shouldCaptureSessions()
+    public function setGuzzleClient($guzzleClient)
     {
-        return $this->autoCaptureSessions;
+        $this->guzzleClient = $guzzleClient;
+        return $this;
+    }
+
+    /**
+     * Gets the current guzzle client, making one if necessary
+     *
+     * @return GuzzleHttp\ClientInterface
+     */
+    public function getGuzzleClient()
+    {
+        if (!$this->guzzleClient) {
+            $this->guzzleClient = Utils::makeGuzzle();
+        }
+        return $this->guzzleClient;
     }
 
     /**
@@ -660,6 +763,6 @@ class Configuration
             return $this->buildEndpoint;
         }
 
-        return self::BUILD_ENDPOINT;
+        return self::DEFAULT_BUILD_ENDPOINT;
     }
 }

@@ -16,13 +16,6 @@ class HttpClient
     protected $config;
 
     /**
-     * The guzzle client instance.
-     *
-     * @var \GuzzleHttp\ClientInterface
-     */
-    protected $guzzle;
-
-    /**
      * The queue of reports to send.
      *
      * @var \Bugsnag\Report[]
@@ -47,14 +40,12 @@ class HttpClient
      * Create a new http client instance.
      *
      * @param \Bugsnag\Configuration      $config the configuration instance
-     * @param \GuzzleHttp\ClientInterface $guzzle the guzzle client instance
      *
      * @return void
      */
-    public function __construct(Configuration $config, ClientInterface $guzzle)
+    public function __construct(Configuration $config)
     {
         $this->config = $config;
-        $this->guzzle = $guzzle;
     }
 
     /**
@@ -149,7 +140,9 @@ class HttpClient
 
         $endpoint = $this->config->getBuildEndpoint();
 
-        $this->guzzle->post($endpoint, ['json' => $data]);
+        $guzzleClient = $this->config->getGuzzleClient();
+
+        $guzzleClient->post($endpoint, ['json' => $data]);
     }
 
     /**
@@ -163,7 +156,7 @@ class HttpClient
             return;
         }
 
-        $this->postJson('', $this->build());
+        $this->postJson($this->config->getNotifyEndpoint(), $this->build());
 
         $this->queue = [];
     }
@@ -236,8 +229,9 @@ class HttpClient
         }
 
         // Send via guzzle and log any failures
+        $guzzleClient = $this->config->getGuzzleClient();
         try {
-            $this->guzzle->post($url, [
+            $guzzleClient->post($url, [
                 'json' => $normalized,
                 'headers' => $this->getHeaders(),
             ]);
