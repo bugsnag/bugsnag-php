@@ -57,9 +57,9 @@ class Bugsnag_Diagnostics
     /**
      * Merges new data fields to the device data collection.
      *
-     * @param array the data to add
+     * @param array $deviceData the data to add
      *
-     * @return this
+     * @return $this
      */
     public function mergeDeviceData($deviceData)
     {
@@ -75,8 +75,10 @@ class Bugsnag_Diagnostics
      */
     public function getDeviceData()
     {
-        return array_merge(array('hostname' => $this->config->get('hostname', php_uname('n'))),
-                           array_filter($this->deviceData));
+        return array_merge(
+            array('hostname' => $this->config->get('hostname', php_uname('n'))),
+            array_filter($this->deviceData)
+        );
     }
 
     /**

@@ -5,7 +5,7 @@ Changelog
 
 ### Enhancements
 
-* Add PHP version string to report and session payloads (device.runtimeVersions)
+* Add PHP version string to report payload (device.runtimeVersions)
   [#526](https://github.com/bugsnag/bugsnag-php/pull/526)
 
 ## 2.9.2 (2016-07-21)
