@@ -94,4 +94,14 @@ class ClientTest extends PHPUnit_Framework_TestCase
         }
         $this->client->setCurlOptions('option');
     }
+
+    public function testDeviceData()
+    {
+        $client = $this->client->setHostname('web1.example.com');
+        $this->assertSame($this->client, $client);
+
+        $deviceData = $client->getDeviceData();
+        $this->assertSame('web1.example.com', $deviceData['hostname']);
+        $this->assertSame(phpversion(), $deviceData['runtimeVersions']['php']);
+    }
 }

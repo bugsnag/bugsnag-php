@@ -21,9 +21,9 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
 
         $appData = $this->diagnostics->getAppData();
 
-        $this->assertSame($appData['releaseStage'], 'qa1');
-        $this->assertSame($appData['version'], '1.2.3');
-        $this->assertSame($appData['type'], 'laravel');
+        $this->assertSame('qa1', $appData['releaseStage']);
+        $this->assertSame('1.2.3', $appData['version']);
+        $this->assertSame('laravel', $appData['type']);
     }
 
     public function testDefaultDeviceData()
@@ -32,13 +32,64 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
 
         $deviceData = $this->diagnostics->getDeviceData();
 
-        $this->assertSame($deviceData['hostname'], 'web1.example.com');
+        $this->assertEquals(2, count($deviceData));
+        $this->assertSame('web1.example.com', $deviceData['hostname']);
+        $this->assertSame(phpversion(), $deviceData['runtimeVersions']['php']);
+    }
+
+    public function testMergeDeviceDataEmptyArray()
+    {
+        $newData = array();
+        $this->diagnostics->mergeDeviceData($newData);
+
+        $deviceData = $this->diagnostics->getDeviceData();
+        $this->assertEquals(2, count($deviceData));
+        $this->assertSame(php_uname('n'), $deviceData['hostname']);
+        $this->assertSame(phpversion(), $deviceData['runtimeVersions']['php']);
+    }
+
+    public function testMergeDeviceDataSingleValue()
+    {
+        $newData = array('field1' => 'value');
+        $this->diagnostics->mergeDeviceData($newData);
+
+        $deviceData = $this->diagnostics->getDeviceData();
+        $this->assertEquals(3, count($deviceData));
+        $this->assertSame(php_uname('n'), $deviceData['hostname']);
+        $this->assertSame(phpversion(), $deviceData['runtimeVersions']['php']);
+        $this->assertSame('value', $deviceData['field1']);
+    }
+
+    public function testMergeDeviceDataMultiValues()
+    {
+        $newData = array('field1' => 'value', 'field2' => 2);
+        $this->diagnostics->mergeDeviceData($newData);
+
+        $deviceData = $this->diagnostics->getDeviceData();
+        $this->assertEquals(4, count($deviceData));
+        $this->assertSame(php_uname('n'), $deviceData['hostname']);
+        $this->assertSame(phpversion(), $deviceData['runtimeVersions']['php']);
+        $this->assertSame('value', $deviceData['field1']);
+        $this->assertSame(2, $deviceData['field2']);
+    }
+
+    public function testMergeDeviceDataComplexValues()
+    {
+        $newData = array('array_field' => array(0, 1, 2), 'assoc_array_field' => array('f1' => 1));
+        $this->diagnostics->mergeDeviceData($newData);
+
+        $deviceData = $this->diagnostics->getDeviceData();
+        $this->assertEquals(4, count($deviceData));
+        $this->assertSame(php_uname('n'), $deviceData['hostname']);
+        $this->assertSame(phpversion(), $deviceData['runtimeVersions']['php']);
+        $this->assertSame(array(0, 1, 2), $deviceData['array_field']);
+        $this->assertSame(array('f1' => 1), $deviceData['assoc_array_field']);
     }
 
     public function testDefaultContext()
     {
         $this->config->context = 'herp#derp';
-        $this->assertSame($this->diagnostics->getContext(), 'herp#derp');
+        $this->assertSame('herp#derp', $this->diagnostics->getContext());
     }
 
     public function testDefaultUser()
@@ -47,8 +98,8 @@ class DiagnosticsTest extends PHPUnit_Framework_TestCase
 
         $userData = $this->diagnostics->getUser();
 
-        $this->assertSame($userData['id'], 123);
-        $this->assertSame($userData['email'], 'test@email.com');
-        $this->assertSame($userData['name'], 'Bob Hoskins');
+        $this->assertSame(123, $userData['id']);
+        $this->assertSame('test@email.com', $userData['email']);
+        $this->assertSame('Bob Hoskins', $userData['name']);
     }
 }
