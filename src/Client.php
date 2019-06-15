@@ -18,6 +18,7 @@ use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
 use Composer\CaBundle\CaBundle;
+use Dotenv\Environment\DotenvFactory;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
 use ReflectionClass;
@@ -87,8 +88,10 @@ class Client
      */
     public static function make($apiKey = null, $endpoint = null, $defaults = true)
     {
-        $config = new Configuration($apiKey ?: getenv('BUGSNAG_API_KEY'));
-        $guzzle = static::makeGuzzle($endpoint ?: getenv('BUGSNAG_ENDPOINT'));
+        $env = (new DotenvFactory())->create();
+
+        $config = new Configuration($apiKey ?: $env->get('BUGSNAG_API_KEY'));
+        $guzzle = static::makeGuzzle($endpoint ?: $env->get('BUGSNAG_ENDPOINT'));
 
         $client = new static($config, null, $guzzle);
 
