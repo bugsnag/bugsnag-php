@@ -31,6 +31,8 @@ Bugsnag is most commonly installed using the [Composer](https://getcomposer.org/
 composer install
 ```
 
+As an alternative, Bugsnag can also be used directly from a `.phar` file. The example `phar.php` demonstrates this, with full instructions below.
+
 ## Set your API key
 
 This can be accomplished in one of two ways:
@@ -65,3 +67,9 @@ Bugsnag\Handler::register($bugsnag);
 ```shell
 BUGSNAG_API_KEY=<YOUR_API_KEY> php -c php.ini catchall.php
 ```
+
+5. `phar.php` is identical to `unhandled.php`, but acquires Bugsnag from a `bugsnag.phar` file instead of using composer. This file, and the accompanying `guzzle.phar` file must be downloaded from the appropriate places, [the Bugsnag-php releases page](https://github.com/bugsnag/bugsnag-php/releases) and [the Guzzle releases page](https://github.com/guzzle/guzzle/releases).
+
+    These files must be in this directory for the `phar.php` example to function correctly.
+
+    For more information about `.phar` files see [the PHP manual](https://www.php.net/manual/en/intro.phar.php).
