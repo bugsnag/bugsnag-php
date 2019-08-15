@@ -27,7 +27,7 @@ More configuration options can be found in the [official documentation](https://
 
 As an alternative to composer, Bugsnag can also be used directly from a `.phar` file. This requires that Bugsnag's dependency Guzzle is also present, whether in `.phar` or any other form. In this example, it assume Guzzle is present as the file `guzzle.phar`.
 
-The latest Bugsnag package `bugsnag.phar` can be downloaded from the Bugsnag-php releases page](https://github.com/bugsnag/bugsnag-php/releases), and the latest Guzzle package  can be downloaded from [the Guzzle releases page](https://github.com/guzzle/guzzle/releases).
+The latest Bugsnag package `bugsnag.phar` can be downloaded from [the Bugsnag-php releases page](https://github.com/bugsnag/bugsnag-php/releases), and the latest Guzzle package  can be downloaded from [the Guzzle releases page](https://github.com/guzzle/guzzle/releases).
 
 ### Running the example
 
@@ -38,7 +38,7 @@ include "phar://bugsnag.phar";
 include "phar://guzzle.phar";
 ```
 
-These files must be in this directory for the `phar.php` example to function correctly.
+These files must be in this directory for the `unhandled.php` example to function correctly.
 
 For more information about `.phar` files see [the PHP manual](https://www.php.net/manual/en/intro.phar.php).
 
