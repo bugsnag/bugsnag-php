@@ -31,10 +31,6 @@ Bugsnag is most commonly installed using the [Composer](https://getcomposer.org/
 composer install
 ```
 
-## Set your API key
-
-This can be accomplished in one of two ways:
-
 ### Running the examples
 
 Each of the examples can be run using the command:

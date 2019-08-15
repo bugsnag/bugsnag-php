@@ -241,7 +241,7 @@ switch (ENVIRONMENT) {
         );
     } else {
         header('HTTP/1.1 503 Service Unavailable.', true, 503);
-        echo 'Your application folder path does not appear to be set correctly. Please open the following file and correct this: '.SELF;
+        echo 'Your application folder path does not appear to be set correctly. Please open the following file and correct this: '.self;
         exit(3); // EXIT_CONFIG
     }
 
@@ -268,7 +268,7 @@ switch (ENVIRONMENT) {
         );
     } else {
         header('HTTP/1.1 503 Service Unavailable.', true, 503);
-        echo 'Your view folder path does not appear to be set correctly. Please open the following file and correct this: '.SELF;
+        echo 'Your view folder path does not appear to be set correctly. Please open the following file and correct this: '.self;
         exit(3); // EXIT_CONFIG
     }
 

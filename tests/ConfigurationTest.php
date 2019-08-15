@@ -218,11 +218,64 @@ class ConfigurationTest extends TestCase
 
     public function testDeviceData()
     {
-        $this->assertSame(['hostname' => php_uname('n')], $this->config->getDeviceData());
+        $this->assertEquals(2, count($this->config->getDeviceData()));
+        $this->assertSame(php_uname('n'), $this->config->getDeviceData()['hostname']);
+        $this->assertSame(phpversion(), $this->config->getDeviceData()['runtimeVersions']['php']);
 
         $this->config->setHostname('web1.example.com');
 
-        $this->assertSame(['hostname' => 'web1.example.com'], $this->config->getDeviceData());
+        $this->assertEquals(2, count($this->config->getDeviceData()));
+        $this->assertSame('web1.example.com', $this->config->getDeviceData()['hostname']);
+        $this->assertSame(phpversion(), $this->config->getDeviceData()['runtimeVersions']['php']);
+    }
+
+    public function testMergeDeviceDataEmptyArray()
+    {
+        $newData = [];
+
+        $this->config->mergeDeviceData($newData);
+
+        $this->assertEquals(2, count($this->config->getDeviceData()));
+        $this->assertSame(php_uname('n'), $this->config->getDeviceData()['hostname']);
+        $this->assertSame(phpversion(), $this->config->getDeviceData()['runtimeVersions']['php']);
+    }
+
+    public function testMergeDeviceDataSingleValue()
+    {
+        $newData = ['field1' => 'value'];
+
+        $this->config->mergeDeviceData($newData);
+
+        $this->assertEquals(3, count($this->config->getDeviceData()));
+        $this->assertSame(php_uname('n'), $this->config->getDeviceData()['hostname']);
+        $this->assertSame(phpversion(), $this->config->getDeviceData()['runtimeVersions']['php']);
+        $this->assertSame('value', $this->config->getDeviceData()['field1']);
+    }
+
+    public function testMergeDeviceDataMultiValues()
+    {
+        $newData = ['field1' => 'value', 'field2' => 2];
+
+        $this->config->mergeDeviceData($newData);
+
+        $this->assertEquals(4, count($this->config->getDeviceData()));
+        $this->assertSame(php_uname('n'), $this->config->getDeviceData()['hostname']);
+        $this->assertSame(phpversion(), $this->config->getDeviceData()['runtimeVersions']['php']);
+        $this->assertSame('value', $this->config->getDeviceData()['field1']);
+        $this->assertSame(2, $this->config->getDeviceData()['field2']);
+    }
+
+    public function testMergeDeviceDataComplexValues()
+    {
+        $newData = ['array_field' => [0, 1, 2], 'assoc_array_field' => ['f1' => 1]];
+
+        $this->config->mergeDeviceData($newData);
+
+        $this->assertEquals(4, count($this->config->getDeviceData()));
+        $this->assertSame(php_uname('n'), $this->config->getDeviceData()['hostname']);
+        $this->assertSame(phpversion(), $this->config->getDeviceData()['runtimeVersions']['php']);
+        $this->assertSame([0, 1, 2], $this->config->getDeviceData()['array_field']);
+        $this->assertSame(['f1' => 1], $this->config->getDeviceData()['assoc_array_field']);
     }
 
     public function testSessionTrackingDefaults()
