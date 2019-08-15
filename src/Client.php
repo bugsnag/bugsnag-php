@@ -2,7 +2,6 @@
 
 namespace Bugsnag;
 
-use BadMethodCallException;
 use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Callbacks\GlobalMetaData;

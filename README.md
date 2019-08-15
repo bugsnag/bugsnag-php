@@ -1,4 +1,4 @@
-# Bugsnag error reporter for PHP
+# Bugsnag error monitoring & exception reporter for PHP
 
 [![Build Status](https://img.shields.io/travis/bugsnag/bugsnag-php/master.svg?style=flat-square)](https://travis-ci.org/bugsnag/bugsnag-php)
 [![StyleCI Status](https://styleci.io/repos/7568230/shield?branch=master)](https://styleci.io/repos/7568230)
