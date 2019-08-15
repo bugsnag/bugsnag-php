@@ -9,9 +9,12 @@ This document is one of a series describing the layout of the individual Bugsnag
 
 ## Dependencies
 - [composer/ca-bundle](https://github.com/composer/ca-bundle)
-- [guzzlehttp/guzzler](https://github.com/guzzle/guzzle)
+- [guzzlehttp/guzzle](https://github.com/guzzle/guzzle)
+- [vlucas/phpdotenv](https://github.com/vlucas/phpdotenv)
 
 ## Dev Dependencies
+- [graham-campbell/testbench-core](https://github.com/GrahamCampbell/Laravel-TestBench-Core)
+- [mockery/mockery](https://github.com/mockery/mockery)
 - [mtdowling/burgomaster](https://github.com/mtdowling/Burgomaster)
 - [phpunit/phpunit](https://github.com/sebastianbergmann/phpunit)
 - [php-mock/php-mock-phpunit](https://github.com/php-mock/php-mock-phpunit)
@@ -152,4 +155,4 @@ Standard default callbacks are registered along with an additional callback to d
 The Silex framework requires manual registering of error and exception handlers, which requires the user add a `notifyException` call into an error handler registered to the app container's `error` function.
 
 ## [Bugsnag-Magento](https://github.com/bugsnag/bugsnag-magento)
-THe Bugsnag-Magento module enables Bugsnag functionality through the Magento admin panel.  It uses an older version of the Bugsnag-PHP library packaged with the module and so some of the methods and features will likely have been refactored by later versions.
+The Bugsnag-Magento module enables Bugsnag functionality through the Magento admin panel.  It uses an older version of the Bugsnag-PHP library packaged with the module and so some of the methods and features will likely have been refactored by later versions.
