@@ -7,6 +7,9 @@ Changelog
   [GrahamCampbell](https://github.com/GrahamCampbell)
   [#530](https://github.com/bugsnag/bugsnag-php/pull/530)
 
+* Support suppressed errors using "@" to ignore exceptions
+  [#531](https://github.com/bugsnag/bugsnag-php/pull/537)
+
 ## 3.17.0 (2019-05-28)
 
 Add the version of PHP to report information to allow easier diagnosis of version-specific issues.

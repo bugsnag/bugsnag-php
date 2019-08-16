@@ -1,15 +1,13 @@
 <?php
-namespace {
-    // This allow us to configure the behavior of the "global mock"
-    $mockErrorReporting = null;
-}
 
 namespace Bugsnag {
 
-    function error_reporting() {
-        global $mockErrorReporting;
-        if (isset($mockErrorReporting)) {
-            return $mockErrorReporting;
+    // Mock error_reporting global function, to be controlled by global switches in the tests
+    function error_reporting()
+    {
+        global $mockErrorReporting, $mockErrorReportingLevel;
+        if (isset($mockErrorReporting) && $mockErrorReporting == true) {
+            return $mockErrorReportingLevel;
         } else {
             return call_user_func_array('\error_reporting', func_get_args());
         }
@@ -19,12 +17,12 @@ namespace Bugsnag {
 
 namespace Bugsnag\Tests {
 
-use Bugsnag\Client;
-use Bugsnag\Configuration;
-use Bugsnag\Handler;
-use Exception;
-use phpmock\phpunit\PHPMock;
-use PHPUnit_Framework_TestCase as TestCase;
+    use Bugsnag\Client;
+    use Bugsnag\Configuration;
+    use Bugsnag\Handler;
+    use Exception;
+    use phpmock\phpunit\PHPMock;
+    use PHPUnit_Framework_TestCase as TestCase;
 
     class HandlerTest extends TestCase
     {
@@ -34,6 +32,10 @@ use PHPUnit_Framework_TestCase as TestCase;
 
         protected function setUp()
         {
+            global $mockErrorReporting, $mockErrorReportingLevel;
+            $mockErrorReporting = false;
+            $mockErrorReportingLevel = null;
+
             $this->client = $this->getMockBuilder(Client::class)
                                 ->setMethods(['notify', 'flush'])
                                 ->setConstructorArgs([new Configuration('example-api-key')])
@@ -137,8 +139,9 @@ use PHPUnit_Framework_TestCase as TestCase;
 
         public function testErrorReportingDefault()
         {
-            global $mockErrorReporting;
-            $mockErrorReporting = E_NOTICE;
+            global $mockErrorReporting, $mockErrorReportingLevel;
+            $mockErrorReporting = true;
+            $mockErrorReportingLevel = E_NOTICE;
 
             $this->client->expects($this->once())->method('notify');
 
@@ -147,8 +150,9 @@ use PHPUnit_Framework_TestCase as TestCase;
 
         public function testErrorReportingDefaultFails()
         {
-            global $mockErrorReporting;
-            $mockErrorReporting = E_NOTICE;
+            global $mockErrorReporting, $mockErrorReportingLevel;
+            $mockErrorReporting = true;
+            $mockErrorReportingLevel = E_NOTICE;
 
             $this->client->expects($this->never())->method('notify');
 
@@ -157,8 +161,9 @@ use PHPUnit_Framework_TestCase as TestCase;
 
         public function testErrorReportingSuppressed()
         {
-            global $mockErrorReporting;
-            $mockErrorReporting = 0;
+            global $mockErrorReporting, $mockErrorReportingLevel;
+            $mockErrorReporting = true;
+            $mockErrorReportingLevel = 0;
 
             $this->client->setErrorReportingLevel(E_NOTICE);
 
@@ -169,8 +174,9 @@ use PHPUnit_Framework_TestCase as TestCase;
 
         public function testErrorReportingDefaultSuppressed()
         {
-            global $mockErrorReporting;
-            $mockErrorReporting = 0;
+            global $mockErrorReporting, $mockErrorReportingLevel;
+            $mockErrorReporting = true;
+            $mockErrorReportingLevel = 0;
 
             $this->client->expects($this->never())->method('notify');
 
