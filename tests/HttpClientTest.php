@@ -110,7 +110,7 @@ class HttpClientTest extends TestCase
         $this->guzzle->expects($spy = $this->any())->method('post');
 
         // Add a report to the http and deliver it
-        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', HttpClient::MAX_SIZE * 2)]));
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1500000)]));
         $this->http->send();
 
         $this->assertCount(0, $spy->getInvocations());
@@ -126,7 +126,7 @@ class HttpClientTest extends TestCase
         $this->guzzle->expects($spy = $this->any())->method('post');
 
         // Add two errors to the http and deliver them
-        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', HttpClient::MAX_SIZE * 2)]));
+        $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1500000)]));
         $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => 'bar']));
         $this->http->send();
 

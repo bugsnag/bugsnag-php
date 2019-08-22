@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## 3.17.1 (2019-08-21)
+## TBD
 
 Bump max payload limit to follow Bugsnag's backend limit to enable larger errors
 
