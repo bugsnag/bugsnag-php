@@ -34,7 +34,7 @@ class HttpClient
      *
      * @var int
      */
-    const MAX_SIZE = 1024 * 1024;
+    const MAX_SIZE = 1048576;
 
     /**
      * The current payload version.
