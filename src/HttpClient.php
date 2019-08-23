@@ -30,11 +30,11 @@ class HttpClient
     protected $queue = [];
 
     /**
-     * The maximum payload size.
+     * The maximum payload size. A whole megabyte (1024 * 1024).
      *
      * @var int
      */
-    const MAX_SIZE = 500000;
+    const MAX_SIZE = 1048576;
 
     /**
      * The current payload version.

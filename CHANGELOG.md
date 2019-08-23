@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## TBD
+
+Bump max payload limit to follow Bugsnag's backend limit to enable larger errors
+
+### Enhancements
+
+* Bump max payload limit to follow Bugsnag's backend limit to enable larger errors
+  [#538](https://github.com/bugsnag/bugsnag-php/pull/538)
+
 ## 3.17.0 (2019-05-28)
 
 Add the version of PHP to report information to allow easier diagnosis of version-specific issues.
