@@ -30,7 +30,7 @@ class HttpClient
     protected $queue = [];
 
     /**
-     * The maximum payload size.
+     * The maximum payload size. A whole megabyte (1024 * 1024).
      *
      * @var int
      */
