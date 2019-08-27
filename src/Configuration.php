@@ -574,11 +574,19 @@ class Configuration
      */
     public function shouldIgnoreErrorCode($code)
     {
+        $defaultReportingLevel = error_reporting();
+
+        if ($defaultReportingLevel === 0) {
+            // The error has been suppressed using the error control operator ('@')
+            // Ignore the error in all cases.
+            return true;
+        }
+
         if (isset($this->errorReportingLevel)) {
             return !($this->errorReportingLevel & $code);
         }
 
-        return !(error_reporting() & $code);
+        return !($defaultReportingLevel & $code);
     }
 
     /**
