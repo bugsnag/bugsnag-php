@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 3.18.0 (2019-08-28)
 
 ### Enhancements
 
