@@ -1,11 +1,16 @@
 Changelog
 =========
 
-## TBD
-
-Bump max payload limit to follow Bugsnag's backend limit to enable larger errors
+## 3.18.0 (2019-08-28)
 
 ### Enhancements
+
+* More robust environment variable fetching
+  [GrahamCampbell](https://github.com/GrahamCampbell)
+  [#530](https://github.com/bugsnag/bugsnag-php/pull/530)
+
+* Support suppressed errors using "@" to ignore exceptions
+  [#531](https://github.com/bugsnag/bugsnag-php/pull/537)
 
 * Bump max payload limit to follow Bugsnag's backend limit to enable larger errors
   [#538](https://github.com/bugsnag/bugsnag-php/pull/538)

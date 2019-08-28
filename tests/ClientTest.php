@@ -117,17 +117,43 @@ class ClientTest extends TestCase
 
     public function testCanMakeFromEnv()
     {
-        $env = $this->getFunctionMock('Bugsnag', 'getenv');
-        $env->expects($this->exactly(2))->will($this->returnValue('http://foo.com'));
+        try {
+            putenv('BUGSNAG_API_KEY=foo-baz');
+            putenv('BUGSNAG_ENDPOINT=http://foo.com');
 
-        $client = Client::make();
+            $client = Client::make();
 
-        $this->assertInstanceOf(Client::class, $client);
+            $this->assertInstanceOf(Client::class, $client);
 
-        if (version_compare(ClientInterface::VERSION, '6') === 1) {
-            $this->assertEquals(new Uri('http://foo.com'), $this->getGuzzle($client)->getConfig('base_uri'));
-        } else {
-            $this->assertSame('http://foo.com', $this->getGuzzle($client)->getBaseUrl());
+            if (version_compare(ClientInterface::VERSION, '6') === 1) {
+                $this->assertEquals(new Uri('http://foo.com'), $this->getGuzzle($client)->getConfig('base_uri'));
+            } else {
+                $this->assertSame('http://foo.com', $this->getGuzzle($client)->getBaseUrl());
+            }
+        } finally {
+            putenv('BUGSNAG_API_KEY=');
+            putenv('BUGSNAG_ENDPOINT=');
+        }
+    }
+
+    public function testCanMakeFromEnvSuperglobal()
+    {
+        try {
+            $_ENV['BUGSNAG_API_KEY'] = 'foo-bar';
+            $_ENV['BUGSNAG_ENDPOINT'] = 'http://bar.com';
+
+            $client = Client::make();
+
+            $this->assertInstanceOf(Client::class, $client);
+
+            if (version_compare(ClientInterface::VERSION, '6') === 1) {
+                $this->assertEquals(new Uri('http://bar.com'), $this->getGuzzle($client)->getConfig('base_uri'));
+            } else {
+                $this->assertSame('http://bar.com', $this->getGuzzle($client)->getBaseUrl());
+            }
+        } finally {
+            unset($_ENV['BUGSNAG_API_KEY']);
+            unset($_ENV['BUGSNAG_ENDPOINT']);
         }
     }
 
