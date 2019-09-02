@@ -82,6 +82,15 @@ namespace Bugsnag\Tests {
             $this->assertSame($e_to_throw, $previous_exception_handler_arg);
         }
 
+        public function testExceptionHandlerWithPreviousWhenNoPrevious()
+        {
+            $exceptionCode = 20190902;
+            $this->expectExceptionCode($exceptionCode);
+            $e = new Exception('No previous handler!', $exceptionCode);
+
+            Handler::registerWithPrevious($this->client)->exceptionHandler($e);
+        }
+
         public function testExceptionHandlerWithoutPrevious()
         {
             $previous_exception_handler_called = false;

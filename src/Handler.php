@@ -26,6 +26,12 @@ class Handler
     protected $previousExceptionHandler;
 
     /**
+     * Indicates that we should use the previous exception handler
+     * @var boolean
+     */
+    protected $usePreviousExceptionHandler;
+
+    /**
      * Register our handlers.
      *
      * @param \Bugsnag\Client|string|null $client client instance or api key
@@ -100,6 +106,7 @@ class Handler
 
         if ($callPrevious) {
             $this->previousExceptionHandler = $previous;
+            $this->usePreviousExceptionHandler = true;
         }
     }
 
@@ -149,11 +156,19 @@ class Handler
 
         $this->client->notify($report);
 
-        if ($this->previousExceptionHandler) {
-            call_user_func(
-                $this->previousExceptionHandler,
-                $throwable
-            );
+        if ($this->usePreviousExceptionHandler) {
+            // if there is a callable...
+            if ($this->previousExceptionHandler) {
+                call_user_func(
+                    $this->previousExceptionHandler,
+                    $throwable
+                );
+            } else {
+                // There was no previous exception handler registered.
+                // In this case, restore to the default handler and re-throw
+                restore_exception_handler();
+                throw $throwable;
+            }
         }
     }
 
