@@ -2,10 +2,8 @@
 
 namespace Bugsnag\Tests;
 
-use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Bugsnag\SessionTracker;
-use GuzzleHttp\Client as Guzzle;
 use phpmock\phpunit\PHPMock;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -61,7 +59,7 @@ class SessionTrackerTest extends TestCase
         $this->config->expects($this->once())->method('getApiKey')->willReturn('example-api-key');
         $this->sessionTracker->expects($this->once())->method('setLastSent');
 
-        $this->http->expects($this->once())->method('post')->with($this->equalTo(''), $this->callback(function($sessionPayload) {
+        $this->http->expects($this->once())->method('post')->with($this->equalTo(''), $this->callback(function ($sessionPayload) {
             return count($sessionPayload) == 2
                    && $sessionPayload['json']['notifier'] == 'test_notifier'
                    && $sessionPayload['json']['device'] == 'device_data'
@@ -71,8 +69,7 @@ class SessionTrackerTest extends TestCase
                    && $sessionPayload['json']['sessionCounts'][0]['sessionsStarted'] == 1
                    && $sessionPayload['headers']['Bugsnag-Api-Key'] == 'example-api-key'
                    && preg_match('/(\d+\.)+/', $sessionPayload['headers']['Bugsnag-Payload-Version'])
-                   && preg_match('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/', $sessionPayload['headers']['Bugsnag-Sent-At'])
-                   ;
+                   && preg_match('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/', $sessionPayload['headers']['Bugsnag-Sent-At']);
         }));
 
         $this->sessionTracker->sendSessions();
