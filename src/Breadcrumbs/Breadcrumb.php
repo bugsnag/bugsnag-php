@@ -63,13 +63,6 @@ class Breadcrumb
     const MANUAL_TYPE = 'manual';
 
     /**
-     * The maximum length of the name.
-     *
-     * @var int
-     */
-    const MAX_LENGTH = 30;
-
-    /**
      * The maximum size of the breadcrumb.
      *
      * @var int
