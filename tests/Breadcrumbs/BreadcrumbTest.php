@@ -28,15 +28,6 @@ class BreadcrumbTest extends TestCase
         $this->assertSame('NULL provided as the breadcrumb name', $breadcrumb->getMetaData()['BreadcrumbError']);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The breadcrumb name must be at most 30 characters in length.
-     */
-    public function testLongName()
-    {
-        new Breadcrumb('This error name is far too long to be allowed through.', 'error');
-    }
-
     public function testGoodName()
     {
         $breadcrumb = new Breadcrumb('Good name!', 'error');
