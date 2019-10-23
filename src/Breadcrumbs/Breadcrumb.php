@@ -123,10 +123,6 @@ class Breadcrumb
             $name = '<no name>';
         }
 
-        if (strlen($name) > static::MAX_LENGTH) {
-            throw new InvalidArgumentException(sprintf('The breadcrumb name must be at most %d characters in length.', static::MAX_LENGTH));
-        }
-
         $types = static::getTypes();
 
         if (!in_array($type, $types, true)) {
