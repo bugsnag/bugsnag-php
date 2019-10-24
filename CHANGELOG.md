@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## (TBD)
+
+### Enhancements
+
+* Removed the length restriction on the Breadcrumb "name" field to match the API and allow large names to be sent.
+
 ## 3.18.0 (2019-08-28)
 
 ### Enhancements
