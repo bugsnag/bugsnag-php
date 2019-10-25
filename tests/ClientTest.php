@@ -6,6 +6,7 @@ use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\Report;
+use Bugsnag\Shutdown\PhpShutdownStrategy;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
@@ -923,5 +924,12 @@ class ClientTest extends TestCase
         $client = Client::make('foo');
         $this->assertSame($client, $client->setNotifier(['foo' => 'bar']));
         $this->assertSame(['foo' => 'bar'], $client->getNotifier());
+    }
+
+    public function testShutdownStrategyIsCalledWithinConstructor()
+    {
+        $mockShutdown = $this->createMock(PhpShutdownStrategy::class);
+        $mockShutdown->expects($this->once())->method('register');
+        $client = new Client($this->config, null, null, $mockShutdown);
     }
 }
