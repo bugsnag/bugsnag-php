@@ -106,10 +106,12 @@ class Client
     /**
      * Create a new client instance.
      *
-     * @param \Bugsnag\Configuration $config
+     * @param \Bugsnag\Configuration                  $config
      * @param \Bugsnag\Request\ResolverInterface|null $resolver
-     * @param \GuzzleHttp\ClientInterface|null $guzzle
-     * @param ShutdownStrategyInterface $shutdownStrategy
+     * @param \GuzzleHttp\ClientInterface|null        $guzzle
+     * @param ShutdownStrategyInterface               $shutdownStrategy
+     * 
+     * @return void
      */
     public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null, ShutdownStrategyInterface $shutdownStrategy = null)
     {
