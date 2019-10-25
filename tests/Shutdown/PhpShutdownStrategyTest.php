@@ -2,17 +2,17 @@
 
 namespace Bugsnag\Tests\Shutdown;
 
-use Bugsnag\Shutdown\PhpShutdownStrategy;
-use PHPUnit_Framework_TestCase as TestCase;
 use Bugsnag\Client;
+use Bugsnag\Shutdown\PhpShutdownStrategy;
 use phpmock\spy\Spy;
+use PHPUnit_Framework_TestCase as TestCase;
 
 class PhpShutdownStrategyTest extends TestCase
 {
     public function testRegisterShutdownFunction()
     {
         // Override/spy on the native PHP method when executed within the Bugsnag\Shutdown namespace
-        $shutdownSpy = new Spy( "Bugsnag\Shutdown", "register_shutdown_function");
+        $shutdownSpy = new Spy("Bugsnag\Shutdown", 'register_shutdown_function');
         $shutdownSpy->enable();
 
         // Mock a bugsnag client
@@ -27,5 +27,4 @@ class PhpShutdownStrategyTest extends TestCase
         $this->assertEquals($mockClient, $args[0]);
         $this->assertEquals('flush', $args[1]);
     }
-
 }
