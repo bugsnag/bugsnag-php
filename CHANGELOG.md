@@ -1,6 +1,11 @@
 Changelog
 =========
 
+## TBC
+
+* Make session delivery obey the release stage rules used by notify
+  [#542](https://github.com/bugsnag/bugsnag-php/pull/542)
+
 ## 3.18.0 (2019-08-28)
 
 ### Enhancements
