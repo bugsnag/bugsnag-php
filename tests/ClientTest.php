@@ -929,7 +929,7 @@ class ClientTest extends TestCase
     public function testShutdownStrategyIsCalledWithinConstructor()
     {
         $mockShutdown = $this->createMock(PhpShutdownStrategy::class);
-        $mockShutdown->expects($this->once())->method('register');
+        $mockShutdown->expects($this->once())->method('registerShutdownStrategy');
         $client = new Client($this->config, null, null, $mockShutdown);
     }
 }

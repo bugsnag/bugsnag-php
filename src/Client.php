@@ -128,7 +128,7 @@ class Client
 
         // Shutdown strategy is used to trigger flush() calls when batch sending is enabled
         $shutdownStrategy = $shutdownStrategy ?: new PhpShutdownStrategy();
-        $shutdownStrategy->register($this);
+        $shutdownStrategy->registerShutdownStrategy($this);
     }
 
     /**

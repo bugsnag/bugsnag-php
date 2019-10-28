@@ -14,7 +14,7 @@ class PhpShutdownStrategy implements ShutdownStrategyInterface
     /**
      * @param Client $client
      */
-    public function register(Client $client)
+    public function registerShutdownStrategy(Client $client)
     {
         register_shutdown_function([$client, 'flush']);
     }

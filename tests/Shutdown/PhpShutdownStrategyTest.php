@@ -20,7 +20,7 @@ class PhpShutdownStrategyTest extends TestCase
 
         // Execute the shutdown strategy
         $strategy = new PhpShutdownStrategy();
-        $strategy->register($mockClient);
+        $strategy->registerShutdownStrategy($mockClient);
 
         // Assert that register_shutdown_function was called with [$client, "flush"]
         list($args) = $shutdownSpy->getInvocations()[0]->getArguments();

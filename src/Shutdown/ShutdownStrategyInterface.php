@@ -14,5 +14,5 @@ interface ShutdownStrategyInterface
      *
      * @param Client $client
      */
-    public function register(Client $client);
+    public function registerShutdownStrategy(Client $client);
 }
