@@ -1,7 +1,11 @@
 Changelog
 =========
 
-## TBC
+## (TBD)
+
+### Enhancements
+
+* Removed the length restriction on the Breadcrumb "name" field to match the API and allow large names to be sent.
 
 * Make session delivery obey the release stage rules used by notify
   [#542](https://github.com/bugsnag/bugsnag-php/pull/542)
