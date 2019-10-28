@@ -248,8 +248,6 @@ class Client
             //
         }
 
-        $name = substr((string) $name, 0, Breadcrumb::MAX_LENGTH);
-
         $type = in_array($type, Breadcrumb::getTypes(), true) ? $type : Breadcrumb::MANUAL_TYPE;
 
         $this->recorder->record(new Breadcrumb($name, $type, $metaData));
