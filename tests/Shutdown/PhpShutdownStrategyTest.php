@@ -3,7 +3,6 @@
 namespace Bugsnag\Tests\Shutdown;
 
 use Bugsnag\Client;
-use Bugsnag\Configuration;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
 use phpmock\spy\Spy;
 use PHPUnit_Framework_TestCase as TestCase;
