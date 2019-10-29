@@ -13,6 +13,7 @@ class PhpShutdownStrategy implements ShutdownStrategyInterface
 {
     /**
      * @param Client $client
+     *
      * @return void
      */
     public function registerShutdownStrategy(Client $client)
