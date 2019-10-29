@@ -12,7 +12,8 @@ interface ShutdownStrategyInterface
     /**
      * Register the shutdown behaviour.
      *
-     * @param Client $client
+     * @param \Bugsnag\Client $client
+     * @return void
      */
     public function registerShutdownStrategy(Client $client);
 }

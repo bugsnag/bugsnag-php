@@ -106,10 +106,10 @@ class Client
     /**
      * Create a new client instance.
      *
-     * @param \Bugsnag\Configuration                  $config
-     * @param \Bugsnag\Request\ResolverInterface|null $resolver
-     * @param \GuzzleHttp\ClientInterface|null        $guzzle
-     * @param ShutdownStrategyInterface               $shutdownStrategy
+     * @param \Bugsnag\Configuration                            $config
+     * @param \Bugsnag\Request\ResolverInterface|null           $resolver
+     * @param \GuzzleHttp\ClientInterface|null                  $guzzle
+     * @param \Bugsnag\Shutdown\ShutdownStrategyInterface|null  $shutdownStrategy
      *
      * @return void
      */
