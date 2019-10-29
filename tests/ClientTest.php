@@ -926,10 +926,13 @@ class ClientTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $client->getNotifier());
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testShutdownStrategyIsCalledWithinConstructor()
     {
-        $mockShutdown = $this->createMock(PhpShutdownStrategy::class);
-        $mockShutdown->expects($this->once())->method('registerShutdownStrategy');
+        $mockShutdown = \Mockery::mock(PhpShutdownStrategy::class);
+        $mockShutdown->shouldReceive('registerShutdownStrategy')->once();
         $client = new Client($this->config, null, null, $mockShutdown);
     }
 }

@@ -16,7 +16,8 @@ class PhpShutdownStrategyTest extends TestCase
         $shutdownSpy->enable();
 
         // Mock a bugsnag client
-        $mockClient = $this->createMock(Client::class);
+        $mockClient = \Mockery::mock(Client::class);
+        $mockClient->shouldReceive('flush');
 
         // Execute the shutdown strategy
         $strategy = new PhpShutdownStrategy();
