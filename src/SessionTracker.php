@@ -285,6 +285,9 @@ class SessionTracker
         if (count($sessions) == 0) {
             return;
         }
+        if (!$this->config->shouldNotify()) {
+            return;
+        }
         $http = $this->config->getSessionClient();
         $payload = $this->constructPayload($sessions);
         $headers = [

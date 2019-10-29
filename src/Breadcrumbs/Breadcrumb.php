@@ -63,13 +63,6 @@ class Breadcrumb
     const MANUAL_TYPE = 'manual';
 
     /**
-     * The maximum length of the name.
-     *
-     * @var int
-     */
-    const MAX_LENGTH = 30;
-
-    /**
      * The maximum size of the breadcrumb.
      *
      * @var int
@@ -128,10 +121,6 @@ class Breadcrumb
         } elseif ($name === '') {
             $metaData['BreadcrumbError'] = 'Empty string provided as the breadcrumb name';
             $name = '<no name>';
-        }
-
-        if (strlen($name) > static::MAX_LENGTH) {
-            throw new InvalidArgumentException(sprintf('The breadcrumb name must be at most %d characters in length.', static::MAX_LENGTH));
         }
 
         $types = static::getTypes();
