@@ -5,6 +5,9 @@ Changelog
 
 ### Enhancements
 
+* Replaced the dependency on phpdotenv with a simple "read" function that follows the same strategy 
+($_ENV, $_SERVER, getenv())
+
 * Removed the length restriction on the Breadcrumb "name" field to match the API and allow large names to be sent.
 
 * Make session delivery obey the release stage rules used by notify
