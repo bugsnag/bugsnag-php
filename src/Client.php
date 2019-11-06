@@ -16,6 +16,8 @@ use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
+use Bugsnag\Shutdown\PhpShutdownStrategy;
+use Bugsnag\Shutdown\ShutdownStrategyInterface;
 use Composer\CaBundle\CaBundle;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
@@ -104,13 +106,14 @@ class Client
     /**
      * Create a new client instance.
      *
-     * @param \Bugsnag\Configuration                  $config
-     * @param \Bugsnag\Request\ResolverInterface|null $resolver
-     * @param \GuzzleHttp\ClientInterface|null        $guzzle
+     * @param \Bugsnag\Configuration                            $config
+     * @param \Bugsnag\Request\ResolverInterface|null           $resolver
+     * @param \GuzzleHttp\ClientInterface|null                  $guzzle
+     * @param \Bugsnag\Shutdown\ShutdownStrategyInterface|null  $shutdownStrategy
      *
      * @return void
      */
-    public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null)
+    public function __construct(Configuration $config, ResolverInterface $resolver = null, ClientInterface $guzzle = null, ShutdownStrategyInterface $shutdownStrategy = null)
     {
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
@@ -123,7 +126,9 @@ class Client
         $this->registerMiddleware(new BreadcrumbData($this->recorder));
         $this->registerMiddleware(new SessionData($this));
 
-        register_shutdown_function([$this, 'flush']);
+        // Shutdown strategy is used to trigger flush() calls when batch sending is enabled
+        $shutdownStrategy = $shutdownStrategy ?: new PhpShutdownStrategy();
+        $shutdownStrategy->registerShutdownStrategy($this);
     }
 
     /**
