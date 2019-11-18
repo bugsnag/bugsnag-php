@@ -1,14 +1,16 @@
 Changelog
 =========
 
-## (TBD)
+## 3.19.0 (2019-11-18)
 
 ### Enhancements
 
-* Replaced the dependency on phpdotenv with a simple "read" function that follows the same strategy 
-($_ENV, $_SERVER, getenv())
+* Added a strategy pattern for the Client shutdown behaviour [#547](https://github.com/bugsnag/bugsnag-php/pull/547)
 
-* Removed the length restriction on the Breadcrumb "name" field to match the API and allow large names to be sent.
+* Replaced the dependency on phpdotenv with a simple "read" function that follows the same strategy 
+($_ENV, $_SERVER, getenv()) [#511](https://github.com/bugsnag/bugsnag-php/pull/551)
+
+* Removed the length restriction on the Breadcrumb "name" field to match the API and allow large names to be sent. [#544](https://github.com/bugsnag/bugsnag-php/pull/554)
 
 * Make session delivery obey the release stage rules used by notify
   [#542](https://github.com/bugsnag/bugsnag-php/pull/542)
