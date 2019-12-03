@@ -28,6 +28,10 @@ matrix:
       env: GUZZLE_VERSION=^5.3
     - php: 7.2
       env: GUZZLE_VERSION=^6.0
+    - php: 7.3
+      env: GUZZLE_VERSION=^5.3
+    - php: 7.3
+      env: GUZZLE_VERSION=^6.0
 
 before_install:
   - composer require "guzzlehttp/guzzle:${GUZZLE_VERSION}" --no-update
