@@ -7,8 +7,8 @@ use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Configuration;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Report;
+use Bugsnag\Tests\TestCase;
 use Exception;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class BreadcrumbsDataTest extends TestCase
 {

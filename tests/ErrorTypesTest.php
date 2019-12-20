@@ -3,7 +3,6 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\ErrorTypes;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class ErrorTypesTest extends TestCase
 {

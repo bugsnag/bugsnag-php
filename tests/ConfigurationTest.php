@@ -5,7 +5,6 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class ConfigurationTest extends TestCase
 {
@@ -16,20 +15,20 @@ class ConfigurationTest extends TestCase
         $this->config = new Configuration('API-KEY');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testDoesNotAcceptBadApiKey()
     {
+        $this->expectedException(\InvalidArgumentException::class);
+
         new Configuration([]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExpcetionMessage Invalid strip path regex: [thisisnotavalidregex
-     */
     public function testDoesNotAcceptBadStripPathRegex()
     {
+        $this->expectedException(
+            \InvalidArgumentException::class,
+            'Invalid strip path regex: [thisisnotavalidregex'
+        );
+
         $this->config->setStripPathRegex('[thisisnotavalidregex');
     }
 
@@ -176,12 +175,13 @@ class ConfigurationTest extends TestCase
         $this->assertSame('x/foo/thing.php', $this->config->getStrippedFilePath('x/foo/thing.php'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExpcetionMessage Invalid project root regex: [thisisnotavalidregex
-     */
     public function testInvalidRootPathRegexThrows()
     {
+        $this->expectedException(
+            \InvalidArgumentException::class,
+            'Invalid project root regex: [thisisnotavalidregex'
+        );
+
         $this->config->setProjectRootRegex('[thisisnotavalidregex');
     }
 

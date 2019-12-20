@@ -4,13 +4,9 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
 use Bugsnag\Stacktrace;
-use phpmock\phpunit\PHPMock;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class StacktraceTest extends TestCase
 {
-    use PHPMock;
-
     protected $config;
 
     protected function setUp()
@@ -183,15 +179,13 @@ class StacktraceTest extends TestCase
         $this->assertCount(2, $stacktrace->toArray());
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Invalid frame index to remove.
-     */
     public function testCanNotRemoveBadFrame()
     {
         $fixture = $this->getJsonFixture('backtraces/exception_handler.json');
         $this->config->setStripPath('/Users/james/src/bugsnag/bugsnag-php/');
         $stacktrace = Stacktrace::fromBacktrace($this->config, $fixture['backtrace'], $fixture['file'], $fixture['line']);
+
+        $this->expectedException(\InvalidArgumentException::class, 'Invalid frame index to remove.');
 
         $stacktrace->removeFrame(4);
     }

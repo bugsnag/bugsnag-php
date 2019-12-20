@@ -8,7 +8,6 @@ use Bugsnag\Stacktrace;
 use Exception;
 use InvalidArgumentException;
 use ParseError;
-use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 
 class ReportTest extends TestCase
@@ -125,7 +124,12 @@ class ReportTest extends TestCase
         $trace = $this->report->getStacktrace();
 
         $this->assertInstanceOf(Stacktrace::class, $trace);
-        $this->assertCount(8, $trace->toArray());
+
+        if (class_exists(\PHPUnit_Framework_TestCase::class)) {
+            $this->assertCount(8, $trace->toArray());
+        } else {
+            $this->assertCount(7, $trace->toArray());
+        }
     }
 
     public function testNoticeName()
@@ -197,11 +201,9 @@ class ReportTest extends TestCase
         $this->assertSame($event['severity'], 'error');
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidSeverity()
     {
+        $this->expectedException(InvalidArgumentException::class);
         $this->report->setSeverity('bunk');
     }
 
@@ -247,35 +249,27 @@ class ReportTest extends TestCase
         $this->assertSame($this->report, $this->report->setPHPThrowable($exception));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSetNotThrowable()
     {
+        $this->expectedException(InvalidArgumentException::class);
         $this->assertSame($this->report, $this->report->setPHPThrowable(new stdClass()));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testSetNotObject()
     {
+        $this->expectedException(InvalidArgumentException::class);
         $this->assertSame($this->report, $this->report->setPHPThrowable('foo'));
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testBadSetName()
     {
+        $this->expectedException(InvalidArgumentException::class);
         $this->report->setName([]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testBadSetMessage()
     {
+        $this->expectedException(InvalidArgumentException::class);
         $this->report->setMessage(new stdClass());
     }
 

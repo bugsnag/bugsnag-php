@@ -5,8 +5,8 @@ namespace Bugsnag\Tests\Callbacks;
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Configuration;
 use Bugsnag\Report;
+use Bugsnag\Tests\TestCase;
 use Exception;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class GlobalMetaDataTest extends TestCase
 {

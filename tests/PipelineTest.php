@@ -3,39 +3,6 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Pipeline;
-use PHPUnit_Framework_TestCase as TestCase;
-
-class ReturnObject
-{
-    public $result = '';
-}
-
-class TestCallbackA
-{
-    public function __invoke($item, $next)
-    {
-        $item->result .= 'A';
-        $next($item);
-    }
-}
-
-class TestCallbackB
-{
-    public function __invoke($item, $next)
-    {
-        $item->result .= 'B';
-        $next($item);
-    }
-}
-
-class TestCallbackC
-{
-    public function __invoke($item, $next)
-    {
-        $item->result .= 'C';
-        $next($item);
-    }
-}
 
 class PipelineTest extends TestCase
 {
@@ -83,5 +50,37 @@ class PipelineTest extends TestCase
         $pipeline->execute($returnItem, function ($item) {
         });
         $this->assertSame('ACB', $returnItem->result);
+    }
+}
+
+class ReturnObject
+{
+    public $result = '';
+}
+
+class TestCallbackA
+{
+    public function __invoke($item, $next)
+    {
+        $item->result .= 'A';
+        $next($item);
+    }
+}
+
+class TestCallbackB
+{
+    public function __invoke($item, $next)
+    {
+        $item->result .= 'B';
+        $next($item);
+    }
+}
+
+class TestCallbackC
+{
+    public function __invoke($item, $next)
+    {
+        $item->result .= 'C';
+        $next($item);
     }
 }

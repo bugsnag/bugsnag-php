@@ -4,8 +4,8 @@ namespace Bugsnag\Tests\Breadcrumbs;
 
 use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\Breadcrumbs\Recorder;
+use Bugsnag\Tests\TestCase;
 use Iterator;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class RecorderTest extends TestCase
 {

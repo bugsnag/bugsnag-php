@@ -8,7 +8,6 @@ use Bugsnag\Request\NullRequest;
 use Bugsnag\Request\PhpRequest;
 use Bugsnag\Request\RequestInterface;
 use Bugsnag\Request\ResolverInterface;
-use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
 
 class RequestTest extends TestCase
