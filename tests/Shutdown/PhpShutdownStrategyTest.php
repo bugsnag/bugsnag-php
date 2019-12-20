@@ -5,8 +5,8 @@ namespace Bugsnag\Tests\Shutdown;
 use Bugsnag\Client;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
 use Bugsnag\Tests\TestCase;
-use phpmock\spy\Spy;
 use Mockery;
+use phpmock\spy\Spy;
 
 class PhpShutdownStrategyTest extends TestCase
 {
