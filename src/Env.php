@@ -5,16 +5,21 @@ namespace Bugsnag;
 class Env
 {
     /**
-     * Reads an environment variable from $_ENV, $_SERVER or via getenv(). Supports a thread-safe read via the
-     * superglobals, but falls back on getenv() to allow for other methods of setting environment data. See this article
-     * for more background context: https://mattallan.me/posts/how-php-environment-variables-actually-work/.
+     * Reads an environment variable from $_ENV, $_SERVER or via getenv().
      *
-     * Copied from phpdotenv: https://github.com/vlucas/phpdotenv/blob/2.6/src/Loader.php#L291. BSD 3-Clause license
-     * provided at this bottom of this file.
+     * Supports a thread-safe read via the superglobals, but falls back on
+     * getenv() to allow for other methods of setting environment data. See
+     * this article for more background context:
+     * https://mattallan.me/posts/how-php-environment-variables-actually-work/.
      *
-     * @param $name
+     * Copied from phpdotenv:
+     * https://github.com/vlucas/phpdotenv/blob/2.6/src/Loader.php#L291.
      *
-     * @return array|false|mixed|string|null
+     * BSD 3-Clause license provided at this bottom of this file.
+     *
+     * @param string $name
+     *
+     * @return string|null
      */
     public function get($name)
     {
