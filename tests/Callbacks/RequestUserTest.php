@@ -6,8 +6,8 @@ use Bugsnag\Callbacks\RequestUser;
 use Bugsnag\Configuration;
 use Bugsnag\Report;
 use Bugsnag\Request\BasicResolver;
+use Bugsnag\Tests\TestCase;
 use Exception;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class RequestUserTest extends TestCase
 {

@@ -21,13 +21,9 @@ namespace Bugsnag\Tests {
     use Bugsnag\Configuration;
     use Bugsnag\Handler;
     use Exception;
-    use phpmock\phpunit\PHPMock;
-    use PHPUnit_Framework_TestCase as TestCase;
 
     class HandlerTest extends TestCase
     {
-        use PHPMock;
-
         protected $client;
 
         protected function setUp()
@@ -49,11 +45,14 @@ namespace Bugsnag\Tests {
             Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
         }
 
-        /**
-         * @expectedException PHPUnit_Framework_Error_Warning
-         */
         public function testErrorHandlerWithPrevious()
         {
+            if (class_exists(\PHPUnit_Framework_Error_Warning::class)) {
+                $this->expectedException(\PHPUnit_Framework_Error_Warning::class);
+            } else {
+                $this->expectedException(\PHPUnit\Framework\Error\Warning::class);
+            }
+
             Handler::registerWithPrevious($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
         }
 

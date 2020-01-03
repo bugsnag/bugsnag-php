@@ -4,13 +4,9 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
 use Bugsnag\SessionTracker;
-use phpmock\phpunit\PHPMock;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class SessionTrackerTest extends TestCase
 {
-    use PHPMock;
-
     protected $sessionTracker;
     protected $config;
     protected $http;

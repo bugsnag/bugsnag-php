@@ -5,8 +5,8 @@ namespace Bugsnag\Tests\Middleware;
 use Bugsnag\Configuration;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Report;
+use Bugsnag\Tests\TestCase;
 use Exception;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class CallbackBridgeTest extends TestCase
 {

@@ -11,14 +11,11 @@ use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Uri;
-use phpmock\phpunit\PHPMock;
-use PHPUnit_Framework_TestCase as TestCase;
+use Mockery;
 use ReflectionClass;
 
 class ClientTest extends TestCase
 {
-    use PHPMock;
-
     protected $guzzle;
     protected $config;
     protected $client;
@@ -907,13 +904,10 @@ class ClientTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $client->getNotifier());
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testShutdownStrategyIsCalledWithinConstructor()
     {
-        $mockShutdown = \Mockery::mock(PhpShutdownStrategy::class);
+        $mockShutdown = Mockery::mock(PhpShutdownStrategy::class);
         $mockShutdown->shouldReceive('registerShutdownStrategy')->once();
-        $client = new Client($this->config, null, null, $mockShutdown);
+        new Client($this->config, null, null, $mockShutdown);
     }
 }

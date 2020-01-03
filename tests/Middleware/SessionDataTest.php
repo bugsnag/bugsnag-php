@@ -6,14 +6,11 @@ use Bugsnag\Client;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Report;
 use Bugsnag\SessionTracker;
-use GrahamCampbell\TestBenchCore\MockeryTrait;
+use Bugsnag\Tests\TestCase;
 use Mockery;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class SessionDataTest extends TestCase
 {
-    use MockeryTrait;
-
     public function testUnhandledError()
     {
         $sessionTracker = Mockery::mock(SessionTracker::class);

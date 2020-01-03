@@ -4,19 +4,20 @@ namespace Bugsnag\Tests\Shutdown;
 
 use Bugsnag\Client;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
+use Bugsnag\Tests\TestCase;
+use Mockery;
 use phpmock\spy\Spy;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class PhpShutdownStrategyTest extends TestCase
 {
     public function testRegisterShutdownFunction()
     {
         // Override/spy on the native PHP method when executed within the Bugsnag\Shutdown namespace
-        $shutdownSpy = new Spy("Bugsnag\Shutdown", 'register_shutdown_function');
+        $shutdownSpy = new Spy('Bugsnag\Shutdown', 'register_shutdown_function');
         $shutdownSpy->enable();
 
         // Mock a bugsnag client
-        $mockClient = \Mockery::mock(Client::class);
+        $mockClient = Mockery::mock(Client::class);
         $mockClient->shouldReceive('flush');
 
         // Execute the shutdown strategy
@@ -32,7 +33,7 @@ class PhpShutdownStrategyTest extends TestCase
     public function testDefaultShutdownStrategyIsCreatedWithinClientConstructor()
     {
         // Override/spy on the native PHP method when executed within the Bugsnag\Shutdown namespace
-        $shutdownSpy = new Spy("Bugsnag\Shutdown", 'register_shutdown_function');
+        $shutdownSpy = new Spy('Bugsnag\Shutdown', 'register_shutdown_function');
         $shutdownSpy->enable();
 
         $client = Client::make('api-key-here');

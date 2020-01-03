@@ -7,13 +7,9 @@ use Bugsnag\HttpClient;
 use Bugsnag\Report;
 use Exception;
 use GuzzleHttp\Client;
-use phpmock\phpunit\PHPMock;
-use PHPUnit_Framework_TestCase as TestCase;
 
 class HttpClientTest extends TestCase
 {
-    use PHPMock;
-
     protected $config;
     protected $guzzle;
     protected $http;
@@ -29,6 +25,15 @@ class HttpClientTest extends TestCase
         $this->http = new HttpClient($this->config, $this->guzzle);
     }
 
+    private static function getInvocationParameters($invocation)
+    {
+        if (is_callable([$invocation, 'getParameters'])) {
+            return $invocation->getParameters();
+        }
+
+        return $invocation->parameters;
+    }
+
     public function testHttpClient()
     {
         // Expect request to be called
@@ -39,7 +44,7 @@ class HttpClientTest extends TestCase
         $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
-        $params = $invocations[0]->parameters;
+        $params = self::getInvocationParameters($invocations[0]);
         $this->assertCount(2, $params);
         $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);
@@ -83,7 +88,7 @@ class HttpClientTest extends TestCase
         $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
-        $params = $invocations[0]->parameters;
+        $params = self::getInvocationParameters($invocations[0]);
         $this->assertCount(2, $params);
         $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);
@@ -131,7 +136,7 @@ class HttpClientTest extends TestCase
         $this->http->send();
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
-        $params = $invocations[0]->parameters;
+        $params = self::getInvocationParameters($invocations[0]);
         $this->assertCount(2, $params);
         $this->assertSame('', $params[0]);
         $this->assertInternalType('array', $params[1]);

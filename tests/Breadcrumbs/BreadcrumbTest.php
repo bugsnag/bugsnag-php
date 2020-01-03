@@ -3,7 +3,7 @@
 namespace Bugsnag\Tests\Breadcrumbs;
 
 use Bugsnag\Breadcrumbs\Breadcrumb;
-use PHPUnit_Framework_TestCase as TestCase;
+use Bugsnag\Tests\TestCase;
 
 class BreadcrumbTest extends TestCase
 {
@@ -35,12 +35,13 @@ class BreadcrumbTest extends TestCase
         $this->assertSame('Good name!', $breadcrumb->toArray()['name']);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage The breadcrumb type must be one of the set of 8 standard types.
-     */
     public function testBadType()
     {
+        $this->expectedException(
+            \InvalidArgumentException::class,
+            'The breadcrumb type must be one of the set of 8 standard types.'
+        );
+
         new Breadcrumb('Foo', 'bar');
     }
 
