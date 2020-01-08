@@ -282,7 +282,7 @@ class SessionTracker
     {
         $sessions = $this->getSessionCounts();
         $this->setSessionCounts([]);
-        if (count($sessions) == 0) {
+        if (!is_array($sessions) || count($sessions) === 0) {
             return;
         }
         if (!$this->config->shouldNotify()) {
