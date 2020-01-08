@@ -208,7 +208,7 @@ class SessionTracker
         try {
             $sessionCounts = $this->getSessionCounts();
 
-            if (is_null($sessionCounts)) {
+            if (!is_array($sessionCounts)) {
                 $sessionCounts = [];
             }
 
