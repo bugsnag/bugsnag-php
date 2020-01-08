@@ -224,7 +224,7 @@ class SessionTracker
                 $this->trimOldestSessions();
             }
             $lastSent = $this->getLastSent();
-            if ($deliver && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
+            if ($deliver && $lastSent !== null && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
                 $this->deliverSessions();
             }
         } finally {
