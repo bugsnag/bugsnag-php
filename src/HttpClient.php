@@ -2,12 +2,12 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Exception\PayloadTooLargeException;
 use Exception;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
 
-class HttpClient
-{
+class HttpClient {
     /**
      * The config instance.
      *
@@ -46,13 +46,12 @@ class HttpClient
     /**
      * Create a new http client instance.
      *
-     * @param \Bugsnag\Configuration      $config the configuration instance
+     * @param \Bugsnag\Configuration $config the configuration instance
      * @param \GuzzleHttp\ClientInterface $guzzle the guzzle client instance
      *
      * @return void
      */
-    public function __construct(Configuration $config, ClientInterface $guzzle)
-    {
+    public function __construct(Configuration $config, ClientInterface $guzzle) {
         $this->config = $config;
         $this->guzzle = $guzzle;
     }
@@ -64,8 +63,7 @@ class HttpClient
      *
      * @return void
      */
-    public function queue(Report $report)
-    {
+    public function queue(Report $report) {
         $this->queue[] = $report;
     }
 
@@ -78,8 +76,7 @@ class HttpClient
      *
      * @return void
      */
-    public function deploy(array $data)
-    {
+    public function deploy(array $data) {
         $app = $this->config->getAppData();
 
         $data['releaseStage'] = $app['releaseStage'];
@@ -100,8 +97,7 @@ class HttpClient
      *
      * @return void
      */
-    public function sendBuildReport(array $buildInfo)
-    {
+    public function sendBuildReport(array $buildInfo) {
         $app = $this->config->getAppData();
 
         $data = [];
@@ -157,8 +153,7 @@ class HttpClient
      *
      * @return void
      */
-    public function send()
-    {
+    public function send() {
         if (!$this->queue) {
             return;
         }
@@ -173,8 +168,7 @@ class HttpClient
      *
      * @return array
      */
-    protected function build()
-    {
+    protected function build() {
         $events = [];
 
         foreach ($this->queue as $report) {
@@ -197,8 +191,7 @@ class HttpClient
      *
      * @return array
      */
-    protected function getHeaders()
-    {
+    protected function getHeaders() {
         return [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
             'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
@@ -209,13 +202,12 @@ class HttpClient
     /**
      * Post the given data to Bugsnag in json form.
      *
-     * @param string $url  the url to hit
-     * @param array  $data the data send
+     * @param string $url the url to hit
+     * @param array $data the data send
      *
      * @return void
      */
-    protected function postJSON($url, $data)
-    {
+    protected function postJSON($url, $data) {
         // Try to send the whole lot, or without the meta data for the first
         // event. If failed, try to send the first event, and then the rest of
         // them, recursively. Decrease by a constant and concquer if you like.
@@ -223,15 +215,18 @@ class HttpClient
         // enought to send, or when it's simply discarded.
         try {
             $normalized = $this->normalize($data);
+        } catch (PayloadTooLargeException $e) {
+            error_log('Bugsnag Warning: Couldn\'t notify, payload too large: ' . json_encode($e->getPayload()));
+            return;
+
         } catch (RuntimeException $e) {
             if (count($data['events']) > 1) {
                 $event = array_shift($data['events']);
                 $this->postJSON($url, array_merge($data, ['events' => [$event]]));
                 $this->postJSON($url, $data);
             } else {
-                error_log('Bugsnag Warning: '.$e->getMessage());
+                error_log('Bugsnag Warning: ' . $e->getMessage());
             }
-
             return;
         }
 
@@ -242,7 +237,7 @@ class HttpClient
                 'headers' => $this->getHeaders(),
             ]);
         } catch (Exception $e) {
-            error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
+            error_log('Bugsnag Warning: Couldn\'t notify. ' . $e->getMessage());
         }
     }
 
@@ -255,8 +250,7 @@ class HttpClient
      *
      * @return array
      */
-    protected function normalize(array $data)
-    {
+    protected function normalize(array $data) {
         $body = json_encode($data);
 
         if ($this->length($body) > static::MAX_SIZE) {
@@ -266,7 +260,7 @@ class HttpClient
         $body = json_encode($data);
 
         if ($this->length($body) > static::MAX_SIZE) {
-            throw new RuntimeException('Payload too large');
+            throw new PayloadTooLargeException($data);
         }
 
         return $data;
@@ -279,8 +273,7 @@ class HttpClient
      *
      * @return int
      */
-    protected function length($str)
-    {
+    protected function length($str) {
         return function_exists('mb_strlen') ? mb_strlen($str, '8bit') : strlen($str);
     }
 }
