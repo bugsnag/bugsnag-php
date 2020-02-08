@@ -18,7 +18,6 @@ use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
 use Bugsnag\Shutdown\ShutdownStrategyInterface;
-use Composer\CaBundle\CaBundle;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
 use ReflectionClass;
@@ -145,25 +144,7 @@ class Client
 
         $options[$key] = $base ?: static::ENDPOINT;
 
-        if ($path = static::getCaBundlePath()) {
-            $options['verify'] = $path;
-        }
-
         return new Guzzle($options);
-    }
-
-    /**
-     * Get the ca bundle path if one exists.
-     *
-     * @return string|false
-     */
-    protected static function getCaBundlePath()
-    {
-        if (!class_exists(CaBundle::class)) {
-            return false;
-        }
-
-        return realpath(CaBundle::getSystemCaRootBundlePath());
     }
 
     /**

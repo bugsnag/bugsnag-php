@@ -11,8 +11,7 @@
         "homepage": "https://bugsnag.com"
     }],
     "require": {
-        "php": ">=5.5",
-        "composer/ca-bundle": "^1.0",
+        "php": ">=5.6",
         "guzzlehttp/guzzle": "^5.0|^6.0"
     },
     "require-dev": {
