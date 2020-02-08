@@ -49,7 +49,7 @@ before_install:
   - composer require "guzzlehttp/guzzle:${GUZZLE_VERSION}" --no-update
 
 install:
-  - travis_retry composer install $COMPOSER_OPTIONS
+  - travis_retry composer update $COMPOSER_OPTIONS
 
 script:
   - make test
