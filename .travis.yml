@@ -2,18 +2,12 @@ language: php
 
 matrix:
   include:
-    - php: 5.5.9
-      dist: trusty
-      env: GUZZLE_VERSION=^5.3
-    - php: 5.5.9
-      dist: trusty
-      env: GUZZLE_VERSION=^6.0
-    - php: 5.5
-      dist: trusty
-      env: GUZZLE_VERSION=^5.3
-    - php: 5.5
-      dist: trusty
-      env: GUZZLE_VERSION=^6.0
+    - php: 5.6
+      dist: xenial
+      env: GUZZLE_VERSION=^5.3 COMPOSER_OPTIONS="--prefer-lowest"
+    - php: 5.6
+      dist: xenial
+      env: GUZZLE_VERSION=^6.0 COMPOSER_OPTIONS="--prefer-lowest"
     - php: 5.6
       dist: xenial
       env: GUZZLE_VERSION=^5.3
@@ -55,8 +49,7 @@ before_install:
   - composer require "guzzlehttp/guzzle:${GUZZLE_VERSION}" --no-update
 
 install:
-  - if [[ $TRAVIS_PHP_VERSION == 5.5.9 ]]; then travis_retry composer update --no-interaction --prefer-source --prefer-lowest ; fi
-  - if [[ $TRAVIS_PHP_VERSION != 5.5.9 ]]; then travis_retry composer update --no-interaction --prefer-source ; fi
+  - travis_retry composer install $COMPOSER_OPTIONS
 
 script:
   - make test
