@@ -10,6 +10,7 @@ abstract class TestCase extends BaseTestCase
 {
     use PHPMock;
     use MockeryTrait;
+
     public function expectedException($class, $msg = null)
     {
         if (class_exists(\PHPUnit_Framework_TestCase::class)) {
