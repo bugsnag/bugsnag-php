@@ -2,14 +2,12 @@
 
 namespace Bugsnag\Tests;
 
-use Exception;
 use GrahamCampbell\TestBenchCore\MockeryTrait;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Uri;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use ReflectionException;
 use ReflectionObject;
 
 abstract class TestCase extends BaseTestCase
@@ -39,8 +37,9 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * @param \GuzzleHttp\Client $guzzle
+     *
      * @return GuzzleHttp\Psr7\Uri|null
-     */ 
+     */
     protected static function getGuzzleBaseUri(Guzzle $guzzle)
     {
         if (method_exists($guzzle, 'getBaseUrl')) {
@@ -49,7 +48,7 @@ abstract class TestCase extends BaseTestCase
 
         $config = self::readObjectAttribute($guzzle, 'config');
 
-        return isset($config['base_uri']) ? $config['base_uri']: null;
+        return isset($config['base_uri']) ? $config['base_uri'] : null;
     }
 
     private static function readObjectAttribute($object, $attributeName)
