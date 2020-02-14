@@ -5,6 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Psr7\Uri;
 
 class ConfigurationTest extends TestCase
 {
@@ -295,14 +296,7 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame(GuzzleClient::class, get_class($client));
 
-        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
-            $clientUri = $client->getBaseUrl();
-        } else {
-            $baseUri = $client->getConfig('base_uri');
-            $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
-        }
-
-        $this->assertSame(Configuration::SESSION_ENDPOINT, $clientUri);
+        $this->assertEquals(new Uri(Configuration::SESSION_ENDPOINT), self::getGuzzleBaseUri($client));
     }
 
     public function testSessionTrackingSetEndpoint()
@@ -321,13 +315,6 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame(GuzzleClient::class, get_class($client));
 
-        if (substr(ClientInterface::VERSION, 0, 1) == '5') {
-            $clientUri = $client->getBaseUrl();
-        } else {
-            $baseUri = $client->getConfig('base_uri');
-            $clientUri = $baseUri->getScheme().'://'.$baseUri->getHost();
-        }
-
-        $this->assertSame($testUrl, $clientUri);
+        $this->assertEquals(new Uri($testUrl), self::getGuzzleBaseUri($client));
     }
 }

@@ -141,7 +141,7 @@ class Client
      */
     public static function makeGuzzle($base = null, array $options = [])
     {
-        $key = version_compare(ClientInterface::VERSION, '6') === 1 ? 'base_uri' : 'base_url';
+        $key = method_exists(ClientInterface::class, 'request') ? 'base_uri' : 'base_url';
 
         $options[$key] = $base ?: static::ENDPOINT;
 
