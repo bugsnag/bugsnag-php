@@ -9,7 +9,6 @@ use Bugsnag\Report;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Uri;
 use Mockery;
 use ReflectionClass;

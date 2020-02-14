@@ -4,7 +4,6 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Psr7\Uri;
 
 class ConfigurationTest extends TestCase
