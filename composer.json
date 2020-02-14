@@ -13,7 +13,7 @@
     "require": {
         "php": ">=5.5",
         "composer/ca-bundle": "^1.0",
-        "guzzlehttp/guzzle": "^5.0|^6.0"
+        "guzzlehttp/guzzle": "^5.0|^6.0|^7.0"
     },
     "require-dev": {
         "graham-campbell/testbench-core": "^1.1",
