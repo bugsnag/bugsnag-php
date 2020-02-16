@@ -29,7 +29,7 @@ class Utils
     {
         return self::getBuilderUsingSymfonyProcess() ?: self::getBuilderUsingNativeExec() ?: get_current_user();
     }
-    
+
     private static function getBuilderUsingSymfonyProcess()
     {
         if (!class_exists(Process::class)) {
