@@ -38,18 +38,27 @@ matrix:
     - php: 7.2
       dist: bionic
       env: GUZZLE_VERSION=^6.0
+    - php: 7.2
+      dist: bionic
+      env: GUZZLE_VERSION=^7.0
     - php: 7.3
       dist: bionic
       env: GUZZLE_VERSION=^5.3
     - php: 7.3
       dist: bionic
       env: GUZZLE_VERSION=^6.0
+    - php: 7.3
+      dist: bionic
+      env: GUZZLE_VERSION=^7.0
     - php: 7.4
       dist: bionic
       env: GUZZLE_VERSION=^5.3
     - php: 7.4
       dist: bionic
       env: GUZZLE_VERSION=^6.0
+    - php: 7.4
+      dist: bionic
+      env: GUZZLE_VERSION=^7.0
 
 before_install:
   - travis_retry composer require "guzzlehttp/guzzle:${GUZZLE_VERSION}" --no-update
