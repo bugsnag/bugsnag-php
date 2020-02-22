@@ -2,6 +2,8 @@
 
 namespace Bugsnag;
 
+use Symfony\Component\Process\Process;
+
 class Utils
 {
     /**
@@ -25,19 +27,36 @@ class Utils
      */
     public static function getBuilderName()
     {
-        $builderName = null;
-        if (self::functionAvailable('exec')) {
-            $output = [];
-            $success = 0;
-            exec('whoami', $output, $success);
-            if ($success == 0) {
-                $builderName = $output[0];
-            }
-        }
-        if (is_null($builderName)) {
-            $builderName = get_current_user();
+        return self::getBuilderUsingSymfonyProcess() ?: self::getBuilderUsingNativeExec() ?: get_current_user();
+    }
+
+    private static function getBuilderUsingSymfonyProcess()
+    {
+        if (!class_exists(Process::class)) {
+            return;
         }
 
-        return $builderName;
+        $process = new Process('whoami');
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            return trim($process->getOutput());
+        }
+    }
+
+    private static function getBuilderUsingNativeExec()
+    {
+        if (!self::functionAvailable('exec')) {
+            return;
+        }
+
+        $output = [];
+        $success = 0;
+
+        exec('whoami', $output, $success);
+
+        if ($success == 0) {
+            return $output[0];
+        }
     }
 }
