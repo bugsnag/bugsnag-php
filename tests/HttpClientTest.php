@@ -19,7 +19,7 @@ class HttpClientTest extends TestCase
         $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
 
         $this->guzzle = $this->getMockBuilder(Client::class)
-                             ->setMethods(['post'])
+                             ->setMethods([self::getGuzzleMethod()])
                              ->getMock();
 
         $this->http = new HttpClient($this->config, $this->guzzle);
@@ -37,7 +37,7 @@ class HttpClientTest extends TestCase
     public function testHttpClient()
     {
         // Expect request to be called
-        $this->guzzle->expects($spy = $this->any())->method('post');
+        $this->guzzle->expects($spy = $this->any())->method(self::getGuzzleMethod());
 
         // Add a report to the http and deliver it
         $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
@@ -45,17 +45,18 @@ class HttpClientTest extends TestCase
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = self::getInvocationParameters($invocations[0]);
-        $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
-        $this->assertInternalType('array', $params[1]);
-        $this->assertInternalType('array', $params[1]['json']['notifier']);
-        $this->assertInternalType('array', $params[1]['json']['events']);
-        $this->assertSame([], $params[1]['json']['events'][0]['user']);
-        $this->assertSame(['foo' => 'bar'], $params[1]['json']['events'][0]['metaData']);
-        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
-        $this->assertSame('4.0', $params[1]['json']['events'][0]['payloadVersion']);
+        $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
+        $this->assertSame('', self::getGuzzlePostUriParam($params));
+        $options = self::getGuzzlePostOptionsParam($params);
+        $this->assertInternalType('array', $options);
+        $this->assertInternalType('array', $options['json']['notifier']);
+        $this->assertInternalType('array', $options['json']['events']);
+        $this->assertSame([], $options['json']['events'][0]['user']);
+        $this->assertSame(['foo' => 'bar'], $options['json']['events'][0]['metaData']);
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
+        $this->assertSame('4.0', $options['json']['events'][0]['payloadVersion']);
 
-        $headers = $params[1]['headers'];
+        $headers = $options['headers'];
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
         $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
         $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
@@ -64,7 +65,7 @@ class HttpClientTest extends TestCase
     public function testHttpClientMultipleSend()
     {
         // Expect request to be called
-        $this->guzzle->expects($spy = $this->any())->method('post');
+        $this->guzzle->expects($spy = $this->any())->method(self::getGuzzleMethod());
 
         // Add a report to the http and deliver it
         $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
@@ -81,7 +82,7 @@ class HttpClientTest extends TestCase
     public function testMassiveMetaDataHttpClient()
     {
         // Expect request to be called
-        $this->guzzle->expects($spy = $this->any())->method('post');
+        $this->guzzle->expects($spy = $this->any())->method(self::getGuzzleMethod());
 
         // Add a report to the http and deliver it
         $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => str_repeat('A', 1500000)]));
@@ -89,17 +90,18 @@ class HttpClientTest extends TestCase
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = self::getInvocationParameters($invocations[0]);
-        $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
-        $this->assertInternalType('array', $params[1]);
-        $this->assertInternalType('array', $params[1]['json']['notifier']);
-        $this->assertInternalType('array', $params[1]['json']['events']);
-        $this->assertSame([], $params[1]['json']['events'][0]['user']);
-        $this->assertArrayNotHasKey('metaData', $params[1]['json']['events'][0]);
-        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
-        $this->assertSame('4.0', $params[1]['json']['events'][0]['payloadVersion']);
+        $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
+        $this->assertSame('', self::getGuzzlePostUriParam($params));
+        $options = self::getGuzzlePostOptionsParam($params);
+        $this->assertInternalType('array', $options);
+        $this->assertInternalType('array', $options['json']['notifier']);
+        $this->assertInternalType('array', $options['json']['events']);
+        $this->assertSame([], $options['json']['events'][0]['user']);
+        $this->assertArrayNotHasKey('metaData', $options['json']['events'][0]);
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
+        $this->assertSame('4.0', $options['json']['events'][0]['payloadVersion']);
 
-        $headers = $params[1]['headers'];
+        $headers = $options['headers'];
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
         $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
         $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
@@ -112,7 +114,7 @@ class HttpClientTest extends TestCase
         $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Payload too large'));
 
         // Expect request to be called
-        $this->guzzle->expects($spy = $this->any())->method('post');
+        $this->guzzle->expects($spy = $this->any())->method(self::getGuzzleMethod());
 
         // Add a report to the http and deliver it
         $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1500000)]));
@@ -128,7 +130,7 @@ class HttpClientTest extends TestCase
         $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Payload too large'));
 
         // Expect request to be called
-        $this->guzzle->expects($spy = $this->any())->method('post');
+        $this->guzzle->expects($spy = $this->any())->method(self::getGuzzleMethod());
 
         // Add two errors to the http and deliver them
         $this->http->queue(Report::fromNamedError($this->config, 'Name')->setUser(['foo' => str_repeat('A', 1500000)]));
@@ -137,17 +139,18 @@ class HttpClientTest extends TestCase
 
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = self::getInvocationParameters($invocations[0]);
-        $this->assertCount(2, $params);
-        $this->assertSame('', $params[0]);
-        $this->assertInternalType('array', $params[1]);
-        $this->assertInternalType('array', $params[1]['json']['notifier']);
-        $this->assertInternalType('array', $params[1]['json']['events']);
-        $this->assertSame(['foo' => 'bar'], $params[1]['json']['events'][0]['user']);
-        $this->assertSame([], $params[1]['json']['events'][0]['metaData']);
-        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $params[1]['json']['apiKey']);
-        $this->assertSame('4.0', $params[1]['json']['events'][0]['payloadVersion']);
+        $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
+        $this->assertSame('', self::getGuzzlePostUriParam($params));
+        $options = self::getGuzzlePostOptionsParam($params);
+        $this->assertInternalType('array', $options);
+        $this->assertInternalType('array', $options['json']['notifier']);
+        $this->assertInternalType('array', $options['json']['events']);
+        $this->assertSame(['foo' => 'bar'], $options['json']['events'][0]['user']);
+        $this->assertSame([], $options['json']['events'][0]['metaData']);
+        $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
+        $this->assertSame('4.0', $options['json']['events'][0]['payloadVersion']);
 
-        $headers = $params[1]['headers'];
+        $headers = $options['headers'];
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
         $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
         $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
@@ -160,10 +163,25 @@ class HttpClientTest extends TestCase
         $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Couldn\'t notify. Guzzle exception thrown!'));
 
         // Expect request to be called
-        $this->guzzle->method('post')->will($this->throwException(new Exception('Guzzle exception thrown!')));
+        $this->guzzle->method(self::getGuzzleMethod())->will($this->throwException(new Exception('Guzzle exception thrown!')));
 
         // Add a report to the http and deliver it
         $this->http->queue(Report::fromNamedError($this->config, 'Name')->setMetaData(['foo' => 'bar']));
         $this->http->send();
+    }
+
+    private function getGuzzleExpectedParamCount()
+    {
+        return self::getGuzzleMethod() === 'request' ? 3 : 2;
+    }
+
+    private function getGuzzlePostUriParam(array $params)
+    {
+        return $params[self::getGuzzleMethod() === 'request' ? 1 : 0];
+    }
+
+    private function getGuzzlePostOptionsParam(array $params)
+    {
+        return $params[self::getGuzzleMethod() === 'request' ? 2 : 1];
     }
 }

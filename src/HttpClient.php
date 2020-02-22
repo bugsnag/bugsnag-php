@@ -90,7 +90,7 @@ class HttpClient
 
         $data['apiKey'] = $this->config->getApiKey();
 
-        $this->guzzle->post('deploy', ['json' => $data]);
+        $this->post('deploy', ['json' => $data]);
     }
 
     /**
@@ -149,7 +149,7 @@ class HttpClient
 
         $endpoint = $this->config->getBuildEndpoint();
 
-        $this->guzzle->post($endpoint, ['json' => $data]);
+        $this->post($endpoint, ['json' => $data]);
     }
 
     /**
@@ -207,14 +207,31 @@ class HttpClient
     }
 
     /**
+     * Send a POST request to Bugsnag.
+     *
+     * @param string $uri  the uri to hit
+     * @param array  $data the request options
+     *
+     * @return void
+     */
+    protected function post($uri, array $options = [])
+    {
+        if (method_exists(ClientInterface::class, 'request')) {
+            $this->guzzle->request('POST', $uri, $options);
+        } else {
+            $this->guzzle->post($uri, $options);
+        }
+    }
+
+    /**
      * Post the given data to Bugsnag in json form.
      *
-     * @param string $url  the url to hit
+     * @param string $uri  the uri to hit
      * @param array  $data the data send
      *
      * @return void
      */
-    protected function postJSON($url, $data)
+    protected function postJson($uri, array $data)
     {
         // Try to send the whole lot, or without the meta data for the first
         // event. If failed, try to send the first event, and then the rest of
@@ -226,8 +243,8 @@ class HttpClient
         } catch (RuntimeException $e) {
             if (count($data['events']) > 1) {
                 $event = array_shift($data['events']);
-                $this->postJSON($url, array_merge($data, ['events' => [$event]]));
-                $this->postJSON($url, $data);
+                $this->postJson($uri, array_merge($data, ['events' => [$event]]));
+                $this->postJson($uri, $data);
             } else {
                 error_log('Bugsnag Warning: '.$e->getMessage());
             }
@@ -237,7 +254,7 @@ class HttpClient
 
         // Send via guzzle and log any failures
         try {
-            $this->guzzle->post($url, [
+            $this->post($uri, [
                 'json' => $normalized,
                 'headers' => $this->getHeaders(),
             ]);
