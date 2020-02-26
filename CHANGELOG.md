@@ -1,16 +1,38 @@
 Changelog
 =========
 
+## 3.20.0 (2020-02-26)
+
+### Enhancements
+
+* Added support for Guzzle 7
+  [#567](https://github.com/bugsnag/bugsnag-php/pull/567)
+
+### Bug Fixes
+
+* Added support for PHP 7.3 and 7.4
+  [#552](https://github.com/bugsnag/bugsnag-php/pull/552)
+  [#556](https://github.com/bugsnag/bugsnag-php/pull/556)
+
+* Only try to search for the CA bundle on PHP 5.5
+  [#566](https://github.com/bugsnag/bugsnag-php/pull/566)
+
 ## 3.19.0 (2019-11-18)
 
 ### Enhancements
 
-* Added a strategy pattern for the Client shutdown behaviour [#547](https://github.com/bugsnag/bugsnag-php/pull/547)
+* Added a strategy pattern for the Client shutdown behaviour
+  [#547](https://github.com/bugsnag/bugsnag-php/pull/547)
 
-* Replaced the dependency on phpdotenv with a simple "read" function that follows the same strategy 
-($_ENV, $_SERVER, getenv()) [#511](https://github.com/bugsnag/bugsnag-php/pull/551)
+* Replaced the dependency on phpdotenv with a simple "read" function that
+  follows the same strategy ($_ENV, $_SERVER, getenv())
+ [#511](https://github.com/bugsnag/bugsnag-php/pull/551)
 
-* Removed the length restriction on the Breadcrumb "name" field to match the API and allow large names to be sent. [#544](https://github.com/bugsnag/bugsnag-php/pull/554)
+* Removed the length restriction on the Breadcrumb "name" field to match the
+  API and allow large names to be sent.
+  [#544](https://github.com/bugsnag/bugsnag-php/pull/554)
+
+### Bug Fixes
 
 * Make session delivery obey the release stage rules used by notify
   [#542](https://github.com/bugsnag/bugsnag-php/pull/542)
@@ -46,7 +68,7 @@ Add the version of PHP to report information to allow easier diagnosis of versio
   [Javier Pérez Cid](https://github.com/jpcid)
   [#514](https://github.com/bugsnag/bugsnag-php/pull/514)
 
-### Fixes
+### Bug Fixes
 
 * Check `php_uname` isn't disabled before attempting to retrieve hostname
   [Graham Campbell](https://github.com/GrahamCampbell)
@@ -54,7 +76,7 @@ Add the version of PHP to report information to allow easier diagnosis of versio
 
 ## 3.15.2 (2019-01-10)
 
-### Fixes
+### Bug Fixes
 
 * Improve performance by removing reflection calls from Client to Configuration
   [#510](https://github.com/bugsnag/bugsnag-php/pull/510)
