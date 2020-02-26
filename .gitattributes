@@ -2,6 +2,7 @@
 
 /example export-ignore
 /tests export-ignore
+/.docker export-ignore
 /.editorconfig export-ignore
 /.gitattributes export-ignore
 /.gitignore export-ignore
@@ -13,6 +14,8 @@
 /README.md export-ignore
 /UPGRADING.md export-ignore
 /Makefile export-ignore
+/package.sh export-ignore
+/packager.sh export-ignore
 /packager.php export-ignore
 /phpunit.xml.dist export-ignore
 /.github export-ignore
