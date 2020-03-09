@@ -10,6 +10,7 @@ use Bugsnag\Callbacks\RequestCookies;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
+use Bugsnag\MetaData\MetaDataAwareInterface;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
@@ -274,6 +275,10 @@ class Client
     public function notifyException($throwable, callable $callback = null)
     {
         $report = Report::fromPHPThrowable($this->config, $throwable);
+
+        if ($throwable instanceof MetaDataAwareInterface) {
+            $report->addMetaData($throwable->getMetaData());
+        }
 
         $this->notify($report, $callback);
     }
