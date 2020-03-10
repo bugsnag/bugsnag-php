@@ -353,11 +353,11 @@ class ReportTest extends TestCase
         $report = Report::fromPHPError($this->config, E_WARNING, 'FOO', __FILE__, 5, false);
 
         $error = [
-            'code'    => E_WARNING,
+            'code' => E_WARNING,
             'message' => 'FOO',
-            'file'    => __FILE__,
-            'line'    => 5,
-            'fatal'   => false,
+            'file' => __FILE__,
+            'line' => 5,
+            'fatal' => false,
         ];
 
         $this->assertSame('warning', $report->toArray()['severity']);

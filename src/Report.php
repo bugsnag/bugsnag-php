@@ -268,11 +268,11 @@ class Report
     public function setPHPError($code, $message, $file, $line, $fatal = false)
     {
         $this->error = [
-            'code'    => $code,
+            'code' => $code,
             'message' => $message,
-            'file'    => $file,
-            'line'    => $line,
-            'fatal'   => $fatal,
+            'file' => $file,
+            'line' => $line,
+            'fatal' => $fatal,
         ];
 
         if ($fatal) {
