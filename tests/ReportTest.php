@@ -207,6 +207,20 @@ class ReportTest extends TestCase
         $this->report->setSeverity('bunk');
     }
 
+    public function testFromThrowable()
+    {
+        $exception = new Exception('foo');
+
+        $report = Report::fromPHPThrowable($this->config, $exception);
+
+        $event = $report->toArray();
+
+        $this->assertCount(1, $event['exceptions']);
+        $this->assertSame($event['exceptions'][0]['message'], 'foo');
+        $this->assertSame($exception, $report->getPHPThrowable());
+        $this->assertSame(null, $report->getPHPError());
+    }
+
     public function testPreviousExceptions()
     {
         $initialCause = new Exception('actual problem');
@@ -332,6 +346,23 @@ class ReportTest extends TestCase
         $this->report->setMessage('bar');
 
         $this->assertSame(['message' => 'bar', 'severity' => 'warning'], $this->report->getSummary());
+    }
+
+    public function testFromError()
+    {
+        $report = Report::fromPHPError($this->config, E_WARNING, 'FOO', __FILE__, 5, false);
+
+        $error = [
+            'code'    => E_WARNING,
+            'message' => 'FOO',
+            'file'    => __FILE__,
+            'line'    => 5,
+            'fatal'   => false,
+        ];
+
+        $this->assertSame('warning', $report->toArray()['severity']);
+        $this->assertSame(null, $report->getPHPThrowable());
+        $this->assertSame($error, $report->getPHPError());
     }
 
     /**

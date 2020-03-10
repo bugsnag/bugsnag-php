@@ -24,6 +24,20 @@ class Report
     protected $config;
 
     /**
+     * The PHP error.
+     *
+     * @var array|null
+     */
+    protected $error;
+
+    /**
+     * The PHP throwable.
+     *
+     * @var \Throwable|null
+     */
+    protected $throwable;
+
+    /**
      * The associated stacktrace.
      *
      * @var \Bugsnag\Stacktrace
@@ -215,6 +229,8 @@ class Report
             throw new InvalidArgumentException('The throwable must implement Throwable or extend Exception.');
         }
 
+        $this->throwable = $throwable;
+
         $this->setName(get_class($throwable))
              ->setMessage($throwable->getMessage())
              ->setStacktrace(Stacktrace::fromBacktrace($this->config, $throwable->getTrace(), $throwable->getFile(), $throwable->getLine()));
@@ -224,6 +240,18 @@ class Report
         }
 
         return $this;
+    }
+
+    /**
+     * Get the PHP throwable.
+     *
+     * Returns null if the report was not generated from a throwable.
+     *
+     * @return \Throwable|null
+     */
+    public function getPHPThrowable()
+    {
+        return $this->throwable;
     }
 
     /**
@@ -239,6 +267,14 @@ class Report
      */
     public function setPHPError($code, $message, $file, $line, $fatal = false)
     {
+        $this->error = [
+            'code'    => $code,
+            'message' => $message,
+            'file'    => $file,
+            'line'    => $line,
+            'fatal'   => $fatal,
+        ];
+
         if ($fatal) {
             // Generating stacktrace for PHP fatal errors is not possible,
             // since this code executes when the PHP process shuts down,
@@ -257,6 +293,18 @@ class Report
              ->setStacktrace($stacktrace);
 
         return $this;
+    }
+
+    /**
+     * Get the PHP error.
+     *
+     * Returns null if the report was not generated from an error.
+     *
+     * @return array|null
+     */
+    public function getPHPError()
+    {
+        return $this->error;
     }
 
     /**
