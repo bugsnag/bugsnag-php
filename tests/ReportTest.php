@@ -217,8 +217,8 @@ class ReportTest extends TestCase
 
         $this->assertCount(1, $event['exceptions']);
         $this->assertSame($event['exceptions'][0]['message'], 'foo');
-        $this->assertSame($exception, $report->getPHPThrowable());
-        $this->assertSame(null, $report->getPHPError());
+        $this->assertSame('warning', $report->getSeverity());
+        $this->assertSame($exception, $report->originalError());
     }
 
     public function testPreviousExceptions()
@@ -348,7 +348,7 @@ class ReportTest extends TestCase
         $this->assertSame(['message' => 'bar', 'severity' => 'warning'], $this->report->getSummary());
     }
 
-    public function testFromError()
+    public function testFromPhpError()
     {
         $report = Report::fromPHPError($this->config, E_WARNING, 'FOO', __FILE__, 5, false);
 
@@ -360,9 +360,16 @@ class ReportTest extends TestCase
             'fatal' => false,
         ];
 
-        $this->assertSame('warning', $report->toArray()['severity']);
-        $this->assertSame(null, $report->getPHPThrowable());
-        $this->assertSame($error, $report->getPHPError());
+        $this->assertSame('warning', $report->getSeverity());
+        $this->assertSame($error, $report->originalError());
+    }
+
+    public function testFromNamedError()
+    {
+        $report = Report::fromNamedError($this->config, 'CRASH', 'Something went wrong!');
+
+        $this->assertSame('warning', $report->getSeverity());
+        $this->assertNull($report->originalError());
     }
 
     /**

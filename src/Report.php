@@ -24,18 +24,11 @@ class Report
     protected $config;
 
     /**
-     * The PHP error.
+     * The original error.
      *
-     * @var array|null
+     * @var \Throwable|array|null
      */
-    protected $error;
-
-    /**
-     * The PHP throwable.
-     *
-     * @var \Throwable|null
-     */
-    protected $throwable;
+    protected $original;
 
     /**
      * The associated stacktrace.
@@ -215,6 +208,16 @@ class Report
     }
 
     /**
+     * Get the original error.
+     *
+     * @return \Throwable|array|null
+     */
+    public function originalError()
+    {
+        return $this->original;
+    }
+
+    /**
      * Set the PHP throwable.
      *
      * @param \Throwable $throwable the throwable instance
@@ -229,7 +232,7 @@ class Report
             throw new InvalidArgumentException('The throwable must implement Throwable or extend Exception.');
         }
 
-        $this->throwable = $throwable;
+        $this->original = $throwable;
 
         $this->setName(get_class($throwable))
              ->setMessage($throwable->getMessage())
@@ -240,18 +243,6 @@ class Report
         }
 
         return $this;
-    }
-
-    /**
-     * Get the PHP throwable.
-     *
-     * Returns null if the report was not generated from a throwable.
-     *
-     * @return \Throwable|null
-     */
-    public function getPHPThrowable()
-    {
-        return $this->throwable;
     }
 
     /**
@@ -267,7 +258,7 @@ class Report
      */
     public function setPHPError($code, $message, $file, $line, $fatal = false)
     {
-        $this->error = [
+        $this->original = [
             'code' => $code,
             'message' => $message,
             'file' => $file,
@@ -293,18 +284,6 @@ class Report
              ->setStacktrace($stacktrace);
 
         return $this;
-    }
-
-    /**
-     * Get the PHP error.
-     *
-     * Returns null if the report was not generated from an error.
-     *
-     * @return array|null
-     */
-    public function getPHPError()
-    {
-        return $this->error;
     }
 
     /**
