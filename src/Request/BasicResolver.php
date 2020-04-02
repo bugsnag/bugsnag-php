@@ -18,11 +18,13 @@ class BasicResolver implements ResolverInterface
                 $params = static::getInputParams($_SERVER, $_POST, true);
             }
 
-            return new PhpRequest($_SERVER,
+            return new PhpRequest(
+                $_SERVER,
                 empty($_SESSION) ? [] : $_SESSION,
                 empty($_COOKIE) ? [] : $_COOKIE,
                 static::getRequestHeaders($_SERVER),
-                $params);
+                $params
+            );
         }
 
         if (PHP_SAPI === 'cli' && isset($_SERVER['argv'])) {
