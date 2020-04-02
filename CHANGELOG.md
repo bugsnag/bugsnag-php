@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## Unreleased
+
+### Enhancements
+
+* Added support for getting the "original error"
+  [#576](https://github.com/bugsnag/bugsnag-php/pull/576)
+
 ## 3.20.0 (2020-02-26)
 
 ### Enhancements
