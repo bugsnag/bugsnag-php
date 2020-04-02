@@ -21,8 +21,6 @@ use Bugsnag\Shutdown\ShutdownStrategyInterface;
 use Composer\CaBundle\CaBundle;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
-use ReflectionClass;
-use ReflectionException;
 
 class Client
 {
@@ -242,12 +240,6 @@ class Client
      */
     public function leaveBreadcrumb($name, $type = null, array $metaData = [])
     {
-        try {
-            $name = (new ReflectionClass($name))->getShortName();
-        } catch (ReflectionException $e) {
-            //
-        }
-
         $type = in_array($type, Breadcrumb::getTypes(), true) ? $type : Breadcrumb::MANUAL_TYPE;
 
         $this->recorder->record(new Breadcrumb($name, $type, $metaData));
