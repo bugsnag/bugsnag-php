@@ -232,7 +232,7 @@ class Report
             throw new InvalidArgumentException('The throwable must implement Throwable or extend Exception.');
         }
 
-        $this->original = $throwable;
+        $this->originalError = $throwable;
 
         $this->setName(get_class($throwable))
              ->setMessage($throwable->getMessage())
@@ -258,7 +258,7 @@ class Report
      */
     public function setPHPError($code, $message, $file, $line, $fatal = false)
     {
-        $this->original = [
+        $this->originalError = [
             'code' => $code,
             'message' => $message,
             'file' => $file,
