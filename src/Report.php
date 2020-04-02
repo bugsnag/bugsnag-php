@@ -212,9 +212,9 @@ class Report
      *
      * @return \Throwable|array|null
      */
-    public function originalError()
+    public function getOriginalError()
     {
-        return $this->original;
+        return $this->originalError;
     }
 
     /**
