@@ -28,7 +28,7 @@ class Report
      *
      * @var \Throwable|array|null
      */
-    protected $original;
+    protected $originalError;
 
     /**
      * The associated stacktrace.
