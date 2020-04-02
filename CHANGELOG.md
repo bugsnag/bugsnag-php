@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## Unreleased
+
+### Enhancements
+
+* Use full class names in breadcrumbs
+  [#578](https://github.com/bugsnag/bugsnag-php/pull/578)
+
 ## 3.20.0 (2020-02-26)
 
 ### Enhancements
