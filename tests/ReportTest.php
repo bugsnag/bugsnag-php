@@ -218,7 +218,7 @@ class ReportTest extends TestCase
         $this->assertCount(1, $event['exceptions']);
         $this->assertSame($event['exceptions'][0]['message'], 'foo');
         $this->assertSame('warning', $report->getSeverity());
-        $this->assertSame($exception, $report->originalError());
+        $this->assertSame($exception, $report->getOriginalError());
     }
 
     public function testPreviousExceptions()
@@ -361,7 +361,7 @@ class ReportTest extends TestCase
         ];
 
         $this->assertSame('warning', $report->getSeverity());
-        $this->assertSame($error, $report->originalError());
+        $this->assertSame($error, $report->getOriginalError());
     }
 
     public function testFromNamedError()
@@ -369,7 +369,7 @@ class ReportTest extends TestCase
         $report = Report::fromNamedError($this->config, 'CRASH', 'Something went wrong!');
 
         $this->assertSame('warning', $report->getSeverity());
-        $this->assertNull($report->originalError());
+        $this->assertNull($report->getOriginalError());
     }
 
     /**
