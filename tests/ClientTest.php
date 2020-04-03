@@ -351,7 +351,7 @@ class ClientTest extends TestCase
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
     }
 
-    public function testBreadcrumbsNoName()
+    public function testBreadcrumbsWithNoName()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -372,7 +372,7 @@ class ClientTest extends TestCase
         $this->assertTrue(isset($breadcrumbs[0]['metaData']));
     }
 
-    public function testBreadcrumbsGetShortNameClass()
+    public function testBreadcrumbsWithClassName()
     {
         $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
 
@@ -386,7 +386,7 @@ class ClientTest extends TestCase
 
         $this->assertCount(3, $breadcrumbs[0]);
         $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
-        $this->assertSame('Client', $breadcrumbs[0]['name']);
+        $this->assertSame('Bugsnag\Client', $breadcrumbs[0]['name']);
         $this->assertSame('state', $breadcrumbs[0]['type']);
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
     }

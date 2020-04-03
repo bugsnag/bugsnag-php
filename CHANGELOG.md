@@ -1,9 +1,12 @@
 Changelog
 =========
 
-## Unreleased
+## 3.21.0 (TBC)
 
 ### Enhancements
+
+* Use full class names in breadcrumbs
+  [#578](https://github.com/bugsnag/bugsnag-php/pull/578)
 
 * Added support for getting the "original error"
   [#576](https://github.com/bugsnag/bugsnag-php/pull/576)
