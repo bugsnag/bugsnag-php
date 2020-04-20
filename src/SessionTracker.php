@@ -298,25 +298,24 @@ class SessionTracker
         }
 
         $http = $this->config->getSessionClient();
-        $payload = $this->constructPayload($sessions);
 
-        $headers = [
-            'Bugsnag-Api-Key' => $this->config->getApiKey(),
-            'Bugsnag-Payload-Version' => self::$SESSION_PAYLOAD_VERSION,
-            'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
+        $options = [
+            'json' => $this->constructPayload($sessions),
+            'headers' => [
+                'Bugsnag-Api-Key' => $this->config->getApiKey(),
+                'Bugsnag-Payload-Version' => self::$SESSION_PAYLOAD_VERSION,
+                'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
+            ],
         ];
 
         $this->setLastSent();
 
         try {
-            $http->request(
-                'POST',
-                '',
-                [
-                    'json' => $payload,
-                    'headers' => $headers,
-                ]
-            );
+            if (method_exists($http, 'request')) {
+                $http->request('POST', '', $options);
+            } else {
+                $http->post('', $options);
+            }
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
             if (!is_null($this->retryFunction)) {

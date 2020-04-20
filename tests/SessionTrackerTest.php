@@ -91,7 +91,7 @@ class SessionTrackerTest extends TestCase
         $this->config->expects($this->never())->method('getDeviceData');
         $this->config->expects($this->never())->method('getAppData');
         $this->config->expects($this->never())->method('getApiKey');
-        $this->guzzleClient->expects($this->never())->method('request');
+        $this->guzzleClient->expects($this->never())->method($this->getGuzzleMethod());
 
         $this->sessionTracker->sendSessions();
     }
@@ -123,7 +123,7 @@ class SessionTrackerTest extends TestCase
         $this->config->expects($this->once())->method('getApiKey')->willReturn('example-api-key');
 
         $this->guzzleClient->expects($this->once())
-            ->method('request')
+            ->method($this->getGuzzleMethod())
             ->with(
                 $this->equalTo('POST'),
                 $this->equalTo(''),
@@ -168,7 +168,7 @@ class SessionTrackerTest extends TestCase
         $this->config->expects($this->once())->method('getApiKey')->willReturn('example-api-key');
 
         $this->guzzleClient->expects($this->once())
-            ->method('request')
+            ->method($this->getGuzzleMethod())
             ->with(
                 $this->equalTo('POST'),
                 $this->equalTo(''),
