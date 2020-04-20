@@ -798,7 +798,7 @@ class Client
     /**
      * Get the session client.
      *
-     * @return \Guzzle\ClientInterface
+     * @return \GuzzleHttp\ClientInterface
      */
     public function getSessionClient()
     {
