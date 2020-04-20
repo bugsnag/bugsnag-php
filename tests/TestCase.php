@@ -2,7 +2,6 @@
 
 namespace Bugsnag\Tests;
 
-use Exception;
 use GrahamCampbell\TestBenchCore\MockeryTrait;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
