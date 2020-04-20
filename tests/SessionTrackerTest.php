@@ -2,8 +2,8 @@
 
 namespace Bugsnag\Tests;
 
-use Bugsnag\HttpClient;
 use Bugsnag\Configuration;
+use Bugsnag\HttpClient;
 use Bugsnag\SessionTracker;
 use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -51,7 +51,7 @@ class SessionTrackerTest extends TestCase
         $numberOfCalls = 0;
 
         $this->sessionTracker->setStorageFunction(function ($key, $value = null) use (&$numberOfCalls) {
-            ++$numberOfCalls;
+            $numberOfCalls++;
 
             if ($value === null) {
                 $this->assertSame(1, $numberOfCalls, 'Expected the first call to be a read ($value === null)');
@@ -74,6 +74,7 @@ class SessionTrackerTest extends TestCase
 
     /**
      * @param mixed $returnValue
+     *
      * @return void
      *
      * @dataProvider storageFunctionEmptyReturnValueProvider
@@ -104,7 +105,7 @@ class SessionTrackerTest extends TestCase
             'float' => [1.2],
             'bool (true)' => [true],
             'bool (false)' => [false],
-            'object' => [new stdClass],
+            'object' => [new stdClass()],
         ];
     }
 
