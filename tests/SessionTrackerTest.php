@@ -3,7 +3,6 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
-use Bugsnag\HttpClient;
 use Bugsnag\SessionTracker;
 use GuzzleHttp\ClientInterface;
 use InvalidArgumentException;
@@ -17,8 +16,6 @@ class SessionTrackerTest extends TestCase
     private $sessionTracker;
     /** @var Configuration&MockObject */
     private $config;
-    /** @var HttpClient&MockObject */
-    private $httpClient;
     /** @var ClientInterface&MockObject */
     private $guzzleClient;
 
@@ -31,11 +28,6 @@ class SessionTrackerTest extends TestCase
 
         $this->sessionTracker = new SessionTracker($this->config);
 
-        $this->httpClient = $this->getMockBuilder(HttpClient::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['post'])
-            ->getMock();
-
         $this->guzzleClient = $this->getMockBuilder(ClientInterface::class)
             ->getMock();
     }
@@ -43,7 +35,6 @@ class SessionTrackerTest extends TestCase
     public function testSendSessionsEmpty()
     {
         $this->config->expects($this->never())->method('getSessionClient');
-        $this->httpClient->expects($this->never())->method('post');
 
         $this->sessionTracker->sendSessions();
     }
@@ -67,7 +58,6 @@ class SessionTrackerTest extends TestCase
 
         $this->config->expects($this->once())->method('shouldNotify')->willReturn(false);
         $this->config->expects($this->never())->method('getSessionClient');
-        $this->httpClient->expects($this->never())->method('post');
 
         $this->sessionTracker->sendSessions();
 
@@ -113,7 +103,7 @@ class SessionTrackerTest extends TestCase
 
     public function testSendSessionsSuccessWhenCallingSendSessions()
     {
-        $this->sessionTracker->setStorageFunction(function ($key, $value = null) {
+        $this->sessionTracker->setStorageFunction(function () {
             return ['2000-01-01T00:00:00' => 1];
         });
 
