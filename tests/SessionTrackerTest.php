@@ -297,4 +297,25 @@ class SessionTrackerTest extends TestCase
         $this->assertTrue($lockWasCalled, 'Expected the `lockFunction` to be called');
         $this->assertTrue($unlockWasCalled, 'Expected the `unlockFunction` to be called');
     }
+
+    public function testSetRetryFunctionThrowsWhenNotGivenACallable()
+    {
+        $this->expectExceptionObject(new InvalidArgumentException('The retry function must be callable'));
+
+        $this->sessionTracker->setRetryFunction(null);
+    }
+
+    public function testSetStorageFunctionThrowsWhenNotGivenACallable()
+    {
+        $this->expectExceptionObject(new InvalidArgumentException('Storage function must be callable'));
+
+        $this->sessionTracker->setStorageFunction(null);
+    }
+
+    public function testSetSessionFunctionThrowsWhenNotGivenACallable()
+    {
+        $this->expectExceptionObject(new InvalidArgumentException('Session function must be callable'));
+
+        $this->sessionTracker->setSessionFunction(null);
+    }
 }
