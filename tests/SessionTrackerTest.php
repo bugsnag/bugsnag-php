@@ -117,6 +117,30 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->startSession();
     }
 
+    /**
+     * @param mixed $returnValue
+     *
+     * @return void
+     *
+     * @dataProvider storageFunctionEmptyReturnValueProvider
+     */
+    public function testStartSessionDoesNotDeliverSessionsWhenGetSessionCountsReturnsAValueThatsNotAPopulatedArray($returnValue)
+    {
+        $this->sessionTracker->setStorageFunction(function ($key) use ($returnValue) {
+            return $returnValue;
+        });
+
+        $this->config->expects($this->never())->method('shouldNotify');
+        $this->config->expects($this->never())->method('getSessionClient');
+        $this->config->expects($this->never())->method('getNotifier');
+        $this->config->expects($this->never())->method('getDeviceData');
+        $this->config->expects($this->never())->method('getAppData');
+        $this->config->expects($this->never())->method('getApiKey');
+        $this->guzzleClient->expects($this->never())->method($this->getGuzzleMethod());
+
+        $this->sessionTracker->startSession();
+    }
+
     public function storageFunctionEmptyReturnValueProvider()
     {
         return [
