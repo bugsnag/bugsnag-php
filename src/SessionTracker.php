@@ -165,39 +165,39 @@ class SessionTracker
 
     public function setLockFunctions($lock, $unlock)
     {
-        if (is_callable($lock) && is_callable($unlock)) {
-            $this->lockFunction = $lock;
-            $this->unlockFunction = $unlock;
-        } else {
+        if (!is_callable($lock) || !is_callable($unlock)) {
             throw new InvalidArgumentException('Both lock and unlock functions must be callable');
         }
+
+        $this->lockFunction = $lock;
+        $this->unlockFunction = $unlock;
     }
 
     public function setRetryFunction($retry)
     {
-        if (is_callable($retry)) {
-            $this->retryFunction = $retry;
-        } else {
+        if (!is_callable($retry)) {
             throw new InvalidArgumentException('The retry function must be callable');
         }
+
+        $this->retryFunction = $retry;
     }
 
     public function setStorageFunction($function)
     {
-        if (is_callable($function)) {
-            $this->storageFunction = $function;
-        } else {
+        if (!is_callable($function)) {
             throw new InvalidArgumentException('Storage function must be callable');
         }
+
+        $this->storageFunction = $function;
     }
 
     public function setSessionFunction($function)
     {
-        if (is_callable($function)) {
-            $this->sessionFunction = $function;
-        } else {
+        if (!is_callable($function)) {
             throw new InvalidArgumentException('Session function must be callable');
         }
+
+        $this->sessionFunction = $function;
     }
 
     protected function incrementSessions($minute, $count = 1, $deliver = true)
