@@ -226,7 +226,9 @@ class SessionTracker
             if (count($sessionCounts) > self::$MAX_SESSION_COUNT) {
                 $this->trimOldestSessions();
             }
+
             $lastSent = $this->getLastSent();
+
             if ($deliver && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
                 $this->deliverSessions();
             }
@@ -284,20 +286,26 @@ class SessionTracker
     protected function deliverSessions()
     {
         $sessions = $this->getSessionCounts();
+
         $this->setSessionCounts([]);
-        if (count($sessions) == 0) {
+
+        if (!is_array($sessions) || count($sessions) === 0) {
             return;
         }
+
         if (!$this->config->shouldNotify()) {
             return;
         }
+
         $http = $this->config->getSessionClient();
         $payload = $this->constructPayload($sessions);
+
         $headers = [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
             'Bugsnag-Payload-Version' => self::$SESSION_PAYLOAD_VERSION,
             'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
         ];
+
         $this->setLastSent();
 
         try {
