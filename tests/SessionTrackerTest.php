@@ -124,24 +124,28 @@ class SessionTrackerTest extends TestCase
         $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
         $this->config->expects($this->once())->method('getApiKey')->willReturn('example-api-key');
 
-        $this->guzzleClient->expects($this->once())
-            ->method($this->getGuzzleMethod())
-            ->with(
-                $this->equalTo('POST'),
-                $this->equalTo(''),
-                $this->callback(function ($sessionPayload) {
-                    return count($sessionPayload) == 2
-                        && $sessionPayload['json']['notifier'] === 'test_notifier'
-                        && $sessionPayload['json']['device'] === 'device_data'
-                        && $sessionPayload['json']['app'] === 'app_data'
-                        && count($sessionPayload['json']['sessionCounts']) === 1
-                        && $sessionPayload['json']['sessionCounts'][0]['startedAt'] === '2000-01-01T00:00:00'
-                        && $sessionPayload['json']['sessionCounts'][0]['sessionsStarted'] === 1
-                        && $sessionPayload['headers']['Bugsnag-Api-Key'] == 'example-api-key'
-                        && preg_match('/(\d+\.)+/', $sessionPayload['headers']['Bugsnag-Payload-Version'])
-                        && preg_match('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/', $sessionPayload['headers']['Bugsnag-Sent-At']);
-                })
-            );
+        $expectCallback = function ($sessionPayload) {
+            return count($sessionPayload) == 2
+                && $sessionPayload['json']['notifier'] === 'test_notifier'
+                && $sessionPayload['json']['device'] === 'device_data'
+                && $sessionPayload['json']['app'] === 'app_data'
+                && count($sessionPayload['json']['sessionCounts']) === 1
+                && $sessionPayload['json']['sessionCounts'][0]['startedAt'] === '2000-01-01T00:00:00'
+                && $sessionPayload['json']['sessionCounts'][0]['sessionsStarted'] === 1
+                && $sessionPayload['headers']['Bugsnag-Api-Key'] == 'example-api-key'
+                && preg_match('/(\d+\.)+/', $sessionPayload['headers']['Bugsnag-Payload-Version'])
+                && preg_match('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/', $sessionPayload['headers']['Bugsnag-Sent-At']);
+        };
+
+        if ($this->getGuzzleMethod() === 'post') {
+            $this->guzzleClient->expects($this->once())
+                ->method($this->getGuzzleMethod())
+                ->with('', $this->callback($expectCallback));
+        } else {
+            $this->guzzleClient->expects($this->once())
+                ->method($this->getGuzzleMethod())
+                ->with('POST', '', $this->callback($expectCallback));
+        }
 
         $this->sessionTracker->sendSessions();
     }
@@ -169,24 +173,28 @@ class SessionTrackerTest extends TestCase
         $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
         $this->config->expects($this->once())->method('getApiKey')->willReturn('example-api-key');
 
-        $this->guzzleClient->expects($this->once())
-            ->method($this->getGuzzleMethod())
-            ->with(
-                $this->equalTo('POST'),
-                $this->equalTo(''),
-                $this->callback(function ($sessionPayload) {
-                    return count($sessionPayload) == 2
-                        && $sessionPayload['json']['notifier'] === 'test_notifier'
-                        && $sessionPayload['json']['device'] === 'device_data'
-                        && $sessionPayload['json']['app'] === 'app_data'
-                        && count($sessionPayload['json']['sessionCounts']) === 1
-                        && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $sessionPayload['json']['sessionCounts'][0]['startedAt'])
-                        && $sessionPayload['json']['sessionCounts'][0]['sessionsStarted'] === 1
-                        && $sessionPayload['headers']['Bugsnag-Api-Key'] == 'example-api-key'
-                        && preg_match('/(\d+\.)+/', $sessionPayload['headers']['Bugsnag-Payload-Version'])
-                        && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $sessionPayload['headers']['Bugsnag-Sent-At']);
-                })
-            );
+        $expectCallback = function ($sessionPayload) {
+            return count($sessionPayload) == 2
+                && $sessionPayload['json']['notifier'] === 'test_notifier'
+                && $sessionPayload['json']['device'] === 'device_data'
+                && $sessionPayload['json']['app'] === 'app_data'
+                && count($sessionPayload['json']['sessionCounts']) === 1
+                && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $sessionPayload['json']['sessionCounts'][0]['startedAt'])
+                && $sessionPayload['json']['sessionCounts'][0]['sessionsStarted'] === 1
+                && $sessionPayload['headers']['Bugsnag-Api-Key'] == 'example-api-key'
+                && preg_match('/(\d+\.)+/', $sessionPayload['headers']['Bugsnag-Payload-Version'])
+                && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $sessionPayload['headers']['Bugsnag-Sent-At']);
+        };
+
+        if ($this->getGuzzleMethod() === 'post') {
+            $this->guzzleClient->expects($this->once())
+                ->method($this->getGuzzleMethod())
+                ->with('', $this->callback($expectCallback));
+        } else {
+            $this->guzzleClient->expects($this->once())
+                ->method($this->getGuzzleMethod())
+                ->with('POST', '', $this->callback($expectCallback));
+        }
 
         $this->sessionTracker->startSession();
     }
