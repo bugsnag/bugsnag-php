@@ -301,10 +301,14 @@ class SessionTracker
         $this->setLastSent();
 
         try {
-            $http->post('', [
-                'json' => $payload,
-                'headers' => $headers,
-            ]);
+            $http->request(
+                'POST',
+                '',
+                [
+                    'json' => $payload,
+                    'headers' => $headers,
+                ]
+            );
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
             if (!is_null($this->retryFunction)) {
