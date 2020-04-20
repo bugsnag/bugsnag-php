@@ -229,7 +229,11 @@ class SessionTracker
 
             $lastSent = $this->getLastSent();
 
-            if ($deliver && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
+            if ($lastSent === null) {
+                $lastSent = 0;
+            }
+
+            if ($deliver && is_int($lastSent) && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
                 $this->deliverSessions();
             }
         } finally {

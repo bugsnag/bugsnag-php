@@ -88,6 +88,35 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->sendSessions();
     }
 
+    /**
+     * @param mixed $returnValue
+     *
+     * @return void
+     *
+     * @dataProvider storageFunctionEmptyReturnValueProvider
+     */
+    public function testStartSessionDoesNotDeliverSessionsWhenLastSentIsNotAnInteger($returnValue)
+    {
+        $this->sessionTracker->setStorageFunction(function ($key) use ($returnValue) {
+            // We only care about the "last sent" value here
+            if ($key === 'bugsnag-sessions-last-sent') {
+                return $returnValue;
+            }
+
+            return null;
+        });
+
+        $this->config->expects($this->never())->method('shouldNotify');
+        $this->config->expects($this->never())->method('getSessionClient');
+        $this->config->expects($this->never())->method('getNotifier');
+        $this->config->expects($this->never())->method('getDeviceData');
+        $this->config->expects($this->never())->method('getAppData');
+        $this->config->expects($this->never())->method('getApiKey');
+        $this->guzzleClient->expects($this->never())->method($this->getGuzzleMethod());
+
+        $this->sessionTracker->startSession();
+    }
+
     public function storageFunctionEmptyReturnValueProvider()
     {
         return [
@@ -101,7 +130,7 @@ class SessionTrackerTest extends TestCase
         ];
     }
 
-    public function testSendSessionsSuccessWhenCallingSendSessions()
+    public function testSendSessionsSuccess()
     {
         $this->sessionTracker->setStorageFunction(function () {
             return ['2000-01-01T00:00:00' => 1];
@@ -140,7 +169,7 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->sendSessions();
     }
 
-    public function testSendSessionsSuccessWhenCallingStartSession()
+    public function testStartSessionsSuccess()
     {
         $session = [];
 
