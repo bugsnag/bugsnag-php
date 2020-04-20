@@ -191,21 +191,21 @@ class SessionTrackerTest extends TestCase
 
     public function testSetLockFunctionsThrowsWhenBothFunctionsAreNotCallable()
     {
-        $this->expectExceptionObject(new InvalidArgumentException('Both lock and unlock functions must be callable'));
+        $this->expectedException(InvalidArgumentException::class, 'Both lock and unlock functions must be callable');
 
         $this->sessionTracker->setLockFunctions(null, function () {});
     }
 
     public function testSetLockFunctionsThrowsWhenLockIsNotCallable()
     {
-        $this->expectExceptionObject(new InvalidArgumentException('Both lock and unlock functions must be callable'));
+        $this->expectedException(InvalidArgumentException::class, 'Both lock and unlock functions must be callable');
 
         $this->sessionTracker->setLockFunctions(null, function () {});
     }
 
     public function testSetLockFunctionsThrowsWhenUnlockIsNotCallable()
     {
-        $this->expectExceptionObject(new InvalidArgumentException('Both lock and unlock functions must be callable'));
+        $this->expectedException(InvalidArgumentException::class, 'Both lock and unlock functions must be callable');
 
         $this->sessionTracker->setLockFunctions(function () {}, null);
     }
@@ -290,21 +290,21 @@ class SessionTrackerTest extends TestCase
 
     public function testSetRetryFunctionThrowsWhenNotGivenACallable()
     {
-        $this->expectExceptionObject(new InvalidArgumentException('The retry function must be callable'));
+        $this->expectedException(InvalidArgumentException::class, 'The retry function must be callable');
 
         $this->sessionTracker->setRetryFunction(null);
     }
 
     public function testSetStorageFunctionThrowsWhenNotGivenACallable()
     {
-        $this->expectExceptionObject(new InvalidArgumentException('Storage function must be callable'));
+        $this->expectedException(InvalidArgumentException::class, 'Storage function must be callable');
 
         $this->sessionTracker->setStorageFunction(null);
     }
 
     public function testSetSessionFunctionThrowsWhenNotGivenACallable()
     {
-        $this->expectExceptionObject(new InvalidArgumentException('Session function must be callable'));
+        $this->expectedException(InvalidArgumentException::class, 'Session function must be callable');
 
         $this->sessionTracker->setSessionFunction(null);
     }
