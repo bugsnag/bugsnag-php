@@ -6,7 +6,9 @@ use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\SessionTracker;
 use GuzzleHttp\ClientInterface;
+use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
+use RuntimeException;
 use stdClass;
 
 class SessionTrackerTest extends TestCase
@@ -187,5 +189,104 @@ class SessionTrackerTest extends TestCase
             );
 
         $this->sessionTracker->startSession();
+    }
+
+    public function testSetLockFunctionsThrowsWhenBothFunctionsAreNotCallable()
+    {
+        $this->expectExceptionObject(new InvalidArgumentException('Both lock and unlock functions must be callable'));
+
+        $this->sessionTracker->setLockFunctions(null, function () {});
+    }
+
+    public function testSetLockFunctionsThrowsWhenLockIsNotCallable()
+    {
+        $this->expectExceptionObject(new InvalidArgumentException('Both lock and unlock functions must be callable'));
+
+        $this->sessionTracker->setLockFunctions(null, function () {});
+    }
+
+    public function testSetLockFunctionsThrowsWhenUnlockIsNotCallable()
+    {
+        $this->expectExceptionObject(new InvalidArgumentException('Both lock and unlock functions must be callable'));
+
+        $this->sessionTracker->setLockFunctions(function () {}, null);
+    }
+
+    public function testSetLockFunctionsSucceedsWhenBothFunctionsAreCallable()
+    {
+        $locked = false;
+        $lockWasCalled = false;
+        $unlockWasCalled = false;
+
+        $this->sessionTracker->setLockFunctions(
+            function () use (&$locked, &$lockWasCalled) {
+                $locked = true;
+                $lockWasCalled = true;
+            },
+            function () use (&$locked, &$unlockWasCalled) {
+                $locked = false;
+                $unlockWasCalled = true;
+            }
+        );
+
+        $session = [];
+
+        $this->sessionTracker->setStorageFunction(function ($key, $value = null) use (&$session) {
+            if (!isset($session[$key])) {
+                $session[$key] = null;
+            }
+
+            if ($value === null) {
+                return $session[$key];
+            }
+
+            $session[$key] = $value;
+        });
+
+        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
+        $this->config->expects($this->once())->method('getSessionClient')->willReturn($this->guzzleClient);
+
+        $this->sessionTracker->startSession();
+
+        $this->assertFalse($locked, 'Expected not to be locked after sending sessions');
+        $this->assertTrue($lockWasCalled, 'Expected the `lockFunction` to be called');
+        $this->assertTrue($unlockWasCalled, 'Expected the `unlockFunction` to be called');
+    }
+
+    public function testSessionShouldBeUnlockedAfterAnException()
+    {
+        $locked = false;
+        $lockWasCalled = false;
+        $unlockWasCalled = false;
+
+        $this->sessionTracker->setLockFunctions(
+            function () use (&$locked, &$lockWasCalled) {
+                $locked = true;
+                $lockWasCalled = true;
+            },
+            function () use (&$locked, &$unlockWasCalled) {
+                $locked = false;
+                $unlockWasCalled = true;
+            }
+        );
+
+        $this->sessionTracker->setStorageFunction(function () {
+            throw new RuntimeException('Something went wrong!');
+        });
+
+        $this->config->expects($this->never())->method('shouldNotify');
+
+        $e = null;
+
+        try {
+            $this->sessionTracker->startSession();
+        } catch (RuntimeException $e) {
+            $this->assertSame('Something went wrong!', $e->getMessage());
+        }
+
+        $this->assertNotNull($e, 'Expected a RuntimeException to be thrown');
+        $this->assertFalse($locked, 'Expected not to be locked after failing to send sessions');
+        $this->assertTrue($lockWasCalled, 'Expected the `lockFunction` to be called');
+        $this->assertTrue($unlockWasCalled, 'Expected the `unlockFunction` to be called');
     }
 }
