@@ -11,6 +11,9 @@ Changelog
 * Added support for getting the "original error"
   [#576](https://github.com/bugsnag/bugsnag-php/pull/576)
 
+* Fixed session tracker possibly raising a warning on PHP 7.2 and above
+  [#579](https://github.com/bugsnag/bugsnag-php/pull/579)
+
 ## 3.20.0 (2020-02-26)
 
 ### Enhancements
