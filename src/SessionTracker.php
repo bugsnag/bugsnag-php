@@ -108,14 +108,23 @@ class SessionTracker
         $this->lastSent = 0;
     }
 
+    /**
+     * @param Configuration $config
+     *
+     * @return void
+     */
     public function setConfig(Configuration $config)
     {
         $this->config = $config;
     }
 
+    /**
+     * @return void
+     */
     public function startSession()
     {
         $currentTime = strftime('%Y-%m-%dT%H:%M:00');
+
         $session = [
             'id' => uniqid('', true),
             'startedAt' => $currentTime,
@@ -124,10 +133,16 @@ class SessionTracker
                 'unhandled' => 0,
             ],
         ];
+
         $this->setCurrentSession($session);
         $this->incrementSessions($currentTime);
     }
 
+    /**
+     * @param array $session
+     *
+     * @return void
+     */
     protected function setCurrentSession(array $session)
     {
         if (!is_null($this->sessionFunction)) {
@@ -137,6 +152,9 @@ class SessionTracker
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function getCurrentSession()
     {
         if (!is_null($this->sessionFunction)) {
@@ -146,6 +164,9 @@ class SessionTracker
         }
     }
 
+    /**
+     * @return void
+     */
     public function sendSessions()
     {
         $locked = false;
@@ -163,6 +184,12 @@ class SessionTracker
         }
     }
 
+    /**
+     * @param callable $lock
+     * @param callable $unlock
+     *
+     * @return void
+     */
     public function setLockFunctions($lock, $unlock)
     {
         if (!is_callable($lock) || !is_callable($unlock)) {
@@ -173,15 +200,25 @@ class SessionTracker
         $this->unlockFunction = $unlock;
     }
 
-    public function setRetryFunction($retry)
+    /**
+     * @param callable $function
+     *
+     * @return void
+     */
+    public function setRetryFunction($function)
     {
-        if (!is_callable($retry)) {
+        if (!is_callable($function)) {
             throw new InvalidArgumentException('The retry function must be callable');
         }
 
-        $this->retryFunction = $retry;
+        $this->retryFunction = $function;
     }
 
+    /**
+     * @param callable $function
+     *
+     * @return void
+     */
     public function setStorageFunction($function)
     {
         if (!is_callable($function)) {
@@ -191,6 +228,11 @@ class SessionTracker
         $this->storageFunction = $function;
     }
 
+    /**
+     * @param callable $function
+     *
+     * @return void
+     */
     public function setSessionFunction($function)
     {
         if (!is_callable($function)) {
@@ -200,6 +242,13 @@ class SessionTracker
         $this->sessionFunction = $function;
     }
 
+    /**
+     * @param string $minute
+     * @param int $count
+     * @param bool $deliver
+     *
+     * @return void
+     */
     protected function incrementSessions($minute, $count = 1, $deliver = true)
     {
         $locked = false;
@@ -243,6 +292,9 @@ class SessionTracker
         }
     }
 
+    /**
+     * @return mixed
+     */
     protected function getSessionCounts()
     {
         if (!is_null($this->storageFunction)) {
@@ -252,6 +304,11 @@ class SessionTracker
         }
     }
 
+    /**
+     * @param array $sessionCounts
+     *
+     * @return void
+     */
     protected function setSessionCounts(array $sessionCounts)
     {
         if (!is_null($this->storageFunction)) {
@@ -261,6 +318,9 @@ class SessionTracker
         }
     }
 
+    /**
+     * @return void
+     */
     protected function trimOldestSessions()
     {
         $sessions = $this->getSessionCounts();
@@ -272,7 +332,12 @@ class SessionTracker
         $this->setSessionCounts($sessionCounts);
     }
 
-    protected function constructPayload($sessions)
+    /**
+     * @param array $sessions
+     *
+     * @return array
+     */
+    protected function constructPayload(array $sessions)
     {
         $formattedSessions = [];
         foreach ($sessions as $minute => $count) {
@@ -287,6 +352,9 @@ class SessionTracker
         ];
     }
 
+    /**
+     * @return void
+     */
     protected function deliverSessions()
     {
         $sessions = $this->getSessionCounts();
@@ -332,6 +400,9 @@ class SessionTracker
         }
     }
 
+    /**
+     * @return void
+     */
     protected function setLastSent()
     {
         $time = time();
@@ -342,6 +413,9 @@ class SessionTracker
         }
     }
 
+    /**
+     * @return mixed
+     */
     protected function getLastSent()
     {
         if (!is_null($this->storageFunction)) {
