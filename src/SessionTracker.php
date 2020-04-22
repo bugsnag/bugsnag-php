@@ -153,12 +153,18 @@ class SessionTracker
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getCurrentSession()
     {
         if (is_callable($this->sessionFunction)) {
-            return call_user_func($this->sessionFunction);
+            $currentSession = call_user_func($this->sessionFunction);
+
+            if (is_array($currentSession)) {
+                return $currentSession;
+            }
+
+            return [];
         }
 
         return $this->currentSession;
@@ -261,10 +267,6 @@ class SessionTracker
         try {
             $sessionCounts = $this->getSessionCounts();
 
-            if (!is_array($sessionCounts)) {
-                $sessionCounts = [];
-            }
-
             if (array_key_exists($minute, $sessionCounts)) {
                 $sessionCounts[$minute] += $count;
             } else {
@@ -279,11 +281,7 @@ class SessionTracker
 
             $lastSent = $this->getLastSent();
 
-            if ($lastSent === null) {
-                $lastSent = 0;
-            }
-
-            if ($deliver && is_int($lastSent) && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
+            if ($deliver && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
                 $this->deliverSessions();
             }
         } finally {
@@ -294,13 +292,20 @@ class SessionTracker
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     protected function getSessionCounts()
     {
         if (is_callable($this->storageFunction)) {
-            return call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY);
+            $sessionCounts = call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY);
+
+            if (is_array($sessionCounts)) {
+                return $sessionCounts;
+            }
+
+            return [];
         }
+
 
         return $this->sessionCounts;
     }
@@ -325,11 +330,14 @@ class SessionTracker
     protected function trimOldestSessions()
     {
         $sessions = $this->getSessionCounts();
+
         uksort($sessions, function ($key) {
             return strtotime($key);
         });
+
         $sessions = array_reverse($sessions);
         $sessionCounts = array_slice($sessions, 0, self::$MAX_SESSION_COUNT);
+
         $this->setSessionCounts($sessionCounts);
     }
 
@@ -362,7 +370,7 @@ class SessionTracker
 
         $this->setSessionCounts([]);
 
-        if (!is_array($sessions) || count($sessions) === 0) {
+        if (count($sessions) === 0) {
             return;
         }
 
@@ -407,6 +415,7 @@ class SessionTracker
     protected function setLastSent()
     {
         $time = time();
+
         if (is_callable($this->storageFunction)) {
             call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY, $time);
         } else {
@@ -415,12 +424,18 @@ class SessionTracker
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     protected function getLastSent()
     {
         if (is_callable($this->storageFunction)) {
-            return call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY);
+            $lastSent = call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY);
+
+            if (is_int($lastSent)) {
+                return $lastSent;
+            }
+
+            return 0;
         }
 
         return $this->lastSent;
