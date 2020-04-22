@@ -313,7 +313,7 @@ class SessionTracker
     protected function setSessionCounts(array $sessionCounts)
     {
         if (is_callable($this->storageFunction)) {
-            return call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY, $sessionCounts);
+            call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY, $sessionCounts);
         }
 
         $this->sessionCounts = $sessionCounts;
