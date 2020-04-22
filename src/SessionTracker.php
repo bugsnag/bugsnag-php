@@ -145,7 +145,7 @@ class SessionTracker
      */
     protected function setCurrentSession(array $session)
     {
-        if (!is_null($this->sessionFunction)) {
+        if (is_callable($this->sessionFunction)) {
             call_user_func($this->sessionFunction, $session);
         } else {
             $this->currentSession = $session;
@@ -157,11 +157,11 @@ class SessionTracker
      */
     public function getCurrentSession()
     {
-        if (!is_null($this->sessionFunction)) {
+        if (is_callable($this->sessionFunction)) {
             return call_user_func($this->sessionFunction);
-        } else {
-            return $this->currentSession;
         }
+
+        return $this->currentSession;
     }
 
     /**
@@ -170,7 +170,7 @@ class SessionTracker
     public function sendSessions()
     {
         $locked = false;
-        if (!is_null($this->lockFunction) && !is_null($this->unlockFunction)) {
+        if (is_callable($this->lockFunction) && is_callable($this->unlockFunction)) {
             call_user_func($this->lockFunction);
             $locked = true;
         }
@@ -252,7 +252,8 @@ class SessionTracker
     protected function incrementSessions($minute, $count = 1, $deliver = true)
     {
         $locked = false;
-        if (!is_null($this->lockFunction) && !is_null($this->unlockFunction)) {
+
+        if (is_callable($this->lockFunction) && is_callable($this->unlockFunction)) {
             call_user_func($this->lockFunction);
             $locked = true;
         }
@@ -297,11 +298,11 @@ class SessionTracker
      */
     protected function getSessionCounts()
     {
-        if (!is_null($this->storageFunction)) {
+        if (is_callable($this->storageFunction)) {
             return call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY);
-        } else {
-            return $this->sessionCounts;
         }
+
+        return $this->sessionCounts;
     }
 
     /**
@@ -311,11 +312,11 @@ class SessionTracker
      */
     protected function setSessionCounts(array $sessionCounts)
     {
-        if (!is_null($this->storageFunction)) {
+        if (is_callable($this->storageFunction)) {
             return call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY, $sessionCounts);
-        } else {
-            $this->sessionCounts = $sessionCounts;
         }
+
+        $this->sessionCounts = $sessionCounts;
     }
 
     /**
@@ -390,7 +391,7 @@ class SessionTracker
             }
         } catch (Exception $e) {
             error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
-            if (!is_null($this->retryFunction)) {
+            if (is_callable($this->retryFunction)) {
                 call_user_func($this->retryFunction, $sessions);
             } else {
                 foreach ($sessions as $minute => $count) {
@@ -406,7 +407,7 @@ class SessionTracker
     protected function setLastSent()
     {
         $time = time();
-        if (!is_null($this->storageFunction)) {
+        if (is_callable($this->storageFunction)) {
             call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY, $time);
         } else {
             $this->lastSent = $time;
@@ -418,10 +419,10 @@ class SessionTracker
      */
     protected function getLastSent()
     {
-        if (!is_null($this->storageFunction)) {
+        if (is_callable($this->storageFunction)) {
             return call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY);
-        } else {
-            return $this->lastSent;
         }
+
+        return $this->lastSent;
     }
 }
