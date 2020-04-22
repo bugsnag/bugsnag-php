@@ -3,6 +3,7 @@
 namespace Bugsnag;
 
 use Exception;
+use GuzzleHttp\ClientInterface;
 use InvalidArgumentException;
 
 class SessionTracker
@@ -391,7 +392,10 @@ class SessionTracker
         $this->setLastSent();
 
         try {
-            if (method_exists($http, 'request')) {
+            // Support later Guzzle versions — note we check the interface to make
+            // sure "request" is a public method as on PHP 7.4 "method_exists" will
+            // return true for private methods
+            if (method_exists(ClientInterface::class, 'request')) {
                 $http->request('POST', '', $options);
             } else {
                 $http->post('', $options);
