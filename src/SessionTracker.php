@@ -306,7 +306,6 @@ class SessionTracker
             return [];
         }
 
-
         return $this->sessionCounts;
     }
 
