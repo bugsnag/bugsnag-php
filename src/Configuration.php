@@ -125,7 +125,7 @@ class Configuration
     /**
      * A client to use to send sessions.
      *
-     * @var \Guzzle\ClientInterface
+     * @var \GuzzleHttp\ClientInterface
      */
     protected $sessionClient;
 
@@ -622,7 +622,7 @@ class Configuration
     /**
      * Get the session client.
      *
-     * @return \Guzzle\ClientInterface
+     * @return \GuzzleHttp\ClientInterface
      */
     public function getSessionClient()
     {

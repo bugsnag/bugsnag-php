@@ -19,7 +19,7 @@ use Bugsnag\Request\ResolverInterface;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
 use Bugsnag\Shutdown\ShutdownStrategyInterface;
 use Composer\CaBundle\CaBundle;
-use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 
 class Client
@@ -147,7 +147,7 @@ class Client
             $options['verify'] = $path;
         }
 
-        return new Guzzle($options);
+        return new GuzzleClient($options);
     }
 
     /**
@@ -798,7 +798,7 @@ class Client
     /**
      * Get the session client.
      *
-     * @return \Guzzle\ClientInterface
+     * @return \GuzzleHttp\ClientInterface
      */
     public function getSessionClient()
     {

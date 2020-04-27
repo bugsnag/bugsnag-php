@@ -15,15 +15,18 @@ abstract class TestCase extends BaseTestCase
     use PHPMock;
     use MockeryTrait;
 
-    public function expectedException($class, $msg = null)
+    public function expectedException($class, $message = null)
     {
         if (class_exists(\PHPUnit_Framework_TestCase::class)) {
-            $this->setExpectedException($class, $msg);
-        } else {
-            $this->expectException($class);
-            if ($msg !== null) {
-                $this->expectExceptionMessage($msg);
-            }
+            $this->setExpectedException($class, $message);
+
+            return;
+        }
+
+        $this->expectException($class);
+
+        if ($message !== null) {
+            $this->expectExceptionMessage($message);
         }
     }
 
