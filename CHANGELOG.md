@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## 3.21.0 (TBC)
+## 3.21.0 (2020-04-29)
 
 ### Enhancements
 
@@ -10,6 +10,8 @@ Changelog
 
 * Added support for getting the "original error"
   [#576](https://github.com/bugsnag/bugsnag-php/pull/576)
+
+### Bug Fixes
 
 * Fixed session tracker possibly raising a warning on PHP 7.2 and above
   [#579](https://github.com/bugsnag/bugsnag-php/pull/579)
