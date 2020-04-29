@@ -24,6 +24,13 @@ class Report
     protected $config;
 
     /**
+     * The original error.
+     *
+     * @var \Throwable|array|null
+     */
+    protected $originalError;
+
+    /**
      * The associated stacktrace.
      *
      * @var \Bugsnag\Stacktrace
@@ -201,6 +208,16 @@ class Report
     }
 
     /**
+     * Get the original error.
+     *
+     * @return \Throwable|array|null
+     */
+    public function getOriginalError()
+    {
+        return $this->originalError;
+    }
+
+    /**
      * Set the PHP throwable.
      *
      * @param \Throwable $throwable the throwable instance
@@ -214,6 +231,8 @@ class Report
         if (!$throwable instanceof Throwable && !$throwable instanceof Exception) {
             throw new InvalidArgumentException('The throwable must implement Throwable or extend Exception.');
         }
+
+        $this->originalError = $throwable;
 
         $this->setName(get_class($throwable))
              ->setMessage($throwable->getMessage())
@@ -239,6 +258,14 @@ class Report
      */
     public function setPHPError($code, $message, $file, $line, $fatal = false)
     {
+        $this->originalError = [
+            'code' => $code,
+            'message' => $message,
+            'file' => $file,
+            'line' => $line,
+            'fatal' => $fatal,
+        ];
+
         if ($fatal) {
             // Generating stacktrace for PHP fatal errors is not possible,
             // since this code executes when the PHP process shuts down,
