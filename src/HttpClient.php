@@ -23,11 +23,25 @@ class HttpClient
     protected $guzzle;
 
     /**
+     * If async requests should be performed if possible.
+     *
+     * @var bool
+     */
+    protected $async;
+
+    /**
      * The queue of reports to send.
      *
      * @var \Bugsnag\Report[]
      */
     protected $queue = [];
+
+    /**
+     * The requests that have started.
+     *
+     * @var \GuzzleHttp\Promise\PromiseInterface[]
+     */
+    protected $jobs = [];
 
     /**
      * The maximum payload size. A whole megabyte (1024 * 1024).
@@ -48,13 +62,31 @@ class HttpClient
      *
      * @param \Bugsnag\Configuration      $config the configuration instance
      * @param \GuzzleHttp\ClientInterface $guzzle the guzzle client instance
+     * @param bool                        $async  if async requests should be performed when possible
      *
      * @return void
      */
-    public function __construct(Configuration $config, ClientInterface $guzzle)
+    public function __construct(Configuration $config, ClientInterface $guzzle, $async = false)
     {
         $this->config = $config;
         $this->guzzle = $guzzle;
+        $this->async = $async;
+    }
+    
+    /**
+     * Tear down the http client instance.
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        foreach ($this->jobs as $job) {
+            try {
+                $job->wait();
+            } catch (Exception $e) {
+                error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
+            }
+        }
     }
 
     /**
@@ -209,6 +241,9 @@ class HttpClient
     /**
      * Send a POST request to Bugsnag.
      *
+     * If Guzzle 6+ is installed, the curl extension is loaded, and the async
+     * option is true, then the request will be made asynchronously.
+     *
      * @param string $uri  the uri to hit
      * @param array  $data the request options
      *
@@ -216,7 +251,9 @@ class HttpClient
      */
     protected function post($uri, array $options = [])
     {
-        if (method_exists(ClientInterface::class, 'request')) {
+        if ($this->async && method_exists(ClientInterface::class, 'requestAsync')) {
+            $this->jobs[] = $this->guzzle->requestAsync('POST', $uri, $options);
+        } elseif (method_exists(ClientInterface::class, 'request')) {
             $this->guzzle->request('POST', $uri, $options);
         } else {
             $this->guzzle->post($uri, $options);
