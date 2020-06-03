@@ -46,7 +46,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = self::getInvocationParameters($invocations[0]);
         $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
-        $this->assertSame('', self::getGuzzlePostUriParam($params));
+        $this->assertSame($this->config->getNotifyEndpoint(), self::getGuzzlePostUriParam($params));
         $options = self::getGuzzlePostOptionsParam($params);
         $this->assertInternalType('array', $options);
         $this->assertInternalType('array', $options['json']['notifier']);
@@ -91,7 +91,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = self::getInvocationParameters($invocations[0]);
         $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
-        $this->assertSame('', self::getGuzzlePostUriParam($params));
+        $this->assertSame($this->config->getNotifyEndpoint(), self::getGuzzlePostUriParam($params));
         $options = self::getGuzzlePostOptionsParam($params);
         $this->assertInternalType('array', $options);
         $this->assertInternalType('array', $options['json']['notifier']);
@@ -140,7 +140,7 @@ class HttpClientTest extends TestCase
         $this->assertCount(1, $invocations = $spy->getInvocations());
         $params = self::getInvocationParameters($invocations[0]);
         $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
-        $this->assertSame('', self::getGuzzlePostUriParam($params));
+        $this->assertSame($this->config->getNotifyEndpoint(), self::getGuzzlePostUriParam($params));
         $options = self::getGuzzlePostOptionsParam($params);
         $this->assertInternalType('array', $options);
         $this->assertInternalType('array', $options['json']['notifier']);

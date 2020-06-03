@@ -9,47 +9,43 @@ use RuntimeException;
 class HttpClient
 {
     /**
-     * The config instance.
-     *
-     * @var \Bugsnag\Configuration
-     */
-    protected $config;
-
-    /**
-     * The guzzle client instance.
-     *
-     * @var \GuzzleHttp\ClientInterface
-     */
-    protected $guzzle;
-
-    /**
-     * The queue of reports to send.
-     *
-     * @var \Bugsnag\Report[]
-     */
-    protected $queue = [];
-
-    /**
-     * The maximum payload size. A whole megabyte (1024 * 1024).
-     *
-     * @var int
+     * The maximum payload size — one megabyte (1024 * 1024).
      */
     const MAX_SIZE = 1048576;
 
     /**
-     * The current payload version.
-     *
-     * @var string
+     * @deprecated Use {@see HttpClient::NOTIFICATION_PAYLOAD_VERSION} instead
      */
-    const PAYLOAD_VERSION = '4.0';
+    const PAYLOAD_VERSION = self::NOTIFICATION_PAYLOAD_VERSION;
 
     /**
-     * Create a new http client instance.
-     *
-     * @param \Bugsnag\Configuration      $config the configuration instance
-     * @param \GuzzleHttp\ClientInterface $guzzle the guzzle client instance
-     *
-     * @return void
+     * The payload version for the error notification API.
+     */
+    const NOTIFICATION_PAYLOAD_VERSION = '4.0';
+
+    /**
+     * The payload version for the session API.
+     */
+    const SESSION_PAYLOAD_VERSION = '1.0';
+
+    /**
+     * @var Configuration
+     */
+    protected $config;
+
+    /**
+     * @var ClientInterface
+     */
+    protected $guzzle;
+
+    /**
+     * @var array<Report>
+     */
+    protected $queue = [];
+
+    /**
+     * @param Configuration   $config
+     * @param ClientInterface $guzzle
      */
     public function __construct(Configuration $config, ClientInterface $guzzle)
     {
@@ -60,13 +56,63 @@ class HttpClient
     /**
      * Add a report to the queue.
      *
-     * @param \Bugsnag\Report $report the bugsnag report instance
+     * @param Report $report
      *
      * @return void
      */
     public function queue(Report $report)
     {
         $this->queue[] = $report;
+    }
+
+    /**
+     * Deliver all errors on the queue to Bugsnag.
+     *
+     * @return void
+     */
+    public function send()
+    {
+        if (!$this->queue) {
+            return;
+        }
+
+        $events = [];
+
+        foreach ($this->queue as $report) {
+            $event = $report->toArray();
+
+            if ($event) {
+                $events[] = $event;
+            }
+        }
+
+        $body = [
+            'apiKey' => $this->config->getApiKey(),
+            'notifier' => $this->config->getNotifier(),
+            'events' => $events,
+        ];
+
+        $this->deliverEvents($body);
+
+        $this->queue = [];
+    }
+
+    /**
+     * Send a session data payload to Bugsnag.
+     *
+     * @param array $payload
+     *
+     * @return void
+     */
+    public function sendSessions(array $payload)
+    {
+        $this->post(
+            $this->config->getSessionEndpoint(),
+            [
+                'json' => $payload,
+                'headers' => $this->getHeaders(self::SESSION_PAYLOAD_VERSION),
+            ]
+        );
     }
 
     /**
@@ -90,7 +136,10 @@ class HttpClient
 
         $data['apiKey'] = $this->config->getApiKey();
 
-        $this->post('deploy', ['json' => $data]);
+        $this->post(
+            $this->config->getNotifyEndpoint().'deploy',
+            ['json' => $data]
+        );
     }
 
     /**
@@ -104,16 +153,15 @@ class HttpClient
     {
         $app = $this->config->getAppData();
 
-        $data = [];
-        $sourceControl = [];
-
-        if (isset($app['version'])) {
-            $data['appVersion'] = $app['version'];
-        } else {
+        if (!isset($app['version'])) {
             error_log('Bugsnag Warning: App version is not set. Unable to send build report.');
 
             return;
         }
+
+        $data = ['appVersion' => $app['version']];
+
+        $sourceControl = [];
 
         if (isset($buildInfo['repository'])) {
             $sourceControl['repository'] = $buildInfo['repository'];
@@ -144,73 +192,72 @@ class HttpClient
         }
 
         $data['releaseStage'] = $app['releaseStage'];
-
         $data['apiKey'] = $this->config->getApiKey();
 
-        $endpoint = $this->config->getBuildEndpoint();
-
-        $this->post($endpoint, ['json' => $data]);
+        $this->post($this->config->getBuildEndpoint(), ['json' => $data]);
     }
 
     /**
-     * Deliver everything on the queue to Bugsnag.
+     * Deliver the given events to the notification API.
+     *
+     * @param array  $data
      *
      * @return void
      */
-    public function send()
+    protected function deliverEvents(array $data)
     {
-        if (!$this->queue) {
+        // Try to send the whole lot, or without the meta data for the first
+        // event. If failed, try to send the first event, and then the rest of
+        // them, recursively. Decrease by a constant and concquer if you like.
+        // Note that the base case is satisfied as soon as the payload is small
+        // enought to send, or when it's simply discarded.
+        try {
+            $normalized = $this->normalize($data);
+        } catch (RuntimeException $e) {
+            if (count($data['events']) > 1) {
+                $event = array_shift($data['events']);
+
+                $this->deliverEvents(array_merge($data, ['events' => [$event]]));
+                $this->deliverEvents($data);
+            } else {
+                error_log('Bugsnag Warning: '.$e->getMessage());
+            }
+
             return;
         }
 
-        $this->postJson('', $this->build());
-
-        $this->queue = [];
-    }
-
-    /**
-     * Build the request data to send.
-     *
-     * @return array
-     */
-    protected function build()
-    {
-        $events = [];
-
-        foreach ($this->queue as $report) {
-            $event = $report->toArray();
-
-            if ($event) {
-                $events[] = $event;
-            }
+        try {
+            $this->post(
+                $this->config->getNotifyEndpoint(),
+                [
+                    'json' => $normalized,
+                    'headers' => $this->getHeaders(self::NOTIFICATION_PAYLOAD_VERSION),
+                ]
+            );
+        } catch (Exception $e) {
+            error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
         }
-
-        return [
-            'apiKey' => $this->config->getApiKey(),
-            'notifier' => $this->config->getNotifier(),
-            'events' => $events,
-        ];
     }
 
     /**
-     * Builds the array of headers to send.
+     * Builds the array of headers to send using the given payload version.
+     *
+     * @param string $version The payload version this request is for
      *
      * @return array
      */
-    protected function getHeaders()
+    protected function getHeaders($version)
     {
         return [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
             'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
-            'Bugsnag-Payload-Version' => self::PAYLOAD_VERSION,
+            'Bugsnag-Payload-Version' => $version,
         ];
     }
 
     /**
-     * Send a POST request to Bugsnag.
-     *
-     * @param string $uri  the uri to hit
-     * @param array  $data the request options
+     * @param string $uri
+     * @param array  $options
      *
      * @return void
      */
@@ -224,51 +271,11 @@ class HttpClient
     }
 
     /**
-     * Post the given data to Bugsnag in json form.
-     *
-     * @param string $uri  the uri to hit
-     * @param array  $data the data send
-     *
-     * @return void
-     */
-    protected function postJson($uri, array $data)
-    {
-        // Try to send the whole lot, or without the meta data for the first
-        // event. If failed, try to send the first event, and then the rest of
-        // them, recursively. Decrease by a constant and concquer if you like.
-        // Note that the base case is satisfied as soon as the payload is small
-        // enought to send, or when it's simply discarded.
-        try {
-            $normalized = $this->normalize($data);
-        } catch (RuntimeException $e) {
-            if (count($data['events']) > 1) {
-                $event = array_shift($data['events']);
-                $this->postJson($uri, array_merge($data, ['events' => [$event]]));
-                $this->postJson($uri, $data);
-            } else {
-                error_log('Bugsnag Warning: '.$e->getMessage());
-            }
-
-            return;
-        }
-
-        // Send via guzzle and log any failures
-        try {
-            $this->post($uri, [
-                'json' => $normalized,
-                'headers' => $this->getHeaders(),
-            ]);
-        } catch (Exception $e) {
-            error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
-        }
-    }
-
-    /**
      * Normalize the given data to ensure it's the correct size.
      *
-     * @param array $data the data to normalize
+     * @param array $data
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      *
      * @return array
      */
@@ -292,7 +299,7 @@ class HttpClient
     /**
      * Get the length of the given string in bytes.
      *
-     * @param string $str the string to get the length of
+     * @param string $str
      *
      * @return int
      */
