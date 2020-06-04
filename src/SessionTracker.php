@@ -91,7 +91,7 @@ class SessionTracker
      *
      * @var array
      */
-    protected $currentSession;
+    protected $currentSession = [];
 
     /**
      * @param Configuration $config
@@ -130,7 +130,7 @@ class SessionTracker
      *
      * @return void
      */
-    protected function setCurrentSession(array $session)
+    public function setCurrentSession(array $session)
     {
         if (is_callable($this->sessionFunction)) {
             call_user_func($this->sessionFunction, $session);

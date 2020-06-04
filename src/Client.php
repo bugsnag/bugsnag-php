@@ -128,7 +128,7 @@ class Client
 
         $this->registerMiddleware(new NotificationSkipper($config));
         $this->registerMiddleware(new BreadcrumbData($this->recorder));
-        $this->registerMiddleware(new SessionData($this));
+        $this->registerMiddleware(new SessionData($this->sessionTracker));
 
         // Shutdown strategy is used to trigger flush() calls when batch sending is enabled
         $shutdownStrategy = $shutdownStrategy ?: new PhpShutdownStrategy();
