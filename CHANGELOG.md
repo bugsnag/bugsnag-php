@@ -5,7 +5,7 @@ Changelog
 
 ### Enhancements
 
-- The Client and SessionTracker now share a single Guzzle instance (#582)
+- The `Client` and `SessionTracker` now share a single Guzzle instance (#582)
 
 ### BC breaks
 
@@ -35,6 +35,8 @@ Changelog
 
 - `Client::makeGuzzle` has been made private (#582)
   Use the `$guzzle` parameter of `Bugsnag\Client::__construct` instead
+
+- The `SessionData` class now takes `SessionTracker` instead of `Client` in its constructor
 
 ## 3.21.0 (2020-04-29)
 
