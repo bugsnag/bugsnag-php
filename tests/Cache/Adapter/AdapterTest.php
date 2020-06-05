@@ -5,8 +5,10 @@ namespace Bugsnag\Tests\Cache\Adapter;
 use Bugsnag\Cache\Adapter\CacheAdapterInterface;
 use Bugsnag\Cache\CacheFactory;
 use Bugsnag\Tests\TestCase;
+use Doctrine\Common\Cache\Cache as DoctrineCache;
 use Psr\Cache\CacheItemPoolInterface as Psr6CacheInterface;
 use Psr\SimpleCache\CacheInterface as Psr16CacheInterface;
+use stdClass;
 
 /**
  * An abstract test class to ensure all adapters work identically.
@@ -23,7 +25,7 @@ abstract class AdapterTest extends TestCase
      * pass it into the CacheFactory and test it works identically to when
      * instantiated manually.
      *
-     * @return Psr16CacheInterface|Psr6CacheInterface
+     * @return Psr16CacheInterface|Psr6CacheInterface|DoctrineCache
      */
     abstract protected function getImplementation();
 
@@ -36,15 +38,29 @@ abstract class AdapterTest extends TestCase
      */
     final public function testAdapter(CacheAdapterInterface $adapter)
     {
-        $adapter->set('hello', 'world');
+        $this->assertTrue($adapter->set('hello', 'world'));
         $this->assertSame('world', $adapter->get('hello'));
 
-        $adapter->set('key', 'value');
+        $this->assertTrue($adapter->set('key', 'value'));
         $this->assertSame('value', $adapter->get('key'));
 
-        $adapter->set('hello', 'goodbye');
+        $this->assertTrue($adapter->set('hello', 'goodbye'));
         $this->assertSame('goodbye', $adapter->get('hello'));
-        $this->assertSame('value', $adapter->get('key'));
+
+        $this->assertTrue($adapter->set('HELLO', 'WORLD'));
+        $this->assertSame('WORLD', $adapter->get('HELLO'));
+        $this->assertSame('goodbye', $adapter->get('hello'));
+
+        $this->assertTrue($adapter->set('key', false));
+        $this->assertSame(false, $adapter->get('key'));
+
+        $array = [1, 2, 'c', 'd', true, false];
+        $this->assertTrue($adapter->set('key', $array));
+        $this->assertSame($array, $adapter->get('key'));
+
+        $object = new stdClass();
+        $this->assertTrue($adapter->set('key', $object));
+        $this->assertSame($object, $adapter->get('key'));
 
         $this->assertSame(null, $adapter->get('does not exist'));
         $this->assertSame(123, $adapter->get('also does not exist', 123));
@@ -60,25 +76,6 @@ abstract class AdapterTest extends TestCase
         $this->assertSame(null, $adapter->get($this));
         $this->assertSame(false, $adapter->get($this, false));
         $this->assertSame('hello', $adapter->get($this, 'hello'));
-    }
-
-    final public function adapterProvider()
-    {
-        $manuallyInstantiated = $this->getAdapter();
-
-        $factory = new CacheFactory();
-        $factoryInstantiated = $factory->create($this->getImplementation());
-
-        // Sanity check we're doing the right thing in the concrete test class
-        $this->assertInstanceOf(
-            get_class($manuallyInstantiated),
-            $factoryInstantiated
-        );
-
-        return [
-            'manually instantiated' => [$manuallyInstantiated],
-            'factory instantiated' => [$factoryInstantiated],
-        ];
     }
 
     final public function adapterProvider()

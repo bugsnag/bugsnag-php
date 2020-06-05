@@ -7,6 +7,8 @@ use Bugsnag\Cache\CacheFactory;
 use Bugsnag\Tests\Fake\FakePsr16Cache;
 use Bugsnag\Tests\Fake\FakePsr6CachePool;
 use Bugsnag\Tests\TestCase;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\Cache as DoctrineCache;
 use InvalidArgumentException;
 use Psr\Cache\CacheItemPoolInterface as Psr6CacheInterface;
 use Psr\SimpleCache\CacheInterface as Psr16CacheInterface;
@@ -30,6 +32,14 @@ final class CacheFactoryTest extends TestCase
         $this->assertInstanceOf(CacheAdapterInterface::class, $adapter);
     }
 
+    public function testItCreatesACacheAdapterForDoctrineCache()
+    {
+        $factory = new CacheFactory();
+        $adapter = $factory->create(new ArrayCache());
+
+        $this->assertInstanceOf(CacheAdapterInterface::class, $adapter);
+    }
+
     /**
      * @param string $type
      * @param mixed  $cache
@@ -45,10 +55,11 @@ final class CacheFactoryTest extends TestCase
         $this->expectedException(
             InvalidArgumentException::class,
             sprintf(
-                '%s::create expects an instance of "%s" or "%s", got "%s"',
+                '%s::create expects an instance of "%s", "%s" or "%s", got "%s"',
                 CacheFactory::class,
                 Psr6CacheInterface::class,
                 Psr16CacheInterface::class,
+                DoctrineCache::class,
                 $type
             )
         );

@@ -23,7 +23,8 @@
         "phpunit/phpunit": "^4.8.36|^7.5.15",
         "php-mock/php-mock-phpunit": "^1.1|^2.1",
         "psr/simple-cache": "^1.0",
-        "psr/cache": "^1.0"
+        "psr/cache": "^1.0",
+        "doctrine/cache": "^1.6"
     },
     "autoload": {
         "psr-4" : {
