@@ -3,8 +3,8 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
+use Bugsnag\HttpClient;
 use Bugsnag\SessionTracker;
-use GuzzleHttp\ClientInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use RuntimeException;
@@ -16,8 +16,8 @@ class SessionTrackerTest extends TestCase
     private $sessionTracker;
     /** @var Configuration&MockObject */
     private $config;
-    /** @var ClientInterface&MockObject */
-    private $guzzleClient;
+    /** @var HttpClient&MockObject */
+    private $client;
 
     public function setUp()
     {
@@ -26,15 +26,16 @@ class SessionTrackerTest extends TestCase
             ->setConstructorArgs(['example-api-key'])
             ->getMock();
 
-        $this->sessionTracker = new SessionTracker($this->config);
-
-        $this->guzzleClient = $this->getMockBuilder(ClientInterface::class)
+        $this->client = $this->getMockBuilder(HttpClient::class)
+            ->disableOriginalConstructor()
             ->getMock();
+
+        $this->sessionTracker = new SessionTracker($this->config, $this->client);
     }
 
     public function testSendSessionsEmpty()
     {
-        $this->config->expects($this->never())->method('getSessionClient');
+        $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->sendSessions();
     }
@@ -57,7 +58,7 @@ class SessionTrackerTest extends TestCase
         });
 
         $this->config->expects($this->once())->method('shouldNotify')->willReturn(false);
-        $this->config->expects($this->never())->method('getSessionClient');
+        $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->sendSessions();
 
@@ -78,12 +79,11 @@ class SessionTrackerTest extends TestCase
         });
 
         $this->config->expects($this->never())->method('shouldNotify');
-        $this->config->expects($this->never())->method('getSessionClient');
         $this->config->expects($this->never())->method('getNotifier');
         $this->config->expects($this->never())->method('getDeviceData');
         $this->config->expects($this->never())->method('getAppData');
         $this->config->expects($this->never())->method('getApiKey');
-        $this->guzzleClient->expects($this->never())->method($this->getGuzzleMethod());
+        $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->sendSessions();
     }
@@ -107,12 +107,11 @@ class SessionTrackerTest extends TestCase
         });
 
         $this->config->expects($this->never())->method('shouldNotify');
-        $this->config->expects($this->never())->method('getSessionClient');
         $this->config->expects($this->never())->method('getNotifier');
         $this->config->expects($this->never())->method('getDeviceData');
         $this->config->expects($this->never())->method('getAppData');
         $this->config->expects($this->never())->method('getApiKey');
-        $this->guzzleClient->expects($this->never())->method($this->getGuzzleMethod());
+        $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->startSession();
     }
@@ -131,12 +130,11 @@ class SessionTrackerTest extends TestCase
         });
 
         $this->config->expects($this->never())->method('shouldNotify');
-        $this->config->expects($this->never())->method('getSessionClient');
         $this->config->expects($this->never())->method('getNotifier');
         $this->config->expects($this->never())->method('getDeviceData');
         $this->config->expects($this->never())->method('getAppData');
         $this->config->expects($this->never())->method('getApiKey');
-        $this->guzzleClient->expects($this->never())->method($this->getGuzzleMethod());
+        $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->startSession();
     }
@@ -161,34 +159,23 @@ class SessionTrackerTest extends TestCase
         });
 
         $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getSessionClient')->willReturn($this->guzzleClient);
         $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
         $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
         $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
-        $this->config->expects($this->once())->method('getApiKey')->willReturn('example-api-key');
 
-        $expectCallback = function ($sessionPayload) {
-            return count($sessionPayload) == 2
-                && $sessionPayload['json']['notifier'] === 'test_notifier'
-                && $sessionPayload['json']['device'] === 'device_data'
-                && $sessionPayload['json']['app'] === 'app_data'
-                && count($sessionPayload['json']['sessionCounts']) === 1
-                && $sessionPayload['json']['sessionCounts'][0]['startedAt'] === '2000-01-01T00:00:00'
-                && $sessionPayload['json']['sessionCounts'][0]['sessionsStarted'] === 1
-                && $sessionPayload['headers']['Bugsnag-Api-Key'] == 'example-api-key'
-                && preg_match('/(\d+\.)+/', $sessionPayload['headers']['Bugsnag-Payload-Version'])
-                && preg_match('/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/', $sessionPayload['headers']['Bugsnag-Sent-At']);
+        $expectCallback = function ($payload) {
+            return count($payload) == 4
+                && $payload['notifier'] === 'test_notifier'
+                && $payload['device'] === 'device_data'
+                && $payload['app'] === 'app_data'
+                && count($payload['sessionCounts']) === 1
+                && $payload['sessionCounts'][0]['startedAt'] === '2000-01-01T00:00:00'
+                && $payload['sessionCounts'][0]['sessionsStarted'] === 1;
         };
 
-        if ($this->getGuzzleMethod() === 'post') {
-            $this->guzzleClient->expects($this->once())
-                ->method($this->getGuzzleMethod())
-                ->with('', $this->callback($expectCallback));
-        } else {
-            $this->guzzleClient->expects($this->once())
-                ->method($this->getGuzzleMethod())
-                ->with('POST', '', $this->callback($expectCallback));
-        }
+        $this->client->expects($this->once())
+            ->method('sendSessions')
+            ->with($this->callback($expectCallback));
 
         $this->sessionTracker->sendSessions();
     }
@@ -210,34 +197,26 @@ class SessionTrackerTest extends TestCase
         });
 
         $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getSessionClient')->willReturn($this->guzzleClient);
         $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
         $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
         $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
-        $this->config->expects($this->once())->method('getApiKey')->willReturn('example-api-key');
 
-        $expectCallback = function ($sessionPayload) {
-            return count($sessionPayload) == 2
-                && $sessionPayload['json']['notifier'] === 'test_notifier'
-                && $sessionPayload['json']['device'] === 'device_data'
-                && $sessionPayload['json']['app'] === 'app_data'
-                && count($sessionPayload['json']['sessionCounts']) === 1
-                && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $sessionPayload['json']['sessionCounts'][0]['startedAt'])
-                && $sessionPayload['json']['sessionCounts'][0]['sessionsStarted'] === 1
-                && $sessionPayload['headers']['Bugsnag-Api-Key'] == 'example-api-key'
-                && preg_match('/(\d+\.)+/', $sessionPayload['headers']['Bugsnag-Payload-Version'])
-                && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $sessionPayload['headers']['Bugsnag-Sent-At']);
+        $expectCallback = function ($payload) {
+            return count($payload) == 4
+                && $payload['notifier'] === 'test_notifier'
+                && $payload['device'] === 'device_data'
+                && $payload['app'] === 'app_data'
+                && count($payload['sessionCounts']) === 1
+                && preg_match(
+                    '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/',
+                    $payload['sessionCounts'][0]['startedAt']
+                )
+                && $payload['sessionCounts'][0]['sessionsStarted'] === 1;
         };
 
-        if ($this->getGuzzleMethod() === 'post') {
-            $this->guzzleClient->expects($this->once())
-                ->method($this->getGuzzleMethod())
-                ->with('', $this->callback($expectCallback));
-        } else {
-            $this->guzzleClient->expects($this->once())
-                ->method($this->getGuzzleMethod())
-                ->with('POST', '', $this->callback($expectCallback));
-        }
+        $this->client->expects($this->once())
+            ->method('sendSessions')
+            ->with($this->callback($expectCallback));
 
         $this->sessionTracker->startSession();
     }
@@ -295,7 +274,6 @@ class SessionTrackerTest extends TestCase
         });
 
         $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getSessionClient')->willReturn($this->guzzleClient);
 
         $this->sessionTracker->startSession();
 
