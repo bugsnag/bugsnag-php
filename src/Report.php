@@ -10,14 +10,9 @@ use Throwable;
 class Report
 {
     /**
-     * @deprecated Use {@see HttpClient::NOTIFICATION_PAYLOAD_VERSION} instead
-     */
-    const PAYLOAD_VERSION = HttpClient::NOTIFICATION_PAYLOAD_VERSION;
-
-    /**
      * The config object.
      *
-     * @var \Bugsnag\Config
+     * @var Configuration
      */
     protected $config;
 
@@ -650,7 +645,7 @@ class Report
             'device' => array_merge(['time' => $this->time], $this->config->getDeviceData()),
             'user' => $this->getUser(),
             'context' => $this->getContext(),
-            'payloadVersion' => HttpClient::NOTIFICATION_PAYLOAD_VERSION,
+            'payloadVersion' => HttpClient::NOTIFY_PAYLOAD_VERSION,
             'severity' => $this->getSeverity(),
             'exceptions' => $this->exceptionArray(),
             'breadcrumbs' => $this->breadcrumbs,

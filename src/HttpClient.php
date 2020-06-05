@@ -14,14 +14,9 @@ class HttpClient
     const MAX_SIZE = 1048576;
 
     /**
-     * @deprecated Use {@see HttpClient::NOTIFICATION_PAYLOAD_VERSION} instead
-     */
-    const PAYLOAD_VERSION = self::NOTIFICATION_PAYLOAD_VERSION;
-
-    /**
      * The payload version for the error notification API.
      */
-    const NOTIFICATION_PAYLOAD_VERSION = '4.0';
+    const NOTIFY_PAYLOAD_VERSION = '4.0';
 
     /**
      * The payload version for the session API.
@@ -116,33 +111,6 @@ class HttpClient
     }
 
     /**
-     * Notify Bugsnag of a deployment.
-     *
-     * @deprecated This method should no longer be used in favour of sendBuildReport.
-     *
-     * @param array $data the deployment information
-     *
-     * @return void
-     */
-    public function deploy(array $data)
-    {
-        $app = $this->config->getAppData();
-
-        $data['releaseStage'] = $app['releaseStage'];
-
-        if (isset($app['version'])) {
-            $data['appVersion'] = $app['version'];
-        }
-
-        $data['apiKey'] = $this->config->getApiKey();
-
-        $this->post(
-            $this->config->getNotifyEndpoint().'deploy',
-            ['json' => $data]
-        );
-    }
-
-    /**
      * Notify Bugsnag of a build.
      *
      * @param array $buildInfo the build information
@@ -231,7 +199,7 @@ class HttpClient
                 $this->config->getNotifyEndpoint(),
                 [
                     'json' => $normalized,
-                    'headers' => $this->getHeaders(self::NOTIFICATION_PAYLOAD_VERSION),
+                    'headers' => $this->getHeaders(self::NOTIFY_PAYLOAD_VERSION),
                 ]
             );
         } catch (Exception $e) {

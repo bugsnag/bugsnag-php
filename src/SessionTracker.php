@@ -18,11 +18,6 @@ class SessionTracker
     protected static $MAX_SESSION_COUNT = 50;
 
     /**
-     * @deprecated Use {@see HttpClient::NOTIFICATION_PAYLOAD_VERSION} instead
-     */
-    protected static $SESSION_PAYLOAD_VERSION = HttpClient::SESSION_PAYLOAD_VERSION;
-
-    /**
      * The key for storing session counts.
      */
     protected static $SESSION_COUNTS_KEY = 'bugsnag-session-counts';

@@ -644,7 +644,7 @@ class Configuration
     }
 
     /**
-     * Set session tracking state and pass in optional guzzle.
+     * Set session tracking state.
      *
      * @param bool $track whether to track sessions
      *

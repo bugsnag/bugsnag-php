@@ -25,11 +25,6 @@ use GuzzleHttp\ClientInterface;
 class Client
 {
     /**
-     * @deprecated Use {@see Configuration::NOTIFY_ENDPOINT} instead
-     */
-    const ENDPOINT = Configuration::NOTIFY_ENDPOINT;
-
-    /**
      * The config instance.
      *
      * @var \Bugsnag\Configuration
@@ -128,7 +123,7 @@ class Client
         $this->resolver = $resolver ?: new BasicResolver();
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
-        $this->http = new HttpClient($config, $guzzle ?: static::makeGuzzle());
+        $this->http = new HttpClient($config, $guzzle ?: self::makeGuzzle());
         $this->sessionTracker = new SessionTracker($config, $this->http);
 
         $this->registerMiddleware(new NotificationSkipper($config));
@@ -141,36 +136,17 @@ class Client
     }
 
     /**
-     * Make a new guzzle client instance.
-     *
-     * @param string $base    No longer used
-     * @param array  $options
-     *
      * @return ClientInterface
-     *
-     * @deprecated Will be removed in a future release
      */
-    public static function makeGuzzle($base = null, array $options = [])
+    private static function makeGuzzle()
     {
-        if ($path = static::getCaBundlePath()) {
-            $options['verify'] = $path;
+        if (version_compare(PHP_VERSION, '5.6.0') >= 0) {
+            return new GuzzleClient();
         }
 
-        return new GuzzleClient($options);
-    }
-
-    /**
-     * Get the ca bundle path if one exists.
-     *
-     * @return string|false
-     */
-    protected static function getCaBundlePath()
-    {
-        if (version_compare(PHP_VERSION, '5.6.0') >= 0 || !class_exists(CaBundle::class)) {
-            return false;
-        }
-
-        return realpath(CaBundle::getSystemCaRootBundlePath());
+        return new GuzzleClient([
+            'verify' => realpath(CaBundle::getSystemCaRootBundlePath()),
+        ]);
     }
 
     /**
@@ -330,22 +306,6 @@ class Client
         if (!$this->config->isBatchSending()) {
             $this->flush();
         }
-    }
-
-    /**
-     * Notify Bugsnag of a deployment.
-     *
-     * @deprecated This function is being deprecated in favour of `build`.
-     *
-     * @param string|null $repository the repository from which you are deploying the code
-     * @param string|null $branch     the source control branch from which you are deploying
-     * @param string|null $revision   the source control revision you are currently deploying
-     *
-     * @return void
-     */
-    public function deploy($repository = null, $branch = null, $revision = null)
-    {
-        $this->build($repository, $revision);
     }
 
     /**
@@ -849,7 +809,7 @@ class Client
     }
 
     /**
-     * Set session tracking state and pass in optional guzzle.
+     * Set session tracking state.
      *
      * @param bool $track whether to track sessions
      *
