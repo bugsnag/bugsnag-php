@@ -3,7 +3,10 @@
 namespace Bugsnag\Tests\Cache\Adapter;
 
 use Bugsnag\Cache\Adapter\CacheAdapterInterface;
+use Bugsnag\Cache\CacheFactory;
 use Bugsnag\Tests\TestCase;
+use Psr\Cache\CacheItemPoolInterface as Psr6CacheInterface;
+use Psr\SimpleCache\CacheInterface as Psr16CacheInterface;
 
 /**
  * An abstract test class to ensure all adapters work identically.
@@ -15,10 +18,24 @@ abstract class AdapterTest extends TestCase
      */
     abstract protected function getAdapter();
 
-    public function testAdapter()
-    {
-        $adapter = $this->getAdapter();
+    /**
+     * Get an implementation of the cache that the Adapter adapts. This lets us
+     * pass it into the CacheFactory and test it works identically to when
+     * instantiated manually.
+     *
+     * @return Psr16CacheInterface|Psr6CacheInterface
+     */
+    abstract protected function getImplementation();
 
+    /**
+     * @param CacheAdapterInterface $adapter
+     *
+     * @return void
+     *
+     * @dataProvider adapterProvider
+     */
+    final public function testAdapter(CacheAdapterInterface $adapter)
+    {
         $adapter->set('hello', 'world');
         $this->assertSame('world', $adapter->get('hello'));
 
@@ -43,6 +60,25 @@ abstract class AdapterTest extends TestCase
         $this->assertSame(null, $adapter->get($this));
         $this->assertSame(false, $adapter->get($this, false));
         $this->assertSame('hello', $adapter->get($this, 'hello'));
+    }
+
+    final public function adapterProvider()
+    {
+        $manuallyInstantiated = $this->getAdapter();
+
+        $factory = new CacheFactory();
+        $factoryInstantiated = $factory->create($this->getImplementation());
+
+        // Sanity check we're doing the right thing in the concrete test class
+        $this->assertInstanceOf(
+            get_class($manuallyInstantiated),
+            $factoryInstantiated
+        );
+
+        return [
+            'manually instantiated' => [$manuallyInstantiated],
+            'factory instantiated' => [$factoryInstantiated],
+        ];
     }
 
     final public function adapterProvider()

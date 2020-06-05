@@ -5,8 +5,10 @@ namespace Bugsnag\Tests\Cache;
 use Bugsnag\Cache\Adapter\CacheAdapterInterface;
 use Bugsnag\Cache\CacheFactory;
 use Bugsnag\Tests\Fake\FakePsr16Cache;
+use Bugsnag\Tests\Fake\FakePsr6CachePool;
 use Bugsnag\Tests\TestCase;
 use InvalidArgumentException;
+use Psr\Cache\CacheItemPoolInterface as Psr6CacheInterface;
 use Psr\SimpleCache\CacheInterface as Psr16CacheInterface;
 use stdClass;
 
@@ -16,6 +18,14 @@ final class CacheFactoryTest extends TestCase
     {
         $factory = new CacheFactory();
         $adapter = $factory->create(new FakePsr16Cache());
+
+        $this->assertInstanceOf(CacheAdapterInterface::class, $adapter);
+    }
+
+    public function testItCreatesACacheAdapterForPsr6()
+    {
+        $factory = new CacheFactory();
+        $adapter = $factory->create(new FakePsr6CachePool());
 
         $this->assertInstanceOf(CacheAdapterInterface::class, $adapter);
     }
@@ -35,8 +45,9 @@ final class CacheFactoryTest extends TestCase
         $this->expectedException(
             InvalidArgumentException::class,
             sprintf(
-                '%s::create expects an instance of "%s", got "%s"',
+                '%s::create expects an instance of "%s" or "%s", got "%s"',
                 CacheFactory::class,
+                Psr6CacheInterface::class,
                 Psr16CacheInterface::class,
                 $type
             )

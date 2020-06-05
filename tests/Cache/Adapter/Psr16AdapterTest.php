@@ -9,6 +9,11 @@ final class Psr16AdapterTest extends AdapterTest
 {
     protected function getAdapter()
     {
-        return new Psr16Adapter(new FakePsr16Cache());
+        return new Psr16Adapter($this->getImplementation());
+    }
+
+    protected function getImplementation()
+    {
+        return new FakePsr16Cache();
     }
 }
