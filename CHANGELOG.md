@@ -1,6 +1,41 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+- The Client and SessionTracker now share a single Guzzle instance (#582)
+
+### BC breaks
+
+- Removal of `getSessionClient` method in `Client` and `Configuration` (#582)
+  This doesn't make sense to keep given the session client is now the same as the notify Guzzle client. Keeping this would either mean changes to the "session" client also propagate to the notify client or changes to this do nothing. Either of which could lead to things being delivered to the wrong endpoint and expected Guzzle changes not being reflected in the actual requests
+
+- We no longer use the Guzzle base URI for requests (#582)
+  This means if a Guzzle client is passed in the constructor with a pre-defined base URI, we will still send requests to the notify URI. `Client::setNotifyEndpoint` now needs to be called manually instead. This changed because the Guzzle base URI is ambiguous now given that it is shared between notifications and sessions
+
+- Removal of `SessionTracker::setConfig` (#582)
+  This was unused internally and doesn't seem to be needed as the configuration can be changed via the `Client` or `Configuration` instance itself. Having the possibility for there to be two different `Configuration` instances could be dangerous as changes may not propagate as expected
+
+- `Client::ENDPOINT` (#582)
+  This is ambiguous as we have three separate endpoints
+  Use `Configuration::NOTIFY_ENDPOINT` instead
+
+- `HttpClient::PAYLOAD_VERSION` (#582)
+  This is ambiguous as there is a session payload version too
+  Use `HttpClient::NOTIFY_PAYLOAD_VERSION` instead
+
+- `Report::PAYLOAD_VERSION` (#582)
+  As above. This was also unused by the notifier
+  Use `HttpClient::NOTIFY_PAYLOAD_VERSION` instead
+
+- `SessionTracker::$SESSION_PAYLOAD_VERSION` (#582)
+  Use `HttpClient::SESSION_PAYLOAD_VERSION` instead
+
+- `Client::makeGuzzle` has been made private (#582)
+  Use the `$guzzle` parameter of `Bugsnag\Client::__construct` instead
+
 ## 3.21.0 (2020-04-29)
 
 ### Enhancements
