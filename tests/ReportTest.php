@@ -125,11 +125,11 @@ class ReportTest extends TestCase
 
         $this->assertInstanceOf(Stacktrace::class, $trace);
 
-        if (class_exists(\PHPUnit_Framework_TestCase::class)) {
-            $this->assertCount(8, $trace->toArray());
-        } else {
-            $this->assertCount(7, $trace->toArray());
-        }
+        // Before PHPUnit 7 tests were executed via ReflectionMethod::invokeArgs
+        // which adds a line to the stacktrace
+        $expectedCount = $this->isPhpUnit7() ? 7 : 8;
+
+        $this->assertCount($expectedCount, $trace->toArray());
     }
 
     public function testNoticeName()

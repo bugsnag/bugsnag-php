@@ -26,8 +26,8 @@ final class Psr6Adapter implements CacheAdapterInterface
             if ($item->isHit()) {
                 return $item->get();
             }
-        } catch (Throwable $e) {
         } catch (Exception $e) {
+        } catch (Throwable $e) {
         }
 
         return $default;
@@ -40,8 +40,8 @@ final class Psr6Adapter implements CacheAdapterInterface
             $item->set($value);
 
             return $this->cache->save($item);
-        } catch (Throwable $e) {
         } catch (Exception $e) {
+        } catch (Throwable $e) {
         }
 
         return false;

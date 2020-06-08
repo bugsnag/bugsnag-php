@@ -38,8 +38,8 @@ final class DoctrineCacheAdapter implements CacheAdapterInterface
             }
 
             return $value;
-        } catch (Throwable $e) {
         } catch (Exception $e) {
+        } catch (Throwable $e) {
         }
 
         return $default;
@@ -49,8 +49,8 @@ final class DoctrineCacheAdapter implements CacheAdapterInterface
     {
         try {
             return $this->cache->save($key, $value);
-        } catch (Throwable $e) {
         } catch (Exception $e) {
+        } catch (Throwable $e) {
         }
 
         return false;

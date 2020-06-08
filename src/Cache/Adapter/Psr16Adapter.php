@@ -22,8 +22,8 @@ final class Psr16Adapter implements CacheAdapterInterface
     {
         try {
             return $this->cache->get($key, $default);
-        } catch (Throwable $e) {
         } catch (Exception $e) {
+        } catch (Throwable $e) {
         }
 
         return $default;
@@ -33,8 +33,8 @@ final class Psr16Adapter implements CacheAdapterInterface
     {
         try {
             return $this->cache->set($key, $value);
-        } catch (Throwable $e) {
         } catch (Exception $e) {
+        } catch (Throwable $e) {
         }
 
         return false;
