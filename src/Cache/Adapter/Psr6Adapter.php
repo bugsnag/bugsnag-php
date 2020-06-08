@@ -2,7 +2,9 @@
 
 namespace Bugsnag\Cache\Adapter;
 
+use Exception;
 use Psr\Cache\CacheItemPoolInterface;
+use Throwable;
 
 final class Psr6Adapter implements CacheAdapterInterface
 {
@@ -18,10 +20,14 @@ final class Psr6Adapter implements CacheAdapterInterface
 
     public function get($key, $default = null)
     {
-        $item = $this->cache->getItem($key);
+        try {
+            $item = $this->cache->getItem($key);
 
-        if ($item->isHit()) {
-            return $item->get();
+            if ($item->isHit()) {
+                return $item->get();
+            }
+        } catch (Throwable $e) {
+        } catch (Exception $e) {
         }
 
         return $default;
@@ -29,9 +35,15 @@ final class Psr6Adapter implements CacheAdapterInterface
 
     public function set($key, $value)
     {
-        $item = $this->cache->getItem($key);
-        $item->set($value);
+        try {
+            $item = $this->cache->getItem($key);
+            $item->set($value);
 
-        return $this->cache->save($item);
+            return $this->cache->save($item);
+        } catch (Throwable $e) {
+        } catch (Exception $e) {
+        }
+
+        return false;
     }
 }

@@ -2,8 +2,9 @@
 
 namespace Bugsnag\Cache\Adapter;
 
+use Exception;
 use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException;
+use Throwable;
 
 final class Psr16Adapter implements CacheAdapterInterface
 {
@@ -21,17 +22,21 @@ final class Psr16Adapter implements CacheAdapterInterface
     {
         try {
             return $this->cache->get($key, $default);
-        } catch (InvalidArgumentException $e) {
-            return $default;
+        } catch (Throwable $e) {
+        } catch (Exception $e) {
         }
+
+        return $default;
     }
 
     public function set($key, $value)
     {
         try {
             return $this->cache->set($key, $value);
-        } catch (InvalidArgumentException $e) {
-            return false;
+        } catch (Throwable $e) {
+        } catch (Exception $e) {
         }
+
+        return false;
     }
 }

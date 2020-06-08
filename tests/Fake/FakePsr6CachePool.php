@@ -18,6 +18,10 @@ final class FakePsr6CachePool implements CacheItemPoolInterface
 
     public function getItem($key)
     {
+        if (!is_string($key)) {
+            throw new FakePsr6Exception('Invalid key given');
+        }
+
         if (array_key_exists($key, $this->cache)) {
             $value = $this->cache[$key];
 
