@@ -2,84 +2,172 @@
 
 namespace Bugsnag\Tests\Middleware;
 
-use Bugsnag\Client;
+use Bugsnag\Configuration;
+use Bugsnag\HttpClient;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Report;
 use Bugsnag\SessionTracker;
 use Bugsnag\Tests\TestCase;
-use Mockery;
+use Exception;
 
 class SessionDataTest extends TestCase
 {
-    public function testUnhandledError()
+    /**
+     * @var SessionTracker
+     */
+    private $sessionTracker;
+
+    /**
+     * @var Report
+     */
+    private $report;
+
+    protected function setUp()
     {
-        $sessionTracker = Mockery::mock(SessionTracker::class);
-        $sessionTracker->shouldReceive('getCurrentSession')->andReturn([
-            'events' => [
-                'unhandled' => 0,
-                'handled' => 0,
-            ],
-        ]);
+        $config = new Configuration('api-key');
+        $httpClient = $this->getMockBuilder(HttpClient::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $client = Mockery::mock(Client::class);
-        $client->shouldReceive('getSessionTracker')->andReturn($sessionTracker);
+        $this->sessionTracker = new SessionTracker($config, $httpClient);
+        $this->report = Report::fromPHPThrowable($config, new Exception('no'));
+    }
 
-        $report = Mockery::mock(Report::class);
-        $report->shouldReceive('getUnhandled')->andReturn(true);
-        $report->shouldReceive('setSessionData')->with([
-            'events' => [
-                'unhandled' => 1,
-                'handled' => 0,
-            ],
-        ]);
+    public function testItSetsTheUnhandledCountWhenAnUnhandledErrorOccurs()
+    {
+        $this->sessionTracker->startSession();
+        $this->report->setUnhandled(true);
 
-        $middleware = new SessionData($client);
-        $middleware($report, function ($var) use ($report) {
-            $this->assertSame($var, $report);
+        $middleware = new SessionData($this->sessionTracker);
+
+        $middleware($this->report, function (Report $report) {
+            $this->assertReportHasUnhandledErrors($report, 1);
         });
     }
 
-    public function testHandledError()
+    public function testItIncrementsTheUnhandledCountWhenMultipleUnhandledErrorsOccur()
     {
-        $sessionTracker = Mockery::mock(SessionTracker::class);
-        $sessionTracker->shouldReceive('getCurrentSession')->andReturn([
-            'events' => [
-                'unhandled' => 0,
-                'handled' => 0,
-            ],
-        ]);
+        $this->sessionTracker->startSession();
+        $this->report->setUnhandled(true);
 
-        $client = Mockery::mock(Client::class);
-        $client->shouldReceive('getSessionTracker')->andReturn($sessionTracker);
+        $middleware = new SessionData($this->sessionTracker);
 
-        $report = Mockery::mock(Report::class);
-        $report->shouldReceive('getUnhandled')->andReturn(false);
-        $report->shouldReceive('setSessionData')->with([
-            'events' => [
-                'unhandled' => 0,
-                'handled' => 1,
-            ],
-        ]);
+        foreach (range(1, 5) as $errorCount) {
+            $middleware($this->report, function (Report $report) use ($errorCount) {
+                $this->assertReportHasUnhandledErrors($report, $errorCount);
+            });
+        }
+    }
 
-        $middleware = new SessionData($client);
-        $middleware($report, function ($var) use ($report) {
-            $this->assertSame($var, $report);
+    public function testItSetsTheHandledCountWhenAHandledErrorOccurs()
+    {
+        $this->sessionTracker->startSession();
+        $this->report->setUnhandled(false);
+
+        $middleware = new SessionData($this->sessionTracker);
+
+        $middleware($this->report, function (Report $report) {
+            $this->assertReportHasHandledErrors($report, 1);
         });
     }
 
-    public function testNullSession()
+    public function testItIncrementsTheHandledCountWhenMultipleHandledErrorsOccur()
     {
-        $sessionTracker = Mockery::mock(SessionTracker::class);
-        $sessionTracker->shouldReceive('getCurrentSession')->andReturn(null);
+        $this->sessionTracker->startSession();
+        $this->report->setUnhandled(false);
 
-        $client = Mockery::mock(Client::class);
-        $client->shouldReceive('getSessionTracker')->andReturn($sessionTracker);
+        $middleware = new SessionData($this->sessionTracker);
 
-        $report = Mockery::mock(Report::class);
+        foreach (range(1, 5) as $errorCount) {
+            $middleware($this->report, function (Report $report) use ($errorCount) {
+                $this->assertReportHasHandledErrors($report, $errorCount);
+            });
+        }
+    }
 
-        $middleware = new SessionData($client);
-        $middleware($report, function ($var) use ($report) {
-            $this->assertSame($var, $report);
+    public function testItDoesNothingWhenForAnUnhandledErrorWhenThereIsNoSessionData()
+    {
+        // We don't call 'startSession' here so there is no session data to
+        // capture in the middleware
+        $this->report->setUnhandled(true);
+
+        $middleware = new SessionData($this->sessionTracker);
+
+        $middleware($this->report, function (Report $report) {
+            $reportArray = $report->toArray();
+            $this->assertArrayNotHasKey('session', $reportArray);
         });
+    }
+
+    public function testItDoesNothingWhenForAHandledErrorWhenThereIsNoSessionData()
+    {
+        // We don't call 'startSession' here so there is no session data to
+        // capture in the middleware
+        $this->report->setUnhandled(false);
+
+        $middleware = new SessionData($this->sessionTracker);
+
+        $middleware($this->report, function (Report $report) {
+            $reportArray = $report->toArray();
+            $this->assertArrayNotHasKey('session', $reportArray);
+        });
+    }
+
+    /**
+     * Assert the given report has the expected number of unhandled errors.
+     *
+     * @param Report $report
+     * @param int    $expectedCount
+     *
+     * @return void
+     */
+    private function assertReportHasUnhandledErrors(Report $report, $expectedCount)
+    {
+        $this->assertReportHasErrors($report, 'unhandled', $expectedCount);
+    }
+
+    /**
+     * Assert the given report has the expected number of handled errors.
+     *
+     * @param Report $report
+     * @param int    $expectedCount
+     *
+     * @return void
+     */
+    private function assertReportHasHandledErrors(Report $report, $expectedCount)
+    {
+        $this->assertReportHasErrors($report, 'handled', $expectedCount);
+    }
+
+    /**
+     * Assert the given report has the expected number of errors of type '$type'.
+     *
+     * @psalm-param 'handled'|'unhandled' $type
+     *
+     * @param Report $report
+     * @param string $type          one of 'handled' or 'unhandled'
+     * @param int    $expectedCount
+     *
+     * @return void
+     */
+    private function assertReportHasErrors(Report $report, $type, $expectedCount)
+    {
+        $reportArray = $report->toArray();
+        $this->assertArrayHasKey('session', $reportArray);
+
+        $session = $reportArray['session'];
+        $this->assertArrayHasKey('events', $session);
+
+        $events = $session['events'];
+        $this->assertArrayHasKey('handled', $events);
+        $this->assertArrayHasKey('unhandled', $events);
+
+        if ($type === 'handled') {
+            $this->assertSame($expectedCount, $events['handled']);
+            $this->assertSame(0, $events['unhandled']);
+        } else {
+            $this->assertSame(0, $events['handled']);
+            $this->assertSame($expectedCount, $events['unhandled']);
+        }
     }
 }
