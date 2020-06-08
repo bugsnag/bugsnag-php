@@ -33,11 +33,21 @@ final class Psr6Adapter implements CacheAdapterInterface
         return $default;
     }
 
-    public function set($key, $value)
+    public function set($key, $value, $ttl = self::ONE_HOUR)
     {
         try {
             $item = $this->cache->getItem($key);
             $item->set($value);
+
+            // Reset a null TTL to our default. There is no specification for
+            // what libraries should do when given null, so we can't be sure
+            // that forwarding it on is OK. Instead we sidestep the issue by
+            // using a sensible default
+            if (!is_int($ttl)) {
+                $ttl = self::ONE_HOUR;
+            }
+
+            $item->expiresAfter($ttl);
 
             return $this->cache->save($item);
         } catch (Exception $e) {

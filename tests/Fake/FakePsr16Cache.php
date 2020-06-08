@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests\Fake;
 
 use BadMethodCallException;
+use DateInterval;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -25,7 +26,15 @@ final class FakePsr16Cache implements CacheInterface
         }
 
         if (array_key_exists($key, $this->cache)) {
-            return $this->cache[$key];
+            list($value, $expiresAt) = $this->cache[$key];
+
+            // Only return values that haven't expired
+            if (time() < $expiresAt) {
+                return $value;
+            }
+
+            // Remove expired entries
+            unset($this->cache[$key]);
         }
 
         return $default;
@@ -37,7 +46,18 @@ final class FakePsr16Cache implements CacheInterface
             throw new FakePsr16Exception('Invalid key given');
         }
 
-        $this->cache[$key] = $value;
+        if ($ttl instanceof DateInterval) {
+            throw new BadMethodCallException(
+                __METHOD__.' does not support DateInterval TTLs'
+            );
+        }
+
+        // Treat null values as instantly expiring
+        $expiresAt = is_int($ttl)
+            ? time() + $ttl
+            : 0;
+
+        $this->cache[$key] = [$value, $expiresAt];
 
         return true;
     }

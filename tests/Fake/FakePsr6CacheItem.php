@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests\Fake;
 
 use BadMethodCallException;
+use DateInterval;
 use Psr\Cache\CacheItemInterface;
 
 /**
@@ -15,13 +16,12 @@ final class FakePsr6CacheItem implements CacheItemInterface
 {
     private $key;
     private $value;
-    private $isHit;
+    private $isHit = false;
+    private $expiresAt;
 
-    public function __construct($key, $value, $isHit)
+    public function __construct($key)
     {
         $this->key = $key;
-        $this->value = $value;
-        $this->isHit = $isHit;
     }
 
     public function getKey()
@@ -36,12 +36,14 @@ final class FakePsr6CacheItem implements CacheItemInterface
 
     public function isHit()
     {
-        return $this->isHit;
+        return time() < $this->expiresAt && $this->isHit;
     }
 
     public function set($value)
     {
         $this->value = $value;
+
+        return $this;
     }
 
     public function expiresAt($expiration)
@@ -49,8 +51,23 @@ final class FakePsr6CacheItem implements CacheItemInterface
         throw new BadMethodCallException(__METHOD__.' is not implemented');
     }
 
-    public function expiresAfter($time)
+    public function expiresAfter($expiresAfter)
     {
-        throw new BadMethodCallException(__METHOD__.' is not implemented');
+        if ($expiresAfter instanceof DateInterval) {
+            throw new BadMethodCallException(
+                __METHOD__.' is not implemented for DateInterval objects'
+            );
+        }
+
+        $this->expiresAt = time() + $expiresAfter;
+
+        return $this;
+    }
+
+    public function save()
+    {
+        $this->isHit = true;
+
+        return $this;
     }
 }

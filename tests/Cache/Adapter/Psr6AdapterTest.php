@@ -48,7 +48,7 @@ final class Psr6AdapterTest extends AdapterTest
                 // implementation, but it's how the interface is supposed to
                 // work so I think it's fine (if a bit ugly)
                 if ($calls === 1) {
-                    return new FakePsr6CacheItem($key, null, false);
+                    return new FakePsr6CacheItem($key);
                 }
 
                 throw new TypeError('Oh no!');

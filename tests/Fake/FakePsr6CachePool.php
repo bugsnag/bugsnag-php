@@ -23,17 +23,19 @@ final class FakePsr6CachePool implements CacheItemPoolInterface
         }
 
         if (array_key_exists($key, $this->cache)) {
-            $value = $this->cache[$key];
-
-            return new FakePsr6CacheItem($key, $value, true);
+            return $this->cache[$key];
         }
 
-        return new FakePsr6CacheItem($key, null, false);
+        return new FakePsr6CacheItem($key);
     }
 
     public function save(CacheItemInterface $item)
     {
-        $this->cache[$item->getKey()] = $item->get();
+        if (!$item instanceof FakePsr6CacheItem) {
+            throw new FakePsr6Exception('Invalid item given: '.get_class($item));
+        }
+
+        $this->cache[$item->getKey()] = $item->save();
 
         return true;
     }

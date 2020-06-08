@@ -78,6 +78,27 @@ abstract class AdapterTest extends TestCase
         $this->assertSame('hello', $adapter->get($this, 'hello'));
     }
 
+    /**
+     * @param CacheAdapterInterface $adapter
+     *
+     * @return void
+     *
+     * @dataProvider ttlProvider
+     */
+    final public function testAdapterHonoursTimeToLive(
+        CacheAdapterInterface $adapter,
+        $ttl,
+        $shouldBeInCache
+    ) {
+        $this->assertTrue($adapter->set('key', 'value', $ttl));
+
+        $expected = $shouldBeInCache ? 'value' : null;
+        $this->assertSame($expected, $adapter->get('key'));
+
+        $expected = $shouldBeInCache ? 'value' : 'hello';
+        $this->assertSame($expected, $adapter->get('key', 'hello'));
+    }
+
     final public function adapterProvider()
     {
         $manuallyInstantiated = $this->getAdapter();
@@ -95,5 +116,36 @@ abstract class AdapterTest extends TestCase
             'manually instantiated' => [$manuallyInstantiated],
             'factory instantiated' => [$factoryInstantiated],
         ];
+    }
+
+    final public function ttlProvider()
+    {
+        $tests = [
+            [100000, true],
+            [100, true],
+            [1, true],
+            [null, true],
+            [0, false],
+            [-1, false],
+            [-100, false],
+            [-100000, false],
+        ];
+
+        foreach ($this->adapterProvider() as $adapterLabel => $adapter) {
+            $adapter = $adapter[0];
+
+            foreach ($tests as $test) {
+                $ttl = $test[0];
+                $shouldBeInCache = $test[1];
+                $label = sprintf(
+                    '(%s) ttl %s => %s',
+                    $adapterLabel,
+                    is_int($ttl) ? "{$ttl}" : 'null',
+                    $shouldBeInCache ? 'should be in cache' : 'should be expired'
+                );
+
+                yield $label => [$adapter, $ttl, $shouldBeInCache];
+            }
+        }
     }
 }
