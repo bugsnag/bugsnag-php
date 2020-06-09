@@ -5,12 +5,8 @@ namespace Bugsnag\Tests;
 use GrahamCampbell\TestBenchCore\MockeryTrait;
 use GuzzleHttp\ClientInterface;
 use phpmock\phpunit\PHPMock;
-use PHPUnit\Framework\MockObject\Matcher\InvokedCount;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\MockObject\Stub\Exception as ExceptionStub;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use PHPUnit\Runner\Version as PhpUnitVersion;
-use Throwable;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -29,38 +25,6 @@ abstract class TestCase extends BaseTestCase
 
         if ($message !== null) {
             $this->expectExceptionMessage($message);
-        }
-    }
-
-    /**
-     * Wrapper around 'willThrowException' with support for Throwable on PHPUnit
-     * versions before 7.
-     *
-     * @param MockObject   $mock
-     * @param InvokedCount $invokedCount
-     * @param string       $methodName
-     * @param Throwable    $throwable
-     *
-     * @return void
-     */
-    protected function willThrow(
-        MockObject $mock,
-        InvokedCount $invokedCount,
-        $methodName,
-        Throwable $throwable
-    ) {
-        // Before PHPUnit 7 'willThrowException' required an Exception, rather
-        // than a Throwable so we have to handle these versions differently
-        if ($this->isPhpUnit7()) {
-            $mock->expects($invokedCount)
-                ->method($methodName)
-                ->withAnyParameters()
-                ->willThrowException($throwable);
-        } else {
-            $mock->expects($invokedCount)
-                ->method($methodName)
-                ->withAnyParameters()
-                ->will(new ExceptionStub($throwable));
         }
     }
 

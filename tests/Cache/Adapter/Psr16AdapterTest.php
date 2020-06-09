@@ -34,8 +34,17 @@ final class Psr16AdapterTest extends AdapterTest
         /** @var CacheInterface&\PHPUnit\Framework\MockObject\MockObject $cache */
         $cache = $this->getMockBuilder(CacheInterface::class)->getMock();
 
-        $this->willThrow($cache, $this->exactly(3), 'get', new TypeError('no'));
-        $this->willThrow($cache, $this->once(), 'set', new TypeError('no'));
+        $cache->expects($this->exactly(3))
+            ->method('get')
+            ->willReturnCallback(function () {
+                throw new TypeError('oh no!');
+            });
+
+        $cache->expects($this->once())
+            ->method('set')
+            ->willReturnCallback(function () {
+                throw new TypeError('oh no!');
+            });
 
         $adapter = new Psr16Adapter($cache);
 

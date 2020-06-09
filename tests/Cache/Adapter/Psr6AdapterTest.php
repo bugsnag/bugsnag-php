@@ -54,7 +54,11 @@ final class Psr6AdapterTest extends AdapterTest
                 throw new TypeError('Oh no!');
             });
 
-        $this->willThrow($cache, $this->once(), 'save', new TypeError('no'));
+        $cache->expects($this->once())
+            ->method('save')
+            ->willReturnCallback(function () {
+                throw new TypeError('oh no!');
+            });
 
         $adapter = new Psr6Adapter($cache);
 
