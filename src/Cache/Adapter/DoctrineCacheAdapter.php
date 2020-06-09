@@ -47,6 +47,14 @@ final class DoctrineCacheAdapter implements CacheAdapterInterface
 
     public function set($key, $value, $ttl = self::ONE_HOUR)
     {
+        // If we got a TTL less than or equal to 0, don't cache anything but
+        // pretend we did. Doctrine cache implementations act differently when
+        // given a TTL below 0 — some will store the TTL and work as expected,
+        // others will ignore it and never expire the entry.
+        if (is_int($ttl) && $ttl <= 0) {
+            return true;
+        }
+
         try {
             // Reset a null TTL to our default. Doctrine shouldn't be fed null
             // values because it always expects an integer TTL and treats null
@@ -54,13 +62,6 @@ final class DoctrineCacheAdapter implements CacheAdapterInterface
             // expire', so we reset it to our default instead.
             if (!is_int($ttl)) {
                 $ttl = self::ONE_HOUR;
-            }
-
-            // Doctrine treats 0 to mean 'never expires', but this is counter
-            // to how we define a TTL. We want a TTL of '0' to mean 'expire
-            // immediately', so setting it to '-1' achieves this
-            if ($ttl === 0) {
-                $ttl = -1;
             }
 
             return $this->cache->save($key, $value, $ttl);
