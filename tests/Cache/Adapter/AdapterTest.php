@@ -131,21 +131,28 @@ abstract class AdapterTest extends TestCase
             [-100000, false],
         ];
 
-        foreach ($this->adapterProvider() as $adapterLabel => $adapter) {
-            $adapter = $adapter[0];
+        $factory = new CacheFactory();
 
-            foreach ($tests as $test) {
-                $ttl = $test[0];
-                $shouldBeInCache = $test[1];
-                $label = sprintf(
-                    '(%s) ttl %s => %s',
-                    $adapterLabel,
-                    is_int($ttl) ? "{$ttl}" : 'null',
-                    $shouldBeInCache ? 'should be in cache' : 'should be expired'
-                );
+        foreach ($tests as $test) {
+            $ttl = $test[0];
+            $shouldBeInCache = $test[1];
+            $label = sprintf(
+                'ttl %s => %s',
+                is_int($ttl) ? "{$ttl}" : 'null',
+                $shouldBeInCache ? 'should be in cache' : 'should be expired'
+            );
 
-                yield $label => [$adapter, $ttl, $shouldBeInCache];
-            }
+            yield "(manual) {$label}" => [
+                $this->getAdapter(),
+                $ttl,
+                $shouldBeInCache,
+            ];
+
+            yield "(factory) {$label}" => [
+                $factory->create($this->getImplementation()),
+                $ttl,
+                $shouldBeInCache,
+            ];
         }
     }
 }

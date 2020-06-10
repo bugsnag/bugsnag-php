@@ -22,6 +22,9 @@ namespace Bugsnag\Tests {
     use Bugsnag\Handler;
     use Exception;
 
+    /**
+     * @runTestsInSeparateProcesses
+     */
     class HandlerTest extends TestCase
     {
         protected $client;

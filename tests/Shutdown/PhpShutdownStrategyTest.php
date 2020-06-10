@@ -8,6 +8,9 @@ use Bugsnag\Tests\TestCase;
 use Mockery;
 use phpmock\spy\Spy;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class PhpShutdownStrategyTest extends TestCase
 {
     public function testRegisterShutdownFunction()

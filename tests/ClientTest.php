@@ -46,8 +46,8 @@ class ClientTest extends TestCase
 
     protected function tearDown()
     {
-        putenv('BUGSNAG_API_KEY=');
-        putenv('BUGSNAG_ENDPOINT=');
+        putenv('BUGSNAG_API_KEY');
+        putenv('BUGSNAG_ENDPOINT');
         unset($_ENV['BUGSNAG_API_KEY']);
         unset($_ENV['BUGSNAG_ENDPOINT']);
     }

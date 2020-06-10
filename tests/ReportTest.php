@@ -127,7 +127,7 @@ class ReportTest extends TestCase
 
         // Before PHPUnit 7 tests were executed via ReflectionMethod::invokeArgs
         // which adds a line to the stacktrace
-        $expectedCount = $this->isPhpUnit7() ? 7 : 8;
+        $expectedCount = $this->isPhpUnit7() ? 11 : 12;
 
         $this->assertCount($expectedCount, $trace->toArray());
     }
