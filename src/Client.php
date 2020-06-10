@@ -4,23 +4,22 @@ namespace Bugsnag;
 
 use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\Breadcrumbs\Recorder;
-use Bugsnag\Callbacks\GlobalMetaData;
-use Bugsnag\Callbacks\RequestContext;
-use Bugsnag\Callbacks\RequestCookies;
-use Bugsnag\Callbacks\RequestMetaData;
-use Bugsnag\Callbacks\RequestSession;
-use Bugsnag\Callbacks\RequestUser;
-use Bugsnag\Middleware\BreadcrumbData;
-use Bugsnag\Middleware\CallbackBridge;
-use Bugsnag\Middleware\NotificationSkipper;
-use Bugsnag\Middleware\SessionData;
+use Bugsnag\Cache\Adapter\CacheAdapterInterface;
+use Bugsnag\Cache\CacheFactory;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
+use Bugsnag\SessionTracker\NullSessionTracker;
+use Bugsnag\SessionTracker\SessionTracker;
+use Bugsnag\SessionTracker\SessionTrackerInterface;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
 use Bugsnag\Shutdown\ShutdownStrategyInterface;
 use Composer\CaBundle\CaBundle;
+use Doctrine\Common\Cache\Cache as DoctrineCache;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
+use InvalidArgumentException;
+use Psr\Cache\CacheItemPoolInterface as Psr6CacheInterface;
+use Psr\SimpleCache\CacheInterface as Psr16CacheInterface;
 
 class Client
 {
@@ -62,7 +61,7 @@ class Client
     /**
      * The session tracker instance.
      *
-     * @var \Bugsnag\SessionTracker
+     * @var SessionTrackerInterface
      */
     protected $sessionTracker;
 
@@ -71,14 +70,16 @@ class Client
      *
      * If you don't pass in a key, we'll try to read it from the env variables.
      *
-     * @param string|null $apiKey         your bugsnag api key
-     * @param string|null $notifyEndpoint your bugsnag notify endpoint
-     * @param bool        $default        if we should register our default callbacks
+     * @param string|null                                               $apiKey         your bugsnag api key
+     * @param Psr16CacheInterface|Psr6CacheInterface|DoctrineCache|null $cache
+     * @param string|null                                               $notifyEndpoint your bugsnag notify endpoint
+     * @param bool                                                      $default        if we should register our default callbacks
      *
      * @return static
      */
     public static function make(
         $apiKey = null,
+        $cache = null,
         $notifyEndpoint = null,
         $defaults = true
     ) {
@@ -98,7 +99,7 @@ class Client
             $config->setNotifyEndpoint($notifyEndpoint);
         }
 
-        $client = new static($config);
+        $client = new static($config, $cache);
 
         if ($defaults) {
             $client->registerDefaultCallbacks();
@@ -108,31 +109,84 @@ class Client
     }
 
     /**
-     * @param Configuration                  $config
-     * @param ResolverInterface|null         $resolver
-     * @param ClientInterface|null           $guzzle
-     * @param ShutdownStrategyInterface|null $shutdownStrategy
+     * @param Configuration                                             $config
+     * @param Psr16CacheInterface|Psr6CacheInterface|DoctrineCache|null $cache
+     * @param ResolverInterface|null                                    $resolver
+     * @param ClientInterface|null                                      $guzzle
+     * @param ShutdownStrategyInterface|null                            $shutdownStrategy
      */
     public function __construct(
         Configuration $config,
+        $cache = null,
         ResolverInterface $resolver = null,
         ClientInterface $guzzle = null,
         ShutdownStrategyInterface $shutdownStrategy = null
     ) {
+        $cache = $this->resolveCache($cache);
+
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: self::makeGuzzle());
-        $this->sessionTracker = new SessionTracker($config, $this->http);
+        $this->sessionTracker = $this->resolveSessionTracker($config, $this->http, $cache);
 
-        $this->registerMiddleware(new NotificationSkipper($config));
-        $this->registerMiddleware(new BreadcrumbData($this->recorder));
-        $this->registerMiddleware(new SessionData($this->sessionTracker));
+        $this->registerMiddleware(new Middleware\NotificationSkipper($config));
+        $this->registerMiddleware(new Middleware\BreadcrumbData($this->recorder));
+        $this->registerMiddleware(new Middleware\SessionData($this->sessionTracker));
 
         // Shutdown strategy is used to trigger flush() calls when batch sending is enabled
         $shutdownStrategy = $shutdownStrategy ?: new PhpShutdownStrategy();
         $shutdownStrategy->registerShutdownStrategy($this);
+    }
+
+    /**
+     * @param Configuration              $config
+     * @param HttpClient                 $http
+     * @param CacheAdapterInterface|null $cache
+     *
+     * @return SessionTrackerInterface
+     */
+    private function resolveSessionTracker(
+        Configuration $config,
+        HttpClient $http,
+        CacheAdapterInterface $cache = null
+    ) {
+        if ($cache instanceof CacheAdapterInterface) {
+            return new SessionTracker($config, $http, $cache);
+        }
+
+        if ($config->shouldCaptureSessions()) {
+            error_log(
+                'Bugsnag: unable to track sessions because no compatible cache was given. '.
+                'Pass a compatible cache object to Bugsnag or disable session tracking to '.
+                'suppress this message.'
+            );
+        }
+
+        return new NullSessionTracker();
+    }
+
+    /**
+     * @param Psr16CacheInterface|Psr6CacheInterface|DoctrineCache|null $cache
+     *
+     * @return CacheAdapterInteface|null
+     */
+    private function resolveCache($cache)
+    {
+        if ($cache === null) {
+            return null;
+        }
+
+        try {
+            $factory = new CacheFactory();
+
+            return $factory->create($cache);
+        } catch (InvalidArgumentException $e) {
+            error_log('Bugsnag: unable to create cache. '.$e->getMessage());
+        }
+
+        return null;
     }
 
     /**
@@ -178,7 +232,7 @@ class Client
      */
     public function registerCallback(callable $callback)
     {
-        $this->registerMiddleware(new CallbackBridge($callback));
+        $this->registerMiddleware(new Middleware\CallbackBridge($callback));
 
         return $this;
     }
@@ -190,12 +244,12 @@ class Client
      */
     public function registerDefaultCallbacks()
     {
-        $this->registerCallback(new GlobalMetaData($this->config))
-             ->registerCallback(new RequestMetaData($this->resolver))
-             ->registerCallback(new RequestCookies($this->resolver))
-             ->registerCallback(new RequestSession($this->resolver))
-             ->registerCallback(new RequestUser($this->resolver))
-             ->registerCallback(new RequestContext($this->resolver));
+        $this->registerCallback(new Callbacks\GlobalMetaData($this->config))
+             ->registerCallback(new Callbacks\RequestContext($this->resolver))
+             ->registerCallback(new Callbacks\RequestCookies($this->resolver))
+             ->registerCallback(new Callbacks\RequestMetaData($this->resolver))
+             ->registerCallback(new Callbacks\RequestSession($this->resolver))
+             ->registerCallback(new Callbacks\RequestUser($this->resolver));
 
         return $this;
     }
@@ -287,7 +341,7 @@ class Client
             if ($callback) {
                 $resolvedReport = null;
 
-                $bridge = new CallbackBridge($callback);
+                $bridge = new Middleware\CallbackBridge($callback);
                 $bridge($report, function ($report) use (&$resolvedReport) {
                     $resolvedReport = $report;
                 });
@@ -364,7 +418,7 @@ class Client
     /**
      * Returns the session tracker.
      *
-     * @return \Bugsnag\SessionTracker
+     * @return SessionTrackerInterface
      */
     public function getSessionTracker()
     {

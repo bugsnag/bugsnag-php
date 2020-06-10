@@ -1,32 +1,14 @@
 <?php
 
-namespace Bugsnag;
+namespace Bugsnag\SessionTracker;
 
+use Bugsnag\Configuration;
+use Bugsnag\HttpClient;
 use Exception;
 use InvalidArgumentException;
 
-class SessionTracker
+class SessionTracker implements SessionTrackerInterface
 {
-    /**
-     * The amount of time between each sending attempt.
-     */
-    protected static $DELIVERY_INTERVAL = 30;
-
-    /**
-     * The maximum amount of sessions to hold onto.
-     */
-    protected static $MAX_SESSION_COUNT = 50;
-
-    /**
-     * The key for storing session counts.
-     */
-    protected static $SESSION_COUNTS_KEY = 'bugsnag-session-counts';
-
-    /**
-     * The key for storing last sent data.
-     */
-    protected static $SESSIONS_LAST_SENT_KEY = 'bugsnag-sessions-last-sent';
-
     /**
      * @var Configuration
      */
@@ -262,13 +244,13 @@ class SessionTracker
 
             $this->setSessionCounts($sessionCounts);
 
-            if (count($sessionCounts) > self::$MAX_SESSION_COUNT) {
+            if (count($sessionCounts) > SessionTrackerInterface::MAX_SESSION_COUNT) {
                 $this->trimOldestSessions();
             }
 
             $lastSent = $this->getLastSent();
 
-            if ($deliver && ((time() - $lastSent) > self::$DELIVERY_INTERVAL)) {
+            if ($deliver && ((time() - $lastSent) > SessionTrackerInterface::DELIVERY_INTERVAL)) {
                 $this->deliverSessions();
             }
         } finally {
@@ -284,7 +266,7 @@ class SessionTracker
     protected function getSessionCounts()
     {
         if (is_callable($this->storageFunction)) {
-            $sessionCounts = call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY);
+            $sessionCounts = call_user_func($this->storageFunction, SessionTrackerInterface::SESSION_COUNTS_KEY);
 
             if (is_array($sessionCounts)) {
                 return $sessionCounts;
@@ -304,7 +286,7 @@ class SessionTracker
     protected function setSessionCounts(array $sessionCounts)
     {
         if (is_callable($this->storageFunction)) {
-            call_user_func($this->storageFunction, self::$SESSION_COUNTS_KEY, $sessionCounts);
+            call_user_func($this->storageFunction, SessionTrackerInterface::SESSION_COUNTS_KEY, $sessionCounts);
         }
 
         $this->sessionCounts = $sessionCounts;
@@ -322,7 +304,7 @@ class SessionTracker
         });
 
         $sessions = array_reverse($sessions);
-        $sessionCounts = array_slice($sessions, 0, self::$MAX_SESSION_COUNT);
+        $sessionCounts = array_slice($sessions, 0, SessionTrackerInterface::MAX_SESSION_COUNT);
 
         $this->setSessionCounts($sessionCounts);
     }
@@ -391,7 +373,7 @@ class SessionTracker
         $time = time();
 
         if (is_callable($this->storageFunction)) {
-            call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY, $time);
+            call_user_func($this->storageFunction, SessionTrackerInterface::SESSIONS_LAST_SENT_KEY, $time);
         } else {
             $this->lastSent = $time;
         }
@@ -403,7 +385,7 @@ class SessionTracker
     protected function getLastSent()
     {
         if (is_callable($this->storageFunction)) {
-            $lastSent = call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY);
+            $lastSent = call_user_func($this->storageFunction, SessionTrackerInterface::SESSIONS_LAST_SENT_KEY);
 
             if (is_int($lastSent)) {
                 return $lastSent;

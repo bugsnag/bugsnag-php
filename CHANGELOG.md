@@ -38,6 +38,10 @@ Changelog
 
 - The `SessionData` class now takes `SessionTracker` instead of `Client` in its constructor
 
+- The second parameter of `Client::make` is now a supported cache instance or `null`
+
+- The second parameter of `Client::__construct` is now a supported cache instance or `null`
+
 ## 3.21.0 (2020-04-29)
 
 ### Enhancements

@@ -3,29 +3,29 @@
 namespace Bugsnag\Middleware;
 
 use Bugsnag\Report;
-use Bugsnag\SessionTracker;
+use Bugsnag\SessionTracker\SessionTrackerInterface;
 
 class SessionData
 {
     /**
-     * @var SessionTracker
+     * @var SessionTrackerInterface
      */
     protected $sessionTracker;
 
     /**
-     * @param SessionTracker $sessionTracker
+     * @param SessionTrackerInterface $sessionTracker
      */
-    public function __construct(SessionTracker $sessionTracker)
+    public function __construct(SessionTrackerInterface $sessionTracker)
     {
         $this->sessionTracker = $sessionTracker;
     }
 
     /**
-     * Attaches session information to the Report, if the SessionTracker has a
+     * Attaches session information to the Report, if the session tracker has a
      * current session. Note that this is not the same as the PHP session, but
      * refers to the current request.
      *
-     * If the SessionTracker does not have a current session, the report will
+     * If the session tracker does not have a current session, the report will
      * not be changed.
      *
      * @param Report   $report

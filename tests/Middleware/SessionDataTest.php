@@ -6,7 +6,7 @@ use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Report;
-use Bugsnag\SessionTracker;
+use Bugsnag\SessionTracker\SessionTracker;
 use Bugsnag\Tests\TestCase;
 use Exception;
 

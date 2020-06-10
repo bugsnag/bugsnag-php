@@ -1,10 +1,12 @@
 <?php
 
-namespace Bugsnag\Tests;
+namespace Bugsnag\Tests\SessionTracker;
 
 use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
-use Bugsnag\SessionTracker;
+use Bugsnag\SessionTracker\SessionTracker;
+use Bugsnag\SessionTracker\SessionTrackerInterface;
+use Bugsnag\Tests\TestCase;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use RuntimeException;
@@ -31,6 +33,14 @@ class SessionTrackerTest extends TestCase
             ->getMock();
 
         $this->sessionTracker = new SessionTracker($this->config, $this->client);
+    }
+
+    public function testItImplementsTheSessionTrackerInterface()
+    {
+        $this->assertInstanceOf(
+            SessionTrackerInterface::class,
+            $this->sessionTracker
+        );
     }
 
     public function testSendSessionsEmpty()
