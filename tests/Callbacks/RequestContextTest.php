@@ -9,6 +9,9 @@ use Bugsnag\Request\BasicResolver;
 use Bugsnag\Tests\TestCase;
 use Exception;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class RequestContextTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */
