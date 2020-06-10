@@ -15,14 +15,33 @@ class NullSessionTrackerTest extends TestCase
         $this->assertInstanceOf(SessionTrackerInterface::class, $sessionTracker);
     }
 
-    public function testItLogsWhenStartSessionIsCalled()
+    public function testItStartsACurrentSessionWhenStartSessionIsCalled()
     {
         $errorLog = $this->getFunctionMock('Bugsnag\SessionTracker', 'error_log');
-        $errorLog->expects($this->once())
-            ->with("Bugsnag: 'startSession' cannot be called when session tracking is disabled");
+        $errorLog->expects($this->never());
 
         $sessionTracker = new NullSessionTracker();
         $sessionTracker->startSession();
+
+        $session = $sessionTracker->getCurrentSession();
+
+        $this->assertArrayHasKey('id', $session);
+        $this->assertArrayHasKey('startedAt', $session);
+        $this->assertArrayHasKey('events', $session);
+        $this->assertSame(['handled' => 0, 'unhandled' => 0], $session['events']);
+    }
+
+    public function testItTheCurrentSessionCanBeSet()
+    {
+        $errorLog = $this->getFunctionMock('Bugsnag\SessionTracker', 'error_log');
+        $errorLog->expects($this->never());
+
+        $sessionTracker = new NullSessionTracker();
+        $sessionTracker->setCurrentSession(['hello' => 'world']);
+
+        $session = $sessionTracker->getCurrentSession();
+
+        $this->assertSame(['hello' => 'world'], $session);
     }
 
     public function testItLogsWhenSendSessionsIsCalled()
@@ -33,24 +52,6 @@ class NullSessionTrackerTest extends TestCase
 
         $sessionTracker = new NullSessionTracker();
         $sessionTracker->sendSessions();
-    }
-
-    public function testSetCurrentSessionHasNoObservableEffects()
-    {
-        $errorLog = $this->getFunctionMock('Bugsnag\SessionTracker', 'error_log');
-        $errorLog->expects($this->never());
-
-        $sessionTracker = new NullSessionTracker();
-        $sessionTracker->setCurrentSession([]);
-    }
-
-    public function testGetCurrentSessionHasNoObservableEffects()
-    {
-        $errorLog = $this->getFunctionMock('Bugsnag\SessionTracker', 'error_log');
-        $errorLog->expects($this->never());
-
-        $sessionTracker = new NullSessionTracker();
-        $sessionTracker->getCurrentSession(null);
     }
 
     public function testSetLockFunctionsHasNoObservableEffects()

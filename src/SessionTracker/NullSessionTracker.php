@@ -5,11 +5,24 @@ namespace Bugsnag\SessionTracker;
 final class NullSessionTracker implements SessionTrackerInterface
 {
     /**
+     * @var array
+     */
+    private $currentSession = [];
+
+    /**
      * @return void
      */
     public function startSession()
     {
-        $this->warn(__FUNCTION__);
+        // TODO this is duplicated in SessionTracker
+        $this->currentSession = [
+            'id' => uniqid('', true),
+            'startedAt' => strftime('%Y-%m-%dT%H:%M:00'),
+            'events' => [
+                'handled' => 0,
+                'unhandled' => 0,
+            ],
+        ];
     }
 
     /**
@@ -19,6 +32,7 @@ final class NullSessionTracker implements SessionTrackerInterface
      */
     public function setCurrentSession(array $session)
     {
+        $this->currentSession = $session;
     }
 
     /**
@@ -26,7 +40,7 @@ final class NullSessionTracker implements SessionTrackerInterface
      */
     public function getCurrentSession()
     {
-        return [];
+        return $this->currentSession;
     }
 
     /**

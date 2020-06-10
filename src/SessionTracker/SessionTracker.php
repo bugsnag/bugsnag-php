@@ -94,6 +94,7 @@ class SessionTracker implements SessionTrackerInterface
     {
         $currentTime = strftime('%Y-%m-%dT%H:%M:00');
 
+        // TODO this is duplicated in NullSessionTracker
         $session = [
             'id' => uniqid('', true),
             'startedAt' => $currentTime,

@@ -6,108 +6,168 @@ use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Report;
+use Bugsnag\SessionTracker\NullSessionTracker;
 use Bugsnag\SessionTracker\SessionTracker;
+use Bugsnag\SessionTracker\SessionTrackerInterface;
 use Bugsnag\Tests\TestCase;
 use Exception;
 
 class SessionDataTest extends TestCase
 {
-    /**
-     * @var SessionTracker
-     */
-    private $sessionTracker;
-
-    /**
-     * @var Report
-     */
-    private $report;
-
-    protected function setUp()
+    public function sessionTrackerProvider()
     {
         $config = new Configuration('api-key');
         $httpClient = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->sessionTracker = new SessionTracker($config, $httpClient);
-        $this->report = Report::fromPHPThrowable($config, new Exception('no'));
+        return [
+            'real session tracker' => [
+                new SessionTracker($config, $httpClient),
+                Report::fromPHPThrowable($config, new Exception('no')),
+            ],
+            'null session tracker' => [
+                new NullSessionTracker(),
+                Report::fromPHPThrowable($config, new Exception('no')),
+            ],
+        ];
     }
 
-    public function testItSetsTheUnhandledCountWhenAnUnhandledErrorOccurs()
-    {
-        $this->sessionTracker->startSession();
-        $this->report->setUnhandled(true);
+    /**
+     * @param SessionTrackerInterface $sessionTracker
+     * @param Report                  $report
+     *
+     * @return void
+     *
+     * @dataProvider sessionTrackerProvider
+     */
+    public function testItSetsTheUnhandledCountWhenAnUnhandledErrorOccurs(
+        SessionTrackerInterface $sessionTracker,
+        Report $report
+    ) {
+        $sessionTracker->startSession();
+        $report->setUnhandled(true);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($sessionTracker);
 
-        $middleware($this->report, function (Report $report) {
+        $middleware($report, function (Report $report) {
             $this->assertReportHasUnhandledErrors($report, 1);
         });
     }
 
-    public function testItIncrementsTheUnhandledCountWhenMultipleUnhandledErrorsOccur()
-    {
-        $this->sessionTracker->startSession();
-        $this->report->setUnhandled(true);
+    /**
+     * @param SessionTrackerInterface $sessionTracker
+     * @param Report                  $report
+     *
+     * @return void
+     *
+     * @dataProvider sessionTrackerProvider
+     */
+    public function testItIncrementsTheUnhandledCountWhenMultipleUnhandledErrorsOccur(
+        SessionTrackerInterface $sessionTracker,
+        Report $report
+    ) {
+        $sessionTracker->startSession();
+        $report->setUnhandled(true);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($sessionTracker);
 
         foreach (range(1, 5) as $errorCount) {
-            $middleware($this->report, function (Report $report) use ($errorCount) {
+            $middleware($report, function (Report $report) use ($errorCount) {
                 $this->assertReportHasUnhandledErrors($report, $errorCount);
             });
         }
     }
 
-    public function testItSetsTheHandledCountWhenAHandledErrorOccurs()
-    {
-        $this->sessionTracker->startSession();
-        $this->report->setUnhandled(false);
+    /**
+     * @param SessionTrackerInterface $sessionTracker
+     * @param Report                  $report
+     *
+     * @return void
+     *
+     * @dataProvider sessionTrackerProvider
+     */
+    public function testItSetsTheHandledCountWhenAHandledErrorOccurs(
+        SessionTrackerInterface $sessionTracker,
+        Report $report
+    ) {
+        $sessionTracker->startSession();
+        $report->setUnhandled(false);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($sessionTracker);
 
-        $middleware($this->report, function (Report $report) {
+        $middleware($report, function (Report $report) {
             $this->assertReportHasHandledErrors($report, 1);
         });
     }
 
-    public function testItIncrementsTheHandledCountWhenMultipleHandledErrorsOccur()
-    {
-        $this->sessionTracker->startSession();
-        $this->report->setUnhandled(false);
+    /**
+     * @param SessionTrackerInterface $sessionTracker
+     * @param Report                  $report
+     *
+     * @return void
+     *
+     * @dataProvider sessionTrackerProvider
+     */
+    public function testItIncrementsTheHandledCountWhenMultipleHandledErrorsOccur(
+        SessionTrackerInterface $sessionTracker,
+        Report $report
+    ) {
+        $sessionTracker->startSession();
+        $report->setUnhandled(false);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($sessionTracker);
 
         foreach (range(1, 5) as $errorCount) {
-            $middleware($this->report, function (Report $report) use ($errorCount) {
+            $middleware($report, function (Report $report) use ($errorCount) {
                 $this->assertReportHasHandledErrors($report, $errorCount);
             });
         }
     }
 
-    public function testItDoesNothingWhenForAnUnhandledErrorWhenThereIsNoSessionData()
-    {
+    /**
+     * @param SessionTrackerInterface $sessionTracker
+     * @param Report                  $report
+     *
+     * @return void
+     *
+     * @dataProvider sessionTrackerProvider
+     */
+    public function testItDoesNothingWhenForAnUnhandledErrorWhenThereIsNoSessionData(
+        SessionTrackerInterface $sessionTracker,
+        Report $report
+    ) {
         // We don't call 'startSession' here so there is no session data to
         // capture in the middleware
-        $this->report->setUnhandled(true);
+        $report->setUnhandled(true);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($sessionTracker);
 
-        $middleware($this->report, function (Report $report) {
+        $middleware($report, function (Report $report) {
             $reportArray = $report->toArray();
             $this->assertArrayNotHasKey('session', $reportArray);
         });
     }
 
-    public function testItDoesNothingWhenForAHandledErrorWhenThereIsNoSessionData()
-    {
+    /**
+     * @param SessionTrackerInterface $sessionTracker
+     * @param Report                  $report
+     *
+     * @return void
+     *
+     * @dataProvider sessionTrackerProvider
+     */
+    public function testItDoesNothingWhenForAHandledErrorWhenThereIsNoSessionData(
+        SessionTrackerInterface $sessionTracker,
+        Report $report
+    ) {
         // We don't call 'startSession' here so there is no session data to
         // capture in the middleware
-        $this->report->setUnhandled(false);
+        $report->setUnhandled(false);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($sessionTracker);
 
-        $middleware($this->report, function (Report $report) {
+        $middleware($report, function (Report $report) {
             $reportArray = $report->toArray();
             $this->assertArrayNotHasKey('session', $reportArray);
         });
