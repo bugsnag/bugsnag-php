@@ -6,7 +6,7 @@ use GrahamCampbell\TestBenchCore\MockeryTrait;
 use GuzzleHttp\ClientInterface;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use ReflectionObject;
+use PHPUnit\Runner\Version as PhpUnitVersion;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -15,7 +15,7 @@ abstract class TestCase extends BaseTestCase
 
     public function expectedException($class, $message = null)
     {
-        if (class_exists(\PHPUnit_Framework_TestCase::class)) {
+        if ($this->isPhpUnit4()) {
             $this->setExpectedException($class, $message);
 
             return;
@@ -26,6 +26,18 @@ abstract class TestCase extends BaseTestCase
         if ($message !== null) {
             $this->expectExceptionMessage($message);
         }
+    }
+
+    protected function isPhpUnit7()
+    {
+        return version_compare($this->phpUnitVersion(), '7.0.0', '>=')
+            && version_compare($this->phpUnitVersion(), '8.0.0', '<');
+    }
+
+    protected function isPhpUnit4()
+    {
+        return version_compare($this->phpUnitVersion(), '4.0.0', '>=')
+            && version_compare($this->phpUnitVersion(), '5.0.0', '<');
     }
 
     /**
@@ -52,18 +64,14 @@ abstract class TestCase extends BaseTestCase
         return method_exists(ClientInterface::class, 'getBaseUrl');
     }
 
-    private static function readObjectAttribute($object, $attributeName)
+    private function phpUnitVersion()
     {
-        $reflector = new ReflectionObject($object);
-
-        $attribute = $reflector->getProperty($attributeName);
-
-        if (!$attribute || $attribute->isPublic()) {
-            return $object->$attributeName;
+        // Support versions of PHPUnit before 6.0.0 when native namespaces were
+        // introduced for the Version class
+        if (class_exists(\PHPUnit_Runner_Version::class)) {
+            return \PHPUnit_Runner_Version::id();
         }
 
-        $attribute->setAccessible(true);
-
-        return $attribute->getValue($object);
+        return PhpUnitVersion::id();
     }
 }
