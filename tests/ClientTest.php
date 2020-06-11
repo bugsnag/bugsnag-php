@@ -7,6 +7,7 @@ use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\Report;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
+use Bugsnag\Tests\Fake\FakePsr16Cache;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
 use Mockery;
@@ -455,28 +456,30 @@ class ClientTest extends TestCase
 
     public function testBatchingDoesNotFlush()
     {
-        $this->client = $this->getMockBuilder(Client::class)
+        /** @var MockObject&Client $client */
+        $client = $this->getMockBuilder(Client::class)
             ->setMethods(['flush'])
             ->setConstructorArgs([$this->config, null, null, $this->guzzle])
             ->getMock();
 
-        $this->client->expects($this->never())->method('flush');
+        $client->expects($this->never())->method('flush');
 
-        $this->client->notify(Report::fromNamedError($this->config, 'Name'));
+        $client->notify(Report::fromNamedError($this->config, 'Name'));
     }
 
     public function testFlushesWhenNotBatching()
     {
-        $this->client = $this->getMockBuilder(Client::class)
+        /** @var MockObject&Client $client */
+        $client = $this->getMockBuilder(Client::class)
             ->setMethods(['flush'])
             ->setConstructorArgs([$this->config, null, null, $this->guzzle])
             ->getMock();
 
-        $this->client->expects($this->once())->method('flush');
+        $client->expects($this->once())->method('flush');
 
-        $this->client->setBatchSending(false);
+        $client->setBatchSending(false);
 
-        $this->client->notify(Report::fromNamedError($this->config, 'Name'));
+        $client->notify(Report::fromNamedError($this->config, 'Name'));
     }
 
     public function testCanManuallyFlush()
@@ -907,5 +910,31 @@ class ClientTest extends TestCase
         $this->config->setAutoCaptureSessions(false);
 
         new Client($this->config, $this);
+    }
+
+    public function testItStartsSessionTrackingWhenGivenAValidCacheAndAutoSessionTrackingIsEnabled()
+    {
+        $cache = new FakePsr16Cache();
+        $config = new Configuration('example-api-key');
+        $config->setAutoCaptureSessions(true);
+
+        $client = new Client($config, $cache);
+
+        $sessionTracker = $client->getSessionTracker();
+
+        $this->assertNotEmpty($sessionTracker->getCurrentSession());
+    }
+
+    public function testItDoesNotStartSessionTrackingWhenGivenAValidCacheAndAutoSessionTrackingIsDisabled()
+    {
+        $cache = new FakePsr16Cache();
+        $config = new Configuration('example-api-key');
+        $config->setAutoCaptureSessions(false);
+
+        $client = new Client($config, $cache);
+
+        $sessionTracker = $client->getSessionTracker();
+
+        $this->assertEmpty($sessionTracker->getCurrentSession());
     }
 }

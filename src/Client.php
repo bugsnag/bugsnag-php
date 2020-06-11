@@ -152,7 +152,15 @@ class Client
         CacheAdapterInterface $cache = null
     ) {
         if ($cache instanceof CacheAdapterInterface) {
-            return new SessionTracker($config, $http, $cache);
+            $sessionTracker = new SessionTracker($config, $http, $cache);
+
+            // Start session tracking automatically if automatic session
+            // tracking is enabled and we've been given a cache
+            if ($config->shouldCaptureSessions()) {
+                $sessionTracker->startSession();
+            }
+
+            return $sessionTracker;
         }
 
         if ($config->shouldCaptureSessions()) {
