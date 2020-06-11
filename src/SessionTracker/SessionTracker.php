@@ -27,41 +27,6 @@ class SessionTracker implements SessionTrackerInterface
     protected $sessionCounts = [];
 
     /**
-     * A locking function for synchronisation.
-     *
-     * @var callable|null
-     */
-    protected $lockFunction = null;
-
-    /**
-     * An unlocking function for synchronisation.
-     *
-     * @var callable|null
-     */
-    protected $unlockFunction = null;
-
-    /**
-     * A function to use when retrying a failed delivery.
-     *
-     * @var callable|null
-     */
-    protected $retryFunction = null;
-
-    /**
-     * A function to store/get data.
-     *
-     * @var callable|null
-     */
-    protected $storageFunction = null;
-
-    /**
-     * A function to store/get sessions.
-     *
-     * @var callable|null
-     */
-    protected $sessionFunction = null;
-
-    /**
      * The last time the sessions were delivered.
      *
      * @var int
@@ -74,6 +39,13 @@ class SessionTracker implements SessionTrackerInterface
      * @var array
      */
     protected $currentSession = [];
+
+    /**
+     * A function to use when retrying a failed delivery.
+     *
+     * @var callable|null
+     */
+    protected $retryFunction = null;
 
     /**
      * @param Configuration $config
@@ -114,11 +86,7 @@ class SessionTracker implements SessionTrackerInterface
      */
     public function setCurrentSession(array $session)
     {
-        if (is_callable($this->sessionFunction)) {
-            call_user_func($this->sessionFunction, $session);
-        } else {
-            $this->currentSession = $session;
-        }
+        $this->currentSession = $session;
     }
 
     /**
@@ -126,16 +94,6 @@ class SessionTracker implements SessionTrackerInterface
      */
     public function getCurrentSession()
     {
-        if (is_callable($this->sessionFunction)) {
-            $currentSession = call_user_func($this->sessionFunction);
-
-            if (is_array($currentSession)) {
-                return $currentSession;
-            }
-
-            return [];
-        }
-
         return $this->currentSession;
     }
 
@@ -144,35 +102,28 @@ class SessionTracker implements SessionTrackerInterface
      */
     public function sendSessions()
     {
-        $locked = false;
-        if (is_callable($this->lockFunction) && is_callable($this->unlockFunction)) {
-            call_user_func($this->lockFunction);
-            $locked = true;
+        $sessions = $this->sessionCounts;
+        $this->sessionCounts = [];
+
+        if (count($sessions) === 0 || !$this->config->shouldNotify()) {
+            return;
         }
+
+        $payload = $this->constructPayload($sessions);
+
+        $this->lastSent = time();
 
         try {
-            $this->deliverSessions();
-        } finally {
-            if ($locked) {
-                call_user_func($this->unlockFunction);
+            $this->http->sendSessions($payload);
+        } catch (Exception $e) {
+            error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
+
+            if (is_callable($this->retryFunction)) {
+                call_user_func($this->retryFunction, $sessions);
+            } else {
+                $this->sessionCounts = $sessions;
             }
         }
-    }
-
-    /**
-     * @param callable $lock
-     * @param callable $unlock
-     *
-     * @return void
-     */
-    public function setLockFunctions($lock, $unlock)
-    {
-        if (!is_callable($lock) || !is_callable($unlock)) {
-            throw new InvalidArgumentException('Both lock and unlock functions must be callable');
-        }
-
-        $this->lockFunction = $lock;
-        $this->unlockFunction = $unlock;
     }
 
     /**
@@ -190,106 +141,25 @@ class SessionTracker implements SessionTrackerInterface
     }
 
     /**
-     * @param callable $function
-     *
-     * @return void
-     */
-    public function setStorageFunction($function)
-    {
-        if (!is_callable($function)) {
-            throw new InvalidArgumentException('Storage function must be callable');
-        }
-
-        $this->storageFunction = $function;
-    }
-
-    /**
-     * @param callable $function
-     *
-     * @return void
-     */
-    public function setSessionFunction($function)
-    {
-        if (!is_callable($function)) {
-            throw new InvalidArgumentException('Session function must be callable');
-        }
-
-        $this->sessionFunction = $function;
-    }
-
-    /**
      * @param string $minute
-     * @param int $count
-     * @param bool $deliver
      *
      * @return void
      */
-    protected function incrementSessions($minute, $count = 1, $deliver = true)
+    protected function incrementSessions($minute)
     {
-        $locked = false;
-
-        if (is_callable($this->lockFunction) && is_callable($this->unlockFunction)) {
-            call_user_func($this->lockFunction);
-            $locked = true;
+        if (array_key_exists($minute, $this->sessionCounts)) {
+            $this->sessionCounts[$minute] += 1;
+        } else {
+            $this->sessionCounts[$minute] = 1;
         }
 
-        try {
-            $sessionCounts = $this->getSessionCounts();
-
-            if (array_key_exists($minute, $sessionCounts)) {
-                $sessionCounts[$minute] += $count;
-            } else {
-                $sessionCounts[$minute] = $count;
-            }
-
-            $this->setSessionCounts($sessionCounts);
-
-            if (count($sessionCounts) > SessionTrackerInterface::MAX_SESSION_COUNT) {
-                $this->trimOldestSessions();
-            }
-
-            $lastSent = $this->getLastSent();
-
-            if ($deliver && ((time() - $lastSent) > SessionTrackerInterface::DELIVERY_INTERVAL)) {
-                $this->deliverSessions();
-            }
-        } finally {
-            if ($locked) {
-                call_user_func($this->unlockFunction);
-            }
-        }
-    }
-
-    /**
-     * @return array
-     */
-    protected function getSessionCounts()
-    {
-        if (is_callable($this->storageFunction)) {
-            $sessionCounts = call_user_func($this->storageFunction, SessionTrackerInterface::SESSION_COUNTS_KEY);
-
-            if (is_array($sessionCounts)) {
-                return $sessionCounts;
-            }
-
-            return [];
+        if (count($this->sessionCounts) > SessionTrackerInterface::MAX_SESSION_COUNT) {
+            $this->trimOldestSessions();
         }
 
-        return $this->sessionCounts;
-    }
-
-    /**
-     * @param array $sessionCounts
-     *
-     * @return void
-     */
-    protected function setSessionCounts(array $sessionCounts)
-    {
-        if (is_callable($this->storageFunction)) {
-            call_user_func($this->storageFunction, SessionTrackerInterface::SESSION_COUNTS_KEY, $sessionCounts);
+        if ((time() - $this->lastSent) > SessionTrackerInterface::DELIVERY_INTERVAL) {
+            $this->sendSessions();
         }
-
-        $this->sessionCounts = $sessionCounts;
     }
 
     /**
@@ -297,16 +167,14 @@ class SessionTracker implements SessionTrackerInterface
      */
     protected function trimOldestSessions()
     {
-        $sessions = $this->getSessionCounts();
-
-        uksort($sessions, function ($key) {
+        uksort($this->sessionCounts, function ($key) {
             return strtotime($key);
         });
 
-        $sessions = array_reverse($sessions);
+        $sessions = array_reverse($this->sessionCounts);
         $sessionCounts = array_slice($sessions, 0, SessionTrackerInterface::MAX_SESSION_COUNT);
 
-        $this->setSessionCounts($sessionCounts);
+        $this->sessionCounts = $sessionCounts;
     }
 
     /**
@@ -317,6 +185,7 @@ class SessionTracker implements SessionTrackerInterface
     protected function constructPayload(array $sessions)
     {
         $formattedSessions = [];
+
         foreach ($sessions as $minute => $count) {
             $formattedSessions[] = ['startedAt' => $minute, 'sessionsStarted' => $count];
         }
@@ -327,73 +196,5 @@ class SessionTracker implements SessionTrackerInterface
             'app' => $this->config->getAppData(),
             'sessionCounts' => $formattedSessions,
         ];
-    }
-
-    /**
-     * @return void
-     */
-    protected function deliverSessions()
-    {
-        $sessions = $this->getSessionCounts();
-
-        $this->setSessionCounts([]);
-
-        if (count($sessions) === 0) {
-            return;
-        }
-
-        if (!$this->config->shouldNotify()) {
-            return;
-        }
-
-        $payload = $this->constructPayload($sessions);
-
-        $this->setLastSent();
-
-        try {
-            $this->http->sendSessions($payload);
-        } catch (Exception $e) {
-            error_log('Bugsnag Warning: Couldn\'t notify. '.$e->getMessage());
-
-            if (is_callable($this->retryFunction)) {
-                call_user_func($this->retryFunction, $sessions);
-            } else {
-                foreach ($sessions as $minute => $count) {
-                    $this->incrementSessions($minute, $count, false);
-                }
-            }
-        }
-    }
-
-    /**
-     * @return void
-     */
-    protected function setLastSent()
-    {
-        $time = time();
-
-        if (is_callable($this->storageFunction)) {
-            call_user_func($this->storageFunction, SessionTrackerInterface::SESSIONS_LAST_SENT_KEY, $time);
-        } else {
-            $this->lastSent = $time;
-        }
-    }
-
-    /**
-     * @return int
-     */
-    protected function getLastSent()
-    {
-        if (is_callable($this->storageFunction)) {
-            $lastSent = call_user_func($this->storageFunction, SessionTrackerInterface::SESSIONS_LAST_SENT_KEY);
-
-            if (is_int($lastSent)) {
-                return $lastSent;
-            }
-
-            return 0;
-        }
-
-        return $this->lastSent;
     }
 }

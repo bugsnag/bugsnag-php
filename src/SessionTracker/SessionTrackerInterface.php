@@ -47,31 +47,9 @@ interface SessionTrackerInterface
     public function sendSessions();
 
     /**
-     * @param callable $lock
-     * @param callable $unlock
-     *
-     * @return void
-     */
-    public function setLockFunctions($lock, $unlock);
-
-    /**
      * @param callable $function
      *
      * @return void
      */
     public function setRetryFunction($function);
-
-    /**
-     * @param callable $function
-     *
-     * @return void
-     */
-    public function setStorageFunction($function);
-
-    /**
-     * @param callable $function
-     *
-     * @return void
-     */
-    public function setSessionFunction($function);
 }
