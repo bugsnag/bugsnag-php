@@ -131,6 +131,99 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->startSession();
     }
 
+    /**
+     * @runInSeparateProcess as we need to mock 'strftime'
+     */
+    public function testThereIsAMaximumNumberOfSessionsThatWillBeSent()
+    {
+        // 60 sessions is convenient because they are batched per minute, so we
+        // can pretend to generate one session per minute for an hour
+        $sessionsToGenerate = 60;
+
+        $this->assertGreaterThan(
+            SessionTrackerInterface::MAX_SESSION_COUNT,
+            $sessionsToGenerate,
+            'Expected to generate more sessions than the maximum'
+        );
+
+        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
+        $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
+        $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
+        $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
+
+        $expectCallback = function ($payload) use ($sessionsToGenerate) {
+            $this->assertArrayHasKey('notifier', $payload);
+            $this->assertArrayHasKey('device', $payload);
+            $this->assertArrayHasKey('app', $payload);
+            $this->assertArrayHasKey('sessionCounts', $payload);
+
+            $this->assertSame($payload['notifier'], 'test_notifier');
+            $this->assertSame($payload['device'], 'device_data');
+            $this->assertSame($payload['app'], 'app_data');
+            $this->assertCount(SessionTrackerInterface::MAX_SESSION_COUNT, $payload['sessionCounts']);
+            $this->assertLessThan($sessionsToGenerate, count($payload['sessionCounts']));
+
+            // Ensure the dates go in decending order of minutes, starting at 59
+            $expectedMinute = 59;
+            $dateFormat = '2000-01-01T00:%s:00';
+
+            foreach ($payload['sessionCounts'] as $session) {
+                $this->assertArrayHasKey('startedAt', $session);
+                $this->assertArrayHasKey('sessionsStarted', $session);
+
+                $date = sprintf(
+                    $dateFormat,
+                    str_pad($expectedMinute, 2, '0', STR_PAD_LEFT)
+                );
+
+                $this->assertSame($date, $session['startedAt']);
+                $this->assertSame(1, $session['sessionsStarted']);
+
+                $expectedMinute--;
+            }
+
+            return true;
+        };
+
+        $this->client->expects($this->once())
+            ->method('sendSessions')
+            ->with($this->callback($expectCallback));
+
+        $strftimeReturnValues = array_map(
+            function ($minute) {
+                $minute = str_pad($minute, 2, '0', STR_PAD_LEFT);
+
+                return "2000-01-01T00:{$minute}:00";
+            },
+            // range is inclusive but we need to generate 0-59
+            range(0, $sessionsToGenerate - 1)
+        );
+
+        $invocation = 0;
+
+        $strftime = $this->getFunctionMock('Bugsnag\\SessionTracker', 'strftime');
+        $strftime->expects($this->exactly($sessionsToGenerate))
+            ->withAnyParameters()
+            ->willReturnCallback(function () use ($strftimeReturnValues, &$invocation) {
+                return $strftimeReturnValues[$invocation++];
+            });
+
+        // Set the lastSent property of the SessionTracker so that 'startSession'
+        // doesn't immediately send sessions
+        $setLastSent = function () {
+            $this->lastSent = time();
+        };
+
+        $setLastSent = $setLastSent->bindTo($this->sessionTracker, $this->sessionTracker);
+        $setLastSent();
+
+        for ($i = 0; $i < $sessionsToGenerate; $i++) {
+            $this->sessionTracker->startSession();
+        }
+
+        $this->sessionTracker->sendSessions();
+    }
+
     public function testSetRetryFunctionThrowsWhenNotGivenACallable()
     {
         $this->expectedException(InvalidArgumentException::class, 'The retry function must be callable');
