@@ -8,7 +8,6 @@ use Bugsnag\Cache\Adapter\CacheAdapterInterface;
 use Bugsnag\Cache\CacheFactory;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
-use Bugsnag\SessionTracker\NullSessionTracker;
 use Bugsnag\SessionTracker\SessionTracker;
 use Bugsnag\SessionTracker\SessionTrackerInterface;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
@@ -164,7 +163,7 @@ class Client
             );
         }
 
-        return new NullSessionTracker();
+        return new SessionTracker($config, $http);
     }
 
     /**

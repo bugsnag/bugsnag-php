@@ -6,7 +6,6 @@ use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Report;
-use Bugsnag\SessionTracker\NullSessionTracker;
 use Bugsnag\SessionTracker\SessionTracker;
 use Bugsnag\SessionTracker\SessionTrackerInterface;
 use Bugsnag\Tests\TestCase;
@@ -17,6 +16,7 @@ class SessionDataTest extends TestCase
     public function sessionTrackerProvider()
     {
         $config = new Configuration('api-key');
+        /** @var HttpClient&\PHPUnit\Framework\MockObject $httpClient */
         $httpClient = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -24,10 +24,6 @@ class SessionDataTest extends TestCase
         return [
             'real session tracker' => [
                 new SessionTracker($config, $httpClient),
-                Report::fromPHPThrowable($config, new Exception('no')),
-            ],
-            'null session tracker' => [
-                new NullSessionTracker(),
                 Report::fromPHPThrowable($config, new Exception('no')),
             ],
         ];
