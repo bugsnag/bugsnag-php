@@ -97,7 +97,6 @@ class SessionTrackerTest extends TestCase
         };
 
         $setLastSent = $setLastSent->bindTo($this->sessionTracker, $this->sessionTracker);
-
         $setLastSent();
 
         $this->sessionTracker->startSession();
@@ -129,6 +128,83 @@ class SessionTrackerTest extends TestCase
             ->with($this->callback($expectCallback));
 
         $this->sessionTracker->startSession();
+    }
+
+    public function testIfSendingSessionsFailsTheyWillBeResentOnTheNextCallWhenNoRetryFunctionIsGiven()
+    {
+        $this->config->expects($this->exactly(2))->method('shouldNotify')->willReturn(true);
+        $this->config->expects($this->exactly(2))->method('getNotifier')->willReturn('test_notifier');
+        $this->config->expects($this->exactly(2))->method('getDeviceData')->willReturn('device_data');
+        $this->config->expects($this->exactly(2))->method('getAppData')->willReturn('app_data');
+
+        $calls = 0;
+
+        $this->client->expects($this->exactly(2))
+            ->method('sendSessions')
+            ->with($this->callback(function ($payload) {
+                $this->assertArrayHasKey('notifier', $payload);
+                $this->assertArrayHasKey('device', $payload);
+                $this->assertArrayHasKey('app', $payload);
+                $this->assertArrayHasKey('sessionCounts', $payload);
+
+                $this->assertSame($payload['notifier'], 'test_notifier');
+                $this->assertSame($payload['device'], 'device_data');
+                $this->assertSame($payload['app'], 'app_data');
+                $this->assertCount(1, $payload['sessionCounts']);
+
+                $session = $payload['sessionCounts'][0];
+
+                $this->assertArrayHasKey('startedAt', $session);
+                $this->assertArrayHasKey('sessionsStarted', $session);
+
+                $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $session['startedAt']);
+                $this->assertSame(1, $session['sessionsStarted']);
+
+                return true;
+            }))
+            ->willReturnCallback(function () use (&$calls) {
+                $calls++;
+
+                if ($calls === 1) {
+                    throw new InvalidArgumentException(
+                        'Making sendSessions fail the first time it is called'
+                    );
+                }
+            });
+
+        $this->sessionTracker->startSession();
+        $this->sessionTracker->sendSessions();
+    }
+
+    public function testIfSendingSessionsFailsTheRetryFunctionWillBeCalledIfOneIsGiven()
+    {
+        $wasCalled = false;
+
+        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
+        $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
+        $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
+        $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
+
+        $this->client->expects($this->once())
+            ->method('sendSessions')
+            ->willThrowException(new InvalidArgumentException('Hello'));
+
+        $retryFunction = function (array $sessions) use (&$wasCalled) {
+            $this->assertCount(1, $sessions);
+
+            foreach ($sessions as $minute => $count) {
+                $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $minute);
+                $this->assertSame(1, $count);
+            }
+
+            $wasCalled = true;
+        };
+
+        $this->sessionTracker->setRetryFunction($retryFunction);
+
+        $this->sessionTracker->startSession();
+
+        $this->assertTrue($wasCalled, 'Expected retryFunction to be called');
     }
 
     /**
