@@ -167,14 +167,17 @@ class SessionTracker implements SessionTrackerInterface
      */
     protected function trimOldestSessions()
     {
-        uksort($this->sessionCounts, function ($key) {
-            return strtotime($key);
+        // Sort the session counts so that the oldest minutes are first
+        // i.e. '2000-01-01T00:00:00' should be after '2000-01-01T00:01:00'
+        uksort($this->sessionCounts, function ($a, $b) {
+            return strtotime($b) - strtotime($a);
         });
 
-        $sessions = array_reverse($this->sessionCounts);
-        $sessionCounts = array_slice($sessions, 0, SessionTrackerInterface::MAX_SESSION_COUNT);
-
-        $this->sessionCounts = $sessionCounts;
+        $this->sessionCounts = array_slice(
+            $this->sessionCounts,
+            0,
+            SessionTrackerInterface::MAX_SESSION_COUNT
+        );
     }
 
     /**
