@@ -99,39 +99,21 @@ class SessionTrackerTest extends TestCase
             ->method('sendSessions')
             ->with($this->callback($expectCallback));
 
-        // Set the lastSent property of the SessionTracker so that 'startSession'
-        // doesn't immediately send sessions
-        $setLastSent = function () {
-            $this->lastSent = time();
-        };
-
-        $setLastSent = $setLastSent->bindTo($this->sessionTracker, $this->sessionTracker);
-        $setLastSent();
-
         $this->sessionTracker->startSession();
         $this->sessionTracker->sendSessions();
     }
 
-    public function testSessionsAreSentOnStartSessionIfNotRecentlySent()
+    public function testSessionsAreBatchedAndSentOnDestruction()
     {
         $expectCallback = function ($payload) {
-            $this->assertArrayHasKey('notifier', $payload);
-            $this->assertArrayHasKey('device', $payload);
-            $this->assertArrayHasKey('app', $payload);
             $this->assertArrayHasKey('sessionCounts', $payload);
-
-            $this->assertSame($this->config->getNotifier(), $payload['notifier']);
-            $this->assertSame($this->config->getDeviceData(), $payload['device']);
-            $this->assertSame($this->config->getAppData(), $payload['app']);
             $this->assertCount(1, $payload['sessionCounts']);
 
             $session = $payload['sessionCounts'][0];
-
             $this->assertArrayHasKey('startedAt', $session);
             $this->assertArrayHasKey('sessionsStarted', $session);
-
             $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $session['startedAt']);
-            $this->assertSame(1, $session['sessionsStarted']);
+            $this->assertSame(2, $session['sessionsStarted']);
 
             return true;
         };
@@ -141,10 +123,19 @@ class SessionTrackerTest extends TestCase
             ->with($this->callback($expectCallback));
 
         $this->sessionTracker->startSession();
+        $this->sessionTracker->startSession();
+
+        // Trigger the destructor which should result in one call to 'sendSessions'
+        // on the HttpClient and a 'sessionsStarted' of '2' in the payload
+        unset($this->sessionTracker);
     }
 
     public function testIfSendingSessionsFailsTheyWillBeResentOnTheNextCallWhenNoRetryFunctionIsGiven()
     {
+        $errorLog = $this->getFunctionMock('Bugsnag\SessionTracker', 'error_log');
+        $errorLog->expects($this->once())
+            ->with("Bugsnag Warning: Couldn't notify. Making sendSessions fail the first time it is called");
+
         $calls = 0;
 
         $this->client->expects($this->exactly(2))
@@ -181,11 +172,20 @@ class SessionTrackerTest extends TestCase
             });
 
         $this->sessionTracker->startSession();
+
+        // This call should fail
         $this->sessionTracker->sendSessions();
+
+        // Trigger the destructor, which should send the sessions again
+        unset($this->sessionTracker);
     }
 
     public function testIfSendingSessionsFailsTheRetryFunctionWillBeCalledIfOneIsGiven()
     {
+        $errorLog = $this->getFunctionMock('Bugsnag\SessionTracker', 'error_log');
+        $errorLog->expects($this->once())
+            ->with("Bugsnag Warning: Couldn't notify. Hello");
+
         $wasCalled = false;
 
         $this->client->expects($this->once())
@@ -206,6 +206,7 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->setRetryFunction($retryFunction);
 
         $this->sessionTracker->startSession();
+        $this->sessionTracker->sendSessions();
 
         $this->assertTrue($wasCalled, 'Expected retryFunction to be called');
     }
@@ -278,15 +279,6 @@ class SessionTrackerTest extends TestCase
             ->willReturnCallback(function () use ($strftimeReturnValues, &$invocation) {
                 return $strftimeReturnValues[$invocation++];
             });
-
-        // Set the lastSent property of the SessionTracker so that 'startSession'
-        // doesn't immediately send sessions
-        $setLastSent = function () {
-            $this->lastSent = time();
-        };
-
-        $setLastSent = $setLastSent->bindTo($this->sessionTracker, $this->sessionTracker);
-        $setLastSent();
 
         for ($i = 0; $i < $sessionsToGenerate; $i++) {
             $this->sessionTracker->startSession();

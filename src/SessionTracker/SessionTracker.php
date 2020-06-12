@@ -37,13 +37,6 @@ class SessionTracker implements SessionTrackerInterface
     protected $sessionCounts = [];
 
     /**
-     * The last time the sessions were delivered.
-     *
-     * @var int
-     */
-    protected $lastSent = 0;
-
-    /**
      * A function to use when retrying a failed delivery.
      *
      * @var callable|null
@@ -83,10 +76,6 @@ class SessionTracker implements SessionTrackerInterface
         if (count($this->sessionCounts) > SessionTrackerInterface::MAX_SESSION_COUNT) {
             $this->trimOldestSessions();
         }
-
-        if ((time() - $this->lastSent) > SessionTrackerInterface::DELIVERY_INTERVAL) {
-            $this->sendSessions();
-        }
     }
 
     /**
@@ -110,8 +99,6 @@ class SessionTracker implements SessionTrackerInterface
         }
 
         $payload = $this->constructPayload($sessions);
-
-        $this->lastSent = time();
 
         try {
             $this->http->sendSessions($payload);
@@ -138,6 +125,21 @@ class SessionTracker implements SessionTrackerInterface
         }
 
         $this->retryFunction = $function;
+    }
+
+    /**
+     * On destruct we send any sessions that have been started. This allows us
+     * to batch them into one request, rather than sending each in a separate
+     * request.
+     *
+     * The "queue" of sessions can be manually flushed with 'sendSessions', if
+     * necessary.
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        $this->sendSessions();
     }
 
     /**
