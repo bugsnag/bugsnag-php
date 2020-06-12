@@ -2,6 +2,8 @@
 
 namespace Bugsnag\SessionTracker;
 
+use InvalidArgumentException;
+
 interface SessionTrackerInterface
 {
     /**
@@ -49,6 +51,8 @@ interface SessionTrackerInterface
      * @param callable $function
      *
      * @return void
+     *
+     * @throws InvalidArgumentException if $function is not callable
      */
     public function setRetryFunction($function);
 }
