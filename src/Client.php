@@ -8,6 +8,7 @@ use Bugsnag\Cache\Adapter\CacheAdapterInterface;
 use Bugsnag\Cache\CacheFactory;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
+use Bugsnag\SessionTracker\CurrentSession;
 use Bugsnag\SessionTracker\SessionTracker;
 use Bugsnag\SessionTracker\SessionTrackerInterface;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
@@ -151,8 +152,10 @@ class Client
         HttpClient $http,
         CacheAdapterInterface $cache = null
     ) {
+        $currentSession = new CurrentSession();
+
         if ($cache instanceof CacheAdapterInterface) {
-            $sessionTracker = new SessionTracker($config, $http, $cache);
+            $sessionTracker = new SessionTracker($config, $http, $currentSession, $cache);
 
             // Start session tracking automatically if automatic session
             // tracking is enabled and we've been given a cache
@@ -171,7 +174,7 @@ class Client
             );
         }
 
-        return new SessionTracker($config, $http);
+        return new SessionTracker($config, $http, $currentSession);
     }
 
     /**

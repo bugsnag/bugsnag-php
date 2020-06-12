@@ -7,6 +7,11 @@ use Bugsnag\HttpClient;
 use Exception;
 use InvalidArgumentException;
 
+/**
+ * In a web application, a Bugsnag session refers to a single HTTP request. This
+ * is not the same as the PHP session, but is named this way to align with the
+ * Bugsnag session API.
+ */
 class SessionTracker implements SessionTrackerInterface
 {
     /**
@@ -18,6 +23,11 @@ class SessionTracker implements SessionTrackerInterface
      * @var HttpClient
      */
     protected $http;
+
+    /**
+     * @var CurrentSession
+     */
+    protected $currentSession;
 
     /**
      * An array of session counts.
@@ -34,13 +44,6 @@ class SessionTracker implements SessionTrackerInterface
     protected $lastSent = 0;
 
     /**
-     * The current session.
-     *
-     * @var array
-     */
-    protected $currentSession = [];
-
-    /**
      * A function to use when retrying a failed delivery.
      *
      * @var callable|null
@@ -50,13 +53,16 @@ class SessionTracker implements SessionTrackerInterface
     /**
      * @param Configuration $config
      * @param HttpClient $http
-     *
-     * @return void
+     * @param CurrentSession $http
      */
-    public function __construct(Configuration $config, HttpClient $http)
-    {
+    public function __construct(
+        Configuration $config,
+        HttpClient $http,
+        CurrentSession $currentSession
+    ) {
         $this->config = $config;
         $this->http = $http;
+        $this->currentSession = $currentSession;
     }
 
     /**
@@ -66,31 +72,25 @@ class SessionTracker implements SessionTrackerInterface
     {
         $currentTime = strftime('%Y-%m-%dT%H:%M:00');
 
-        $session = [
-            'id' => uniqid('', true),
-            'startedAt' => $currentTime,
-            'events' => [
-                'handled' => 0,
-                'unhandled' => 0,
-            ],
-        ];
+        $this->currentSession->start($currentTime);
 
-        $this->setCurrentSession($session);
-        $this->incrementSessions($currentTime);
+        if (array_key_exists($currentTime, $this->sessionCounts)) {
+            $this->sessionCounts[$currentTime] += 1;
+        } else {
+            $this->sessionCounts[$currentTime] = 1;
+        }
+
+        if (count($this->sessionCounts) > SessionTrackerInterface::MAX_SESSION_COUNT) {
+            $this->trimOldestSessions();
+        }
+
+        if ((time() - $this->lastSent) > SessionTrackerInterface::DELIVERY_INTERVAL) {
+            $this->sendSessions();
+        }
     }
 
     /**
-     * @param array $session
-     *
-     * @return void
-     */
-    public function setCurrentSession(array $session)
-    {
-        $this->currentSession = $session;
-    }
-
-    /**
-     * @return array
+     * @return CurrentSession
      */
     public function getCurrentSession()
     {
@@ -138,28 +138,6 @@ class SessionTracker implements SessionTrackerInterface
         }
 
         $this->retryFunction = $function;
-    }
-
-    /**
-     * @param string $minute
-     *
-     * @return void
-     */
-    protected function incrementSessions($minute)
-    {
-        if (array_key_exists($minute, $this->sessionCounts)) {
-            $this->sessionCounts[$minute] += 1;
-        } else {
-            $this->sessionCounts[$minute] = 1;
-        }
-
-        if (count($this->sessionCounts) > SessionTrackerInterface::MAX_SESSION_COUNT) {
-            $this->trimOldestSessions();
-        }
-
-        if ((time() - $this->lastSent) > SessionTrackerInterface::DELIVERY_INTERVAL) {
-            $this->sendSessions();
-        }
     }
 
     /**

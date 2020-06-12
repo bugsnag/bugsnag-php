@@ -6,6 +6,7 @@ use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Report;
+use Bugsnag\SessionTracker\CurrentSession;
 use Bugsnag\SessionTracker\SessionTracker;
 use Bugsnag\SessionTracker\SessionTrackerInterface;
 use Bugsnag\Tests\TestCase;
@@ -23,7 +24,7 @@ class SessionDataTest extends TestCase
 
         return [
             'real session tracker' => [
-                new SessionTracker($config, $httpClient),
+                new SessionTracker($config, $httpClient, new CurrentSession()),
                 Report::fromPHPThrowable($config, new Exception('no')),
             ],
         ];

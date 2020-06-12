@@ -4,6 +4,7 @@ namespace Bugsnag\Tests\SessionTracker;
 
 use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
+use Bugsnag\SessionTracker\CurrentSession;
 use Bugsnag\SessionTracker\SessionTracker;
 use Bugsnag\SessionTracker\SessionTrackerInterface;
 use Bugsnag\Tests\TestCase;
@@ -39,7 +40,11 @@ class SessionTrackerTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->sessionTracker = new SessionTracker($this->config, $this->client);
+        $this->sessionTracker = new SessionTracker(
+            $this->config,
+            $this->client,
+            new CurrentSession()
+        );
     }
 
     public function testItImplementsTheSessionTrackerInterface()

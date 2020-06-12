@@ -922,7 +922,7 @@ class ClientTest extends TestCase
 
         $sessionTracker = $client->getSessionTracker();
 
-        $this->assertNotEmpty($sessionTracker->getCurrentSession());
+        $this->assertTrue($sessionTracker->getCurrentSession()->isActive());
     }
 
     public function testItDoesNotStartSessionTrackingWhenGivenAValidCacheAndAutoSessionTrackingIsDisabled()
@@ -935,6 +935,6 @@ class ClientTest extends TestCase
 
         $sessionTracker = $client->getSessionTracker();
 
-        $this->assertEmpty($sessionTracker->getCurrentSession());
+        $this->assertFalse($sessionTracker->getCurrentSession()->isActive());
     }
 }
