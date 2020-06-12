@@ -2,6 +2,8 @@
 
 namespace Bugsnag\SessionTracker;
 
+use InvalidArgumentException;
+
 interface SessionTrackerInterface
 {
     /**
@@ -47,6 +49,8 @@ interface SessionTrackerInterface
      * ({@see SessionTracker::$sessionCounts}) and should not return a value.
      *
      * @param callable $function
+     *
+     * @throws InvalidArgumentException if $function is not callable
      *
      * @return void
      */

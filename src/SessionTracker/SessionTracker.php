@@ -142,6 +142,8 @@ class SessionTracker implements SessionTrackerInterface
      *
      * @param callable $function
      *
+     * @throws InvalidArgumentException if $function is not callable
+     *
      * @return void
      */
     public function setRetryFunction($function)
