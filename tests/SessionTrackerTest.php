@@ -19,7 +19,7 @@ class SessionTrackerTest extends TestCase
     private $sessionTracker;
 
     /**
-     * @var Configuration&MockObject
+     * @var Configuration
      */
     private $config;
 
@@ -30,10 +30,7 @@ class SessionTrackerTest extends TestCase
 
     public function setUp()
     {
-        /** @var Configuration&MockObject */
-        $this->config = $this->getMockBuilder(Configuration::class)
-            ->setConstructorArgs(['example-api-key'])
-            ->getMock();
+        $this->config = new Configuration('example-api-key');
 
         /** @var HttpClient&MockObject */
         $this->client = $this->getMockBuilder(HttpClient::class)
@@ -64,7 +61,9 @@ class SessionTrackerTest extends TestCase
 
     public function testSendSessionsDoesNothingIfReleaseStageIsIgnored()
     {
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(false);
+        $this->config->setReleaseStage('development');
+        $this->config->setNotifyReleaseStages(['production']);
+
         $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->startSession();
@@ -73,22 +72,27 @@ class SessionTrackerTest extends TestCase
 
     public function testSessionsCanBeSentExplicitly()
     {
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
-        $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
-        $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
-
         $expectCallback = function ($payload) {
-            return count($payload) == 4
-                && $payload['notifier'] === 'test_notifier'
-                && $payload['device'] === 'device_data'
-                && $payload['app'] === 'app_data'
-                && count($payload['sessionCounts']) === 1
-                && preg_match(
-                    '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/',
-                    $payload['sessionCounts'][0]['startedAt']
-                )
-                && $payload['sessionCounts'][0]['sessionsStarted'] === 1;
+            $this->assertArrayHasKey('notifier', $payload);
+            $this->assertArrayHasKey('device', $payload);
+            $this->assertArrayHasKey('app', $payload);
+            $this->assertArrayHasKey('sessionCounts', $payload);
+
+            $this->assertSame($this->config->getNotifier(), $payload['notifier']);
+            $this->assertSame($this->config->getDeviceData(), $payload['device']);
+            $this->assertSame($this->config->getAppData(), $payload['app']);
+
+            $this->assertCount(1, $payload['sessionCounts']);
+
+            $session = $payload['sessionCounts'][0];
+
+            $this->assertArrayHasKey('startedAt', $session);
+            $this->assertArrayHasKey('sessionsStarted', $session);
+
+            $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $session['startedAt']);
+            $this->assertSame(1, $session['sessionsStarted']);
+
+            return true;
         };
 
         $this->client->expects($this->once())
@@ -110,22 +114,26 @@ class SessionTrackerTest extends TestCase
 
     public function testSessionsAreSentOnStartSessionIfNotRecentlySent()
     {
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
-        $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
-        $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
-
         $expectCallback = function ($payload) {
-            return count($payload) == 4
-                && $payload['notifier'] === 'test_notifier'
-                && $payload['device'] === 'device_data'
-                && $payload['app'] === 'app_data'
-                && count($payload['sessionCounts']) === 1
-                && preg_match(
-                    '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/',
-                    $payload['sessionCounts'][0]['startedAt']
-                )
-                && $payload['sessionCounts'][0]['sessionsStarted'] === 1;
+            $this->assertArrayHasKey('notifier', $payload);
+            $this->assertArrayHasKey('device', $payload);
+            $this->assertArrayHasKey('app', $payload);
+            $this->assertArrayHasKey('sessionCounts', $payload);
+
+            $this->assertSame($this->config->getNotifier(), $payload['notifier']);
+            $this->assertSame($this->config->getDeviceData(), $payload['device']);
+            $this->assertSame($this->config->getAppData(), $payload['app']);
+            $this->assertCount(1, $payload['sessionCounts']);
+
+            $session = $payload['sessionCounts'][0];
+
+            $this->assertArrayHasKey('startedAt', $session);
+            $this->assertArrayHasKey('sessionsStarted', $session);
+
+            $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $session['startedAt']);
+            $this->assertSame(1, $session['sessionsStarted']);
+
+            return true;
         };
 
         $this->client->expects($this->once())
@@ -137,11 +145,6 @@ class SessionTrackerTest extends TestCase
 
     public function testIfSendingSessionsFailsTheyWillBeResentOnTheNextCallWhenNoRetryFunctionIsGiven()
     {
-        $this->config->expects($this->exactly(2))->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->exactly(2))->method('getNotifier')->willReturn('test_notifier');
-        $this->config->expects($this->exactly(2))->method('getDeviceData')->willReturn('device_data');
-        $this->config->expects($this->exactly(2))->method('getAppData')->willReturn('app_data');
-
         $calls = 0;
 
         $this->client->expects($this->exactly(2))
@@ -152,9 +155,9 @@ class SessionTrackerTest extends TestCase
                 $this->assertArrayHasKey('app', $payload);
                 $this->assertArrayHasKey('sessionCounts', $payload);
 
-                $this->assertSame($payload['notifier'], 'test_notifier');
-                $this->assertSame($payload['device'], 'device_data');
-                $this->assertSame($payload['app'], 'app_data');
+                $this->assertSame($this->config->getNotifier(), $payload['notifier']);
+                $this->assertSame($this->config->getDeviceData(), $payload['device']);
+                $this->assertSame($this->config->getAppData(), $payload['app']);
                 $this->assertCount(1, $payload['sessionCounts']);
 
                 $session = $payload['sessionCounts'][0];
@@ -184,11 +187,6 @@ class SessionTrackerTest extends TestCase
     public function testIfSendingSessionsFailsTheRetryFunctionWillBeCalledIfOneIsGiven()
     {
         $wasCalled = false;
-
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
-        $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
-        $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
 
         $this->client->expects($this->once())
             ->method('sendSessions')
@@ -227,20 +225,16 @@ class SessionTrackerTest extends TestCase
             'Expected to generate more sessions than the maximum'
         );
 
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
-        $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
-        $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
-
         $expectCallback = function ($payload) use ($sessionsToGenerate) {
             $this->assertArrayHasKey('notifier', $payload);
             $this->assertArrayHasKey('device', $payload);
             $this->assertArrayHasKey('app', $payload);
             $this->assertArrayHasKey('sessionCounts', $payload);
 
-            $this->assertSame($payload['notifier'], 'test_notifier');
-            $this->assertSame($payload['device'], 'device_data');
-            $this->assertSame($payload['app'], 'app_data');
+            $this->assertSame($this->config->getNotifier(), $payload['notifier']);
+            $this->assertSame($this->config->getDeviceData(), $payload['device']);
+            $this->assertSame($this->config->getAppData(), $payload['app']);
+
             $this->assertCount(SessionTrackerInterface::MAX_SESSION_COUNT, $payload['sessionCounts']);
             $this->assertLessThan($sessionsToGenerate, count($payload['sessionCounts']));
 
