@@ -32,21 +32,29 @@ class SessionTracker implements SessionTrackerInterface
     /**
      * An array of session counts.
      *
-     * @var array
+     * This is stored with the current minute (a datetime string in the format
+     * '%Y-%m-%dT%H:%M:00') as the key and the count of sessions within that
+     * minute as the value.
+     *
+     * @var array<string, int>
      */
     protected $sessionCounts = [];
 
     /**
      * A function to use when retrying a failed delivery.
      *
+     * If this is not given, we will not retry a failed request, but will keep
+     * the sessions internally, so they can be sent with the next request. If no
+     * follow up request it made, these sessions will not be sent.
+     *
      * @var callable|null
      */
     protected $retryFunction = null;
 
     /**
-     * @param Configuration $config
-     * @param HttpClient $http
-     * @param CurrentSession $http
+     * @param Configuration  $config
+     * @param HttpClient     $http
+     * @param CurrentSession $currentSession
      */
     public function __construct(
         Configuration $config,
@@ -59,6 +67,11 @@ class SessionTracker implements SessionTrackerInterface
     }
 
     /**
+     * Start a new session.
+     *
+     * This will create a new "current session" and increment the count of
+     * sessions within this minute.
+     *
      * @return void
      */
     public function startSession()
@@ -87,6 +100,14 @@ class SessionTracker implements SessionTrackerInterface
     }
 
     /**
+     * Manually send sessions to Bugsnag.
+     *
+     * If no sessions have been recorded with 'startSession' or if the current
+     * release stage is ignored, then nothing will be sent.
+     *
+     * This should not usually need to be called manually as it will be called
+     * automatically by the destructor.
+     *
      * @return void
      */
     public function sendSessions()
@@ -114,6 +135,11 @@ class SessionTracker implements SessionTrackerInterface
     }
 
     /**
+     * Set a function that will be called if 'sendSessions' fails.
+     *
+     * This will receive the session counts as its only parameter
+     * ({@see SessionTracker::$sessionCounts}) and should not return a value.
+     *
      * @param callable $function
      *
      * @return void
