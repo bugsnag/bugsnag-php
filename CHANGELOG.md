@@ -42,6 +42,15 @@ Changelog
 
 - The second parameter of `Client::__construct` is now a supported cache instance or `null`
 
+- The `SessionTracker` class has moved from `Bugsnag\SessionTracker` to `Bugsnag\SessionTracker\SessionTracker`
+
+- The `protected static` attributes in `SessionTracker` have been removed. `DELIVERY_INTERVAL` and `MAX_SESSION_COUNT` are now constants on the new `Bugsnag\SessionTracker\SessionTrackerInterface` interface
+
+- The following public methods have been removed from `SessionTracker`:
+    - `setLockFunctions`
+    - `setStorageFunction`
+    - `setSessionFunction`
+
 ## 3.21.0 (2020-04-29)
 
 ### Enhancements
