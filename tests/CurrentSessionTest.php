@@ -41,7 +41,7 @@ class CurrentSessionTest extends TestCase
         $this->assertSame(['handled' => 0, 'unhandled' => 0], $actual['events']);
     }
 
-    public function testStartedAtDoesNotChangeWhenSessionIsStartedMultipleTimes()
+    public function testStartedAtChangesWhenSessionIsStartedMultipleTimes()
     {
         $session = new CurrentSession();
         $session->start('2000-01-01T12:00:00');
@@ -50,7 +50,7 @@ class CurrentSessionTest extends TestCase
 
         $actual = $session->toArray();
 
-        $this->assertSame('2000-01-01T12:00:00', $actual['startedAt']);
+        $this->assertSame('2002-01-01T12:00:00', $actual['startedAt']);
     }
 
     public function testHandledCountIsIncrementedWhenGivenAHandledReport()
