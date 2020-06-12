@@ -15,16 +15,6 @@ interface SessionTrackerInterface
     const MAX_SESSION_COUNT = 50;
 
     /**
-     * The key for storing session counts.
-     */
-    const SESSION_COUNTS_KEY = 'bugsnag-session-counts';
-
-    /**
-     * The key for storing last sent data.
-     */
-    const SESSIONS_LAST_SENT_KEY = 'bugsnag-sessions-last-sent';
-
-    /**
      * @return void
      */
     public function startSession();
