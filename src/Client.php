@@ -16,6 +16,8 @@ use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
 use Bugsnag\Request\ResolverInterface;
+use Bugsnag\SessionTracker\CurrentSession;
+use Bugsnag\SessionTracker\SessionTracker;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
 use Bugsnag\Shutdown\ShutdownStrategyInterface;
 use Composer\CaBundle\CaBundle;
@@ -124,7 +126,7 @@ class Client
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
         $this->http = new HttpClient($config, $guzzle ?: self::makeGuzzle());
-        $this->sessionTracker = new SessionTracker($config, $this->http);
+        $this->sessionTracker = new SessionTracker($config, $this->http, new CurrentSession());
 
         $this->registerMiddleware(new NotificationSkipper($config));
         $this->registerMiddleware(new BreadcrumbData($this->recorder));

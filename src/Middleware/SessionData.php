@@ -3,7 +3,7 @@
 namespace Bugsnag\Middleware;
 
 use Bugsnag\Report;
-use Bugsnag\SessionTracker;
+use Bugsnag\SessionTracker\SessionTracker;
 
 class SessionData
 {
@@ -37,15 +37,9 @@ class SessionData
     {
         $session = $this->sessionTracker->getCurrentSession();
 
-        if (isset($session['events'])) {
-            if ($report->getUnhandled()) {
-                $session['events']['unhandled'] += 1;
-            } else {
-                $session['events']['handled'] += 1;
-            }
-
-            $report->setSessionData($session);
-            $this->sessionTracker->setCurrentSession($session);
+        if ($session->isActive()) {
+            $session->handle($report);
+            $report->setSessionData($session->toArray());
         }
 
         $next($report);

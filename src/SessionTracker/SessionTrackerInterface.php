@@ -20,14 +20,7 @@ interface SessionTrackerInterface
     public function startSession();
 
     /**
-     * @param array $session
-     *
-     * @return void
-     */
-    public function setCurrentSession(array $session);
-
-    /**
-     * @return array
+     * @return CurrentSession
      */
     public function getCurrentSession();
 

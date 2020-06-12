@@ -6,14 +6,16 @@ use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Report;
-use Bugsnag\SessionTracker;
+use Bugsnag\SessionTracker\CurrentSession;
+use Bugsnag\SessionTracker\SessionTracker;
+use Bugsnag\SessionTracker\SessionTrackerInterface;
 use Bugsnag\Tests\TestCase;
 use Exception;
 
 class SessionDataTest extends TestCase
 {
     /**
-     * @var SessionTracker
+     * @var SessionTrackerInterface
      */
     private $sessionTracker;
 
@@ -25,11 +27,13 @@ class SessionDataTest extends TestCase
     protected function setUp()
     {
         $config = new Configuration('api-key');
+
+        /** @var HttpClient&\PHPUnit\Framework\MockObject $httpClient */
         $httpClient = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->sessionTracker = new SessionTracker($config, $httpClient);
+        $this->sessionTracker = new SessionTracker($config, $httpClient, new CurrentSession());
         $this->report = Report::fromPHPThrowable($config, new Exception('no'));
     }
 
