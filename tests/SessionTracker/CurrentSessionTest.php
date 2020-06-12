@@ -150,4 +150,26 @@ class CurrentSessionTest extends TestCase
 
         $this->assertSame(['handled' => 0, 'unhandled' => 0], $actual['events']);
     }
+
+    public function testHandledAndUnhandledCountsAreIncrementedWhenGivenMultipleReports()
+    {
+        $report = Report::fromPHPThrowable(new Configuration('hello'), new Exception('hi'));
+        $report->setUnhandled(true);
+
+        $session = new CurrentSession();
+        $session->start('2000-01-01T12:00:00');
+
+        $session->handle($report);
+        $session->handle($report);
+
+        $report->setUnhandled(false);
+
+        $session->handle($report);
+        $session->handle($report);
+        $session->handle($report);
+
+        $actual = $session->toArray();
+
+        $this->assertSame(['handled' => 3, 'unhandled' => 2], $actual['events']);
+    }
 }
