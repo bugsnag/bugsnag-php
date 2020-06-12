@@ -53,11 +53,6 @@ final class CurrentSession
      */
     public function start($currentTime)
     {
-        // Do nothing if we've already been started
-        if ($this->isActive()) {
-            return;
-        }
-
         $this->id = uniqid('', true);
         $this->startedAt = $currentTime;
         $this->handledCount = 0;
