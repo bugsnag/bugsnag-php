@@ -5,12 +5,7 @@ namespace Bugsnag\SessionTracker;
 interface SessionTrackerInterface
 {
     /**
-     * The amount of time between each sending attempt.
-     */
-    const DELIVERY_INTERVAL = 30;
-
-    /**
-     * The maximum amount of sessions to hold onto.
+     * The maximum number of sessions to hold onto.
      */
     const MAX_SESSION_COUNT = 50;
 

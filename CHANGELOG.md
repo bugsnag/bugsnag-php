@@ -40,7 +40,7 @@ Changelog
 
 - The `SessionTracker` class has moved from `Bugsnag\SessionTracker` to `Bugsnag\SessionTracker\SessionTracker`
 
-- The `protected static` attributes in `SessionTracker` have been removed. `DELIVERY_INTERVAL` and `MAX_SESSION_COUNT` are now constants on the new `Bugsnag\SessionTracker\SessionTrackerInterface` interface
+- The `protected static` attributes in `SessionTracker` have been removed. `MAX_SESSION_COUNT` is now a constant on the new `Bugsnag\SessionTracker\SessionTrackerInterface` interface
 
 - The following public methods have been removed from `SessionTracker`:
     - `setLockFunctions`
