@@ -498,6 +498,83 @@ class SessionTrackerTest extends TestCase
     }
 
     /**
+     * @runInSeparateProcess as we need to mock 'strftime' and 'time'
+     */
+    public function testThereIsAMaximumNumberOfSessionsThatWillBeSent()
+    {
+        // 60 sessions is convenient because they are batched per minute, so we
+        // can pretend to generate one session per minute for an hour
+        $sessionsToGenerate = 60;
+
+        $expectCallback = function ($payload) use ($sessionsToGenerate) {
+            $this->assertArrayHasKey('notifier', $payload);
+            $this->assertArrayHasKey('device', $payload);
+            $this->assertArrayHasKey('app', $payload);
+            $this->assertArrayHasKey('sessionCounts', $payload);
+
+            $this->assertSame($this->config->getNotifier(), $payload['notifier']);
+            $this->assertSame($this->config->getDeviceData(), $payload['device']);
+            $this->assertSame($this->config->getAppData(), $payload['app']);
+
+            $this->assertCount(50, $payload['sessionCounts']);
+            $this->assertLessThan($sessionsToGenerate, count($payload['sessionCounts']));
+
+            // Ensure the dates go in decending order of minutes, starting at 59
+            $expectedMinute = 59;
+
+            foreach ($payload['sessionCounts'] as $session) {
+                $this->assertArrayHasKey('startedAt', $session);
+                $this->assertArrayHasKey('sessionsStarted', $session);
+
+                $date = sprintf('2000-01-01T00:%02s:00', $expectedMinute);
+
+                $this->assertSame($date, $session['startedAt']);
+                $this->assertSame(1, $session['sessionsStarted']);
+
+                $expectedMinute--;
+            }
+
+            return true;
+        };
+
+        $this->client->expects($this->once())
+            ->method('sendSessions')
+            ->with($this->callback($expectCallback));
+
+        $strftimeReturnValues = array_map(
+            function ($minute) {
+                $minute = str_pad($minute, 2, '0', STR_PAD_LEFT);
+
+                return "2000-01-01T00:{$minute}:00";
+            },
+            // range is inclusive but we need to generate 0-59
+            range(0, $sessionsToGenerate - 1)
+        );
+
+        $invocation = 0;
+
+        $strftime = $this->getFunctionMock('Bugsnag', 'strftime');
+        $strftime->expects($this->exactly($sessionsToGenerate))
+            ->withAnyParameters()
+            ->willReturnCallback(function () use ($strftimeReturnValues, &$invocation) {
+                return $strftimeReturnValues[$invocation++];
+            });
+
+        // Mock 'time' to return a negative value, which will stop 'startSession'
+        // from sending sessions. It will be called one more time than the number
+        // of calls to 'startSession', because it's called after sending sessions
+        // successfully too
+        $time = $this->getFunctionMock('Bugsnag', 'time');
+        $time->expects($this->exactly($sessionsToGenerate + 1))->willReturn(-1);
+
+        for ($i = 0; $i < $sessionsToGenerate; $i++) {
+            $this->sessionTracker->startSession();
+        }
+
+        $this->sessionTracker->sendSessions();
+    }
+
+    /**
      * Get an expectation callback for the typical test case where there is a
      * single session that is being sent.
      *

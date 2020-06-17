@@ -336,11 +336,12 @@ class SessionTracker
     {
         $sessions = $this->getSessionCounts();
 
-        uksort($sessions, function ($key) {
-            return strtotime($key);
+        // Sort the session counts so that the oldest minutes are first
+        // i.e. '2000-01-01T00:00:00' should be after '2000-01-01T00:01:00'
+        uksort($sessions, function ($a, $b) {
+            return strtotime($b) - strtotime($a);
         });
 
-        $sessions = array_reverse($sessions);
         $sessionCounts = array_slice($sessions, 0, self::$MAX_SESSION_COUNT);
 
         $this->setSessionCounts($sessionCounts);
