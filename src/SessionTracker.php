@@ -8,6 +8,13 @@ use InvalidArgumentException;
 class SessionTracker
 {
     /**
+     * The current session payload version.
+     *
+     * @deprecated Use {HttpClient::SESSION_PAYLOAD_VERSION} instead.
+     */
+    protected static $SESSION_PAYLOAD_VERSION = HttpClient::SESSION_PAYLOAD_VERSION;
+
+    /**
      * The amount of time between each sending attempt.
      */
     protected static $DELIVERY_INTERVAL = 30;
@@ -103,6 +110,16 @@ class SessionTracker
     {
         $this->config = $config;
         $this->http = $http;
+    }
+
+    /**
+     * @param Configuration $config
+     *
+     * @deprecated Change the Configuration via the Client object instead.
+     */
+    public function setConfig(Configuration $config)
+    {
+        $this->config = $config;
     }
 
     /**

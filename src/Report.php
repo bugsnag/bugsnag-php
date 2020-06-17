@@ -10,6 +10,13 @@ use Throwable;
 class Report
 {
     /**
+     * The payload version for the error notification API.
+     *
+     * @deprecated Use {HttpClient::NOTIFY_PAYLOAD_VERSION} instead.
+     */
+    const PAYLOAD_VERSION = HttpClient::NOTIFY_PAYLOAD_VERSION;
+
+    /**
      * The config object.
      *
      * @var Configuration

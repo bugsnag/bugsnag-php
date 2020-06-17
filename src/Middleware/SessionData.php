@@ -2,22 +2,32 @@
 
 namespace Bugsnag\Middleware;
 
+use Bugsnag\Client;
 use Bugsnag\Report;
 use Bugsnag\SessionTracker;
 
 class SessionData
 {
     /**
-     * @var SessionTracker
+     * @var Client
+     *
+     * @deprecated This will be removed in the next major version.
+     *             The constructor parameter will also change to {@see SessionTracker}
      */
-    protected $sessionTracker;
+    protected $client;
 
     /**
-     * @param SessionTracker $sessionTracker
+     * @var SessionTracker
      */
-    public function __construct(SessionTracker $sessionTracker)
+    private $sessionTracker;
+
+    /**
+     * @param Client $client
+     */
+    public function __construct(Client $client)
     {
-        $this->sessionTracker = $sessionTracker;
+        $this->client = $client;
+        $this->sessionTracker = $client->getSessionTracker();
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Bugsnag\Tests\Middleware;
 
+use Bugsnag\Client;
 use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\Middleware\SessionData;
@@ -12,6 +13,11 @@ use Exception;
 
 class SessionDataTest extends TestCase
 {
+    /**
+     * @var Client&\PHPUnit\Framework\MockObject
+     */
+    private $client;
+
     /**
      * @var SessionTracker
      */
@@ -25,11 +31,22 @@ class SessionDataTest extends TestCase
     protected function setUp()
     {
         $config = new Configuration('api-key');
+
+        /** @var HttpClient&\PHPUnit\Framework\MockObject $httpClient */
         $httpClient = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->sessionTracker = new SessionTracker($config, $httpClient);
+
+        /** @var Client&\PHPUnit\Framework\MockObject $httpClient */
+        $this->client = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->disableProxyingToOriginalMethods()
+            ->getMock();
+
+        $this->client->method('getSessionTracker')->willReturn($this->sessionTracker);
+
         $this->report = Report::fromPHPThrowable($config, new Exception('no'));
     }
 
@@ -38,7 +55,7 @@ class SessionDataTest extends TestCase
         $this->sessionTracker->startSession();
         $this->report->setUnhandled(true);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($this->client);
 
         $middleware($this->report, function (Report $report) {
             $this->assertReportHasUnhandledErrors($report, 1);
@@ -50,7 +67,7 @@ class SessionDataTest extends TestCase
         $this->sessionTracker->startSession();
         $this->report->setUnhandled(true);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($this->client);
 
         foreach (range(1, 5) as $errorCount) {
             $middleware($this->report, function (Report $report) use ($errorCount) {
@@ -64,7 +81,7 @@ class SessionDataTest extends TestCase
         $this->sessionTracker->startSession();
         $this->report->setUnhandled(false);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($this->client);
 
         $middleware($this->report, function (Report $report) {
             $this->assertReportHasHandledErrors($report, 1);
@@ -76,7 +93,7 @@ class SessionDataTest extends TestCase
         $this->sessionTracker->startSession();
         $this->report->setUnhandled(false);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($this->client);
 
         foreach (range(1, 5) as $errorCount) {
             $middleware($this->report, function (Report $report) use ($errorCount) {
@@ -91,7 +108,7 @@ class SessionDataTest extends TestCase
         // capture in the middleware
         $this->report->setUnhandled(true);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($this->client);
 
         $middleware($this->report, function (Report $report) {
             $reportArray = $report->toArray();
@@ -105,7 +122,7 @@ class SessionDataTest extends TestCase
         // capture in the middleware
         $this->report->setUnhandled(false);
 
-        $middleware = new SessionData($this->sessionTracker);
+        $middleware = new SessionData($this->client);
 
         $middleware($this->report, function (Report $report) {
             $reportArray = $report->toArray();

@@ -25,6 +25,15 @@ use GuzzleHttp\ClientInterface;
 class Client
 {
     /**
+     * The default error notification endpoint.
+     *
+     * @var string
+     *
+     * @deprecated Use {@see Configuration::NOTIFY_ENDPOINT} instead.
+     */
+    const ENDPOINT = Configuration::NOTIFY_ENDPOINT;
+
+    /**
      * The config instance.
      *
      * @var \Bugsnag\Configuration
@@ -84,21 +93,17 @@ class Client
     ) {
         $env = new Env();
 
-        if ($apiKey === null) {
-            $apiKey = $env->get('BUGSNAG_API_KEY');
-        }
+        $config = new Configuration($apiKey ?: $env->get('BUGSNAG_API_KEY'));
 
-        $config = new Configuration($apiKey);
-
-        if ($notifyEndpoint === null) {
-            $notifyEndpoint = $env->get('BUGSNAG_ENDPOINT');
-        }
+        $notifyEndpoint = $notifyEndpoint ?: $env->get('BUGSNAG_ENDPOINT');
 
         if (is_string($notifyEndpoint)) {
             $config->setNotifyEndpoint($notifyEndpoint);
         }
 
-        $client = new static($config);
+        $guzzle = static::makeGuzzle($notifyEndpoint);
+
+        $client = new static($config, null, $guzzle);
 
         if ($defaults) {
             $client->registerDefaultCallbacks();
@@ -119,16 +124,27 @@ class Client
         ClientInterface $guzzle = null,
         ShutdownStrategyInterface $shutdownStrategy = null
     ) {
+        $guzzle = $guzzle ?: self::makeGuzzle();
+
+        // We need to use 'getBaseUrl' for Guzzle v5 compatibility
+        $base = method_exists(ClientInterface::class, 'getBaseUrl')
+            ? $guzzle->getBaseUrl()
+            : $guzzle->getConfig(self::getGuzzleBaseOptionName());
+
+        if (is_string($base) || method_exists($base, '__toString')) {
+            $config->setNotifyEndpoint((string) $base);
+        }
+
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
         $this->recorder = new Recorder();
         $this->pipeline = new Pipeline();
-        $this->http = new HttpClient($config, $guzzle ?: self::makeGuzzle());
+        $this->http = new HttpClient($config, $guzzle);
         $this->sessionTracker = new SessionTracker($config, $this->http);
 
         $this->registerMiddleware(new NotificationSkipper($config));
         $this->registerMiddleware(new BreadcrumbData($this->recorder));
-        $this->registerMiddleware(new SessionData($this->sessionTracker));
+        $this->registerMiddleware(new SessionData($this));
 
         // Shutdown strategy is used to trigger flush() calls when batch sending is enabled
         $shutdownStrategy = $shutdownStrategy ?: new PhpShutdownStrategy();
@@ -136,17 +152,48 @@ class Client
     }
 
     /**
+     * Make a new guzzle client instance.
+     *
+     * @param string|null $base
+     * @param array       $options
+     *
      * @return ClientInterface
      */
-    private static function makeGuzzle()
+    public static function makeGuzzle($base = null, array $options = [])
     {
-        if (version_compare(PHP_VERSION, '5.6.0') >= 0) {
-            return new GuzzleClient();
+        $key = self::getGuzzleBaseOptionName();
+
+        $options[$key] = $base ?: Configuration::NOTIFY_ENDPOINT;
+
+        if ($path = static::getCaBundlePath()) {
+            $options['verify'] = $path;
         }
 
-        return new GuzzleClient([
-            'verify' => realpath(CaBundle::getSystemCaRootBundlePath()),
-        ]);
+        return new GuzzleClient($options);
+    }
+
+    /**
+     * Get the base URL/URI option name, which depends on the Guzzle version.
+     *
+     * @return string
+     */
+    private static function getGuzzleBaseOptionName()
+    {
+        return method_exists(ClientInterface::class, 'request') ? 'base_uri' : 'base_url';
+    }
+
+    /**
+     * Get the ca bundle path if one exists.
+     *
+     * @return string|false
+     */
+    protected static function getCaBundlePath()
+    {
+        if (version_compare(PHP_VERSION, '5.6.0') >= 0 || !class_exists(CaBundle::class)) {
+            return false;
+        }
+
+        return realpath(CaBundle::getSystemCaRootBundlePath());
     }
 
     /**
@@ -306,6 +353,22 @@ class Client
         if (!$this->config->isBatchSending()) {
             $this->flush();
         }
+    }
+
+    /**
+     * Notify Bugsnag of a deployment.
+     *
+     * @param string|null $repository the repository from which you are deploying the code
+     * @param string|null $branch     the source control branch from which you are deploying
+     * @param string|null $revision   the source control revision you are currently deploying
+     *
+     * @return void
+     *
+     * @deprecated Use {@see Client::build} instead.
+     */
+    public function deploy($repository = null, $branch = null, $revision = null)
+    {
+        $this->build($repository, $revision);
     }
 
     /**
@@ -830,5 +893,15 @@ class Client
     public function shouldCaptureSessions()
     {
         return $this->config->shouldCaptureSessions();
+    }
+
+    /**
+     * Get the session client.
+     *
+     * @return \GuzzleHttp\ClientInterface
+     */
+    public function getSessionClient()
+    {
+        return $this->config->getSessionClient();
     }
 }

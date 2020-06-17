@@ -24,6 +24,13 @@ class HttpClient
     const SESSION_PAYLOAD_VERSION = '1.0';
 
     /**
+     * The payload version for the error notification API.
+     *
+     * @deprecated Use {self::NOTIFY_PAYLOAD_VERSION} instead.
+     */
+    const PAYLOAD_VERSION = self::NOTIFY_PAYLOAD_VERSION;
+
+    /**
      * @var Configuration
      */
     protected $config;
@@ -87,7 +94,7 @@ class HttpClient
             'events' => $events,
         ];
 
-        $this->deliverEvents($body);
+        $this->deliverEvents($this->config->getNotifyEndpoint(), $body);
 
         $this->queue = [];
     }
@@ -166,13 +173,54 @@ class HttpClient
     }
 
     /**
+     * Notify Bugsnag of a deployment.
+     *
+     * @param array $data the deployment information
+     *
+     * @return void
+     *
+     * @deprecated Use {@see self::sendBuildReport} instead.
+     */
+    public function deploy(array $data)
+    {
+        $app = $this->config->getAppData();
+
+        $data['releaseStage'] = $app['releaseStage'];
+
+        if (isset($app['version'])) {
+            $data['appVersion'] = $app['version'];
+        }
+
+        $data['apiKey'] = $this->config->getApiKey();
+
+        $uri = rtrim($this->config->getNotifyEndpoint(), '/').'/deploy';
+
+        $this->post($uri, ['json' => $data]);
+    }
+
+    /**
      * Deliver the given events to the notification API.
      *
+     * @param string $uri
      * @param array  $data
      *
      * @return void
+     *
+     * @deprecated Use {@see self::deliverEvents} instead.
      */
-    protected function deliverEvents(array $data)
+    protected function postJson($uri, array $data)
+    {
+        $this->deliverEvents($uri, $data);
+    }
+
+    /**
+     * Deliver the given events to the notification API.
+     *
+     * @param array $data
+     *
+     * @return void
+     */
+    protected function deliverEvents($uri, array $data)
     {
         // Try to send the whole lot, or without the meta data for the first
         // event. If failed, try to send the first event, and then the rest of
@@ -185,8 +233,8 @@ class HttpClient
             if (count($data['events']) > 1) {
                 $event = array_shift($data['events']);
 
-                $this->deliverEvents(array_merge($data, ['events' => [$event]]));
-                $this->deliverEvents($data);
+                $this->deliverEvents($uri, array_merge($data, ['events' => [$event]]));
+                $this->deliverEvents($uri, $data);
             } else {
                 error_log('Bugsnag Warning: '.$e->getMessage());
             }
@@ -196,7 +244,7 @@ class HttpClient
 
         try {
             $this->post(
-                $this->config->getNotifyEndpoint(),
+                $uri,
                 [
                     'json' => $normalized,
                     'headers' => $this->getHeaders(self::NOTIFY_PAYLOAD_VERSION),
@@ -210,12 +258,21 @@ class HttpClient
     /**
      * Builds the array of headers to send using the given payload version.
      *
-     * @param string $version The payload version this request is for
+     * If no payload version is given, we assume this is for the notify endpoint
+     * and so use {@see self::NOTIFY_PAYLOAD_VERSION}.
+     *
+     * @param string|null $version The payload version this request is for
+     *                             Not providing this parameter is deprecated
+     *                             and it will be required in the next major version.
      *
      * @return array
      */
-    protected function getHeaders($version)
+    protected function getHeaders($version = null)
     {
+        if ($version === null) {
+            $version = self::NOTIFY_PAYLOAD_VERSION;
+        }
+
         return [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
             'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),

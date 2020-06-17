@@ -5,38 +5,40 @@ Changelog
 
 ### Enhancements
 
-- The `Client` and `SessionTracker` now share a single Guzzle instance (#582)
+- The `Client` and `SessionTracker` now share a single Guzzle instance
 
-### BC breaks
+### Deprecations
 
-- Removal of `getSessionClient` method in `Client` and `Configuration` (#582)
-  This doesn't make sense to keep given the session client is now the same as the notify Guzzle client. Keeping this would either mean changes to the "session" client also propagate to the notify client or changes to this do nothing. Either of which could lead to things being delivered to the wrong endpoint and expected Guzzle changes not being reflected in the actual requests
-
-- We no longer use the Guzzle base URI for requests (#582)
-  This means if a Guzzle client is passed in the constructor with a pre-defined base URI, we will still send requests to the notify URI. `Client::setNotifyEndpoint` now needs to be called manually instead. This changed because the Guzzle base URI is ambiguous now given that it is shared between notifications and sessions
-
-- Removal of `SessionTracker::setConfig` (#582)
-  This was unused internally and doesn't seem to be needed as the configuration can be changed via the `Client` or `Configuration` instance itself. Having the possibility for there to be two different `Configuration` instances could be dangerous as changes may not propagate as expected
-
-- `Client::ENDPOINT` (#582)
+- `Client::ENDPOINT`
   This is ambiguous as we have three separate endpoints
   Use `Configuration::NOTIFY_ENDPOINT` instead
 
-- `HttpClient::PAYLOAD_VERSION` (#582)
+- `HttpClient::PAYLOAD_VERSION`
   This is ambiguous as there is a session payload version too
   Use `HttpClient::NOTIFY_PAYLOAD_VERSION` instead
 
-- `Report::PAYLOAD_VERSION` (#582)
+- `Report::PAYLOAD_VERSION`
   As above. This was also unused by the notifier
   Use `HttpClient::NOTIFY_PAYLOAD_VERSION` instead
 
-- `SessionTracker::$SESSION_PAYLOAD_VERSION` (#582)
+- `SessionTracker::$SESSION_PAYLOAD_VERSION`
   Use `HttpClient::SESSION_PAYLOAD_VERSION` instead
 
-- `Client::makeGuzzle` has been made private (#582)
-  Use the `$guzzle` parameter of `Bugsnag\Client::__construct` instead
+- Using the `base_uri`/`base_url` on a Guzzle instance
+  The base URI is ambiguous as there are three separate endpoints which could be used, therefore all Guzzle requests now use absolute URIs. We will extract the `base_uri`/`base_url` Guzzle option if one is set and use it as the notification endpoint URI, however this will be removed in the next major version
+  Set the notification endpoint manually with `Configuration::setNotifyEndpoint` instead
 
-- The `SessionData` class now takes `SessionTracker` instead of `Client` in its constructor
+- Calling `HttpClient::getHeaders` without providing a payload version
+  This is deprecated as the version is ambiguous between the notification payload version and session payload version
+  Call this with the correct `HttpClient` payload version constants instead
+
+- Using `getSessionClient` method in `Client` and `Configuration`
+  This method is dangerous to use as there is now only one Guzzle instance used across every request
+  Changes to this Guzzle client will now be ignored
+
+- `SessionData::$client`
+  The `SessionData` class will be passed a `SessionTracker` instead of a `Client` instance in its constructor in the next major version
+  In this version it will extract the `SessionTracker` from the `Client`
 
 ## 3.21.0 (2020-04-29)
 

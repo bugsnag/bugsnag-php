@@ -36,6 +36,22 @@ abstract class TestCase extends BaseTestCase
         return method_exists(ClientInterface::class, 'request') ? 'request' : 'post';
     }
 
+    /**
+     * @return string
+     */
+    protected function getGuzzleBaseOptionName()
+    {
+        return $this->isUsingGuzzle5() ? 'base_url' : 'base_uri';
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isUsingGuzzle5()
+    {
+        return method_exists(ClientInterface::class, 'getBaseUrl');
+    }
+
     private static function readObjectAttribute($object, $attributeName)
     {
         $reflector = new ReflectionObject($object);

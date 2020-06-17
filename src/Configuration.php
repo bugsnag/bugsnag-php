@@ -6,8 +6,19 @@ use InvalidArgumentException;
 
 class Configuration
 {
+    /**
+     * The default endpoint for error notifications.
+     */
     const NOTIFY_ENDPOINT = 'https://notify.bugsnag.com';
+
+    /**
+     * The default endpoint for session tracking.
+     */
     const SESSION_ENDPOINT = 'https://sessions.bugsnag.com';
+
+    /**
+     * The default endpoint for build notifications.
+     */
     const BUILD_ENDPOINT = 'https://build.bugsnag.com';
 
     /**
@@ -109,6 +120,15 @@ class Configuration
      * @var bool
      */
     protected $autoCaptureSessions = false;
+
+    /**
+     * A client to use to send sessions.
+     *
+     * @var \GuzzleHttp\ClientInterface
+     *
+     * @deprecated This will be removed in the next major version.
+     */
+    protected $sessionClient;
 
     /**
      * @var string
@@ -665,5 +685,21 @@ class Configuration
     public function shouldCaptureSessions()
     {
         return $this->autoCaptureSessions;
+    }
+
+    /**
+     * Get the session client.
+     *
+     * @return \GuzzleHttp\ClientInterface
+     *
+     * @deprecated This will be removed in the next major version.
+     */
+    public function getSessionClient()
+    {
+        if (is_null($this->sessionClient)) {
+            $this->sessionClient = Client::makeGuzzle($this->sessionEndpoint);
+        }
+
+        return $this->sessionClient;
     }
 }
