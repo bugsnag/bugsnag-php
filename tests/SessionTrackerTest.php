@@ -23,9 +23,7 @@ class SessionTrackerTest extends TestCase
     public function setUp()
     {
         /** @var Configuration&MockObject */
-        $this->config = $this->getMockBuilder(Configuration::class)
-            ->setConstructorArgs(['example-api-key'])
-            ->getMock();
+        $this->config = new Configuration('example-api-key');
 
         /** @var HttpClient&MockObject */
         $this->client = $this->getMockBuilder(HttpClient::class)
@@ -107,7 +105,7 @@ class SessionTrackerTest extends TestCase
         $sessionTracker->sendSessions();
     }
 
-    public function testSendSessionsShouldNotNotify()
+    public function testSessionsShouldNotSendWhenTheReleaseStageIsIgnored()
     {
         $numberOfCalls = 0;
 
@@ -124,7 +122,9 @@ class SessionTrackerTest extends TestCase
             $this->assertSame([], $value, 'Expected the second call to be a write ($value === [])');
         });
 
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(false);
+        $this->config->setReleaseStage('unit test');
+        $this->config->setNotifyReleaseStages(['not unit test']);
+
         $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->sendSessions();
@@ -145,11 +145,6 @@ class SessionTrackerTest extends TestCase
             return $returnValue;
         });
 
-        $this->config->expects($this->never())->method('shouldNotify');
-        $this->config->expects($this->never())->method('getNotifier');
-        $this->config->expects($this->never())->method('getDeviceData');
-        $this->config->expects($this->never())->method('getAppData');
-        $this->config->expects($this->never())->method('getApiKey');
         $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->sendSessions();
@@ -173,11 +168,6 @@ class SessionTrackerTest extends TestCase
             return null;
         });
 
-        $this->config->expects($this->never())->method('shouldNotify');
-        $this->config->expects($this->never())->method('getNotifier');
-        $this->config->expects($this->never())->method('getDeviceData');
-        $this->config->expects($this->never())->method('getAppData');
-        $this->config->expects($this->never())->method('getApiKey');
         $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->startSession();
@@ -196,11 +186,6 @@ class SessionTrackerTest extends TestCase
             return $returnValue;
         });
 
-        $this->config->expects($this->never())->method('shouldNotify');
-        $this->config->expects($this->never())->method('getNotifier');
-        $this->config->expects($this->never())->method('getDeviceData');
-        $this->config->expects($this->never())->method('getAppData');
-        $this->config->expects($this->never())->method('getApiKey');
         $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->startSession();
@@ -225,16 +210,11 @@ class SessionTrackerTest extends TestCase
             return ['2000-01-01T00:00:00' => 1];
         });
 
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
-        $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
-        $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
-
         $expectCallback = function ($payload) {
             return count($payload) == 4
-                && $payload['notifier'] === 'test_notifier'
-                && $payload['device'] === 'device_data'
-                && $payload['app'] === 'app_data'
+                && $payload['notifier'] === $this->config->getNotifier()
+                && $payload['device'] === $this->config->getDeviceData()
+                && $payload['app'] === $this->config->getAppData()
                 && count($payload['sessionCounts']) === 1
                 && $payload['sessionCounts'][0]['startedAt'] === '2000-01-01T00:00:00'
                 && $payload['sessionCounts'][0]['sessionsStarted'] === 1;
@@ -263,16 +243,11 @@ class SessionTrackerTest extends TestCase
             $session[$key] = $value;
         });
 
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-        $this->config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
-        $this->config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
-        $this->config->expects($this->once())->method('getAppData')->willReturn('app_data');
-
         $expectCallback = function ($payload) {
             return count($payload) == 4
-                && $payload['notifier'] === 'test_notifier'
-                && $payload['device'] === 'device_data'
-                && $payload['app'] === 'app_data'
+                && $payload['notifier'] === $this->config->getNotifier()
+                && $payload['device'] === $this->config->getDeviceData()
+                && $payload['app'] === $this->config->getAppData()
                 && count($payload['sessionCounts']) === 1
                 && preg_match(
                     '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/',
@@ -340,8 +315,6 @@ class SessionTrackerTest extends TestCase
             $session[$key] = $value;
         });
 
-        $this->config->expects($this->once())->method('shouldNotify')->willReturn(true);
-
         $this->sessionTracker->startSession();
 
         $this->assertFalse($locked, 'Expected not to be locked after sending sessions');
@@ -369,8 +342,6 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->setStorageFunction(function () {
             throw new RuntimeException('Something went wrong!');
         });
-
-        $this->config->expects($this->never())->method('shouldNotify');
 
         $e = null;
 
