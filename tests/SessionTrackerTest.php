@@ -33,7 +33,7 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker = new SessionTracker($this->config, $this->client);
     }
 
-    public function testSendSessionsEmpty()
+    public function testSendSessionsDoesNothingWhenThereAreNoSessionsToSend()
     {
         $this->client->expects($this->never())->method('sendSessions');
 
@@ -66,7 +66,7 @@ class SessionTrackerTest extends TestCase
         $config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
         $config->expects($this->once())->method('getAppData')->willReturn('app_data');
 
-        $expectCallback = function ($payload) use ($config) {
+        $expectCallback = function ($payload) {
             $this->assertArrayHasKey('json', $payload);
             $this->assertArrayHasKey('headers', $payload);
 
@@ -107,6 +107,31 @@ class SessionTrackerTest extends TestCase
 
     public function testSessionsShouldNotSendWhenTheReleaseStageIsIgnored()
     {
+        $this->config->setReleaseStage('development');
+        $this->config->setNotifyReleaseStages(['production']);
+
+        $this->client->expects($this->never())->method('sendSessions');
+
+        $this->sessionTracker->startSession();
+    }
+
+    public function testConfigurationCanBeChanged()
+    {
+        // The 'newConfig' prevents sessions from being sent because of the
+        // release stage (as proven above). If the original config was used here
+        // then the 'sendSessions' call would be made
+        $newConfig = new Configuration('a different api key');
+        $newConfig->setReleaseStage('development');
+        $newConfig->setNotifyReleaseStages(['production']);
+
+        $this->client->expects($this->never())->method('sendSessions');
+
+        $this->sessionTracker->setConfig($newConfig);
+        $this->sessionTracker->startSession();
+    }
+
+    public function testSessionsShouldNotSendWhenTheReleaseStageIsIgnoredWithStorageFunction()
+    {
         $numberOfCalls = 0;
 
         $this->sessionTracker->setStorageFunction(function ($key, $value = null) use (&$numberOfCalls) {
@@ -122,14 +147,21 @@ class SessionTrackerTest extends TestCase
             $this->assertSame([], $value, 'Expected the second call to be a write ($value === [])');
         });
 
-        $this->config->setReleaseStage('unit test');
-        $this->config->setNotifyReleaseStages(['not unit test']);
+        $this->config->setReleaseStage('development');
+        $this->config->setNotifyReleaseStages(['production']);
 
         $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->sendSessions();
 
         $this->assertSame(2, $numberOfCalls, 'Expected there to be two calls to the session storage function');
+    }
+
+    public function testSendSessionsDoesNotDeliverSessionsWhenThereAreNoSessions()
+    {
+        $this->client->expects($this->never())->method('sendSessions');
+
+        $this->sessionTracker->sendSessions();
     }
 
     /**
@@ -139,7 +171,7 @@ class SessionTrackerTest extends TestCase
      *
      * @dataProvider storageFunctionEmptyReturnValueProvider
      */
-    public function testSendSessionsReturnsEarlyWhenGetSessionCountsReturnsAValueThatsNotAPopulatedArray($returnValue)
+    public function testSendSessionsDoesNotDeliverSessionsWhenGetSessionCountsReturnsAValueThatsNotAPopulatedArray($returnValue)
     {
         $this->sessionTracker->setStorageFunction(function () use ($returnValue) {
             return $returnValue;
@@ -157,7 +189,7 @@ class SessionTrackerTest extends TestCase
      *
      * @dataProvider storageFunctionEmptyReturnValueProvider
      */
-    public function testStartSessionDoesNotDeliverSessionsWhenLastSentIsNotAnInteger($returnValue)
+    public function testStartSessionDoesNotDeliverSessionsWhenLastSentIsNotAnIntegerWithStorageFunction($returnValue)
     {
         $this->sessionTracker->setStorageFunction(function ($key) use ($returnValue) {
             // We only care about the "last sent" value here
@@ -180,7 +212,7 @@ class SessionTrackerTest extends TestCase
      *
      * @dataProvider storageFunctionEmptyReturnValueProvider
      */
-    public function testStartSessionDoesNotDeliverSessionsWhenGetSessionCountsReturnsAValueThatsNotAPopulatedArray($returnValue)
+    public function testStartSessionDoesNotDeliverSessionsWhenGetSessionCountsReturnsAValueThatsNotAPopulatedArrayWithStorageFunction($returnValue)
     {
         $this->sessionTracker->setStorageFunction(function ($key) use ($returnValue) {
             return $returnValue;
@@ -204,30 +236,29 @@ class SessionTrackerTest extends TestCase
         ];
     }
 
-    public function testSendSessionsSuccess()
+    public function testSendSessionsSendsSessionsWhenThereAreSessionsToSendFromTheStorageFunction()
     {
         $this->sessionTracker->setStorageFunction(function () {
             return ['2000-01-01T00:00:00' => 1];
         });
 
-        $expectCallback = function ($payload) {
-            return count($payload) == 4
-                && $payload['notifier'] === $this->config->getNotifier()
-                && $payload['device'] === $this->config->getDeviceData()
-                && $payload['app'] === $this->config->getAppData()
-                && count($payload['sessionCounts']) === 1
-                && $payload['sessionCounts'][0]['startedAt'] === '2000-01-01T00:00:00'
-                && $payload['sessionCounts'][0]['sessionsStarted'] === 1;
-        };
-
         $this->client->expects($this->once())
             ->method('sendSessions')
-            ->with($this->callback($expectCallback));
+            ->with($this->singleSessionExpectationCallback());
 
         $this->sessionTracker->sendSessions();
     }
 
-    public function testStartSessionsSuccess()
+    public function testStartSessionSendsTheSessionItStartsImmediately()
+    {
+        $this->client->expects($this->once())
+            ->method('sendSessions')
+            ->with($this->singleSessionExpectationCallback());
+
+        $this->sessionTracker->startSession();
+    }
+
+    public function testStartSessionSendsTheSessionItStartsImmediatelyWithStorageFunction()
     {
         $session = [];
 
@@ -243,22 +274,9 @@ class SessionTrackerTest extends TestCase
             $session[$key] = $value;
         });
 
-        $expectCallback = function ($payload) {
-            return count($payload) == 4
-                && $payload['notifier'] === $this->config->getNotifier()
-                && $payload['device'] === $this->config->getDeviceData()
-                && $payload['app'] === $this->config->getAppData()
-                && count($payload['sessionCounts']) === 1
-                && preg_match(
-                    '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/',
-                    $payload['sessionCounts'][0]['startedAt']
-                )
-                && $payload['sessionCounts'][0]['sessionsStarted'] === 1;
-        };
-
         $this->client->expects($this->once())
             ->method('sendSessions')
-            ->with($this->callback($expectCallback));
+            ->with($this->singleSessionExpectationCallback());
 
         $this->sessionTracker->startSession();
     }
@@ -284,7 +302,31 @@ class SessionTrackerTest extends TestCase
         $this->sessionTracker->setLockFunctions(function () {}, null);
     }
 
-    public function testSetLockFunctionsSucceedsWhenBothFunctionsAreCallable()
+    public function testLockFunctionsAreCalledWhenStartingSessions()
+    {
+        $locked = false;
+        $lockWasCalled = false;
+        $unlockWasCalled = false;
+
+        $this->sessionTracker->setLockFunctions(
+            function () use (&$locked, &$lockWasCalled) {
+                $locked = true;
+                $lockWasCalled = true;
+            },
+            function () use (&$locked, &$unlockWasCalled) {
+                $locked = false;
+                $unlockWasCalled = true;
+            }
+        );
+
+        $this->sessionTracker->startSession();
+
+        $this->assertFalse($locked, 'Expected not to be locked after sending sessions');
+        $this->assertTrue($lockWasCalled, 'Expected the `lockFunction` to be called');
+        $this->assertTrue($unlockWasCalled, 'Expected the `unlockFunction` to be called');
+    }
+
+    public function testLockFunctionsAreCalledWhenStartingSessionsWithStorageFunction()
     {
         $locked = false;
         $lockWasCalled = false;
@@ -316,6 +358,68 @@ class SessionTrackerTest extends TestCase
         });
 
         $this->sessionTracker->startSession();
+
+        $this->assertFalse($locked, 'Expected not to be locked after sending sessions');
+        $this->assertTrue($lockWasCalled, 'Expected the `lockFunction` to be called');
+        $this->assertTrue($unlockWasCalled, 'Expected the `unlockFunction` to be called');
+    }
+
+    public function testLockFunctionsAreCalledWhenSendingSessions()
+    {
+        $locked = false;
+        $lockWasCalled = false;
+        $unlockWasCalled = false;
+
+        $this->sessionTracker->setLockFunctions(
+            function () use (&$locked, &$lockWasCalled) {
+                $locked = true;
+                $lockWasCalled = true;
+            },
+            function () use (&$locked, &$unlockWasCalled) {
+                $locked = false;
+                $unlockWasCalled = true;
+            }
+        );
+
+        $this->sessionTracker->sendSessions();
+
+        $this->assertFalse($locked, 'Expected not to be locked after sending sessions');
+        $this->assertTrue($lockWasCalled, 'Expected the `lockFunction` to be called');
+        $this->assertTrue($unlockWasCalled, 'Expected the `unlockFunction` to be called');
+    }
+
+    public function testLockFunctionsAreCalledWhenSendingSessionsWithStorageFunction()
+    {
+        $locked = false;
+        $lockWasCalled = false;
+        $unlockWasCalled = false;
+
+        $this->sessionTracker->setLockFunctions(
+            function () use (&$locked, &$lockWasCalled) {
+                $locked = true;
+                $lockWasCalled = true;
+            },
+            function () use (&$locked, &$unlockWasCalled) {
+                $locked = false;
+                $unlockWasCalled = true;
+            }
+        );
+
+        $session = [];
+
+        $this->sessionTracker->setStorageFunction(function ($key, $value = null) use (&$session) {
+            if (!isset($session[$key])) {
+                $session[$key] = null;
+            }
+
+            if ($value === null) {
+                return $session[$key];
+            }
+
+            $session[$key] = $value;
+        });
+
+        $this->sessionTracker->sendSessions();
 
         $this->assertFalse($locked, 'Expected not to be locked after sending sessions');
         $this->assertTrue($lockWasCalled, 'Expected the `lockFunction` to be called');
@@ -357,24 +461,71 @@ class SessionTrackerTest extends TestCase
         $this->assertTrue($unlockWasCalled, 'Expected the `unlockFunction` to be called');
     }
 
-    public function testSetRetryFunctionThrowsWhenNotGivenACallable()
+    /**
+     * @return void
+     *
+     * @dataProvider storageFunctionEmptyReturnValueProvider
+     */
+    public function testSetRetryFunctionThrowsWhenNotGivenACallable($value)
     {
         $this->expectedException(InvalidArgumentException::class, 'The retry function must be callable');
 
-        $this->sessionTracker->setRetryFunction(null);
+        $this->sessionTracker->setRetryFunction($value);
     }
 
-    public function testSetStorageFunctionThrowsWhenNotGivenACallable()
+    /**
+     * @return void
+     *
+     * @dataProvider storageFunctionEmptyReturnValueProvider
+     */
+    public function testSetStorageFunctionThrowsWhenNotGivenACallable($value)
     {
         $this->expectedException(InvalidArgumentException::class, 'Storage function must be callable');
 
-        $this->sessionTracker->setStorageFunction(null);
+        $this->sessionTracker->setStorageFunction($value);
     }
 
-    public function testSetSessionFunctionThrowsWhenNotGivenACallable()
+    /**
+     * @return void
+     *
+     * @dataProvider storageFunctionEmptyReturnValueProvider
+     */
+    public function testSetSessionFunctionThrowsWhenNotGivenACallable($value)
     {
         $this->expectedException(InvalidArgumentException::class, 'Session function must be callable');
 
-        $this->sessionTracker->setSessionFunction(null);
+        $this->sessionTracker->setSessionFunction($value);
+    }
+
+    /**
+     * Get an expectation callback for the typical test case where there is a
+     * single session that is being sent.
+     *
+     * @return \PHPUnit\Framework\Constraint\Callback
+     */
+    private function singleSessionExpectationCallback()
+    {
+        return $this->callback(function ($payload) {
+            $this->assertArrayHasKey('notifier', $payload);
+            $this->assertArrayHasKey('device', $payload);
+            $this->assertArrayHasKey('app', $payload);
+            $this->assertArrayHasKey('sessionCounts', $payload);
+
+            $this->assertSame($this->config->getNotifier(), $payload['notifier']);
+            $this->assertSame($this->config->getDeviceData(), $payload['device']);
+            $this->assertSame($this->config->getAppData(), $payload['app']);
+
+            $this->assertCount(1, $payload['sessionCounts']);
+
+            $session = $payload['sessionCounts'][0];
+
+            $this->assertArrayHasKey('startedAt', $session);
+            $this->assertArrayHasKey('sessionsStarted', $session);
+
+            $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $session['startedAt']);
+            $this->assertSame(1, $session['sessionsStarted']);
+
+            return true;
+        });
     }
 }
