@@ -5,6 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use Bugsnag\HttpClient;
 use Bugsnag\SessionTracker;
+use GuzzleHttp;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
 use RuntimeException;
@@ -26,6 +27,7 @@ class SessionTrackerTest extends TestCase
             ->setConstructorArgs(['example-api-key'])
             ->getMock();
 
+        /** @var HttpClient&MockObject */
         $this->client = $this->getMockBuilder(HttpClient::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -38,6 +40,71 @@ class SessionTrackerTest extends TestCase
         $this->client->expects($this->never())->method('sendSessions');
 
         $this->sessionTracker->sendSessions();
+    }
+
+    public function testHttpClientCanBeObtainedViaConfig()
+    {
+        /** @var GuzzleHttp\Client&MockObject */
+        $guzzle = $this->getMockBuilder(GuzzleHttp\Client::class)
+            ->disableOriginalConstructor()
+            ->disableProxyingToOriginalMethods()
+            ->getMock();
+
+        /** @var Configuration&MockObject */
+        $config = $this->getMockBuilder(Configuration::class)
+            ->setConstructorArgs(['example-api-key'])
+            ->getMock();
+
+        $config->expects($this->once())
+            ->method('getSessionClient')
+            ->willReturn($guzzle);
+
+        $config->expects($this->once())
+            ->method('getSessionEndpoint')
+            ->willReturn(Configuration::SESSION_ENDPOINT);
+
+        $config->expects($this->once())->method('shouldNotify')->willReturn(true);
+        $config->expects($this->once())->method('getNotifier')->willReturn('test_notifier');
+        $config->expects($this->once())->method('getDeviceData')->willReturn('device_data');
+        $config->expects($this->once())->method('getAppData')->willReturn('app_data');
+
+        $expectCallback = function ($payload) use ($config) {
+            $this->assertArrayHasKey('json', $payload);
+            $this->assertArrayHasKey('headers', $payload);
+
+            $json = $payload['json'];
+
+            $this->assertArrayHasKey('notifier', $json);
+            $this->assertArrayHasKey('device', $json);
+            $this->assertArrayHasKey('app', $json);
+            $this->assertArrayHasKey('sessionCounts', $json);
+
+            $this->assertSame('test_notifier', $json['notifier']);
+            $this->assertSame('device_data', $json['device']);
+            $this->assertSame('app_data', $json['app']);
+            $this->assertCount(1, $json['sessionCounts']);
+            $this->assertSame('2000-01-01T00:00:00', $json['sessionCounts'][0]['startedAt']);
+            $this->assertSame(1, $json['sessionCounts'][0]['sessionsStarted']);
+
+            return true;
+        };
+
+        $method = self::getGuzzleMethod();
+        $mock = $guzzle->expects($this->once())->method($method);
+
+        if ($method === 'request') {
+            $mock->with('POST', Configuration::SESSION_ENDPOINT, $this->callback($expectCallback));
+        } else {
+            $mock->with(Configuration::SESSION_ENDPOINT, $this->callback($expectCallback));
+        }
+
+        $sessionTracker = new SessionTracker($config);
+
+        $sessionTracker->setStorageFunction(function () {
+            return ['2000-01-01T00:00:00' => 1];
+        });
+
+        $sessionTracker->sendSessions();
     }
 
     public function testSendSessionsShouldNotNotify()

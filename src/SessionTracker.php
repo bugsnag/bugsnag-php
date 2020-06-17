@@ -101,15 +101,17 @@ class SessionTracker
     protected $currentSession = [];
 
     /**
-     * @param Configuration $config
-     * @param HttpClient $http
-     *
-     * @return void
+     * @param Configuration   $config
+     * @param HttpClient|null $http   A HttpClient instance to use. Passing null
+     *                                is deprecated and $http will be required
+     *                                in the next major version.
      */
-    public function __construct(Configuration $config, HttpClient $http)
+    public function __construct(Configuration $config, HttpClient $http = null)
     {
         $this->config = $config;
-        $this->http = $http;
+        $this->http = $http === null
+            ? new HttpClient($config, $config->getSessionClient())
+            : $http;
     }
 
     /**

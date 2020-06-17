@@ -40,6 +40,11 @@ Changelog
   The `SessionData` class will be passed a `SessionTracker` instead of a `Client` instance in its constructor in the next major version
   In this version it will extract the `SessionTracker` from the `Client`
 
+- `SessionTracker` should be constructed with a `HttpClient`
+  The `SessionTracker` class should now always be passed a `HttpClient`
+  In this version it will construct its own `HttpClient` if one is not provided
+  In the next major version, this fallback will be removed and passing a `HttpClient` will be mandatory 
+
 ## 3.21.0 (2020-04-29)
 
 ### Enhancements
