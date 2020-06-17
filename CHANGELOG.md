@@ -32,13 +32,12 @@ Changelog
   This is deprecated as the version is ambiguous between the notification payload version and session payload version
   Call this with the correct `HttpClient` payload version constants instead
 
-- Using `getSessionClient` method in `Client` and `Configuration`
-  This method is dangerous to use as there is now only one Guzzle instance used across every request
-  Changes to this Guzzle client will now be ignored
+- `Client::getSessionClient` and `Configuration::getSessionClient`
+  This method is dangerous to use as there is now only one Guzzle instance used across every request, so changing this client would also affect the notification client. Changes to this Guzzle client will now be ignored
+  Use the `$guzzle` parameter of the `Client` constructor to customise the Guzzle client instead
 
 - `SessionData::$client`
   The `SessionData` class will be passed a `SessionTracker` instead of a `Client` instance in its constructor in the next major version
-  In this version it will extract the `SessionTracker` from the `Client`
 
 - `SessionTracker` should be constructed with a `HttpClient`
   The `SessionTracker` class should now always be passed a `HttpClient`

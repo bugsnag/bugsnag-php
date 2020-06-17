@@ -899,6 +899,8 @@ class Client
      * Get the session client.
      *
      * @return \GuzzleHttp\ClientInterface
+     *
+     * @deprecated This will be removed in the next major version.
      */
     public function getSessionClient()
     {
