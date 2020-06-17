@@ -411,7 +411,7 @@ class Client
      */
     public function flush()
     {
-        $this->http->send();
+        $this->http->sendEvents();
     }
 
     /**

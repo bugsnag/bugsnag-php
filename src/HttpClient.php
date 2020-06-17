@@ -9,7 +9,26 @@ use RuntimeException;
 class HttpClient
 {
     /**
-     * The maximum payload size — one megabyte (1024 * 1024).
+     * @var Configuration
+     */
+    protected $config;
+
+    /**
+     * @var ClientInterface
+     */
+    protected $guzzle;
+
+    /**
+     * The queue of reports to send.
+     *
+     * @var array<Report>
+     */
+    protected $queue = [];
+
+    /**
+     * The maximum payload size. A whole megabyte (1024 * 1024).
+     *
+     * @var int
      */
     const MAX_SIZE = 1048576;
 
@@ -29,21 +48,6 @@ class HttpClient
      * @deprecated Use {self::NOTIFY_PAYLOAD_VERSION} instead.
      */
     const PAYLOAD_VERSION = self::NOTIFY_PAYLOAD_VERSION;
-
-    /**
-     * @var Configuration
-     */
-    protected $config;
-
-    /**
-     * @var ClientInterface
-     */
-    protected $guzzle;
-
-    /**
-     * @var array<Report>
-     */
-    protected $queue = [];
 
     /**
      * @param Configuration   $config
@@ -68,53 +72,29 @@ class HttpClient
     }
 
     /**
-     * Deliver all errors on the queue to Bugsnag.
+     * Notify Bugsnag of a deployment.
+     *
+     * @param array $data the deployment information
      *
      * @return void
+     *
+     * @deprecated Use {@see self::sendBuildReport} instead.
      */
-    public function send()
+    public function deploy(array $data)
     {
-        if (!$this->queue) {
-            return;
+        $app = $this->config->getAppData();
+
+        $data['releaseStage'] = $app['releaseStage'];
+
+        if (isset($app['version'])) {
+            $data['appVersion'] = $app['version'];
         }
 
-        $events = [];
+        $data['apiKey'] = $this->config->getApiKey();
 
-        foreach ($this->queue as $report) {
-            $event = $report->toArray();
+        $uri = rtrim($this->config->getNotifyEndpoint(), '/').'/deploy';
 
-            if ($event) {
-                $events[] = $event;
-            }
-        }
-
-        $body = [
-            'apiKey' => $this->config->getApiKey(),
-            'notifier' => $this->config->getNotifier(),
-            'events' => $events,
-        ];
-
-        $this->deliverEvents($this->config->getNotifyEndpoint(), $body);
-
-        $this->queue = [];
-    }
-
-    /**
-     * Send a session data payload to Bugsnag.
-     *
-     * @param array $payload
-     *
-     * @return void
-     */
-    public function sendSessions(array $payload)
-    {
-        $this->post(
-            $this->config->getSessionEndpoint(),
-            [
-                'json' => $payload,
-                'headers' => $this->getHeaders(self::SESSION_PAYLOAD_VERSION),
-            ]
-        );
+        $this->post($uri, ['json' => $data]);
     }
 
     /**
@@ -173,40 +153,133 @@ class HttpClient
     }
 
     /**
-     * Notify Bugsnag of a deployment.
-     *
-     * @param array $data the deployment information
+     * Deliver everything on the queue to Bugsnag.
      *
      * @return void
      *
-     * @deprecated Use {@see self::sendBuildReport} instead.
+     * @deprecated Use {HttpClient::sendEvents} instead.
      */
-    public function deploy(array $data)
+    public function send()
     {
-        $app = $this->config->getAppData();
+        $this->sendEvents();
+    }
 
-        $data['releaseStage'] = $app['releaseStage'];
-
-        if (isset($app['version'])) {
-            $data['appVersion'] = $app['version'];
+    /**
+     * Deliver everything on the queue to Bugsnag.
+     *
+     * @return void
+     */
+    public function sendEvents()
+    {
+        if (!$this->queue) {
+            return;
         }
 
-        $data['apiKey'] = $this->config->getApiKey();
+        $this->deliverEvents(
+            $this->config->getNotifyEndpoint(),
+            $this->getEventPayload()
+        );
 
-        $uri = rtrim($this->config->getNotifyEndpoint(), '/').'/deploy';
+        $this->queue = [];
+    }
 
-        $this->post($uri, ['json' => $data]);
+    /**
+     * Build the request data to send.
+     *
+     * @return array
+     *
+     * @deprecated Use {@see HttpClient::getEventPayload} instead.
+     */
+    protected function build()
+    {
+        return $this->getEventPayload();
+    }
+
+    /**
+     * Get the event payload to send.
+     *
+     * @return array
+     */
+    protected function getEventPayload()
+    {
+        $events = [];
+
+        foreach ($this->queue as $report) {
+            $event = $report->toArray();
+
+            if ($event) {
+                $events[] = $event;
+            }
+        }
+
+        return [
+            'apiKey' => $this->config->getApiKey(),
+            'notifier' => $this->config->getNotifier(),
+            'events' => $events,
+        ];
+    }
+
+    /**
+     * Send a session data payload to Bugsnag.
+     *
+     * @param array $payload
+     *
+     * @return void
+     */
+    public function sendSessions(array $payload)
+    {
+        $this->post(
+            $this->config->getSessionEndpoint(),
+            [
+                'json' => $payload,
+                'headers' => $this->getHeaders(self::SESSION_PAYLOAD_VERSION),
+            ]
+        );
+    }
+
+    /**
+     * Builds the array of headers to send.
+     *
+     * @param string $version The payload version to use. This defaults to the
+     *                        notify payload version if not given
+     *
+     * @return array
+     */
+    protected function getHeaders($version = self::NOTIFY_PAYLOAD_VERSION)
+    {
+        return [
+            'Bugsnag-Api-Key' => $this->config->getApiKey(),
+            'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
+            'Bugsnag-Payload-Version' => $version,
+        ];
+    }
+
+    /**
+     * Send a POST request to Bugsnag.
+     *
+     * @param string $uri  the uri to hit
+     * @param array  $data the request options
+     *
+     * @return void
+     */
+    protected function post($uri, array $options = [])
+    {
+        if (method_exists(ClientInterface::class, 'request')) {
+            $this->guzzle->request('POST', $uri, $options);
+        } else {
+            $this->guzzle->post($uri, $options);
+        }
     }
 
     /**
      * Deliver the given events to the notification API.
      *
-     * @param string $uri
-     * @param array  $data
+     * @param string $uri  the uri to hit
+     * @param array  $data the data send
      *
      * @return void
      *
-     * @deprecated Use {@see self::deliverEvents} instead.
+     * @deprecated Use {HttpClient::deliverEvents} instead
      */
     protected function postJson($uri, array $data)
     {
@@ -216,7 +289,8 @@ class HttpClient
     /**
      * Deliver the given events to the notification API.
      *
-     * @param array $data
+     * @param string $uri  the uri to hit
+     * @param array  $data the data send
      *
      * @return void
      */
@@ -256,49 +330,9 @@ class HttpClient
     }
 
     /**
-     * Builds the array of headers to send using the given payload version.
-     *
-     * If no payload version is given, we assume this is for the notify endpoint
-     * and so use {@see self::NOTIFY_PAYLOAD_VERSION}.
-     *
-     * @param string|null $version The payload version this request is for
-     *                             Not providing this parameter is deprecated
-     *                             and it will be required in the next major version.
-     *
-     * @return array
-     */
-    protected function getHeaders($version = null)
-    {
-        if ($version === null) {
-            $version = self::NOTIFY_PAYLOAD_VERSION;
-        }
-
-        return [
-            'Bugsnag-Api-Key' => $this->config->getApiKey(),
-            'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
-            'Bugsnag-Payload-Version' => $version,
-        ];
-    }
-
-    /**
-     * @param string $uri
-     * @param array  $options
-     *
-     * @return void
-     */
-    protected function post($uri, array $options = [])
-    {
-        if (method_exists(ClientInterface::class, 'request')) {
-            $this->guzzle->request('POST', $uri, $options);
-        } else {
-            $this->guzzle->post($uri, $options);
-        }
-    }
-
-    /**
      * Normalize the given data to ensure it's the correct size.
      *
-     * @param array $data
+     * @param array $data the data to normalize
      *
      * @throws RuntimeException
      *
@@ -324,7 +358,7 @@ class HttpClient
     /**
      * Get the length of the given string in bytes.
      *
-     * @param string $str
+     * @param string $str the string to get the length of
      *
      * @return int
      */

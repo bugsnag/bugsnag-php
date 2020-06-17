@@ -24,6 +24,15 @@ Changelog
 - `SessionTracker::$SESSION_PAYLOAD_VERSION`
   Use `HttpClient::SESSION_PAYLOAD_VERSION` instead
 
+- `HttpClient::send`
+  Use `HttpClient::sendEvents` instead
+  
+- `HttpClient::build`
+  Use `HttpClient::getEventPayload` instead
+
+- `HttpClient::postJson`
+  Use `HttpClient::deliverEvents` instead
+
 - Using the `base_uri`/`base_url` on a Guzzle instance
   The base URI is ambiguous as there are three separate endpoints which could be used, therefore all Guzzle requests now use absolute URIs. We will extract the `base_uri`/`base_url` Guzzle option if one is set and use it as the notification endpoint URI, however this will be removed in the next major version
   Set the notification endpoint manually with `Configuration::setNotifyEndpoint` instead
