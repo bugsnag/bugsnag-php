@@ -19,8 +19,7 @@ use Bugsnag\Request\ResolverInterface;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
 use Bugsnag\Shutdown\ShutdownStrategyInterface;
 use Composer\CaBundle\CaBundle;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp;
 
 class Client
 {
@@ -113,21 +112,21 @@ class Client
     }
 
     /**
-     * @param Configuration                  $config
-     * @param ResolverInterface|null         $resolver
-     * @param ClientInterface|null           $guzzle
+     * @param Configuration $config
+     * @param ResolverInterface|null $resolver
+     * @param GuzzleHttp\ClientInterface|null $guzzle
      * @param ShutdownStrategyInterface|null $shutdownStrategy
      */
     public function __construct(
         Configuration $config,
         ResolverInterface $resolver = null,
-        ClientInterface $guzzle = null,
+        GuzzleHttp\ClientInterface $guzzle = null,
         ShutdownStrategyInterface $shutdownStrategy = null
     ) {
         $guzzle = $guzzle ?: self::makeGuzzle();
 
         // We need to use 'getBaseUrl' for Guzzle v5 compatibility
-        $base = method_exists(ClientInterface::class, 'getBaseUrl')
+        $base = method_exists(GuzzleHttp\ClientInterface::class, 'getBaseUrl')
             ? $guzzle->getBaseUrl()
             : $guzzle->getConfig(self::getGuzzleBaseOptionName());
 
@@ -157,7 +156,7 @@ class Client
      * @param string|null $base
      * @param array       $options
      *
-     * @return ClientInterface
+     * @return GuzzleHttp\ClientInterface
      */
     public static function makeGuzzle($base = null, array $options = [])
     {
@@ -169,7 +168,7 @@ class Client
             $options['verify'] = $path;
         }
 
-        return new GuzzleClient($options);
+        return new GuzzleHttp\Client($options);
     }
 
     /**
@@ -179,7 +178,7 @@ class Client
      */
     private static function getGuzzleBaseOptionName()
     {
-        return method_exists(ClientInterface::class, 'request') ? 'base_uri' : 'base_url';
+        return method_exists(GuzzleHttp\ClientInterface::class, 'request') ? 'base_uri' : 'base_url';
     }
 
     /**
@@ -898,7 +897,7 @@ class Client
     /**
      * Get the session client.
      *
-     * @return \GuzzleHttp\ClientInterface
+     * @return GuzzleHttp\ClientInterface
      *
      * @deprecated This will be removed in the next major version.
      */
