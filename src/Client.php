@@ -182,7 +182,7 @@ class Client
     }
 
     /**
-     * Ensure the notify endpoint is synchronised with Guzzle's base URL
+     * Ensure the notify endpoint is synchronised with Guzzle's base URL.
      *
      * @param Configuration $configuration
      * @param GuzzleHttp\ClientInterface $guzzle
