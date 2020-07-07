@@ -81,7 +81,7 @@ class Client
      *
      * @param string|null $apiKey         your bugsnag api key
      * @param string|null $notifyEndpoint your bugsnag notify endpoint
-     * @param bool        $default        if we should register our default callbacks
+     * @param bool        $defaults       if we should register our default callbacks
      *
      * @return static
      */
@@ -93,14 +93,7 @@ class Client
         $env = new Env();
 
         $config = new Configuration($apiKey ?: $env->get('BUGSNAG_API_KEY'));
-
-        $notifyEndpoint = $notifyEndpoint ?: $env->get('BUGSNAG_ENDPOINT');
-
-        if (is_string($notifyEndpoint)) {
-            $config->setNotifyEndpoint($notifyEndpoint);
-        }
-
-        $guzzle = static::makeGuzzle($notifyEndpoint);
+        $guzzle = static::makeGuzzle($notifyEndpoint ?: $env->get('BUGSNAG_ENDPOINT'));
 
         $client = new static($config, null, $guzzle);
 
