@@ -241,7 +241,9 @@ class HttpClient
      * Builds the array of headers to send.
      *
      * @param string $version The payload version to use. This defaults to the
-     *                        notify payload version if not given
+     *                        notify payload version if not given. The default
+     *                        value should not be relied upon and will be removed
+     *                        in the next major release.
      *
      * @return array
      */
