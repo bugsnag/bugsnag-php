@@ -7,7 +7,7 @@ use InvalidArgumentException;
 class Configuration
 {
     /**
-     * The default endpoint for error notifications.
+     * The default endpoint for event notifications.
      */
     const NOTIFY_ENDPOINT = 'https://notify.bugsnag.com';
 
@@ -592,7 +592,7 @@ class Configuration
     }
 
     /**
-     * Set notification delivery endpoint.
+     * Set event notification endpoint.
      *
      * @param string $endpoint
      *
@@ -606,7 +606,7 @@ class Configuration
     }
 
     /**
-     * Get notification delivery endpoint.
+     * Get event notification endpoint.
      *
      * @return string
      */

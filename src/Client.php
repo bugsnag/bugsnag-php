@@ -24,7 +24,7 @@ use GuzzleHttp;
 class Client
 {
     /**
-     * The default error notification endpoint.
+     * The default event notification endpoint.
      *
      * @var string
      *
