@@ -118,14 +118,7 @@ class Client
     ) {
         $guzzle = $guzzle ?: self::makeGuzzle();
 
-        // We need to use 'getBaseUrl' for Guzzle v5 compatibility
-        $base = method_exists(GuzzleHttp\ClientInterface::class, 'getBaseUrl')
-            ? $guzzle->getBaseUrl()
-            : $guzzle->getConfig(self::getGuzzleBaseOptionName());
-
-        if (is_string($base) || method_exists($base, '__toString')) {
-            $config->setNotifyEndpoint((string) $base);
-        }
+        $this->syncNotifyEndpointWithGuzzleBaseUri($config, $guzzle);
 
         $this->config = $config;
         $this->resolver = $resolver ?: new BasicResolver();
@@ -153,7 +146,7 @@ class Client
      */
     public static function makeGuzzle($base = null, array $options = [])
     {
-        $key = self::getGuzzleBaseOptionName();
+        $key = self::getGuzzleBaseUriOptionName();
 
         $options[$key] = $base ?: Configuration::NOTIFY_ENDPOINT;
 
@@ -169,9 +162,42 @@ class Client
      *
      * @return string
      */
-    private static function getGuzzleBaseOptionName()
+    private static function getGuzzleBaseUriOptionName()
     {
-        return method_exists(GuzzleHttp\ClientInterface::class, 'request') ? 'base_uri' : 'base_url';
+        return method_exists(GuzzleHttp\ClientInterface::class, 'request')
+            ? 'base_uri'
+            : 'base_url';
+    }
+
+    /**
+     * Get the base URL/URI, which depends on the Guzzle version.
+     *
+     * @return mixed
+     */
+    private function getGuzzleBaseUri(GuzzleHttp\ClientInterface $guzzle)
+    {
+        return method_exists(GuzzleHttp\ClientInterface::class, 'getBaseUrl')
+            ? $guzzle->getBaseUrl()
+            : $guzzle->getConfig(self::getGuzzleBaseUriOptionName());
+    }
+
+    /**
+     * Ensure the notify endpoint is synchronised with Guzzle's base URL
+     *
+     * @param Configuration $configuration
+     * @param GuzzleHttp\ClientInterface $guzzle
+     *
+     * @return void
+     */
+    private function syncNotifyEndpointWithGuzzleBaseUri(
+        Configuration $configuration,
+        GuzzleHttp\ClientInterface $guzzle
+    ) {
+        $base = $this->getGuzzleBaseUri($guzzle);
+
+        if (is_string($base) || method_exists($base, '__toString')) {
+            $configuration->setNotifyEndpoint((string) $base);
+        }
     }
 
     /**
