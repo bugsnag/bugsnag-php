@@ -58,10 +58,14 @@ class BasicResolver implements ResolverInterface
 
         $headers = [];
 
-        foreach ($server as $name => $value) {
-            if (substr($name, 0, 5) == 'HTTP_') {
-                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+        if (!function_exists('getallheaders')) {
+            foreach ($server as $name => $value) {
+                if (substr($name, 0, 5) == 'HTTP_') {
+                    $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+                }
             }
+        } else {
+            $headers = getallheaders();
         }
 
         return $headers;
