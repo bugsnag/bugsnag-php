@@ -65,10 +65,10 @@ class BasicResolver implements ResolverInterface
         foreach ($server as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-            } elseif ($name === "CONTENT_TYPE") {
-                $headers["Content-Type"] = $value;
-            } elseif ($name === "CONTENT_LENGTH") {
-                $headers["Content-Length"] = $value;
+            } elseif ($name === 'CONTENT_TYPE') {
+                $headers['Content-Type'] = $value;
+            } elseif ($name === 'CONTENT_LENGTH') {
+                $headers['Content-Length'] = $value;
             }
         }
 
