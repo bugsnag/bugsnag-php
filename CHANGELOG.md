@@ -1,6 +1,18 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Include all HTTP headers in request metadata
+  [#588](https://github.com/bugsnag/bugsnag-php/pull/588)
+
+### Bug Fixes
+
+* TBD
+
+
 ## 3.21.0 (2020-04-29)
 
 ### Enhancements
