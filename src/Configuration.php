@@ -481,7 +481,7 @@ class Configuration
      *
      * @param array $data an associative array containing the new data to be added
      *
-     * @return this
+     * @return $this
      */
     public function mergeDeviceData($data)
     {
