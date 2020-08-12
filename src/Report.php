@@ -19,7 +19,7 @@ class Report
     /**
      * The config object.
      *
-     * @var \Bugsnag\Config
+     * @var \Bugsnag\Configuration
      */
     protected $config;
 
