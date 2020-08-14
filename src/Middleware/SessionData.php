@@ -9,7 +9,7 @@ use Bugsnag\SessionTracker;
 class SessionData
 {
     /**
-     * @var Client
+     * @var \Bgusnag\Client
      *
      * @deprecated This will be removed in the next major version.
      *             The constructor parameter will also change to {@see SessionTracker}
@@ -17,12 +17,12 @@ class SessionData
     protected $client;
 
     /**
-     * @var SessionTracker
+     * @var \Bugsnag\SessionTracker
      */
     private $sessionTracker;
 
     /**
-     * @param Client $client
+     * @param \Bugsnag\Client $client
      */
     public function __construct(Client $client)
     {
@@ -38,7 +38,7 @@ class SessionData
      * If the SessionTracker does not have a current session, the report will
      * not be changed.
      *
-     * @param Report   $report
+     * @param \Bugsnag\Report $report
      * @param callable $next
      *
      * @return void

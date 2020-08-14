@@ -9,19 +9,19 @@ use RuntimeException;
 class HttpClient
 {
     /**
-     * @var Configuration
+     * @var \Bugsnag\Configuration
      */
     protected $config;
 
     /**
-     * @var ClientInterface
+     * @var \GuzzleHttp\ClientInterface
      */
     protected $guzzle;
 
     /**
      * The queue of reports to send.
      *
-     * @var array<Report>
+     * @var \Bugsnag\Report[]
      */
     protected $queue = [];
 
@@ -50,8 +50,8 @@ class HttpClient
     const PAYLOAD_VERSION = self::NOTIFY_PAYLOAD_VERSION;
 
     /**
-     * @param Configuration   $config
-     * @param ClientInterface $guzzle
+     * @param \Bugsnag\Configuration $config
+     * @param \GuzzleHttp\ClientInterface $guzzle
      */
     public function __construct(Configuration $config, ClientInterface $guzzle)
     {
@@ -62,7 +62,7 @@ class HttpClient
     /**
      * Add a report to the queue.
      *
-     * @param Report $report
+     * @param \Bugsnag\Report $report
      *
      * @return void
      */

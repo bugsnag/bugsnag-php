@@ -105,10 +105,10 @@ class Client
     }
 
     /**
-     * @param Configuration $config
-     * @param ResolverInterface|null $resolver
-     * @param GuzzleHttp\ClientInterface|null $guzzle
-     * @param ShutdownStrategyInterface|null $shutdownStrategy
+     * @param \Bugsnag\Configuration $config
+     * @param \Bugsnag\Request\ResolverInterface|null $resolver
+     * @param \GuzzleHttp\ClientInterface|null $guzzle
+     * @param \Bugsnag\Shutdown\ShutdownStrategyInterface|null $shutdownStrategy
      */
     public function __construct(
         Configuration $config,
@@ -184,8 +184,8 @@ class Client
     /**
      * Ensure the notify endpoint is synchronised with Guzzle's base URL.
      *
-     * @param Configuration $configuration
-     * @param GuzzleHttp\ClientInterface $guzzle
+     * @param \Bugsnag\Configuration $configuration
+     * @param \GuzzleHttp\ClientInterface $guzzle
      *
      * @return void
      */
@@ -916,7 +916,7 @@ class Client
     /**
      * Get the session client.
      *
-     * @return GuzzleHttp\ClientInterface
+     * @return \GuzzleHttp\ClientInterface
      *
      * @deprecated This will be removed in the next major version.
      */
