@@ -132,7 +132,7 @@ class RequestTest extends TestCase
             'params' => ['foo' => 'baz'],
             'clientIp' => '123.45.67.8',
             'userAgent' => 'Example Browser 1.2.3',
-            'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3'],
+            'headers' => ['Host' => 'example.com', 'User-Agent' => 'Example Browser 1.2.3', 'Content-Type' => 'application/json'],
         ];
 
         $this->assertSame(['request' => $data], $this->resolver->resolve()->getMetaData());
