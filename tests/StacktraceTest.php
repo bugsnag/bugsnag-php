@@ -204,6 +204,9 @@ class StacktraceTest extends TestCase
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testCodeBadFile()
     {
         // Ensure we deal with race conditions ok

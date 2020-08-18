@@ -10,11 +10,11 @@ use Throwable;
 class Report
 {
     /**
-     * The payload version.
+     * The payload version for the error notification API.
      *
-     * @var string
+     * @deprecated Use {HttpClient::NOTIFY_PAYLOAD_VERSION} instead.
      */
-    const PAYLOAD_VERSION = HttpClient::PAYLOAD_VERSION;
+    const PAYLOAD_VERSION = HttpClient::NOTIFY_PAYLOAD_VERSION;
 
     /**
      * The config object.
@@ -652,7 +652,7 @@ class Report
             'device' => array_merge(['time' => $this->time], $this->config->getDeviceData()),
             'user' => $this->getUser(),
             'context' => $this->getContext(),
-            'payloadVersion' => HttpClient::PAYLOAD_VERSION,
+            'payloadVersion' => HttpClient::NOTIFY_PAYLOAD_VERSION,
             'severity' => $this->getSeverity(),
             'exceptions' => $this->exceptionArray(),
             'breadcrumbs' => $this->breadcrumbs,

@@ -10,6 +10,9 @@ use Bugsnag\Request\RequestInterface;
 use Bugsnag\Request\ResolverInterface;
 use ReflectionClass;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class RequestTest extends TestCase
 {
     protected $resolver;
