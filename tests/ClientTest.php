@@ -133,6 +133,42 @@ class ClientTest extends TestCase
         $this->assertEquals('https://example.com', $client->getNotifyEndpoint());
     }
 
+    public function testTheNotifyEndpointWontBeOverwrittenWhenOneIsAlreadySetOnConfiguration()
+    {
+        $config = new Configuration('abc');
+        $config->setNotifyEndpoint('https://foo.com');
+
+        $client = new Client($config);
+
+        $this->assertEquals('https://foo.com', $client->getNotifyEndpoint());
+    }
+
+    public function testTheNotifyEndpointWontBeOverwrittenByGivenGuzzleInstanceWhenOneIsAlreadySetOnConfiguration()
+    {
+        $config = new Configuration('abc');
+        $config->setNotifyEndpoint('https://foo.com');
+
+        $guzzle = new Guzzle([
+            $this->getGuzzleBaseOptionName() => 'https://example.com',
+        ]);
+
+        $client = new Client($config, null, $guzzle);
+
+        $this->assertEquals('https://foo.com', $client->getNotifyEndpoint());
+    }
+
+    public function testTheNotifyEndpointWontBeOverwrittenByMakeGuzzleWhenOneIsAlreadySetOnConfiguration()
+    {
+        $config = new Configuration('abc');
+        $config->setNotifyEndpoint('https://foo.com');
+
+        $guzzle = Client::makeGuzzle();
+
+        $client = new Client($config, null, $guzzle);
+
+        $this->assertEquals('https://foo.com', $client->getNotifyEndpoint());
+    }
+
     public function testTheNotifyEndpointCanBeSetBySettingItOnAGuzzleInstanceWithAnArray()
     {
         if (!$this->isUsingGuzzle5()) {
