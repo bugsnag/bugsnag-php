@@ -193,6 +193,13 @@ class Client
         Configuration $configuration,
         GuzzleHttp\ClientInterface $guzzle
     ) {
+        // Don't change the endpoint if one is already set, otherwise we could be
+        // resetting it back to the default as the Guzzle base URL will always
+        // be set by 'makeGuzzle'.
+        if ($configuration->getNotifyEndpoint() !== Configuration::NOTIFY_ENDPOINT) {
+            return;
+        }
+
         $base = $this->getGuzzleBaseUri($guzzle);
 
         if (is_string($base) || method_exists($base, '__toString')) {
