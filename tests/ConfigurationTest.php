@@ -3,8 +3,6 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\Uri;
 
 class ConfigurationTest extends TestCase
 {
@@ -278,42 +276,31 @@ class ConfigurationTest extends TestCase
         $this->assertSame(['f1' => 1], $this->config->getDeviceData()['assoc_array_field']);
     }
 
-    public function testSessionTrackingDefaults()
+    public function testSessionTrackingIsDisabledByDefault()
     {
         $this->assertFalse($this->config->shouldCaptureSessions());
     }
 
-    public function testSessionTrackingSetTrue()
+    public function testSessionTrackingCanBeEnabled()
     {
-        $this->assertFalse($this->config->shouldCaptureSessions());
-
         $this->config->setAutoCaptureSessions(true);
 
         $this->assertTrue($this->config->shouldCaptureSessions());
-
-        $client = $this->config->getSessionClient();
-
-        $this->assertSame(GuzzleClient::class, get_class($client));
-
-        $this->assertEquals(new Uri(Configuration::SESSION_ENDPOINT), self::getGuzzleBaseUri($client));
     }
 
-    public function testSessionTrackingSetEndpoint()
+    public function testTheSessionEndpointHasASensibleDefault()
     {
-        $testUrl = 'https://testurl.com';
+        $expected = 'https://sessions.bugsnag.com';
 
-        $this->assertFalse($this->config->shouldCaptureSessions());
+        $this->assertSame($expected, $this->config->getSessionEndpoint());
+    }
 
-        $this->config->setAutoCaptureSessions(true);
+    public function testTheSessionEndpointCanBeSetIfNecessary()
+    {
+        $expected = 'https://example.com';
 
-        $this->assertTrue($this->config->shouldCaptureSessions());
+        $this->config->setSessionEndpoint($expected);
 
-        $this->config->setSessionEndpoint($testUrl);
-
-        $client = $this->config->getSessionClient();
-
-        $this->assertSame(GuzzleClient::class, get_class($client));
-
-        $this->assertEquals(new Uri($testUrl), self::getGuzzleBaseUri($client));
+        $this->assertSame($expected, $this->config->getSessionEndpoint());
     }
 }

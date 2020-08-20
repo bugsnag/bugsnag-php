@@ -3,12 +3,10 @@
 namespace Bugsnag\Tests;
 
 use GrahamCampbell\TestBenchCore\MockeryTrait;
-use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Psr7\Uri;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use ReflectionObject;
+use PHPUnit\Runner\Version as PhpUnitVersion;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -17,7 +15,7 @@ abstract class TestCase extends BaseTestCase
 
     public function expectedException($class, $message = null)
     {
-        if (class_exists(\PHPUnit_Framework_TestCase::class)) {
+        if ($this->isPhpUnit4()) {
             $this->setExpectedException($class, $message);
 
             return;
@@ -30,6 +28,18 @@ abstract class TestCase extends BaseTestCase
         }
     }
 
+    protected function isPhpUnit7()
+    {
+        return version_compare($this->phpUnitVersion(), '7.0.0', '>=')
+            && version_compare($this->phpUnitVersion(), '8.0.0', '<');
+    }
+
+    protected function isPhpUnit4()
+    {
+        return version_compare($this->phpUnitVersion(), '4.0.0', '>=')
+            && version_compare($this->phpUnitVersion(), '5.0.0', '<');
+    }
+
     /**
      * @return string
      */
@@ -39,33 +49,29 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @param \GuzzleHttp\Client $guzzle
-     *
-     * @return GuzzleHttp\Psr7\Uri|null
+     * @return string
      */
-    protected static function getGuzzleBaseUri(Guzzle $guzzle)
+    protected function getGuzzleBaseOptionName()
     {
-        if (method_exists($guzzle, 'getBaseUrl')) {
-            return new Uri($guzzle->getBaseUrl());
-        }
-
-        $config = self::readObjectAttribute($guzzle, 'config');
-
-        return isset($config['base_uri']) ? $config['base_uri'] : null;
+        return $this->isUsingGuzzle5() ? 'base_url' : 'base_uri';
     }
 
-    private static function readObjectAttribute($object, $attributeName)
+    /**
+     * @return bool
+     */
+    protected function isUsingGuzzle5()
     {
-        $reflector = new ReflectionObject($object);
+        return method_exists(ClientInterface::class, 'getBaseUrl');
+    }
 
-        $attribute = $reflector->getProperty($attributeName);
-
-        if (!$attribute || $attribute->isPublic()) {
-            return $object->$attributeName;
+    private function phpUnitVersion()
+    {
+        // Support versions of PHPUnit before 6.0.0 when native namespaces were
+        // introduced for the Version class
+        if (class_exists(\PHPUnit_Runner_Version::class)) {
+            return \PHPUnit_Runner_Version::id();
         }
 
-        $attribute->setAccessible(true);
-
-        return $attribute->getValue($object);
+        return PhpUnitVersion::id();
     }
 }

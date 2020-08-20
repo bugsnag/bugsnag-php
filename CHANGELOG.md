@@ -1,17 +1,61 @@
 Changelog
 =========
 
-## TBD
+## 3.22.0 (2020-08-20)
 
 ### Enhancements
 
 * Include all HTTP headers in request metadata
   [#588](https://github.com/bugsnag/bugsnag-php/pull/588)
 
-### Bug Fixes
+* The `Client` and `SessionTracker` now share a single Guzzle instance
+  [#587](https://github.com/bugsnag/bugsnag-php/pull/587)
 
-* TBD
+### Deprecations
 
+* `Client::ENDPOINT`
+  This is ambiguous as we have three separate endpoints
+  Use `Configuration::NOTIFY_ENDPOINT` instead
+
+* `HttpClient::PAYLOAD_VERSION`
+  This is ambiguous as there is a session payload version too
+  Use `HttpClient::NOTIFY_PAYLOAD_VERSION` instead
+
+* `Report::PAYLOAD_VERSION`
+  As above. This was also unused by the notifier
+  Use `HttpClient::NOTIFY_PAYLOAD_VERSION` instead
+
+* `SessionTracker::$SESSION_PAYLOAD_VERSION`
+  Use `HttpClient::SESSION_PAYLOAD_VERSION` instead
+
+* `HttpClient::send`
+  Use `HttpClient::sendEvents` instead
+  
+* `HttpClient::build`
+  Use `HttpClient::getEventPayload` instead
+
+* `HttpClient::postJson`
+  Use `HttpClient::deliverEvents` instead
+
+* Using the `base_uri`/`base_url` on a Guzzle instance
+  The base URI is ambiguous as there are three separate endpoints which could be used, therefore all Guzzle requests now use absolute URIs. We will extract the `base_uri`/`base_url` Guzzle option if one is set and use it as the notification endpoint URI, however this will be removed in the next major version
+  Set the notification endpoint manually with `Configuration::setNotifyEndpoint` instead
+
+* Calling `HttpClient::getHeaders` without providing a payload version
+  This is deprecated as the version is ambiguous between the notification payload version and session payload version
+  Call this with the correct `HttpClient` payload version constants instead
+
+* `Client::getSessionClient` and `Configuration::getSessionClient`
+  This method is dangerous to use as there is now only one Guzzle instance used across every request, so changing this client would also affect the notification client. Changes to this Guzzle client will now be ignored
+  Use the `$guzzle` parameter of the `Client` constructor to customise the Guzzle client instead
+
+* `SessionData::$client`
+  The `SessionData` class will be passed a `SessionTracker` instead of a `Client` instance in its constructor in the next major version
+
+* `SessionTracker` should be constructed with a `HttpClient`
+  The `SessionTracker` class should now always be passed a `HttpClient`
+  In this version it will construct its own `HttpClient` if one is not provided
+  In the next major version, this fallback will be removed and passing a `HttpClient` will be mandatory 
 
 ## 3.21.0 (2020-04-29)
 
