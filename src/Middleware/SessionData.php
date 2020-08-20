@@ -9,7 +9,7 @@ use Bugsnag\SessionTracker;
 class SessionData
 {
     /**
-     * @var \Bgusnag\Client
+     * @var \Bugsnag\Client
      *
      * @deprecated This will be removed in the next major version.
      *             The constructor parameter will also change to {@see SessionTracker}
