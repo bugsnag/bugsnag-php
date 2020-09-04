@@ -418,6 +418,17 @@ class ClientTest extends TestCase
                 $this->assertSame($expectedMetadata, $report->getMetaData());
                 $this->assertSame(['id' => '8.76.54.321'], $report->getUser());
                 $this->assertSame('GET /abc/xyz', $report->getContext());
+
+                $payload = $report->toArray();
+
+                $this->assertSame(
+                    [
+                        'Host' => 'example.com',
+                        'Cookie' => '[FILTERED]',
+                        'X-Forwarded-For' => '8.76.54.321',
+                    ],
+                    $payload['metaData']['request']['headers']
+                );
             }
         );
 

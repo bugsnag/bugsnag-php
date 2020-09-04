@@ -8,6 +8,9 @@ Changelog
 * Filters are now applied case insensitively, e.g. 'password' will now also match 'PASSWORD'
   [#595](https://github.com/bugsnag/bugsnag-php/pull/595)
 
+* Cookies are now filtered from events by default
+  [#596](https://github.com/bugsnag/bugsnag-php/pull/596)
+
 ## 3.22.0 (2020-08-20)
 
 ### Enhancements
