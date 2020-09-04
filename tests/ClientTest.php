@@ -410,9 +410,6 @@ class ClientTest extends TestCase
                             'X-Forwarded-For' => '8.76.54.321',
                         ],
                     ],
-                    'cookies' => [
-                        'tastes' => 'delicious',
-                    ],
                     'session' => [
                         'abcde' => '12345',
                     ],
