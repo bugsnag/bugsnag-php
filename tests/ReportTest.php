@@ -117,6 +117,32 @@ class ReportTest extends TestCase
         $this->assertInternalType('array', $event['exceptions'][0]['stacktrace'][0]['code']);
     }
 
+    public function testFiltersAreCaseInsensitive()
+    {
+        $this->report->setMetaData([
+            'Testing' => [
+                'PASSWORD' => 'a',
+                'Password' => 'b',
+                'passworD' => 'c',
+                'PaSsWoRd' => 'd',
+                'password2' => 'e',
+                '2PASSWORD2POROUS' => 'f',
+            ],
+        ]);
+
+        $this->assertSame(
+            [
+                'PASSWORD' => '[FILTERED]',
+                'Password' => '[FILTERED]',
+                'passworD' => '[FILTERED]',
+                'PaSsWoRd' => '[FILTERED]',
+                'password2' => '[FILTERED]',
+                '2PASSWORD2POROUS' => '[FILTERED]',
+            ],
+            $this->report->toArray()['metaData']['Testing']
+        );
+    }
+
     public function testCanGetStacktrace()
     {
         $this->report->setPHPError(E_NOTICE, 'Broken', 'file', 123);
