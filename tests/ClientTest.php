@@ -13,6 +13,9 @@ use GuzzleHttp\Psr7\Uri;
 use Mockery;
 use ReflectionClass;
 
+/**
+ * @backupGlobals enabled
+ */
 class ClientTest extends TestCase
 {
     protected $guzzle;
@@ -21,22 +24,21 @@ class ClientTest extends TestCase
 
     protected function setUp()
     {
+        $this->config = new Configuration('example-api-key');
         $this->guzzle = $this->getMockBuilder(Guzzle::class)
-                             ->setMethods([self::getGuzzleMethod()])
-                             ->getMock();
+            ->setMethods([self::getGuzzleMethod()])
+            ->getMock();
 
         $this->client = $this->getMockBuilder(Client::class)
-                             ->setMethods(['notify'])
-                             ->setConstructorArgs([$this->config = new Configuration('example-api-key'), null, $this->guzzle])
-                             ->getMock();
+            ->setMethods(['notify'])
+            ->setConstructorArgs([$this->config, null, $this->guzzle])
+            ->getMock();
     }
 
     protected function tearDown()
     {
         putenv('BUGSNAG_API_KEY');
         putenv('BUGSNAG_ENDPOINT');
-        unset($_ENV['BUGSNAG_API_KEY']);
-        unset($_ENV['BUGSNAG_ENDPOINT']);
     }
 
     public function testManualErrorNotification()
@@ -360,6 +362,77 @@ class ClientTest extends TestCase
 
         $this->assertSame(['type' => 'right'], $report->getSeverityReason());
         $this->assertSame(true, $report->getUnhandled());
+    }
+
+    public function testItAddsADefaultSetOfMiddlewares()
+    {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REMOTE_ADDR'] = '123.45.67.8';
+        $_SERVER['HTTP_HOST'] = 'example.com';
+        $_SERVER['HTTP_COOKIE'] = 'tastes=delicious';
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '8.76.54.321';
+        $_SERVER['REQUEST_URI'] = '/abc/xyz?abc=1&xyz=2';
+        $_GET['abc'] = '1';
+        $_GET['xyz'] = '2';
+        $_COOKIE['tastes'] = 'delicious';
+        $_SESSION['abcde'] = '12345';
+
+        $client = Client::make('foo');
+        $config = $client->getConfig();
+        $report = Report::fromPHPThrowable(
+            $config,
+            new Exception('oh no')
+        );
+
+        $config->setMetaData(['abc' => 'xyz']);
+
+        $pipelineCompleted = false;
+        $pipeline = $client->getPipeline();
+
+        $pipeline->execute(
+            $report,
+            function (Report $report) use (&$pipelineCompleted) {
+                $pipelineCompleted = true;
+
+                $expectedMetadata = [
+                    'abc' => 'xyz',
+                    'request' => [
+                        'url' => 'http://example.com/abc/xyz?abc=1&xyz=2',
+                        'httpMethod' => 'GET',
+                        'params' => [
+                            'abc' => '1',
+                            'xyz' => '2',
+                        ],
+                        'clientIp' => '8.76.54.321',
+                        'headers' => [
+                            'Host' => 'example.com',
+                            'Cookie' => 'tastes=delicious',
+                            'X-Forwarded-For' => '8.76.54.321',
+                        ],
+                    ],
+                    'session' => [
+                        'abcde' => '12345',
+                    ],
+                ];
+
+                $this->assertSame($expectedMetadata, $report->getMetaData());
+                $this->assertSame(['id' => '8.76.54.321'], $report->getUser());
+                $this->assertSame('GET /abc/xyz', $report->getContext());
+
+                $payload = $report->toArray();
+
+                $this->assertSame(
+                    [
+                        'Host' => 'example.com',
+                        'Cookie' => '[FILTERED]',
+                        'X-Forwarded-For' => '8.76.54.321',
+                    ],
+                    $payload['metaData']['request']['headers']
+                );
+            }
+        );
+
+        $this->assertTrue($pipelineCompleted);
     }
 
     public function testBreadcrumbsWorks()

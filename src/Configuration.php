@@ -45,7 +45,7 @@ class Configuration
      *
      * @var string[]
      */
-    protected $filters = ['password'];
+    protected $filters = ['password', 'cookie'];
 
     /**
      * The project root regex.
