@@ -750,7 +750,7 @@ class Report
     {
         if ($isMetaData) {
             foreach ($this->config->getFilters() as $filter) {
-                if (strpos($key, $filter) !== false) {
+                if (stripos($key, $filter) !== false) {
                     return true;
                 }
             }
