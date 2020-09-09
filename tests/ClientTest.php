@@ -372,6 +372,7 @@ class ClientTest extends TestCase
         $_SERVER['HTTP_COOKIE'] = 'tastes=delicious';
         $_SERVER['HTTP_X_FORWARDED_FOR'] = '8.76.54.321';
         $_SERVER['REQUEST_URI'] = '/abc/xyz?abc=1&xyz=2';
+        $_SERVER['HTTP_AUTHORIZATION'] = 'Basic YTpi';
         $_GET['abc'] = '1';
         $_GET['xyz'] = '2';
         $_COOKIE['tastes'] = 'delicious';
@@ -408,6 +409,7 @@ class ClientTest extends TestCase
                             'Host' => 'example.com',
                             'Cookie' => 'tastes=delicious',
                             'X-Forwarded-For' => '8.76.54.321',
+                            'Authorization' => 'Basic YTpi',
                         ],
                     ],
                     'session' => [
@@ -426,6 +428,7 @@ class ClientTest extends TestCase
                         'Host' => 'example.com',
                         'Cookie' => '[FILTERED]',
                         'X-Forwarded-For' => '8.76.54.321',
+                        'Authorization' => '[FILTERED]',
                     ],
                     $payload['metaData']['request']['headers']
                 );
