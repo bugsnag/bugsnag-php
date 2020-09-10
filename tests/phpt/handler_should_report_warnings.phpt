@@ -18,3 +18,6 @@ string(6) "Hello!"
 Guzzle request made (2 events)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - include(%s/abc/xyz.php): failed to open stream: No such file or directory
+    - include(): Failed opening '%s/abc/xyz.php' for inclusion (include_path='%s')

@@ -16,3 +16,5 @@ string(6) "Hello!"
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - Undefined variable: b

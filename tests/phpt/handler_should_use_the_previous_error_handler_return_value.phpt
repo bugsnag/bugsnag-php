@@ -29,3 +29,6 @@ Notice: Undefined variable: b in %s on line 17
 Guzzle request made (2 events)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - Undefined variable: b
+    - Undefined variable: b

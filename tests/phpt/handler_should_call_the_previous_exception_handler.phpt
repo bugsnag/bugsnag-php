@@ -43,6 +43,10 @@ Stack trace:
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - abc xyz
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - Uncaught %SRuntimeException%S %Sabc xyz%S in %s:11
