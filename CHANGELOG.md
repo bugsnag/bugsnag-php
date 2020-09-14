@@ -11,6 +11,9 @@ Changelog
 * Cookies are now filtered from events by default
   [#596](https://github.com/bugsnag/bugsnag-php/pull/596)
 
+* HTTP basic auth headers are filtered from events by default
+  [#597](https://github.com/bugsnag/bugsnag-php/pull/597)
+
 ## 3.22.0 (2020-08-20)
 
 ### Enhancements

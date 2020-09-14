@@ -102,12 +102,27 @@ class ReportTest extends TestCase
 
     public function testDefaultFilters()
     {
-        $this->report->setMetaData([
-            'Testing' => ['password' => '123456', 'Cookie' => 'abc=xyz'],
-        ]);
+        $metadata = array_reduce(
+            $this->config->getFilters(),
+            function ($metadata, $filter) {
+                $metadata[$filter] = "abc {$filter} xyz";
+
+                return $metadata;
+            },
+            []
+        );
+
+        $this->report->setMetaData(['Testing' => $metadata]);
 
         $this->assertSame(
-            ['password' => '[FILTERED]', 'Cookie' => '[FILTERED]'],
+            [
+                'password' => '[FILTERED]',
+                'cookie' => '[FILTERED]',
+                'authorization' => '[FILTERED]',
+                'php-auth-user' => '[FILTERED]',
+                'php-auth-pw' => '[FILTERED]',
+                'php-auth-digest' => '[FILTERED]',
+            ],
             $this->report->toArray()['metaData']['Testing']
         );
     }

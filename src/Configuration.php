@@ -45,7 +45,14 @@ class Configuration
      *
      * @var string[]
      */
-    protected $filters = ['password', 'cookie'];
+    protected $filters = [
+        'password',
+        'cookie',
+        'authorization',
+        'php-auth-user',
+        'php-auth-pw',
+        'php-auth-digest',
+    ];
 
     /**
      * The project root regex.
