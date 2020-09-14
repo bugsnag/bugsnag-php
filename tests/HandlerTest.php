@@ -1,213 +1,237 @@
 <?php
 
-namespace Bugsnag {
+namespace Bugsnag\Tests;
 
-    // Mock error_reporting global function, to be controlled by global switches in the tests
-    function error_reporting()
-    {
-        global $mockErrorReporting, $mockErrorReportingLevel;
-        if (isset($mockErrorReporting) && $mockErrorReporting == true) {
-            return $mockErrorReportingLevel;
-        } else {
-            return call_user_func_array('\error_reporting', func_get_args());
-        }
-    }
+use Bugsnag\Client;
+use Bugsnag\Configuration;
+use Bugsnag\Handler;
+use Closure;
+use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 
-}
-
-namespace Bugsnag\Tests {
-
-    use Bugsnag\Client;
-    use Bugsnag\Configuration;
-    use Bugsnag\Handler;
-    use Exception;
+class HandlerTest extends TestCase
+{
+    /**
+     * @var Client&MockObject
+     */
+    protected $client;
 
     /**
-     * @runTestsInSeparateProcesses
+     * The original error reporting level before each test run. This is used to
+     * restore the error reporting level after each test.
+     *
+     * @var int
      */
-    class HandlerTest extends TestCase
+    protected $originalErrorReporting;
+
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
-        protected $client;
+        $this->client = $this->getMockBuilder(Client::class)
+            ->setMethods(['notify', 'flush'])
+            ->setConstructorArgs([new Configuration('example-api-key')])
+            ->getMock();
 
-        /**
-         * @before
-         */
-        protected function beforeEach()
-        {
-            global $mockErrorReporting, $mockErrorReportingLevel;
-            $mockErrorReporting = false;
-            $mockErrorReportingLevel = null;
+        $this->originalErrorReporting = error_reporting();
+    }
 
-            $this->client = $this->getMockBuilder(Client::class)
-                                ->setMethods(['notify', 'flush'])
-                                ->setConstructorArgs([new Configuration('example-api-key')])
-                                ->getMock();
-        }
+    /**
+     * @after
+     */
+    protected function afterEach()
+    {
+        error_reporting($this->originalErrorReporting);
+    }
 
-        public function testErrorHandler()
-        {
+    public function testErrorHandler()
+    {
+        $this->runErrorHandlerTest(function () {
             $this->client->expects($this->once())->method('notify');
 
-            Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
-        }
+            $handler = Handler::register($this->client);
+            $handler->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
+        });
+    }
 
-        public function testErrorHandlerWithPrevious()
-        {
-            $wasCalled = false;
-            set_error_handler(function () use (&$wasCalled) {
-                $wasCalled = true;
+    public function testErrorHandlerWithPrevious()
+    {
+        $this->runErrorHandlerTest(function () {
+            $this->client->expects($this->once())->method('notify');
+
+            $handler = Handler::registerWithPrevious($this->client);
+            $handler->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
+        });
+    }
+
+    public function testItReturnsThePreviousErrorHandlerReturnValue()
+    {
+        $this->runErrorHandlerTest(function () {
+            $previousHandler = set_error_handler(function () use (&$previousHandler) {
+                $previousHandler();
+
+                return '123';
             });
 
-            $this->assertFalse($wasCalled);
-
-            Handler::registerWithPrevious($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
-
-            $this->assertTrue($wasCalled);
-        }
-
-        public function testExceptionHandler()
-        {
             $this->client->expects($this->once())->method('notify');
-
-            Handler::register($this->client)->exceptionHandler(new Exception('Something broke'));
-        }
-
-        public function testExceptionHandlerWithPrevious()
-        {
-            // Register a custom exception handler that stores it's parameter in the
-            // parent's scope so we can assert that it was correctly called.
-            $previous_exception_handler_arg = null;
-            set_exception_handler(
-                function ($e) use (&$previous_exception_handler_arg) {
-                    $previous_exception_handler_arg = $e;
-                }
-            );
-
-            $e_to_throw = new Exception('Something broke');
-
-            Handler::registerWithPrevious($this->client)->exceptionHandler($e_to_throw);
-
-            $this->assertSame($e_to_throw, $previous_exception_handler_arg);
-        }
-
-        public function testExceptionHandlerWithoutPrevious()
-        {
-            $previous_exception_handler_called = false;
-            set_exception_handler(
-                function ($e) use (&$previous_exception_handler_called) {
-                    $previous_exception_handler_called = true;
-                }
-            );
-
-            Handler::register($this->client)->exceptionHandler(new Exception());
-
-            $this->assertFalse($previous_exception_handler_called);
-        }
-
-        public function testCustomErrorHandlerValueReturned()
-        {
-            set_error_handler(
-                function () {
-                    return '123';
-                }
-            );
+            $handler = Handler::registerWithPrevious($this->client);
 
             $this->assertSame(
                 '123',
-                Handler::registerWithPrevious($this->client)->errorHandler(E_WARNING, 'Something broke')
+                $handler->errorHandler(E_WARNING, 'Something broke')
             );
-        }
+        });
+    }
 
-        public function testErrorReportingLevel()
-        {
+    public function testErrorReportingLevel()
+    {
+        $this->runErrorHandlerTest(function () {
             $this->client->expects($this->once())->method('notify');
-
             $this->client->setErrorReportingLevel(E_NOTICE);
 
-            Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
-        }
+            $handler = Handler::register($this->client);
+            $handler->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
+        });
+    }
 
-        public function testErrorReportingLevelFails()
-        {
+    public function testErrorReportingLevelFails()
+    {
+        $this->runErrorHandlerTest(function () {
             $this->client->expects($this->never())->method('notify');
+            $this->client->setErrorReportingLevel(E_ALL & ~E_WARNING);
+
+            $handler = Handler::register($this->client);
+            $handler->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
+        });
+    }
+
+    public function testErrorReportingDefaultFails()
+    {
+        $this->runErrorHandlerTest(function () {
+            error_reporting(E_NOTICE);
+
+            $this->client->expects($this->never())->method('notify');
+
+            $handler = Handler::register($this->client);
+            $handler->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
+        });
+    }
+
+    public function testErrorReportingSuppressed()
+    {
+        $this->runErrorHandlerTest(function () {
+            error_reporting(0);
 
             $this->client->setErrorReportingLevel(E_NOTICE);
-
-            Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
-        }
-
-        public function testErrorReportingWithoutNotice()
-        {
             $this->client->expects($this->never())->method('notify');
 
-            $this->client->setErrorReportingLevel(E_ALL & ~E_NOTICE);
+            $handler = Handler::register($this->client);
+            $handler->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
+        });
+    }
 
-            Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
-        }
+    public function testErrorReportingDefaultSuppressed()
+    {
+        $this->runErrorHandlerTest(function () {
+            error_reporting(0);
 
-        public function testErrorReportingDefault()
-        {
-            global $mockErrorReporting, $mockErrorReportingLevel;
-            $mockErrorReporting = true;
-            $mockErrorReportingLevel = E_NOTICE;
+            $this->client->expects($this->never())->method('notify');
 
+            $handler = Handler::register($this->client);
+            $handler->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
+        });
+    }
+
+    public function testExceptionHandler()
+    {
+        $this->runExceptionHandlerTest(function () {
             $this->client->expects($this->once())->method('notify');
 
-            Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
-        }
+            $handler = Handler::register($this->client);
+            $handler->exceptionHandler(new Exception('Something broke'));
+        });
+    }
 
-        public function testErrorReportingDefaultFails()
-        {
-            global $mockErrorReporting, $mockErrorReportingLevel;
-            $mockErrorReporting = true;
-            $mockErrorReportingLevel = E_NOTICE;
+    public function testCanShutdown()
+    {
+        $this->client->expects($this->never())->method('notify');
+        $this->client->expects($this->once())->method('flush');
 
-            $this->client->expects($this->never())->method('notify');
+        $handler = Handler::register($this->client);
+        $handler->shutdownHandler();
+    }
 
-            Handler::register($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
-        }
+    /**
+     * @runInSeparateProcess
+     */
+    public function testCanFatalShutdown()
+    {
+        $report = $this->getFunctionMock('Bugsnag', 'error_get_last');
+        $report->expects($this->once())->will($this->returnValue(['type' => E_ERROR, 'message' => 'Undefined variable: a', 'file' => '/foo/index.php', 'line' => 2]));
 
-        public function testErrorReportingSuppressed()
-        {
-            global $mockErrorReporting, $mockErrorReportingLevel;
-            $mockErrorReporting = true;
-            $mockErrorReportingLevel = 0;
+        $this->client->expects($this->once())->method('notify');
+        $this->client->expects($this->once())->method('flush');
 
-            $this->client->setErrorReportingLevel(E_NOTICE);
+        $handler = Handler::register($this->client);
+        $handler->shutdownHandler();
+    }
 
-            $this->client->expects($this->never())->method('notify');
+    /**
+     * @param Closure $test
+     *
+     * @return void
+     */
+    private function runErrorHandlerTest($test)
+    {
+        $this->runHandlerTest(
+            $test,
+            'set_error_handler',
+            'restore_error_handler'
+        );
+    }
 
-            Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
-        }
+    /**
+     * @param Closure $test
+     *
+     * @return void
+     */
+    private function runExceptionHandlerTest($test)
+    {
+        $this->runHandlerTest(
+            $test,
+            'set_exception_handler',
+            'restore_exception_handler'
+        );
+    }
 
-        public function testErrorReportingDefaultSuppressed()
-        {
-            global $mockErrorReporting, $mockErrorReportingLevel;
-            $mockErrorReporting = true;
-            $mockErrorReportingLevel = 0;
+    /**
+     * Don't call this directly! Use {@see runErrorHandlerTest} or
+     * {@see runExceptionHandlerTest} instead.
+     *
+     * @param Closure $test
+     * @param callable $setHandler
+     * @param callable $restoreHandler
+     *
+     * @return void
+     */
+    private function runHandlerTest($test, $setHandler, $restoreHandler)
+    {
+        try {
+            $handlerWasCalled = false;
 
-            $this->client->expects($this->never())->method('notify');
+            $setHandler(function () use (&$handlerWasCalled) {
+                $handlerWasCalled = true;
+            });
 
-            Handler::register($this->client)->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
-        }
+            $this->assertFalse(
+                $handlerWasCalled,
+                'Expected the previous handler not to be called before running the test'
+            );
 
-        public function testCanShutdown()
-        {
-            $this->client->expects($this->never())->method('notify');
-            $this->client->expects($this->once())->method('flush');
-
-            Handler::register($this->client)->shutdownHandler();
-        }
-
-        public function testCanFatalShutdown()
-        {
-            $report = $this->getFunctionMock('Bugsnag', 'error_get_last');
-            $report->expects($this->once())->will($this->returnValue(['type' => E_ERROR, 'message' => 'Undefined variable: a', 'file' => '/foo/index.php', 'line' => 2]));
-
-            $this->client->expects($this->once())->method('notify');
-            $this->client->expects($this->once())->method('flush');
-
-            Handler::register($this->client)->shutdownHandler();
+            $test();
+        } finally {
+            $restoreHandler();
         }
     }
 }
