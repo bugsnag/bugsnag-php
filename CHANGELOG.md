@@ -1,6 +1,19 @@
 Changelog
 =========
 
+## 3.23.0 (2020-09-14)
+
+### Enhancements
+
+* Filters are now applied case insensitively, e.g. 'password' will now also match 'PASSWORD'
+  [#595](https://github.com/bugsnag/bugsnag-php/pull/595)
+
+* Cookies are now filtered from events by default
+  [#596](https://github.com/bugsnag/bugsnag-php/pull/596)
+
+* HTTP basic auth headers are filtered from events by default
+  [#597](https://github.com/bugsnag/bugsnag-php/pull/597)
+
 ## 3.22.0 (2020-08-20)
 
 ### Enhancements
@@ -30,7 +43,7 @@ Changelog
 
 * `HttpClient::send`
   Use `HttpClient::sendEvents` instead
-  
+
 * `HttpClient::build`
   Use `HttpClient::getEventPayload` instead
 
@@ -55,7 +68,7 @@ Changelog
 * `SessionTracker` should be constructed with a `HttpClient`
   The `SessionTracker` class should now always be passed a `HttpClient`
   In this version it will construct its own `HttpClient` if one is not provided
-  In the next major version, this fallback will be removed and passing a `HttpClient` will be mandatory 
+  In the next major version, this fallback will be removed and passing a `HttpClient` will be mandatory
 
 ## 3.21.0 (2020-04-29)
 

@@ -100,11 +100,31 @@ class ReportTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $this->report->toArray()['user']);
     }
 
-    public function testFiltering()
+    public function testDefaultFilters()
     {
-        $this->report->setMetaData(['Testing' => ['password' => '123456']]);
+        $metadata = array_reduce(
+            $this->config->getFilters(),
+            function ($metadata, $filter) {
+                $metadata[$filter] = "abc {$filter} xyz";
 
-        $this->assertSame(['password' => '[FILTERED]'], $this->report->toArray()['metaData']['Testing']);
+                return $metadata;
+            },
+            []
+        );
+
+        $this->report->setMetaData(['Testing' => $metadata]);
+
+        $this->assertSame(
+            [
+                'password' => '[FILTERED]',
+                'cookie' => '[FILTERED]',
+                'authorization' => '[FILTERED]',
+                'php-auth-user' => '[FILTERED]',
+                'php-auth-pw' => '[FILTERED]',
+                'php-auth-digest' => '[FILTERED]',
+            ],
+            $this->report->toArray()['metaData']['Testing']
+        );
     }
 
     public function testExceptionsNotFiltered()
@@ -115,6 +135,32 @@ class ReportTest extends TestCase
         $event = $this->report->toArray();
         // 'Code' should not be filtered so should remain still be an array
         $this->assertInternalType('array', $event['exceptions'][0]['stacktrace'][0]['code']);
+    }
+
+    public function testFiltersAreCaseInsensitive()
+    {
+        $this->report->setMetaData([
+            'Testing' => [
+                'PASSWORD' => 'a',
+                'Password' => 'b',
+                'passworD' => 'c',
+                'PaSsWoRd' => 'd',
+                'password2' => 'e',
+                '2PASSWORD2POROUS' => 'f',
+            ],
+        ]);
+
+        $this->assertSame(
+            [
+                'PASSWORD' => '[FILTERED]',
+                'Password' => '[FILTERED]',
+                'passworD' => '[FILTERED]',
+                'PaSsWoRd' => '[FILTERED]',
+                'password2' => '[FILTERED]',
+                '2PASSWORD2POROUS' => '[FILTERED]',
+            ],
+            $this->report->toArray()['metaData']['Testing']
+        );
     }
 
     public function testCanGetStacktrace()

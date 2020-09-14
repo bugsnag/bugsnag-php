@@ -9,3 +9,4 @@ enabled:
 finder:
   exclude: Bugsnag
   not-name: catchall.php
+  not-path: tests/phpt/fixtures

@@ -6,7 +6,6 @@ use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Callbacks\GlobalMetaData;
 use Bugsnag\Callbacks\RequestContext;
-use Bugsnag\Callbacks\RequestCookies;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
@@ -264,7 +263,6 @@ class Client
     {
         $this->registerCallback(new GlobalMetaData($this->config))
              ->registerCallback(new RequestMetaData($this->resolver))
-             ->registerCallback(new RequestCookies($this->resolver))
              ->registerCallback(new RequestSession($this->resolver))
              ->registerCallback(new RequestUser($this->resolver))
              ->registerCallback(new RequestContext($this->resolver));

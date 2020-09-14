@@ -45,7 +45,14 @@ class Configuration
      *
      * @var string[]
      */
-    protected $filters = ['password'];
+    protected $filters = [
+        'password',
+        'cookie',
+        'authorization',
+        'php-auth-user',
+        'php-auth-pw',
+        'php-auth-digest',
+    ];
 
     /**
      * The project root regex.
@@ -75,7 +82,7 @@ class Configuration
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.22.0',
+        'version' => '3.23.0',
         'url' => 'https://bugsnag.com',
     ];
 
