@@ -47,9 +47,12 @@ class Handler
      */
     public static function register($client = null)
     {
-        $handler = new static($client instanceof Client ? $client : Client::make($client));
+        if (!$client instanceof Client) {
+            $client = Client::make($client);
+        }
 
-        $handler->registerBugsnagHandlers(false); // don't preserve previous handlers
+        $handler = new static($client);
+        $handler->registerBugsnagHandlers(true);
 
         return $handler;
     }
@@ -63,11 +66,7 @@ class Handler
      */
     public static function registerWithPrevious($client = null)
     {
-        $handler = new static($client instanceof Client ? $client : Client::make($client));
-
-        $handler->registerBugsnagHandlers(true); // preserve previous handlers
-
-        return $handler;
+        return self::register($client);
     }
 
     /**

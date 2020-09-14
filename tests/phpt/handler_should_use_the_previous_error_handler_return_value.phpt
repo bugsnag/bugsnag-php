@@ -10,7 +10,7 @@ set_error_handler(function ()use (&$hideError) {
     return $hideError;
 });
 
-Bugsnag\Handler::registerWithPrevious($client);
+Bugsnag\Handler::register($client);
 
 var_dump('Triggering notice with hide error:', $hideError);
 new stdClass == 1;
