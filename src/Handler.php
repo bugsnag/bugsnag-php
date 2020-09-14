@@ -2,6 +2,9 @@
 
 namespace Bugsnag;
 
+use Exception;
+use Throwable;
+
 class Handler
 {
     /**
@@ -24,6 +27,16 @@ class Handler
      * @var callable|null
      */
     protected $previousExceptionHandler;
+
+    /**
+     * Whether the shutdown handler will run.
+     *
+     * This is used to disable the shutdown handler in order to avoid double
+     * reporting exceptions when trying to run the native PHP exception handler.
+     *
+     * @var bool
+     */
+    private static $enableShutdownHandler = true;
 
     /**
      * Register our handlers.
@@ -149,12 +162,43 @@ class Handler
 
         $this->client->notify($report);
 
-        if ($this->previousExceptionHandler) {
-            call_user_func(
-                $this->previousExceptionHandler,
-                $throwable
-            );
+        // If we have no previous exception handler to call, there's nothing left
+        // to do. This could be because one never existed, or we may have disabled
+        // it if it previously raised an exception
+        if (!$this->previousExceptionHandler) {
+            return;
         }
+
+        $exceptionFromPreviousHandler = null;
+
+        // Get a reference to the previous handler and then disable it — this
+        // prevents an infinite loop if the previous handler raises a new exception
+        $previousExceptionHandler = $this->previousExceptionHandler;
+        $this->previousExceptionHandler = null;
+
+        // These empty catches exist to set $exceptionFromPreviousHandler — we
+        // support both PHP 5 & 7 so can't have a single Throwable catch
+        try {
+            call_user_func($previousExceptionHandler, $throwable);
+
+            return;
+        } catch (Throwable $exceptionFromPreviousHandler) {
+        } catch (Exception $exceptionFromPreviousHandler) {
+        }
+
+        // If the previous handler threw the same exception that we are currently
+        // handling then it's trying to force PHP's native exception handler to run
+        // In this case we disable our shutdown handler (to avoid reporting it
+        // twice) and re-throw the exception
+        if ($throwable === $exceptionFromPreviousHandler) {
+            self::$enableShutdownHandler = false;
+
+            throw $throwable;
+        }
+
+        // The previous handler raised a new exception so try to handle it too
+        // We've disabled the previous handler so it can't trigger _another_ exception
+        $this->exceptionHandler($exceptionFromPreviousHandler);
     }
 
     /**
@@ -198,9 +242,9 @@ class Handler
                 $errfile,
                 $errline
             );
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -210,7 +254,12 @@ class Handler
      */
     public function shutdownHandler()
     {
-        // Get last error
+        // If we're disabled, do nothing. This avoids reporting twice if the
+        // exception handler is forcing the native PHP handler to run
+        if (!self::$enableShutdownHandler) {
+            return;
+        }
+
         $lastError = error_get_last();
 
         // Check if a fatal error caused this shutdown
@@ -223,11 +272,13 @@ class Handler
                 $lastError['line'],
                 true
             );
+
             $report->setSeverity('error');
             $report->setUnhandled(true);
             $report->setSeverityReason([
                 'type' => 'unhandledException',
             ]);
+
             $this->client->notify($report);
         }
 
