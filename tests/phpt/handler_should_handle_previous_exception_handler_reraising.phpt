@@ -9,7 +9,7 @@ set_exception_handler(function ($throwable) {
     throw $throwable;
 });
 
-Bugsnag\Handler::registerWithPrevious($client);
+Bugsnag\Handler::register($client);
 
 throw new RuntimeException('abc xyz');
 

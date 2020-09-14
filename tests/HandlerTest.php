@@ -69,7 +69,7 @@ class HandlerTest extends TestCase
             });
 
             $this->client->expects($this->once())->method('notify');
-            $handler = Handler::registerWithPrevious($this->client);
+            $handler = Handler::register($this->client);
 
             $this->assertSame(
                 '123',
@@ -224,6 +224,11 @@ class HandlerTest extends TestCase
             );
 
             $test();
+
+            $this->assertTrue(
+                $handlerWasCalled,
+                'Expected the previous handler to be called after running the test'
+            );
         } finally {
             $restoreHandler();
         }

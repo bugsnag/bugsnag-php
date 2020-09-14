@@ -9,7 +9,7 @@ set_exception_handler(function ($throwable) {
     throw new BadMethodCallException('oh dear');
 });
 
-Bugsnag\Handler::registerWithPrevious($client);
+Bugsnag\Handler::register($client);
 
 throw new RuntimeException('abc xyz');
 
