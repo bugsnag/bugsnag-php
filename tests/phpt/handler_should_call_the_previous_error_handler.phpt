@@ -9,7 +9,7 @@ set_error_handler(function () {
     return false;
 });
 
-Bugsnag\Handler::registerWithPrevious($client);
+Bugsnag\Handler::register($client);
 
 $a = $b;
 
