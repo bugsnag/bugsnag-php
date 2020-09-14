@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 3.23.0 (2020-09-14)
 
 ### Enhancements
 
@@ -43,7 +43,7 @@ Changelog
 
 * `HttpClient::send`
   Use `HttpClient::sendEvents` instead
-  
+
 * `HttpClient::build`
   Use `HttpClient::getEventPayload` instead
 
@@ -68,7 +68,7 @@ Changelog
 * `SessionTracker` should be constructed with a `HttpClient`
   The `SessionTracker` class should now always be passed a `HttpClient`
   In this version it will construct its own `HttpClient` if one is not provided
-  In the next major version, this fallback will be removed and passing a `HttpClient` will be mandatory 
+  In the next major version, this fallback will be removed and passing a `HttpClient` will be mandatory
 
 ## 3.21.0 (2020-04-29)
 
