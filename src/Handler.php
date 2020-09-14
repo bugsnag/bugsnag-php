@@ -63,6 +63,8 @@ class Handler
      * @param \Bugsnag\Client|string|null $client client instance or api key
      *
      * @return static
+     *
+     * @deprecated Use {@see Handler::register} instead.
      */
     public static function registerWithPrevious($client = null)
     {
