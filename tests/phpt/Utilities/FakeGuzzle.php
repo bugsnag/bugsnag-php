@@ -52,16 +52,26 @@ if (!isset($fakeGuzzleMapping[$guzzleMajorVersion])) {
 function reportRequest($method, $uri, $options)
 {
     $numberOfEvents = 0;
+    $errors = [];
 
     if (isset($options['json']['events'])) {
         $numberOfEvents = count($options['json']['events']);
+        $errors = array_map(
+            function ($event) {
+                return strtok($event['exceptions'][0]['message'], "\n");
+            },
+            $options['json']['events']
+        );
     }
 
+    $errors = implode("\n    - ", $errors);
     $events = $numberOfEvents === 1 ? 'event' : 'events';
 
     echo "Guzzle request made ({$numberOfEvents} {$events})!\n";
     echo "* Method: '{$method}'\n";
     echo "* URI: '{$uri}'\n";
+    echo "* Events:\n";
+    echo "    - {$errors}\n";
 }
 
 // Create the 'FakeGuzzle' class as an alias of the correct implementation,

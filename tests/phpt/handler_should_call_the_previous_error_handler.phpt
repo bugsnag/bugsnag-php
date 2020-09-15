@@ -58,3 +58,7 @@ Warning: include(): Failed opening '%s/abc/xyz.php' for inclusion (include_path=
 Guzzle request made (3 events)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - Undefined variable: b
+    - include(%s/abc/xyz.php): failed to open stream: No such file or directory
+    - include(): Failed opening '%s/abc/xyz.php' for inclusion (include_path='%s')

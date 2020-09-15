@@ -17,6 +17,10 @@ Fatal error: abc in %s on line 6
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - abc
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - abc

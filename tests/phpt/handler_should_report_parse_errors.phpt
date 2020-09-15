@@ -23,3 +23,5 @@ Parse error: syntax error, unexpected '{' in %s/parse_error.php on line 3
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - syntax error, unexpected '{'

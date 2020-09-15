@@ -20,3 +20,5 @@ var_dump("I should never be reached!");
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - abcxyz
