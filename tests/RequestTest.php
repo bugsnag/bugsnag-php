@@ -17,7 +17,10 @@ class RequestTest extends TestCase
 {
     protected $resolver;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $_SERVER['REQUEST_METHOD'] = 'PUT';
         $_SERVER['REQUEST_URI'] = '/blah/blah.php?some=param';

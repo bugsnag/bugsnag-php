@@ -15,7 +15,10 @@ class ReportTest extends TestCase
     protected $config;
     protected $report;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $this->config = new Configuration('example-key');
         $this->report = Report::fromNamedError($this->config, 'Name', 'Message');

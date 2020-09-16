@@ -20,7 +20,10 @@ class SessionTrackerTest extends TestCase
     /** @var HttpClient&MockObject */
     private $client;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         /** @var Configuration&MockObject */
         $this->config = new Configuration('example-api-key');

@@ -14,7 +14,10 @@ class HttpClientTest extends TestCase
     protected $guzzle;
     protected $http;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
 

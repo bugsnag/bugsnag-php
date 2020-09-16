@@ -19,7 +19,10 @@ class BreadcrumbsDataTest extends TestCase
     /** @var \Bugsnag\Breadcrumbs\Recorder */
     protected $recorder;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $this->config = new Configuration('API-KEY');
         $this->recorder = new Recorder();

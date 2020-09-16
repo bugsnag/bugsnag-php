@@ -22,7 +22,10 @@ class ClientTest extends TestCase
     protected $config;
     protected $client;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $this->config = new Configuration('example-api-key');
         $this->guzzle = $this->getMockBuilder(Guzzle::class)
@@ -35,7 +38,10 @@ class ClientTest extends TestCase
             ->getMock();
     }
 
-    protected function tearDown()
+    /**
+     * @after
+     */
+    protected function afterEach()
     {
         putenv('BUGSNAG_API_KEY');
         putenv('BUGSNAG_ENDPOINT');

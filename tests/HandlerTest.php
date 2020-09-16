@@ -29,7 +29,10 @@ namespace Bugsnag\Tests {
     {
         protected $client;
 
-        protected function setUp()
+        /**
+         * @before
+         */
+        protected function beforeEach()
         {
             global $mockErrorReporting, $mockErrorReportingLevel;
             $mockErrorReporting = false;
