@@ -11,6 +11,7 @@ use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Psr7\Uri;
 use Mockery;
+use PHPUnit\Framework\MockObject\MockObject;
 use ReflectionClass;
 
 /**
@@ -18,9 +19,20 @@ use ReflectionClass;
  */
 class ClientTest extends TestCase
 {
-    protected $guzzle;
-    protected $config;
-    protected $client;
+    /**
+     * @var Configuration
+     */
+    private $config;
+
+    /**
+     * @var MockObject&Guzzle
+     */
+    private $guzzle;
+
+    /**
+     * @var Client
+     */
+    private $client;
 
     /**
      * @before
@@ -28,14 +40,13 @@ class ClientTest extends TestCase
     protected function beforeEach()
     {
         $this->config = new Configuration('example-api-key');
+
+        /** @var MockObject&Guzzle */
         $this->guzzle = $this->getMockBuilder(Guzzle::class)
             ->setMethods([self::getGuzzleMethod()])
             ->getMock();
 
-        $this->client = $this->getMockBuilder(Client::class)
-            ->setMethods(['notify'])
-            ->setConstructorArgs([$this->config, null, $this->guzzle])
-            ->getMock();
+        $this->client = new Client($this->config, null, $this->guzzle);
     }
 
     /**
@@ -49,48 +60,56 @@ class ClientTest extends TestCase
 
     public function testManualErrorNotification()
     {
-        $this->client->expects($this->once())->method('notify');
+        $this->guzzle->expects($this->once())->method(self::getGuzzleMethod());
 
         $this->client->notifyError('SomeError', 'Some message');
+        $this->client->flush();
     }
 
     public function testManualErrorNotificationWithSeverity()
     {
-        $client = new Client($this->config, null, $this->guzzle);
-        $prop = (new ReflectionClass($client))->getProperty('http');
-        $prop->setAccessible(true);
+        $this->expectGuzzlePostWithCallback(
+            $this->client->getNotifyEndpoint(),
+            function ($options) {
+                $this->assertTrue(isset($options['json']['events'][0]['severity']));
+                $this->assertSame('info', $options['json']['events'][0]['severity']);
 
-        $http = $this->getMockBuilder(HttpClient::class)
-                     ->setMethods(['queue'])
-                     ->setConstructorArgs([$this->config, $this->guzzle])
-                     ->getMock();
-        $prop->setValue($client, $http);
+                return true;
+            }
+        );
 
-        $http->expects($this->once())
-             ->method('queue')
-             ->with($this->callback(function ($subject) {
-                 return $subject->getSeverity() === 'info';
-             }));
-
-        $client->notifyError('SomeError', 'Some message', function ($report) {
+        $this->client->notifyError('SomeError', 'Some message', function ($report) {
             $report->setSeverity('info');
         });
+
+        $this->client->flush();
     }
 
     public function testManualExceptionNotification()
     {
-        $this->client->expects($this->once())->method('notify');
+        $this->guzzle->expects($this->once())->method(self::getGuzzleMethod());
 
         $this->client->notifyException(new Exception('Something broke'));
+        $this->client->flush();
     }
 
     public function testManualExceptionNotificationWithSeverity()
     {
-        $this->client->expects($this->once())->method('notify');
+        $this->expectGuzzlePostWithCallback(
+            $this->client->getNotifyEndpoint(),
+            function ($options) {
+                $this->assertTrue(isset($options['json']['events'][0]['severity']));
+                $this->assertSame('info', $options['json']['events'][0]['severity']);
+
+                return true;
+            }
+        );
 
         $this->client->notifyException(new Exception('Something broke'), function ($report) {
             $report->setSeverity('info');
         });
+
+        $this->client->flush();
     }
 
     public function testTheNotifyEndpointHasASensibleDefault()
@@ -601,39 +620,27 @@ class ClientTest extends TestCase
 
     public function testBatchingDoesNotFlush()
     {
-        $this->client = $this->getMockBuilder(Client::class)
-                             ->setMethods(['flush'])
-                             ->setConstructorArgs([$this->config, null, $this->guzzle])
-                             ->getMock();
+        $this->guzzle->expects($this->never())->method(self::getGuzzleMethod());
 
-        $this->client->expects($this->never())->method('flush');
-
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+        $this->client->notify(Report::fromNamedError($this->config, 'Name'));
     }
 
     public function testFlushesWhenNotBatching()
     {
-        $this->client = $this->getMockBuilder(Client::class)
-                             ->setMethods(['flush'])
-                             ->setConstructorArgs([$this->config, null, $this->guzzle])
-                             ->getMock();
-
-        $this->client->expects($this->once())->method('flush');
+        $this->guzzle->expects($this->once())->method(self::getGuzzleMethod());
 
         $this->client->setBatchSending(false);
 
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+        $this->client->notify(Report::fromNamedError($this->config, 'Name'));
     }
 
     public function testCanManuallyFlush()
     {
-        $this->client = new Client($this->config = new Configuration('example-api-key'), null, $this->guzzle);
-
         $this->client->setBatchSending(false);
 
         $this->guzzle->expects($this->once())->method(self::getGuzzleMethod());
 
-        $this->client->notify($report = Report::fromNamedError($this->config, 'Name'));
+        $this->client->notify(Report::fromNamedError($this->config, 'Name'));
 
         $this->client->flush();
         $this->client->flush();
@@ -642,7 +649,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksOutOfTheBox()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -655,7 +662,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithReleaseStage()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -669,7 +676,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithAppVersion()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['releaseStage' => 'production', 'appVersion' => '1.1.0', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -682,7 +689,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithRepository()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['sourceControl' => ['repository' => 'foo'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -695,7 +702,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithBranch()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -708,7 +715,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithRevision()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['sourceControl' => ['revision' => 'bar'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -721,7 +728,7 @@ class ClientTest extends TestCase
 
     public function testDeployWorksWithEverything()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['sourceControl' => ['repository' => 'baz', 'revision' => 'foo'], 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -735,7 +742,7 @@ class ClientTest extends TestCase
 
     public function testBuildWorksOutOfTheBox()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -748,7 +755,7 @@ class ClientTest extends TestCase
 
     public function testBuildWorksWithReleaseStage()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['releaseStage' => 'staging', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -762,7 +769,7 @@ class ClientTest extends TestCase
 
     public function testBuildWorksWithRepository()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['sourceControl' => ['repository' => 'foo'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -775,7 +782,7 @@ class ClientTest extends TestCase
 
     public function testBuildWorksWithProvider()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['sourceControl' => ['provider' => 'github'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -788,7 +795,7 @@ class ClientTest extends TestCase
 
     public function testBuildWorksWithRevision()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['sourceControl' => ['revision' => 'bar'], 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -801,7 +808,7 @@ class ClientTest extends TestCase
 
     public function testBuildWorksWithBuilderName()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['builderName' => 'me', 'releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'appVersion' => '1.3.1']]
         );
@@ -814,7 +821,7 @@ class ClientTest extends TestCase
 
     public function testBuildWorksWithBuildTool()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['releaseStage' => 'production', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php', 'builderName' => exec('whoami'), 'appVersion' => '1.3.1']]
         );
@@ -827,7 +834,7 @@ class ClientTest extends TestCase
 
     public function testBuildWorksWithEverything()
     {
-        $this->guzzlePostWith(
+        $this->expectGuzzlePostWith(
             'https://build.bugsnag.com',
             ['json' => ['builderName' => 'me', 'sourceControl' => ['repository' => 'baz', 'revision' => 'foo', 'provider' => 'github'], 'releaseStage' => 'development', 'appVersion' => '1.3.1', 'apiKey' => 'example-api-key', 'buildTool' => 'bugsnag-php']]
         );
@@ -1079,15 +1086,27 @@ class ClientTest extends TestCase
         new Client($this->config, null, null, $mockShutdown);
     }
 
-    private function guzzlePostWith($uri, array $options = [])
+    private function expectGuzzlePostWith($uri, array $options = [])
     {
         $method = self::getGuzzleMethod();
         $mock = $this->guzzle->expects($this->once())->method($method);
 
         if ($method === 'request') {
-            return $mock->with($this->equalTo('POST'), $this->equalTo($uri), $this->equalTo($options));
+            return $mock->with('POST', $uri, $options);
         }
 
-        return $mock->with($this->equalTo($uri), $this->equalTo($options));
+        return $mock->with($uri, $options);
+    }
+
+    private function expectGuzzlePostWithCallback($uri, $callback)
+    {
+        $method = self::getGuzzleMethod();
+        $mock = $this->guzzle->expects($this->once())->method($method);
+
+        if ($method === 'request') {
+            return $mock->with('POST', $uri, $this->callback($callback));
+        }
+
+        return $mock->with($uri, $this->callback($callback));
     }
 }
