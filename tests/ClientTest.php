@@ -4,15 +4,12 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use Bugsnag\Configuration;
-use Bugsnag\HttpClient;
 use Bugsnag\Report;
-use Bugsnag\Shutdown\PhpShutdownStrategy;
+use Bugsnag\Tests\Fakes\FakeShutdownStrategy;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Psr7\Uri;
-use Mockery;
 use PHPUnit\Framework\MockObject\MockObject;
-use ReflectionClass;
 
 /**
  * @backupGlobals enabled
@@ -1081,9 +1078,13 @@ class ClientTest extends TestCase
 
     public function testShutdownStrategyIsCalledWithinConstructor()
     {
-        $mockShutdown = Mockery::mock(PhpShutdownStrategy::class);
-        $mockShutdown->shouldReceive('registerShutdownStrategy')->once();
-        new Client($this->config, null, null, $mockShutdown);
+        $shutdownStrategy = new FakeShutdownStrategy();
+
+        $this->assertFalse($shutdownStrategy->wasRegistered());
+
+        new Client($this->config, null, null, $shutdownStrategy);
+
+        $this->assertTrue($shutdownStrategy->wasRegistered());
     }
 
     private function expectGuzzlePostWith($uri, array $options = [])
