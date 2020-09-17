@@ -386,7 +386,7 @@ class Report
      */
     public function setName($name)
     {
-        if (is_scalar($name) || method_exists($name, '__toString')) {
+        if (is_scalar($name) || (is_object($name) && method_exists($name, '__toString'))) {
             $this->name = (string) $name;
         } else {
             throw new InvalidArgumentException('The name must be a string.');
@@ -422,7 +422,10 @@ class Report
     {
         if ($message === null) {
             $this->message = null;
-        } elseif (is_scalar($message) || method_exists($message, '__toString')) {
+        } elseif (
+            is_scalar($message)
+            || (is_object($message) && method_exists($message, '__toString'))
+        ) {
             $this->message = (string) $message;
         } else {
             throw new InvalidArgumentException('The message must be a string.');
