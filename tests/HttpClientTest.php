@@ -34,9 +34,7 @@ class HttpClientTest extends TestCase
         $this->config = new Configuration('6015a72ff14038114c3d12623dfb018f');
 
         /** @var MockObject&Client */
-        $this->guzzle = $this->getMockBuilder(Client::class)
-            ->setMethods([self::getGuzzleMethod()])
-            ->getMock();
+        $this->guzzle = $this->getMockBuilder(Client::class)->getMock();
 
         $this->http = new HttpClient($this->config, $this->guzzle);
     }
