@@ -26,7 +26,7 @@ class ReportTest extends TestCase
         $data = $this->report->toArray();
 
         $this->assertCount(3, $data['device']);
-        $this->assertInternalType('string', $data['device']['time']);
+        Assert::isType('string', $data['device']['time']);
         $this->assertSame(php_uname('n'), $data['device']['hostname']);
         $this->assertSame(phpversion(), $data['device']['runtimeVersions']['php']);
     }
@@ -134,7 +134,7 @@ class ReportTest extends TestCase
 
         $event = $this->report->toArray();
         // 'Code' should not be filtered so should remain still be an array
-        $this->assertInternalType('array', $event['exceptions'][0]['stacktrace'][0]['code']);
+        Assert::isType('array', $event['exceptions'][0]['stacktrace'][0]['code']);
     }
 
     public function testFiltersAreCaseInsensitive()

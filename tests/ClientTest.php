@@ -451,7 +451,7 @@ class ClientTest extends TestCase
         $this->assertCount(1, $breadcrumbs);
 
         $this->assertCount(4, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Test', $breadcrumbs[0]['name']);
         $this->assertSame('user', $breadcrumbs[0]['type']);
         $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
@@ -470,7 +470,7 @@ class ClientTest extends TestCase
         $this->assertCount(1, $breadcrumbs);
 
         $this->assertCount(3, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Foo Bar Baz', $breadcrumbs[0]['name']);
         $this->assertSame('manual', $breadcrumbs[0]['type']);
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
@@ -491,7 +491,7 @@ class ClientTest extends TestCase
         $this->assertCount(1, $breadcrumbs);
 
         $this->assertCount(4, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Error', $breadcrumbs[0]['name']);
         $this->assertSame('error', $breadcrumbs[0]['type']);
         $this->assertTrue(isset($breadcrumbs[0]['metaData']));
@@ -510,7 +510,7 @@ class ClientTest extends TestCase
         $this->assertCount(1, $breadcrumbs);
 
         $this->assertCount(3, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Bugsnag\Client', $breadcrumbs[0]['name']);
         $this->assertSame('state', $breadcrumbs[0]['type']);
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
@@ -529,7 +529,7 @@ class ClientTest extends TestCase
         $this->assertCount(1, $breadcrumbs);
 
         $this->assertCount(3, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Test', $breadcrumbs[0]['name']);
         $this->assertSame('user', $breadcrumbs[0]['type']);
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
@@ -548,7 +548,7 @@ class ClientTest extends TestCase
         $this->assertCount(1, $breadcrumbs);
 
         $this->assertCount(4, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Test', $breadcrumbs[0]['name']);
         $this->assertSame('user', $breadcrumbs[0]['type']);
         $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
@@ -560,13 +560,13 @@ class ClientTest extends TestCase
         $this->assertCount(2, $breadcrumbs);
 
         $this->assertCount(4, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Test', $breadcrumbs[0]['name']);
         $this->assertSame('user', $breadcrumbs[0]['type']);
         $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
 
         $this->assertCount(4, $breadcrumbs[1]);
-        $this->assertInternalType('string', $breadcrumbs[1]['timestamp']);
+        Assert::isType('string', $breadcrumbs[1]['timestamp']);
         $this->assertSame('Name', $breadcrumbs[1]['name']);
         $this->assertSame('error', $breadcrumbs[1]['type']);
         $this->assertSame(['name' => 'Name', 'severity' => 'warning'], $breadcrumbs[1]['metaData']);

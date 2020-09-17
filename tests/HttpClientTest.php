@@ -48,9 +48,9 @@ class HttpClientTest extends TestCase
         $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
         $this->assertSame($this->config->getNotifyEndpoint(), self::getGuzzlePostUriParam($params));
         $options = self::getGuzzlePostOptionsParam($params);
-        $this->assertInternalType('array', $options);
-        $this->assertInternalType('array', $options['json']['notifier']);
-        $this->assertInternalType('array', $options['json']['events']);
+        Assert::isType('array', $options);
+        Assert::isType('array', $options['json']['notifier']);
+        Assert::isType('array', $options['json']['events']);
         $this->assertSame([], $options['json']['events'][0]['user']);
         $this->assertSame(['foo' => 'bar'], $options['json']['events'][0]['metaData']);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
@@ -93,9 +93,9 @@ class HttpClientTest extends TestCase
         $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
         $this->assertSame($this->config->getNotifyEndpoint(), self::getGuzzlePostUriParam($params));
         $options = self::getGuzzlePostOptionsParam($params);
-        $this->assertInternalType('array', $options);
-        $this->assertInternalType('array', $options['json']['notifier']);
-        $this->assertInternalType('array', $options['json']['events']);
+        Assert::isType('array', $options);
+        Assert::isType('array', $options['json']['notifier']);
+        Assert::isType('array', $options['json']['events']);
         $this->assertSame([], $options['json']['events'][0]['user']);
         $this->assertArrayNotHasKey('metaData', $options['json']['events'][0]);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
@@ -142,9 +142,9 @@ class HttpClientTest extends TestCase
         $this->assertCount(self::getGuzzleExpectedParamCount(), $params);
         $this->assertSame($this->config->getNotifyEndpoint(), self::getGuzzlePostUriParam($params));
         $options = self::getGuzzlePostOptionsParam($params);
-        $this->assertInternalType('array', $options);
-        $this->assertInternalType('array', $options['json']['notifier']);
-        $this->assertInternalType('array', $options['json']['events']);
+        Assert::isType('array', $options);
+        Assert::isType('array', $options['json']['notifier']);
+        Assert::isType('array', $options['json']['events']);
         $this->assertSame(['foo' => 'bar'], $options['json']['events'][0]['user']);
         $this->assertSame([], $options['json']['events'][0]['metaData']);
         $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
