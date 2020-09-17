@@ -13,6 +13,30 @@ use PHPUnit\Framework\Assert as PhpUnitAssert;
 final class Assert
 {
     /**
+     * A PHPUnit 4, 7 & 9 compatible version of 'assertRegExp' and its replacement,
+     * 'assertMatchesRegularExpression'.
+     *
+     * This is necessary to avoid warnings - PHPUnit 9 deprecated 'assertRegExp'
+     * in favour of 'assertMatchesRegularExpression' and outputs a warning if
+     * the former is used
+     *
+     * @param string $regex
+     * @param string $value
+     *
+     * @return void
+     */
+    public static function matchesRegularExpression($regex, $value)
+    {
+        if (method_exists(PhpUnitAssert::class, 'assertMatchesRegularExpression')) {
+            PhpUnitAssert::assertMatchesRegularExpression($regex, $value);
+
+            return;
+        }
+
+        PhpUnitAssert::assertRegExp($regex, $value);
+    }
+
+    /**
      * A replacement for 'assertInternalType', which was removed in PHPUnit 9.
      *
      * @param string $type
