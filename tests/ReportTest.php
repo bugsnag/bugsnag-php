@@ -5,6 +5,7 @@ namespace Bugsnag\Tests;
 use Bugsnag\Configuration;
 use Bugsnag\Report;
 use Bugsnag\Stacktrace;
+use Bugsnag\Tests\Fakes\StringableObject;
 use Exception;
 use InvalidArgumentException;
 use ParseError;
@@ -405,44 +406,77 @@ class ReportTest extends TestCase
         $this->assertSame($this->report, $this->report->setPHPThrowable('foo'));
     }
 
-    public function testBadSetName()
+    public function testSetNameThrowsWhenPassedAnArray()
     {
         $this->expectedException(InvalidArgumentException::class);
         $this->report->setName([]);
     }
 
-    public function testBadSetMessage()
+    public function testSetNameThrowsWhenPassedANonStringableObject()
+    {
+        $this->expectedException(InvalidArgumentException::class);
+        $this->report->setName(new stdClass());
+    }
+
+    public function testSetMessageThrowsWhenPassedAnArray()
+    {
+        $this->expectedException(InvalidArgumentException::class);
+        $this->report->setMessage([]);
+    }
+
+    public function testSetMessageThrowsWhenPassedANonStringableObject()
     {
         $this->expectedException(InvalidArgumentException::class);
         $this->report->setMessage(new stdClass());
     }
 
-    public function testGoodSetName()
+    public function testSetNameAcceptsIntegers()
     {
         $this->report->setName(123);
 
         $this->assertSame('123', $this->report->getName());
     }
 
-    public function testGoodSetMessage()
+    public function testSetNameAcceptsStrings()
+    {
+        $this->report->setName('hey');
+
+        $this->assertSame('hey', $this->report->getName());
+    }
+
+    public function testSetNameAcceptsStringableObjects()
+    {
+        $this->report->setName(new StringableObject());
+
+        $this->assertSame('2object2string', $this->report->getName());
+    }
+
+    public function testSetMessageAcceptsStrings()
     {
         $this->report->setMessage('foo bar baz');
 
         $this->assertSame('foo bar baz', $this->report->getMessage());
     }
 
-    public function testEmptySetMessage()
+    public function testSetMessageAcceptsEmptyStrings()
     {
         $this->report->setMessage('');
 
         $this->assertSame('', $this->report->getMessage());
     }
 
-    public function testNullSetMessage()
+    public function testSetMessageAcceptsNull()
     {
         $this->report->setMessage(null);
 
         $this->assertNull($this->report->getMessage());
+    }
+
+    public function testSetMessageAcceptsStringableObjects()
+    {
+        $this->report->setMessage(new StringableObject());
+
+        $this->assertSame('2object2string', $this->report->getMessage());
     }
 
     public function testGetSummaryFull()
