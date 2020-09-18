@@ -19,7 +19,10 @@ class RequestCookiesTest extends TestCase
     /** @var \Bugsnag\Request\ResolverInterface */
     protected $resolver;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $this->config = new Configuration('API-KEY');
         $this->resolver = new BasicResolver();

@@ -12,10 +12,20 @@ use stdClass;
 
 class ReportTest extends TestCase
 {
+    /**
+     * @var Configuration
+     */
     protected $config;
+
+    /**
+     * @var Report
+     */
     protected $report;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $this->config = new Configuration('example-key');
         $this->report = Report::fromNamedError($this->config, 'Name', 'Message');
@@ -26,7 +36,7 @@ class ReportTest extends TestCase
         $data = $this->report->toArray();
 
         $this->assertCount(3, $data['device']);
-        $this->assertInternalType('string', $data['device']['time']);
+        Assert::isType('string', $data['device']['time']);
         $this->assertSame(php_uname('n'), $data['device']['hostname']);
         $this->assertSame(phpversion(), $data['device']['runtimeVersions']['php']);
     }
@@ -134,7 +144,7 @@ class ReportTest extends TestCase
 
         $event = $this->report->toArray();
         // 'Code' should not be filtered so should remain still be an array
-        $this->assertInternalType('array', $event['exceptions'][0]['stacktrace'][0]['code']);
+        Assert::isType('array', $event['exceptions'][0]['stacktrace'][0]['code']);
     }
 
     public function testFiltersAreCaseInsensitive()
@@ -165,17 +175,91 @@ class ReportTest extends TestCase
 
     public function testCanGetStacktrace()
     {
-        $this->report->setPHPError(E_NOTICE, 'Broken', 'file', 123);
+        $beginningOfTest = __LINE__;
+
+        // Generate a small backtrace to test with
+        $this->generateBacktrace(4);
 
         $trace = $this->report->getStacktrace();
-
         $this->assertInstanceOf(Stacktrace::class, $trace);
 
-        // Before PHPUnit 7 tests were executed via ReflectionMethod::invokeArgs
-        // which adds a line to the stacktrace
-        $expectedCount = $this->isPhpUnit7() ? 11 : 12;
+        $trace = $trace->toArray();
+        $this->assertGreaterThan(4, count($trace));
 
-        $this->assertCount($expectedCount, $trace->toArray());
+        // Strip out frames that weren't generated in this file, so that changes
+        // in how PHPUnit executes tests don't cause this test to fail (some
+        // versions of PHPUnit will generate more/less frames than others)
+        $trace = array_filter($trace, function ($frame) {
+            return $frame['file'] === __FILE__;
+        });
+
+        $this->assertNotEmpty($trace);
+
+        $lineNumber = __LINE__;
+
+        $generatedFrame = [
+            'lineNumber' => $lineNumber + 61,
+            'method' => __CLASS__.'::generateBacktrace',
+            'code' => [
+                $lineNumber + 58 => '    private function generateBacktrace($depth)',
+                $lineNumber + 59 => '    {',
+                $lineNumber + 60 => '        if ($depth > 0) {',
+                $lineNumber + 61 => '            return $this->generateBacktrace($depth - 1);',
+                $lineNumber + 62 => '        }',
+                $lineNumber + 63 => '',
+                $lineNumber + 64 => '        $this->report->setPHPError(E_NOTICE, \'Broken\', \'file\', 123);',
+            ],
+            'inProject' => false,
+            'file' => __FILE__,
+        ];
+
+        $expected = [
+            [
+                'lineNumber' => $lineNumber + 64,
+                'method' => __CLASS__.'::generateBacktrace',
+                'code' => [
+                    $lineNumber + 61 => '            return $this->generateBacktrace($depth - 1);',
+                    $lineNumber + 62 => '        }',
+                    $lineNumber + 63 => '',
+                    $lineNumber + 64 => '        $this->report->setPHPError(E_NOTICE, \'Broken\', \'file\', 123);',
+                    $lineNumber + 65 => '    }',
+                    $lineNumber + 66 => '',
+                    $lineNumber + 67 => '    public function testNoticeName()',
+                ],
+                'inProject' => false,
+                'file' => __FILE__,
+            ],
+            $generatedFrame,
+            $generatedFrame,
+            $generatedFrame,
+            $generatedFrame,
+            [
+                'lineNumber' => $beginningOfTest + 3,
+                'method' => __METHOD__,
+                'code' => [
+                    $beginningOfTest + 0 => '        $beginningOfTest = __LINE__;',
+                    $beginningOfTest + 1 => '',
+                    $beginningOfTest + 2 => '        // Generate a small backtrace to test with',
+                    $beginningOfTest + 3 => '        $this->generateBacktrace(4);',
+                    $beginningOfTest + 4 => '',
+                    $beginningOfTest + 5 => '        $trace = $this->report->getStacktrace();',
+                    $beginningOfTest + 6 => '        $this->assertInstanceOf(Stacktrace::class, $trace);',
+                ],
+                'inProject' => false,
+                'file' => __FILE__,
+            ],
+        ];
+
+        $this->assertSame($expected, $trace);
+    }
+
+    private function generateBacktrace($depth)
+    {
+        if ($depth > 0) {
+            return $this->generateBacktrace($depth - 1);
+        }
+
+        $this->report->setPHPError(E_NOTICE, 'Broken', 'file', 123);
     }
 
     public function testNoticeName()

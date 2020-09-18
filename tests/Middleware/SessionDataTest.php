@@ -28,7 +28,10 @@ class SessionDataTest extends TestCase
      */
     private $report;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $config = new Configuration('api-key');
 

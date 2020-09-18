@@ -29,7 +29,10 @@ namespace Bugsnag\Tests {
     {
         protected $client;
 
-        protected function setUp()
+        /**
+         * @before
+         */
+        protected function beforeEach()
         {
             global $mockErrorReporting, $mockErrorReportingLevel;
             $mockErrorReporting = false;
@@ -50,13 +53,16 @@ namespace Bugsnag\Tests {
 
         public function testErrorHandlerWithPrevious()
         {
-            if (class_exists(\PHPUnit_Framework_Error_Warning::class)) {
-                $this->expectedException(\PHPUnit_Framework_Error_Warning::class);
-            } else {
-                $this->expectedException(\PHPUnit\Framework\Error\Warning::class);
-            }
+            $wasCalled = false;
+            set_error_handler(function () use (&$wasCalled) {
+                $wasCalled = true;
+            });
+
+            $this->assertFalse($wasCalled);
 
             Handler::registerWithPrevious($this->client)->errorHandler(E_WARNING, 'Something broke', 'somefile.php', 123);
+
+            $this->assertTrue($wasCalled);
         }
 
         public function testExceptionHandler()
