@@ -201,7 +201,7 @@ class Client
 
         $base = $this->getGuzzleBaseUri($guzzle);
 
-        if (is_string($base) || method_exists($base, '__toString')) {
+        if (is_string($base) || (is_object($base) && method_exists($base, '__toString'))) {
             $configuration->setNotifyEndpoint((string) $base);
         }
     }

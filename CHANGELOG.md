@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Avoid calling `method_exists` on non-objects
+  [#603](https://github.com/bugsnag/bugsnag-php/pull/603)
+
 ## 3.23.0 (2020-09-14)
 
 ### Enhancements
