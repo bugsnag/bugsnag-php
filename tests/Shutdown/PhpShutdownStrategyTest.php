@@ -4,46 +4,37 @@ namespace Bugsnag\Tests\Shutdown;
 
 use Bugsnag\Client;
 use Bugsnag\Shutdown\PhpShutdownStrategy;
+use Bugsnag\Tests\Assert;
 use Bugsnag\Tests\TestCase;
-use Mockery;
-use phpmock\spy\Spy;
 
 /**
  * @runTestsInSeparateProcesses
  */
 class PhpShutdownStrategyTest extends TestCase
 {
-    public function testRegisterShutdownFunction()
+    public function testShutdownFunctionIsRegisteredAsExpected()
     {
-        // Override/spy on the native PHP method when executed within the Bugsnag\Shutdown namespace
-        $shutdownSpy = new Spy('Bugsnag\Shutdown', 'register_shutdown_function');
-        $shutdownSpy->enable();
+        $shutdownSpy = $this->getFunctionMock('Bugsnag\Shutdown', 'register_shutdown_function');
 
-        // Mock a bugsnag client
-        $mockClient = Mockery::mock(Client::class);
-        $mockClient->shouldReceive('flush');
+        // We expect to get called once by the Client constructor and once
+        // manually in this test
+        $shutdownSpy->expects($this->exactly(2))
+            ->with(
+                $this->callback(function ($callable) {
+                    Assert::isType('callable', $callable);
+                    Assert::isType('array', $callable);
 
-        // Execute the shutdown strategy
-        $strategy = new PhpShutdownStrategy();
-        $strategy->registerShutdownStrategy($mockClient);
+                    $this->assertCount(2, $callable);
+                    $this->assertInstanceOf(Client::class, $callable[0]);
+                    $this->assertSame('flush', $callable[1]);
 
-        // Assert that register_shutdown_function was called with [$client, "flush"]
-        list($args) = $shutdownSpy->getInvocations()[0]->getArguments();
-        $this->assertEquals($mockClient, $args[0]);
-        $this->assertEquals('flush', $args[1]);
-    }
-
-    public function testDefaultShutdownStrategyIsCreatedWithinClientConstructor()
-    {
-        // Override/spy on the native PHP method when executed within the Bugsnag\Shutdown namespace
-        $shutdownSpy = new Spy('Bugsnag\Shutdown', 'register_shutdown_function');
-        $shutdownSpy->enable();
+                    return true;
+                })
+            );
 
         $client = Client::make('api-key-here');
 
-        // Assert that register_shutdown_function was called with [$client, "flush"]
-        list($args) = $shutdownSpy->getInvocations()[0]->getArguments();
-        $this->assertEquals($client, $args[0]);
-        $this->assertEquals('flush', $args[1]);
+        $strategy = new PhpShutdownStrategy();
+        $strategy->registerShutdownStrategy($client);
     }
 }
