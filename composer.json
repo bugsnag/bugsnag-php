@@ -37,6 +37,9 @@
             "dev-master": "3.20-dev"
         }
     },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true
 }
