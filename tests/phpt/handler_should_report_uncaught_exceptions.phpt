@@ -11,7 +11,7 @@ throw new Exception('abcxyz');
 var_dump("I should never be reached!");
 ?>
 --EXPECTF--
-Fatal error: Uncaught Exception: abcxyz in %s:6
+Fatal error: Uncaught %SException%S %Sabcxyz%S in %s:6
 Stack trace:
 #0 {main}
   thrown in %s on line 6
