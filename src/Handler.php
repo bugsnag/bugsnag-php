@@ -112,9 +112,19 @@ class Handler
     {
         $previous = set_exception_handler([$this, 'exceptionHandler']);
 
-        if ($callPrevious) {
-            $this->previousExceptionHandler = $previous;
+        if (!$callPrevious) {
+            return;
         }
+
+        // If there is no previous exception handler, we create one that re-raises
+        // the exception in order to trigger PHP's default exception handler
+        if (!is_callable($previous)) {
+            $previous = static function ($throwable) {
+                throw $throwable;
+            };
+        }
+
+        $this->previousExceptionHandler = $previous;
     }
 
     /**
@@ -163,9 +173,7 @@ class Handler
 
         $this->client->notify($report);
 
-        // If we have no previous exception handler to call, there's nothing left
-        // to do. This could be because one never existed, or we may have disabled
-        // it if it previously raised an exception
+        // If we have no previous exception handler to call, there's nothing left to do
         if (!$this->previousExceptionHandler) {
             return;
         }
