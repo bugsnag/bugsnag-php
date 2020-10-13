@@ -154,41 +154,23 @@ class Handler
     /**
      * Exception handler callback.
      *
-     * @param \Throwable $throwable the exception was was thrown
+     * @param Throwable $throwable the exception was was thrown
      *
      * @return void
      */
     public function exceptionHandler($throwable)
     {
-        $report = Report::fromPHPThrowable(
-            $this->client->getConfig(),
-            $throwable
-        );
+        $this->notifyThrowable($throwable);
 
-        $report->setSeverity('error');
-        $report->setUnhandled(true);
-        $report->setSeverityReason([
-            'type' => 'unhandledException',
-        ]);
-
-        $this->client->notify($report);
-
-        // If we have no previous exception handler to call, there's nothing left to do
+        // If we don't have a previous handler to call, there's nothing left to do
         if (!$this->previousExceptionHandler) {
             return;
         }
 
-        $exceptionFromPreviousHandler = null;
-
-        // Get a reference to the previous handler and then disable it — this
-        // prevents an infinite loop if the previous handler raises a new exception
-        $previousExceptionHandler = $this->previousExceptionHandler;
-        $this->previousExceptionHandler = null;
-
         // These empty catches exist to set $exceptionFromPreviousHandler — we
         // support both PHP 5 & 7 so can't have a single Throwable catch
         try {
-            call_user_func($previousExceptionHandler, $throwable);
+            call_user_func($this->previousExceptionHandler, $throwable);
 
             return;
         } catch (Throwable $exceptionFromPreviousHandler) {
@@ -205,9 +187,31 @@ class Handler
             throw $throwable;
         }
 
-        // The previous handler raised a new exception so try to handle it too
-        // We've disabled the previous handler so it can't trigger _another_ exception
-        $this->exceptionHandler($exceptionFromPreviousHandler);
+        // The previous handler raised a new exception so send a notification
+        // for it too. We don't want the previous handler to run for this
+        // exception, as it may keep throwing new exceptions
+        $this->notifyThrowable($exceptionFromPreviousHandler);
+    }
+
+    /**
+     * Send a notification for the given throwable.
+     *
+     * @param Throwable $throwable
+     *
+     * @return void
+     */
+    private function notifyThrowable($throwable)
+    {
+        $report = Report::fromPHPThrowable(
+            $this->client->getConfig(),
+            $throwable
+        );
+
+        $report->setSeverity('error');
+        $report->setUnhandled(true);
+        $report->setSeverityReason(['type' => 'unhandledException']);
+
+        $this->client->notify($report);
     }
 
     /**
