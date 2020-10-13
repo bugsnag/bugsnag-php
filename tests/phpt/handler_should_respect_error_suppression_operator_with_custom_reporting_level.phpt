@@ -20,6 +20,12 @@ trigger_error('abc warning', E_USER_WARNING);
 echo "Triggering a suppressed user warning that should be ignored by PHP and ignored by Bugsnag\n";
 @trigger_error('xyz warning', E_USER_WARNING);
 ?>
+--SKIPIF--
+<?php
+if (PHP_MAJOR_VERSION === 8) {
+    echo 'SKIP — PHP 8 changes the error suppression operator (PLAT-4822)';
+}
+?>
 --EXPECTF--
 Triggering a user notice that should be reported by PHP and ignored by Bugsnag
 
