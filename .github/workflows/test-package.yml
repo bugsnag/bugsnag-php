@@ -16,6 +16,9 @@ jobs:
           guzzle-version: '^7.0'
         - php-version: 7.4
           guzzle-version: '^7.0'
+        - php-version: 8.0
+          guzzle-version: '^7.0'
+          composer-flags: '--ignore-platform-reqs'
 
     steps:
     - uses: actions/checkout@v2
@@ -28,9 +31,9 @@ jobs:
     - run: composer validate
 
     - name: require guzzle
-      run: composer require "guzzlehttp/guzzle:${{ matrix.guzzle-version }}" --no-update
+      run: composer require "guzzlehttp/guzzle:${{ matrix.guzzle-version }}" --no-update ${{ matrix.composer-flags }}
 
     - name: install dependencies
-      run: composer update --prefer-dist --no-progress --no-suggest --no-interaction
+      run: composer update --prefer-dist --no-progress --no-suggest --no-interaction ${{ matrix.composer-flags }}
 
     - run: composer run-script test
