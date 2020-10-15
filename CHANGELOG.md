@@ -1,12 +1,26 @@
 Changelog
 =========
 
-## TBD
+## 3.23.1 (2020-10-19)
+
+This release fixes several issues with Bugsnag's error handlers that caused it to affect the behaviour of shutdown functions ([#475](https://github.com/bugsnag/bugsnag-php/issues/475)) and CLI script exit codes ([#523](https://github.com/bugsnag/bugsnag-php/issues/523)). This does not apply if you are using the Laravel or Symfony integrations, as they use separate methods of error handling.
+
+These bugs have been fixed and so registering Bugsnag's error handlers should not cause any change to PHP's default behaviour. Make sure that [PHP's `display_errors` option](https://www.php.net/manual/en/errorfunc.configuration.php#ini.display-errors) is disabled in production environments, as exceptions and errors will now go through PHP's default handling.
 
 ### Fixes
 
+* The previous error and exception handler will now always be called
+
+* Exceptions raised by the previous exception handler will now be reported
+
+* The default PHP exception handler will now be called, unless this is prevented by a previous exception handler
+
 * Avoid calling `method_exists` on non-objects
   [#603](https://github.com/bugsnag/bugsnag-php/pull/603)
+
+### Deprecations
+
+* `Bugsnag\Handler::registerWithPrevious` has been deprecated as calling previous error/exception handlers is now the default behaviour. Calls to `registerWithPrevious` can be safely replaced with `Bugsnag\Handler::register`
 
 ## 3.23.0 (2020-09-14)
 
