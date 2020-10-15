@@ -29,4 +29,9 @@
             <directory suffix=".phpt">./tests/phpt</directory>
         </testsuite>
     </testsuites>
+
+    <php>
+        <!-- Use a very big number as we can't use the 'E_ALL' constant here -->
+        <ini name="error_reporting" value="2147483647" />
+    </php>
 </phpunit>
