@@ -58,6 +58,18 @@ class ErrorTypesTest extends TestCase
         $this->assertSame($expected, ErrorTypes::getSeverity($code));
     }
 
+    public function testGetAllCodes()
+    {
+        $codes = ErrorTypes::getAllCodes();
+
+        // If we actually got all of the codes, they should combine to equal E_ALL
+        $combined = array_reduce($codes, function ($acc, $code) {
+            return $acc | $code;
+        }, 0);
+
+        $this->assertSame(E_ALL, $combined);
+    }
+
     public function levelsForSeverityProvider()
     {
         return [

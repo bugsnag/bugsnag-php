@@ -149,4 +149,14 @@ class ErrorTypes
 
         return $levels;
     }
+
+    /**
+     * Get a list of all PHP error codes.
+     *
+     * @return int[]
+     */
+    public static function getAllCodes()
+    {
+        return array_keys(self::$ERROR_TYPES);
+    }
 }
