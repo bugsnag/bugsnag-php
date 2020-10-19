@@ -1,6 +1,17 @@
 Changelog
 =========
 
+## TBD
+
+This release changes how Bugsnag detects the error suppression operator in combination with the `errorReportingLevel` configuration option, for PHP 8 compatibility. Bugsnag's `errorReportingLevel` must now be a subset of `error_reporting` — i.e. every error level in `errorReportingLevel` must also be in `error_reporting`
+
+If you use the `errorReportingLevel` option, you may need to change your Bugsnag or PHP configuration in order to report all expected errors. See [PR #611](https://github.com/bugsnag/bugsnag-php/pull/611) for more details
+
+### Fixes
+
+* Make `Configuration::shouldIgnoreErrorCode` compatible with PHP 8 by requiring the `errorReportingLevel` option to be a subset of `error_reporting`
+  [#611](https://github.com/bugsnag/bugsnag-php/pull/611)
+
 ## 3.23.1 (2020-10-19)
 
 This release fixes several issues with Bugsnag's error handlers that caused it to affect the behaviour of shutdown functions ([#475](https://github.com/bugsnag/bugsnag-php/issues/475)) and CLI script exit codes ([#523](https://github.com/bugsnag/bugsnag-php/issues/523)). This does not apply if you are using the Laravel or Symfony integrations, as they use separate methods of error handling.
