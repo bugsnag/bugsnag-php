@@ -9,9 +9,9 @@ set_error_handler(function () {
     return false;
 });
 
-Bugsnag\Handler::registerWithPrevious($client);
+Bugsnag\Handler::register($client);
 
-$a = $b;
+new stdClass == 1;
 
 var_dump('Hello!');
 
@@ -22,27 +22,27 @@ array(4) {
   [0]=>
   int(8)
   [1]=>
-  string(21) "Undefined variable: b"
+  string(54) "Object of class stdClass could not be converted to int"
   [2]=>
   string(%d) "%s"
   [3]=>
   int(11)
 }
 
-Notice: Undefined variable: b in %s on line 11
+Notice: Object of class stdClass could not be converted to int in %s on line 11
 string(6) "Hello!"
 array(4) {
   [0]=>
   int(2)
   [1]=>
-  string(%d) "include(%s/abc/xyz.php): failed to open stream: No such file or directory"
+  string(%d) "include(%s/abc/xyz.php): %cailed to open stream: No such file or directory"
   [2]=>
   string(%d) "%s"
   [3]=>
   int(15)
 }
 
-Warning: include(%s/abc/xyz.php): failed to open stream: No such file or directory in %s on line 15
+Warning: include(%s/abc/xyz.php): %cailed to open stream: No such file or directory in %s on line 15
 array(4) {
   [0]=>
   int(2)
@@ -58,3 +58,7 @@ Warning: include(): Failed opening '%s/abc/xyz.php' for inclusion (include_path=
 Guzzle request made (3 events)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - Object of class stdClass could not be converted to int
+    - include(%s/abc/xyz.php): %cailed to open stream: No such file or directory
+    - include(): Failed opening '%s/abc/xyz.php' for inclusion (include_path='%s')

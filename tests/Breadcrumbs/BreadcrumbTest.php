@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests\Breadcrumbs;
 
 use Bugsnag\Breadcrumbs\Breadcrumb;
+use Bugsnag\Tests\Assert;
 use Bugsnag\Tests\TestCase;
 
 class BreadcrumbTest extends TestCase
@@ -63,9 +64,9 @@ class BreadcrumbTest extends TestCase
     {
         $breadcrumb = new Breadcrumb('Foo', 'request', ['foo' => 'bar']);
 
-        $this->assertInternalType('array', $breadcrumb->toArray());
+        Assert::isType('array', $breadcrumb->toArray());
         $this->assertCount(3, $breadcrumb->toArray());
-        $this->assertInternalType('string', $breadcrumb->toArray()['timestamp']);
+        Assert::isType('string', $breadcrumb->toArray()['timestamp']);
         $this->assertSame('Foo', $breadcrumb->toArray()['name']);
         $this->assertSame('request', $breadcrumb->toArray()['type']);
     }

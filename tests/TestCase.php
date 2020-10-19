@@ -2,7 +2,6 @@
 
 namespace Bugsnag\Tests;
 
-use GrahamCampbell\TestBenchCore\MockeryTrait;
 use GuzzleHttp\ClientInterface;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase as BaseTestCase;
@@ -11,7 +10,6 @@ use PHPUnit\Runner\Version as PhpUnitVersion;
 abstract class TestCase extends BaseTestCase
 {
     use PHPMock;
-    use MockeryTrait;
 
     public function expectedException($class, $message = null)
     {

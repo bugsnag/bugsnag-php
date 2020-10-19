@@ -7,6 +7,7 @@ use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Configuration;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Report;
+use Bugsnag\Tests\Assert;
 use Bugsnag\Tests\TestCase;
 use Exception;
 
@@ -18,7 +19,10 @@ class BreadcrumbsDataTest extends TestCase
     /** @var \Bugsnag\Breadcrumbs\Recorder */
     protected $recorder;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $this->config = new Configuration('API-KEY');
         $this->recorder = new Recorder();
@@ -50,7 +54,7 @@ class BreadcrumbsDataTest extends TestCase
         $this->assertCount(1, $breadcrumbs);
 
         $this->assertCount(3, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Foo', $breadcrumbs[0]['name']);
         $this->assertSame('error', $breadcrumbs[0]['type']);
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
@@ -70,7 +74,7 @@ class BreadcrumbsDataTest extends TestCase
         $this->assertCount(1, $breadcrumbs);
 
         $this->assertCount(4, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Foo', $breadcrumbs[0]['name']);
         $this->assertSame('error', $breadcrumbs[0]['type']);
         $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
@@ -91,13 +95,13 @@ class BreadcrumbsDataTest extends TestCase
         $this->assertCount(2, $breadcrumbs);
 
         $this->assertCount(4, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Foo', $breadcrumbs[0]['name']);
         $this->assertSame('error', $breadcrumbs[0]['type']);
         $this->assertSame(['foo' => 'bar'], $breadcrumbs[0]['metaData']);
 
         $this->assertCount(3, $breadcrumbs[1]);
-        $this->assertInternalType('string', $breadcrumbs[1]['timestamp']);
+        Assert::isType('string', $breadcrumbs[1]['timestamp']);
         $this->assertSame('Bar', $breadcrumbs[1]['name']);
         $this->assertSame('log', $breadcrumbs[1]['type']);
         $this->assertFalse(isset($breadcrumbs[1]['metaData']));
@@ -123,13 +127,13 @@ class BreadcrumbsDataTest extends TestCase
         $this->assertCount(25, $breadcrumbs);
 
         $this->assertCount(3, $breadcrumbs[0]);
-        $this->assertInternalType('string', $breadcrumbs[0]['timestamp']);
+        Assert::isType('string', $breadcrumbs[0]['timestamp']);
         $this->assertSame('Bar', $breadcrumbs[0]['name']);
         $this->assertSame('log', $breadcrumbs[0]['type']);
         $this->assertFalse(isset($breadcrumbs[0]['metaData']));
 
         $this->assertCount(4, $breadcrumbs[24]);
-        $this->assertInternalType('string', $breadcrumbs[24]['timestamp']);
+        Assert::isType('string', $breadcrumbs[24]['timestamp']);
         $this->assertSame('Baz', $breadcrumbs[24]['name']);
         $this->assertSame('navigation', $breadcrumbs[24]['type']);
         $this->assertSame(['baz' => 'bar'], $breadcrumbs[24]['metaData']);

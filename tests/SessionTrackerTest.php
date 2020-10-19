@@ -20,7 +20,10 @@ class SessionTrackerTest extends TestCase
     /** @var HttpClient&MockObject */
     private $client;
 
-    public function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         /** @var Configuration&MockObject */
         $this->config = new Configuration('example-api-key');
@@ -599,7 +602,7 @@ class SessionTrackerTest extends TestCase
             $this->assertArrayHasKey('startedAt', $session);
             $this->assertArrayHasKey('sessionsStarted', $session);
 
-            $this->assertRegExp('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $session['startedAt']);
+            Assert::matchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/', $session['startedAt']);
             $this->assertSame(1, $session['sessionsStarted']);
 
             return true;

@@ -13,7 +13,10 @@ class CustomUserTest extends TestCase
     /** @var \Bugsnag\Configuration */
     protected $config;
 
-    protected function setUp()
+    /**
+     * @before
+     */
+    protected function beforeEach()
     {
         $this->config = new Configuration('API-KEY');
     }

@@ -26,3 +26,7 @@ Deprecated: hello E_USER_DEPRECATED 2 in %s on line 14
 Guzzle request made (3 events)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
+* Events:
+    - hello E_USER_DEPRECATED
+    - hello E_USER_NOTICE 2
+    - hello E_USER_DEPRECATED 2

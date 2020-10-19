@@ -1,0 +1,40 @@
+name: test
+
+on: [ push, pull_request ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ 5.5, 5.6, 7.0, 7.1, 7.2, 7.3, 7.4 ]
+        guzzle-version: [ '^5.3', '^6.0' ]
+        include:
+        - php-version: 7.2
+          guzzle-version: '^7.0'
+        - php-version: 7.3
+          guzzle-version: '^7.0'
+        - php-version: 7.4
+          guzzle-version: '^7.0'
+        - php-version: 8.0
+          guzzle-version: '^7.0'
+          composer-flags: '--ignore-platform-reqs'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+
+    - run: composer validate
+
+    - name: require guzzle
+      run: composer require "guzzlehttp/guzzle:${{ matrix.guzzle-version }}" --no-update ${{ matrix.composer-flags }}
+
+    - name: install dependencies
+      run: composer update --prefer-dist --no-progress --no-suggest --no-interaction ${{ matrix.composer-flags }}
+
+    - run: composer run-script test
