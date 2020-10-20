@@ -121,25 +121,21 @@ class HandlerTest extends TestCase
     public function testErrorReportingSuppressed()
     {
         $this->runErrorHandlerTest(function () {
-            error_reporting(0);
-
             $this->client->setErrorReportingLevel(E_NOTICE);
             $this->client->expects($this->never())->method('notify');
 
             $handler = Handler::register($this->client);
-            $handler->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
+            @$handler->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
         });
     }
 
     public function testErrorReportingDefaultSuppressed()
     {
         $this->runErrorHandlerTest(function () {
-            error_reporting(0);
-
             $this->client->expects($this->never())->method('notify');
 
             $handler = Handler::register($this->client);
-            $handler->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
+            @$handler->errorHandler(E_NOTICE, 'Something broke', 'somefile.php', 123);
         });
     }
 
