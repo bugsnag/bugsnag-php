@@ -2,6 +2,7 @@
 
 namespace Bugsnag\Tests;
 
+use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PhpUnitAssert;
 
@@ -71,5 +72,22 @@ final class Assert
         }
 
         $typeToAssertion[$type]($value);
+    }
+
+    /**
+     * @param string $format
+     * @param string $dateString
+     *
+     * @return void
+     */
+    public static function matchesDateFormat($format, $dateString)
+    {
+        $date = new DateTimeImmutable($dateString);
+
+        PhpUnitAssert::assertSame(
+            $dateString,
+            $date->format($format),
+            "Date '{$dateString}' did not match format '{$format}'"
+        );
     }
 }
