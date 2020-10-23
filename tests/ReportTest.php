@@ -37,7 +37,7 @@ class ReportTest extends TestCase
         $data = $this->report->toArray();
 
         $this->assertCount(3, $data['device']);
-        Assert::isType('string', $data['device']['time']);
+        Assert::matchesDateFormat('Y-m-d\TH:i:s\Z', $data['device']['time']);
         $this->assertSame(php_uname('n'), $data['device']['hostname']);
         $this->assertSame(phpversion(), $data['device']['runtimeVersions']['php']);
     }
