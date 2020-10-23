@@ -66,7 +66,7 @@ class BreadcrumbTest extends TestCase
 
         Assert::isType('array', $breadcrumb->toArray());
         $this->assertCount(3, $breadcrumb->toArray());
-        Assert::matchesDateFormat('Y-m-d\TH:i:s\Z', $breadcrumb->toArray()['timestamp']);
+        Assert::matchesBugsnagDateFormat($breadcrumb->toArray()['timestamp']);
         $this->assertSame('Foo', $breadcrumb->toArray()['name']);
         $this->assertSame('request', $breadcrumb->toArray()['type']);
     }
