@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests\DateTime;
 
 use Bugsnag\DateTime\Date;
+use Bugsnag\Tests\Assert;
 use Bugsnag\Tests\Fakes\FakeClock;
 use Bugsnag\Tests\TestCase;
 use DateTimeImmutable;
@@ -24,7 +25,10 @@ class DateTest extends TestCase
         $date = new DateTimeImmutable($dateString, new DateTimeZone($offset));
         $clock = new FakeClock($date);
 
-        $this->assertSame($expected, Date::now($clock));
+        $actual = Date::now($clock);
+
+        $this->assertSame($expected, $actual);
+        Assert::matchesBugsnagDateFormat($actual);
     }
 
     public function testItReturnsTheCurrentDateTimeWithARealClock()
