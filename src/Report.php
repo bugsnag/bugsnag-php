@@ -3,6 +3,7 @@
 namespace Bugsnag;
 
 use Bugsnag\Breadcrumbs\Breadcrumb;
+use Bugsnag\DateTime\Date;
 use Exception;
 use InvalidArgumentException;
 use Throwable;
@@ -204,7 +205,7 @@ class Report
     protected function __construct(Configuration $config)
     {
         $this->config = $config;
-        $this->time = gmdate('Y-m-d\TH:i:s\Z');
+        $this->time = Date::now();
     }
 
     /**

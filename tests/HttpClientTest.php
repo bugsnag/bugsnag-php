@@ -69,7 +69,7 @@ class HttpClientTest extends TestCase
             $headers = $options['headers'];
 
             $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
-            $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
+            Assert::matchesBugsnagDateFormat($headers['Bugsnag-Sent-At']);
             $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
 
             return true;
@@ -98,7 +98,7 @@ class HttpClientTest extends TestCase
             $headers = $options['headers'];
 
             $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
-            $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
+            Assert::matchesBugsnagDateFormat($headers['Bugsnag-Sent-At']);
             $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
 
             return true;
@@ -128,7 +128,7 @@ class HttpClientTest extends TestCase
             $headers = $options['headers'];
 
             $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
-            $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
+            Assert::matchesBugsnagDateFormat($headers['Bugsnag-Sent-At']);
             $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
 
             return true;
@@ -173,7 +173,7 @@ class HttpClientTest extends TestCase
 
             $headers = $options['headers'];
             $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
-            $this->assertArrayHasKey('Bugsnag-Sent-At', $headers);
+            Assert::matchesBugsnagDateFormat($headers['Bugsnag-Sent-At']);
             $this->assertSame('4.0', $headers['Bugsnag-Payload-Version']);
 
             return true;

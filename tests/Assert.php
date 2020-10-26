@@ -2,6 +2,7 @@
 
 namespace Bugsnag\Tests;
 
+use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\Assert as PhpUnitAssert;
 
@@ -71,5 +72,48 @@ final class Assert
         }
 
         $typeToAssertion[$type]($value);
+    }
+
+    /**
+     * @param string $format
+     * @param string $dateString
+     *
+     * @return void
+     */
+    public static function matchesDateFormat($format, $dateString)
+    {
+        $date = new DateTimeImmutable($dateString);
+
+        PhpUnitAssert::assertSame(
+            $dateString,
+            $date->format($format),
+            "Date '{$dateString}' did not match format '{$format}'"
+        );
+    }
+
+    /**
+     * @param string $date
+     *
+     * @return void
+     */
+    public static function matchesBugsnagDateFormat($date)
+    {
+        // The millisecond format specifier ("v") was added in PHP 7.0
+        if (PHP_MAJOR_VERSION >= 7) {
+            Assert::matchesDateFormat('Y-m-d\TH:i:s.vP', $date);
+
+            return;
+        }
+
+        $regex = '/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})\.\d{3}([+-]\d{2}:\d{2})$/';
+
+        Assert::matchesRegularExpression($regex, $date);
+
+        preg_match($regex, $date, $matches);
+
+        $dateTime = $matches[1];
+        $offset = $matches[2];
+
+        Assert::matchesDateFormat('Y-m-d\TH:i:sP', $dateTime.$offset);
     }
 }
