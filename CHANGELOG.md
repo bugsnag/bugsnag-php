@@ -7,6 +7,11 @@ This release changes how Bugsnag detects the error suppression operator in combi
 
 If you use the `errorReportingLevel` option, you may need to change your Bugsnag or PHP configuration in order to report all expected errors. See [PR #611](https://github.com/bugsnag/bugsnag-php/pull/611) for more details
 
+### Enhancements
+
+* Improve the display of breadrumbs in the Bugsnag app by including milliseconds in timestamps
+  [#612](https://github.com/bugsnag/bugsnag-php/pull/612)
+
 ### Fixes
 
 * Make `Configuration::shouldIgnoreErrorCode` compatible with PHP 8 by requiring the `errorReportingLevel` option to be a subset of `error_reporting`
