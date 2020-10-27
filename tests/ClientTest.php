@@ -1036,10 +1036,21 @@ class ClientTest extends TestCase
     public function testErrorReportingLevel()
     {
         $client = Client::make('foo');
+
         $this->assertSame($client, $client->setErrorReportingLevel(E_ALL));
         $this->assertFalse($client->shouldIgnoreErrorCode(E_NOTICE));
-        $this->assertSame($client, $client->setErrorReportingLevel(E_ALL && ~E_NOTICE));
+
+        $this->assertSame($client, $client->setErrorReportingLevel(E_ALL & ~E_NOTICE));
         $this->assertTrue($client->shouldIgnoreErrorCode(E_NOTICE));
+
+        $this->assertSame($client, $client->setErrorReportingLevel(E_NOTICE));
+        $this->assertFalse($client->shouldIgnoreErrorCode(E_NOTICE));
+
+        $this->assertSame($client, $client->setErrorReportingLevel(0));
+        $this->assertTrue($client->shouldIgnoreErrorCode(E_NOTICE));
+
+        $this->assertSame($client, $client->setErrorReportingLevel(null));
+        $this->assertFalse($client->shouldIgnoreErrorCode(E_NOTICE));
     }
 
     public function testMetaData()

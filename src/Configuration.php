@@ -82,7 +82,7 @@ class Configuration
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.23.1',
+        'version' => '3.24.0',
         'url' => 'https://bugsnag.com',
     ];
 
@@ -569,9 +569,66 @@ class Configuration
      */
     public function setErrorReportingLevel($errorReportingLevel)
     {
+        if (!$this->isSubsetOfErrorReporting($errorReportingLevel)) {
+            $missingLevels = implode(', ', $this->getMissingErrorLevelNames($errorReportingLevel));
+            $message =
+                'Bugsnag Warning: errorReportingLevel cannot contain values that are not in error_reporting. '.
+                "Any errors of these levels will be ignored: {$missingLevels}.";
+
+            error_log($message);
+        }
+
         $this->errorReportingLevel = $errorReportingLevel;
 
         return $this;
+    }
+
+    /**
+     * Check if the given error reporting level is a subset of error_reporting.
+     *
+     * For example, if $level contains E_WARNING then error_reporting must too.
+     *
+     * @param int|null $level
+     *
+     * @return bool
+     */
+    private function isSubsetOfErrorReporting($level)
+    {
+        if (!is_int($level)) {
+            return true;
+        }
+
+        $errorReporting = error_reporting();
+
+        // If all of the bits in $level are also in $errorReporting, ORing them
+        // together will result in the same value as $errorReporting because
+        // there are no new bits to add
+        return ($errorReporting | $level) === $errorReporting;
+    }
+
+    /**
+     * Get a list of error level names that are in $level but not error_reporting.
+     *
+     * For example, if error_reporting is E_NOTICE and $level is E_ERROR then
+     * this will return ['E_ERROR']
+     *
+     * @param int $level
+     *
+     * @return string[]
+     */
+    private function getMissingErrorLevelNames($level)
+    {
+        $missingLevels = [];
+        $errorReporting = error_reporting();
+
+        foreach (ErrorTypes::getAllCodes() as $code) {
+            // $code is "missing" if it's in $level but not in $errorReporting
+            if (($code & $level) && !($code & $errorReporting)) {
+                $missingLevels[] = ErrorTypes::codeToString($code);
+            }
+        }
+
+        return $missingLevels;
     }
 
     /**
@@ -583,19 +640,19 @@ class Configuration
      */
     public function shouldIgnoreErrorCode($code)
     {
-        $defaultReportingLevel = error_reporting();
-
-        if ($defaultReportingLevel === 0) {
-            // The error has been suppressed using the error control operator ('@')
-            // Ignore the error in all cases.
+        // If the code is not in error_reporting then it is either totally
+        // disabled or is being suppressed with '@'
+        if (!(error_reporting() & $code)) {
             return true;
         }
 
+        // Filter the error code further against our error reporting level, which
+        // can be lower than error_reporting
         if (isset($this->errorReportingLevel)) {
             return !($this->errorReportingLevel & $code);
         }
 
-        return !($defaultReportingLevel & $code);
+        return false;
     }
 
     /**

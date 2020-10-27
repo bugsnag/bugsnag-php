@@ -2,6 +2,7 @@
 
 namespace Bugsnag;
 
+use Bugsnag\DateTime\Date;
 use Exception;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
@@ -251,7 +252,7 @@ class HttpClient
     {
         return [
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
-            'Bugsnag-Sent-At' => strftime('%Y-%m-%dT%H:%M:%S'),
+            'Bugsnag-Sent-At' => Date::now(),
             'Bugsnag-Payload-Version' => $version,
         ];
     }
