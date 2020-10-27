@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 3.24.0 (2020-10-27)
 
 This release changes how Bugsnag detects the error suppression operator in combination with the `errorReportingLevel` configuration option, for PHP 8 compatibility. Bugsnag's `errorReportingLevel` must now be a subset of `error_reporting` — i.e. every error level in `errorReportingLevel` must also be in `error_reporting`
 
