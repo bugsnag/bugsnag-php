@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 2.10.1 (TBD)
+
+### Bug Fixes
+
+* Fix invalid use of `curl_setopt`
+  [#614](https://github.com/bugsnag/bugsnag-php/pull/614)
+
 ## 2.10.0 (2019-06-12)
 
 ### Enhancements
