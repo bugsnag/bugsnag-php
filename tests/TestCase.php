@@ -2,7 +2,7 @@
 
 namespace Bugsnag\Tests;
 
-use GuzzleHttp\ClientInterface;
+use Bugsnag\GuzzleCompat;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use PHPUnit\Runner\Version as PhpUnitVersion;
@@ -43,23 +43,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected static function getGuzzleMethod()
     {
-        return method_exists(ClientInterface::class, 'request') ? 'request' : 'post';
-    }
-
-    /**
-     * @return string
-     */
-    protected function getGuzzleBaseOptionName()
-    {
-        return $this->isUsingGuzzle5() ? 'base_url' : 'base_uri';
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isUsingGuzzle5()
-    {
-        return method_exists(ClientInterface::class, 'getBaseUrl');
+        return GuzzleCompat::isUsingGuzzle5() ? 'post' : 'request';
     }
 
     private function phpUnitVersion()

@@ -4,6 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use Bugsnag\Configuration;
+use Bugsnag\GuzzleCompat;
 use Bugsnag\Report;
 use Bugsnag\Tests\Fakes\FakeShutdownStrategy;
 use Exception;
@@ -149,7 +150,7 @@ class ClientTest extends TestCase
     public function testTheNotifyEndpointCanBeSetBySettingItOnAGuzzleInstance()
     {
         $guzzle = new Guzzle([
-            $this->getGuzzleBaseOptionName() => 'https://example.com',
+            GuzzleCompat::getBaseUriOptionName() => 'https://example.com',
         ]);
 
         $client = new Client(new Configuration('abc'), null, $guzzle);
@@ -173,7 +174,7 @@ class ClientTest extends TestCase
         $config->setNotifyEndpoint('https://foo.com');
 
         $guzzle = new Guzzle([
-            $this->getGuzzleBaseOptionName() => 'https://example.com',
+            GuzzleCompat::getBaseUriOptionName() => 'https://example.com',
         ]);
 
         $client = new Client($config, null, $guzzle);
@@ -195,14 +196,14 @@ class ClientTest extends TestCase
 
     public function testTheNotifyEndpointCanBeSetBySettingItOnAGuzzleInstanceWithAnArray()
     {
-        if (!$this->isUsingGuzzle5()) {
+        if (!GuzzleCompat::isUsingGuzzle5()) {
             $this->markTestSkipped(
                 'This test is not relevant on Guzzle >= 6 as arrays are not allowed'
             );
         }
 
         $guzzle = new Guzzle([
-            $this->getGuzzleBaseOptionName() => [
+            GuzzleCompat::getBaseUriOptionName() => [
                 'https://example.com/{version}', ['version' => '1.2'],
             ],
         ]);
@@ -215,7 +216,7 @@ class ClientTest extends TestCase
     public function testTheNotifyEndpointCanBeSetBySettingItOnAGuzzleInstanceWithAUriInstance()
     {
         $guzzle = new Guzzle([
-            $this->getGuzzleBaseOptionName() => new Uri('https://example.com:8080/hello/world'),
+            GuzzleCompat::getBaseUriOptionName() => new Uri('https://example.com:8080/hello/world'),
         ]);
 
         $client = new Client(new Configuration('abc'), null, $guzzle);
@@ -1113,7 +1114,7 @@ class ClientTest extends TestCase
     {
         $options = ['timeout' => 1, 'connect_timeout' => 2];
 
-        if ($this->isUsingGuzzle5()) {
+        if (GuzzleCompat::isUsingGuzzle5()) {
             $options = ['defaults' => $options];
         }
 
@@ -1128,7 +1129,7 @@ class ClientTest extends TestCase
 
     private function getGuzzleOption($guzzle, $name)
     {
-        if ($this->isUsingGuzzle5()) {
+        if (GuzzleCompat::isUsingGuzzle5()) {
             return $guzzle->getDefaultOption($name);
         }
 

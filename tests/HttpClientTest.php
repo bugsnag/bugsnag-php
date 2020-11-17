@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
+use Bugsnag\GuzzleCompat;
 use Bugsnag\HttpClient;
 use Bugsnag\Report;
 use Exception;
@@ -41,7 +42,7 @@ class HttpClientTest extends TestCase
 
     private function setExpectedGuzzleParameters($expectation, $callback)
     {
-        if ($this->isUsingGuzzle5()) {
+        if (GuzzleCompat::isUsingGuzzle5()) {
             $expectation->with(
                 $this->config->getNotifyEndpoint(),
                 $this->callback($callback)
