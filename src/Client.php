@@ -9,6 +9,7 @@ use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
+use Bugsnag\Internal\GuzzleCompat;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;

@@ -3,6 +3,7 @@
 namespace Bugsnag;
 
 use Bugsnag\DateTime\Date;
+use Bugsnag\Internal\GuzzleCompat;
 use Exception;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;

@@ -2,7 +2,7 @@
 
 namespace Bugsnag\Tests;
 
-use Bugsnag\GuzzleCompat;
+use Bugsnag\Internal\GuzzleCompat;
 use phpmock\phpunit\PHPMock;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use PHPUnit\Runner\Version as PhpUnitVersion;

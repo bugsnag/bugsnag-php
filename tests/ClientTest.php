@@ -4,7 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use Bugsnag\Configuration;
-use Bugsnag\GuzzleCompat;
+use Bugsnag\Internal\GuzzleCompat;
 use Bugsnag\Report;
 use Bugsnag\Tests\Fakes\FakeShutdownStrategy;
 use Exception;
