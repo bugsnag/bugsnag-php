@@ -1098,6 +1098,43 @@ class ClientTest extends TestCase
         $this->assertTrue($shutdownStrategy->wasRegistered());
     }
 
+    public function testMakeGuzzleCreatesAGuzzleInstanceWithATimeout()
+    {
+        $guzzle = Client::makeGuzzle();
+
+        $timeout = $this->getGuzzleOption($guzzle, 'timeout');
+        $connectTimeout = $this->getGuzzleOption($guzzle, 'connect_timeout');
+
+        $this->assertSame(Client::DEFAULT_TIMEOUT_S, $timeout);
+        $this->assertSame(Client::DEFAULT_TIMEOUT_S, $connectTimeout);
+    }
+
+    public function testMakeGuzzleCreatesTimeoutCanBeSpecified()
+    {
+        $options = ['timeout' => 1, 'connect_timeout' => 2];
+
+        if ($this->isUsingGuzzle5()) {
+            $options = ['defaults' => $options];
+        }
+
+        $guzzle = Client::makeGuzzle(null, $options);
+
+        $timeout = $this->getGuzzleOption($guzzle, 'timeout');
+        $connectTimeout = $this->getGuzzleOption($guzzle, 'connect_timeout');
+
+        $this->assertSame(1, $timeout);
+        $this->assertSame(2, $connectTimeout);
+    }
+
+    private function getGuzzleOption($guzzle, $name)
+    {
+        if ($this->isUsingGuzzle5()) {
+            return $guzzle->getDefaultOption($name);
+        }
+
+        return $guzzle->getConfig($name);
+    }
+
     private function expectGuzzlePostWith($uri, array $options = [])
     {
         $method = self::getGuzzleMethod();

@@ -74,6 +74,15 @@ class Client
     protected $sessionTracker;
 
     /**
+     * Default HTTP timeout, in seconds.
+     *
+     * @internal
+     *
+     * @var float
+     */
+    const DEFAULT_TIMEOUT_S = 15.0;
+
+    /**
      * Make a new client instance.
      *
      * If you don't pass in a key, we'll try to read it from the env variables.
@@ -145,15 +154,68 @@ class Client
      */
     public static function makeGuzzle($base = null, array $options = [])
     {
-        $key = self::getGuzzleBaseUriOptionName();
+        $options = self::resolveGuzzleOptions($base, $options);
 
+        return new GuzzleHttp\Client($options);
+    }
+
+    /**
+     * @param string|null $base
+     * @param array $options
+     *
+     * @return array
+     */
+    private static function resolveGuzzleOptions($base, array $options)
+    {
+        $key = self::getGuzzleBaseUriOptionName();
         $options[$key] = $base ?: Configuration::NOTIFY_ENDPOINT;
 
-        if ($path = static::getCaBundlePath()) {
+        $path = static::getCaBundlePath();
+
+        if ($path) {
             $options['verify'] = $path;
         }
 
-        return new GuzzleHttp\Client($options);
+        if (self::isUsingGuzzle5()) {
+            if (!isset($options['defaults'])) {
+                $options['defaults'] = [];
+            }
+
+            if (!isset($options['defaults']['timeout'])) {
+                $options['defaults']['timeout'] = self::DEFAULT_TIMEOUT_S;
+            }
+
+            if (!isset($options['defaults']['connect_timeout'])) {
+                $options['defaults']['connect_timeout'] = self::DEFAULT_TIMEOUT_S;
+            }
+
+            return $options;
+        }
+
+        if (!isset($options['timeout'])) {
+            $options['timeout'] = self::DEFAULT_TIMEOUT_S;
+        }
+
+        if (!isset($options['connect_timeout'])) {
+            $options['connect_timeout'] = self::DEFAULT_TIMEOUT_S;
+        }
+
+        return $options;
+    }
+
+    /**
+     * @return bool
+     */
+    private static function isUsingGuzzle5()
+    {
+        if (defined(GuzzleHttp\ClientInterface::class.'::VERSION')) {
+            $version = constant(GuzzleHttp\ClientInterface::class.'::VERSION');
+
+            return version_compare($version, '5.0.0', '>=')
+                && version_compare($version, '6.0.0', '<');
+        }
+
+        return false;
     }
 
     /**
@@ -163,9 +225,7 @@ class Client
      */
     private static function getGuzzleBaseUriOptionName()
     {
-        return method_exists(GuzzleHttp\ClientInterface::class, 'request')
-            ? 'base_uri'
-            : 'base_url';
+        return self::isUsingGuzzle5() ? 'base_url' : 'base_uri';
     }
 
     /**
@@ -175,7 +235,7 @@ class Client
      */
     private function getGuzzleBaseUri(GuzzleHttp\ClientInterface $guzzle)
     {
-        return method_exists(GuzzleHttp\ClientInterface::class, 'getBaseUrl')
+        return self::isUsingGuzzle5()
             ? $guzzle->getBaseUrl()
             : $guzzle->getConfig(self::getGuzzleBaseUriOptionName());
     }
