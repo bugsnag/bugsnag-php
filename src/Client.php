@@ -167,7 +167,7 @@ class Client
      */
     private static function resolveGuzzleOptions($base, array $options)
     {
-        $key = self::getGuzzleBaseUriOptionName();
+        $key = GuzzleCompat::getBaseUriOptionName();
         $options[$key] = $base ?: Configuration::NOTIFY_ENDPOINT;
 
         $path = static::getCaBundlePath();
@@ -176,68 +176,13 @@ class Client
             $options['verify'] = $path;
         }
 
-        if (self::isUsingGuzzle5()) {
-            if (!isset($options['defaults'])) {
-                $options['defaults'] = [];
-            }
-
-            if (!isset($options['defaults']['timeout'])) {
-                $options['defaults']['timeout'] = self::DEFAULT_TIMEOUT_S;
-            }
-
-            if (!isset($options['defaults']['connect_timeout'])) {
-                $options['defaults']['connect_timeout'] = self::DEFAULT_TIMEOUT_S;
-            }
-
-            return $options;
-        }
-
-        if (!isset($options['timeout'])) {
-            $options['timeout'] = self::DEFAULT_TIMEOUT_S;
-        }
-
-        if (!isset($options['connect_timeout'])) {
-            $options['connect_timeout'] = self::DEFAULT_TIMEOUT_S;
-        }
-
-        return $options;
-    }
-
-    /**
-     * @return bool
-     */
-    private static function isUsingGuzzle5()
-    {
-        if (defined(GuzzleHttp\ClientInterface::class.'::VERSION')) {
-            $version = constant(GuzzleHttp\ClientInterface::class.'::VERSION');
-
-            return version_compare($version, '5.0.0', '>=')
-                && version_compare($version, '6.0.0', '<');
-        }
-
-        return false;
-    }
-
-    /**
-     * Get the base URL/URI option name, which depends on the Guzzle version.
-     *
-     * @return string
-     */
-    private static function getGuzzleBaseUriOptionName()
-    {
-        return self::isUsingGuzzle5() ? 'base_url' : 'base_uri';
-    }
-
-    /**
-     * Get the base URL/URI, which depends on the Guzzle version.
-     *
-     * @return mixed
-     */
-    private function getGuzzleBaseUri(GuzzleHttp\ClientInterface $guzzle)
-    {
-        return self::isUsingGuzzle5()
-            ? $guzzle->getBaseUrl()
-            : $guzzle->getConfig(self::getGuzzleBaseUriOptionName());
+        return GuzzleCompat::applyRequestOptions(
+            $options,
+            [
+                'timeout' => self::DEFAULT_TIMEOUT_S,
+                'connect_timeout' => self::DEFAULT_TIMEOUT_S,
+            ]
+        );
     }
 
     /**
@@ -259,7 +204,7 @@ class Client
             return;
         }
 
-        $base = $this->getGuzzleBaseUri($guzzle);
+        $base = GuzzleCompat::getBaseUri($guzzle);
 
         if (is_string($base) || (is_object($base) && method_exists($base, '__toString'))) {
             $configuration->setNotifyEndpoint((string) $base);
