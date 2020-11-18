@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Add a default timeout & connect_timeout to Guzzle instances created by bugsnag-php. This does not apply if you are providing a custom Guzzle instance.
+  [#616](https://github.com/bugsnag/bugsnag-php/pull/616)
+
 ## 3.24.0 (2020-10-27)
 
 This release changes how Bugsnag detects the error suppression operator in combination with the `errorReportingLevel` configuration option, for PHP 8 compatibility. Bugsnag's `errorReportingLevel` must now be a subset of `error_reporting` — i.e. every error level in `errorReportingLevel` must also be in `error_reporting`
