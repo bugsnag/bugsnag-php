@@ -9,6 +9,7 @@ use Bugsnag\Callbacks\RequestContext;
 use Bugsnag\Callbacks\RequestMetaData;
 use Bugsnag\Callbacks\RequestSession;
 use Bugsnag\Callbacks\RequestUser;
+use Bugsnag\Internal\GuzzleCompat;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
 use Bugsnag\Middleware\NotificationSkipper;
@@ -72,6 +73,15 @@ class Client
      * @var \Bugsnag\SessionTracker
      */
     protected $sessionTracker;
+
+    /**
+     * Default HTTP timeout, in seconds.
+     *
+     * @internal
+     *
+     * @var float
+     */
+    const DEFAULT_TIMEOUT_S = 15.0;
 
     /**
      * Make a new client instance.
@@ -145,39 +155,35 @@ class Client
      */
     public static function makeGuzzle($base = null, array $options = [])
     {
-        $key = self::getGuzzleBaseUriOptionName();
-
-        $options[$key] = $base ?: Configuration::NOTIFY_ENDPOINT;
-
-        if ($path = static::getCaBundlePath()) {
-            $options['verify'] = $path;
-        }
+        $options = self::resolveGuzzleOptions($base, $options);
 
         return new GuzzleHttp\Client($options);
     }
 
     /**
-     * Get the base URL/URI option name, which depends on the Guzzle version.
+     * @param string|null $base
+     * @param array $options
      *
-     * @return string
+     * @return array
      */
-    private static function getGuzzleBaseUriOptionName()
+    private static function resolveGuzzleOptions($base, array $options)
     {
-        return method_exists(GuzzleHttp\ClientInterface::class, 'request')
-            ? 'base_uri'
-            : 'base_url';
-    }
+        $key = GuzzleCompat::getBaseUriOptionName();
+        $options[$key] = $base ?: Configuration::NOTIFY_ENDPOINT;
 
-    /**
-     * Get the base URL/URI, which depends on the Guzzle version.
-     *
-     * @return mixed
-     */
-    private function getGuzzleBaseUri(GuzzleHttp\ClientInterface $guzzle)
-    {
-        return method_exists(GuzzleHttp\ClientInterface::class, 'getBaseUrl')
-            ? $guzzle->getBaseUrl()
-            : $guzzle->getConfig(self::getGuzzleBaseUriOptionName());
+        $path = static::getCaBundlePath();
+
+        if ($path) {
+            $options['verify'] = $path;
+        }
+
+        return GuzzleCompat::applyRequestOptions(
+            $options,
+            [
+                'timeout' => self::DEFAULT_TIMEOUT_S,
+                'connect_timeout' => self::DEFAULT_TIMEOUT_S,
+            ]
+        );
     }
 
     /**
@@ -199,7 +205,7 @@ class Client
             return;
         }
 
-        $base = $this->getGuzzleBaseUri($guzzle);
+        $base = GuzzleCompat::getBaseUri($guzzle);
 
         if (is_string($base) || (is_object($base) && method_exists($base, '__toString'))) {
             $configuration->setNotifyEndpoint((string) $base);

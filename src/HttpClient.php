@@ -3,6 +3,7 @@
 namespace Bugsnag;
 
 use Bugsnag\DateTime\Date;
+use Bugsnag\Internal\GuzzleCompat;
 use Exception;
 use GuzzleHttp\ClientInterface;
 use RuntimeException;
@@ -267,10 +268,10 @@ class HttpClient
      */
     protected function post($uri, array $options = [])
     {
-        if (method_exists(ClientInterface::class, 'request')) {
-            $this->guzzle->request('POST', $uri, $options);
-        } else {
+        if (GuzzleCompat::isUsingGuzzle5()) {
             $this->guzzle->post($uri, $options);
+        } else {
+            $this->guzzle->request('POST', $uri, $options);
         }
     }
 
