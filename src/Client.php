@@ -935,4 +935,28 @@ class Client
     {
         return $this->config->getSessionClient();
     }
+
+    /**
+     * Set the amount to increase the memory_limit when an OOM is triggered.
+     *
+     * This is an amount of bytes or 'null' to disable increasing the limit.
+     *
+     * @param int|null $value
+     */
+    public function setMemoryLimitIncrease($value)
+    {
+        return $this->config->setMemoryLimitIncrease($value);
+    }
+
+    /**
+     * Get the amount to increase the memory_limit when an OOM is triggered.
+     *
+     * This will return 'null' if this feature is disabled.
+     *
+     * @return int|null
+     */
+    public function getMemoryLimitIncrease()
+    {
+        return $this->config->getMemoryLimitIncrease();
+    }
 }

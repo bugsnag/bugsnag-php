@@ -1127,6 +1127,25 @@ class ClientTest extends TestCase
         $this->assertSame(2, $connectTimeout);
     }
 
+    public function testMemoryLimitIncreaseDefault()
+    {
+        $this->assertSame(1024 * 1024 * 5, $this->client->getMemoryLimitIncrease());
+    }
+
+    public function testMemoryLimitIncreaseCanBeSet()
+    {
+        $this->client->setMemoryLimitIncrease(12345);
+
+        $this->assertSame(12345, $this->client->getMemoryLimitIncrease());
+    }
+
+    public function testMemoryLimitIncreaseCanBeSetToNull()
+    {
+        $this->client->setMemoryLimitIncrease(null);
+
+        $this->assertNull($this->client->getMemoryLimitIncrease());
+    }
+
     private function getGuzzleOption($guzzle, $name)
     {
         if (GuzzleCompat::isUsingGuzzle5()) {
