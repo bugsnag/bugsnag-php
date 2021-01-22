@@ -38,7 +38,14 @@ class Handler
      *
      * @var string|null
      */
-    private $reservedMemory = null;
+    private $reservedMemory;
+
+    /**
+     * A regex that matches PHP OOM errors.
+     *
+     * @var string
+     */
+    private $oomRegex = '/^Allowed memory size of (\d+) bytes exhausted \(tried to allocate \d+ bytes\)/';
 
     /**
      * Whether the shutdown handler will run.
@@ -148,7 +155,9 @@ class Handler
      */
     public function registerShutdownHandler()
     {
+        // Reserve some memory that we can free in the shutdown handler
         $this->reservedMemory = str_repeat(' ', 1024 * 32);
+
         register_shutdown_function([$this, 'shutdownHandler']);
     }
 
@@ -280,6 +289,7 @@ class Handler
      */
     public function shutdownHandler()
     {
+        // Free the reserved memory to give ourselves some room to work
         $this->reservedMemory = null;
 
         // If we're disabled, do nothing. This avoids reporting twice if the
@@ -289,6 +299,17 @@ class Handler
         }
 
         $lastError = error_get_last();
+
+        // If this is an OOM and memory increase is enabled, bump the memory
+        // limit so we can report it
+        if ($lastError !== null
+            && $this->client->getMemoryLimitIncrease() !== null
+            && preg_match($this->oomRegex, $lastError['message'], $matches) === 1
+        ) {
+            $currentMemoryLimit = (int) $matches[1];
+
+            ini_set('memory_limit', $currentMemoryLimit + $this->client->getMemoryLimitIncrease());
+        }
 
         // Check if a fatal error caused this shutdown
         if (!is_null($lastError) && ErrorTypes::isFatal($lastError['type']) && !$this->client->getConfig()->shouldIgnoreErrorCode($lastError['type'])) {
