@@ -22,7 +22,7 @@ if (PHP_MAJOR_VERSION !== 7) {
 }
 ?>
 --EXPECTF--
-object(ParseError)#15 (7) {
+object(ParseError)#%d (7) {
   ["message":protected]=>
   string(28) "syntax error, unexpected '{'"
   ["string":"Error":private]=>
