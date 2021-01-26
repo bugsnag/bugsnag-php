@@ -29,6 +29,18 @@ class Handler
     protected $previousExceptionHandler;
 
     /**
+     * A bit of reserved memory to ensure we are able to increase the memory
+     * limit on an OOM.
+     *
+     * We can't reserve all of the memory that we need to send OOM reports
+     * because this would have a big overhead on every request, instead of just
+     * on shutdown in requests with errors.
+     *
+     * @var string|null
+     */
+    private $reservedMemory = null;
+
+    /**
      * Whether the shutdown handler will run.
      *
      * This is used to disable the shutdown handler in order to avoid double
@@ -136,6 +148,7 @@ class Handler
      */
     public function registerShutdownHandler()
     {
+        $this->reservedMemory = str_repeat(' ', 1024 * 32);
         register_shutdown_function([$this, 'shutdownHandler']);
     }
 
@@ -267,6 +280,8 @@ class Handler
      */
     public function shutdownHandler()
     {
+        $this->reservedMemory = null;
+
         // If we're disabled, do nothing. This avoids reporting twice if the
         // exception handler is forcing the native PHP handler to run
         if (!self::$enableShutdownHandler) {
