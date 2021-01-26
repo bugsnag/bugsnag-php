@@ -12,8 +12,12 @@ $config->setSessionEndpoint('http://localhost/sessions');
 
 $guzzle = new FakeGuzzle();
 
-return new Client(
+$client = new Client(
     $config,
     null,
     $guzzle
 );
+
+$client->registerDefaultCallbacks();
+
+return $client;

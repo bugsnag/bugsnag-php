@@ -17,7 +17,7 @@ $handler->exceptionHandler(new LogicException('terrible things'));
 --EXPECTF--
 array(1) {
   [0]=>
-  object(Exception)#15 (7) {
+  object(Exception)#%d (7) {
     ["message":protected]=>
     string(10) "bad things"
     ["string":"Exception":private]=>
