@@ -306,4 +306,23 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame($expected, $this->config->getSessionEndpoint());
     }
+
+    public function testMemoryLimitIncreaseDefault()
+    {
+        $this->assertSame(1024 * 1024 * 5, $this->config->getMemoryLimitIncrease());
+    }
+
+    public function testMemoryLimitIncreaseCanBeSet()
+    {
+        $this->config->setMemoryLimitIncrease(12345);
+
+        $this->assertSame(12345, $this->config->getMemoryLimitIncrease());
+    }
+
+    public function testMemoryLimitIncreaseCanBeSetToNull()
+    {
+        $this->config->setMemoryLimitIncrease(null);
+
+        $this->assertNull($this->config->getMemoryLimitIncrease());
+    }
 }

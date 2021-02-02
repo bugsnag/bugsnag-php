@@ -153,6 +153,15 @@ class Configuration
     protected $buildEndpoint = self::BUILD_ENDPOINT;
 
     /**
+     * The amount to increase the memory_limit to handle an OOM.
+     *
+     * The default is 5MiB and can be disabled by setting it to 'null'
+     *
+     * @var int|null
+     */
+    protected $memoryLimitIncrease = 5242880;
+
+    /**
      * Create a new config instance.
      *
      * @param string $apiKey your bugsnag api key
@@ -765,5 +774,31 @@ class Configuration
         }
 
         return $this->sessionClient;
+    }
+
+    /**
+     * Set the amount to increase the memory_limit when an OOM is triggered.
+     *
+     * This is an amount of bytes or 'null' to disable increasing the limit.
+     *
+     * @param int|null $value
+     */
+    public function setMemoryLimitIncrease($value)
+    {
+        $this->memoryLimitIncrease = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get the amount to increase the memory_limit when an OOM is triggered.
+     *
+     * This will return 'null' if this feature is disabled.
+     *
+     * @return int|null
+     */
+    public function getMemoryLimitIncrease()
+    {
+        return $this->memoryLimitIncrease;
     }
 }

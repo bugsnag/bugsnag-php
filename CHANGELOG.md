@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* Out of memory errors will now be reported by increasing the memory limit by 5 MiB. Use the new `memoryLimitIncrease` configuration option to change the amount of memory, or set it to `null` to disable the increase entirely.
+  [#621](https://github.com/bugsnag/bugsnag-php/pull/621)
+
 ## 3.25.0 (2020-11-25)
 
 ### Enhancements
