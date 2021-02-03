@@ -2,13 +2,17 @@
 
 namespace Bugsnag\Tests;
 
+use BadMethodCallException;
 use Bugsnag\Configuration;
 use Bugsnag\Report;
 use Bugsnag\Stacktrace;
+use Bugsnag\Tests\Fakes\SomeException;
 use Bugsnag\Tests\Fakes\StringableObject;
 use Exception;
 use InvalidArgumentException;
+use LogicException;
 use ParseError;
+use RuntimeException;
 use stdClass;
 
 class ReportTest extends TestCase
@@ -580,5 +584,53 @@ class ReportTest extends TestCase
         $report->setSeverityReason(['foo' => 'bar']);
         $data = $report->toArray();
         $this->assertSame($data['severityReason'], ['foo' => 'bar', 'type' => 'userSpecifiedSeverity']);
+    }
+
+    public function testGetErrorsWithNoPreviousErrors()
+    {
+        $exception = new Exception('abc xyz');
+
+        $report = Report::fromPHPThrowable($this->config, $exception);
+        $actual = $report->getErrors();
+
+        $expected = [
+            ['errorClass' => 'Exception', 'errorMessage' => 'abc xyz', 'type' => 'php'],
+        ];
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testGetErrorsWithPreviousErrors()
+    {
+        $exception5 = new SomeException('exception5');
+        $exception4 = new BadMethodCallException('exception4', 0, $exception5);
+        $exception3 = new LogicException('exception3', 0, $exception4);
+        $exception2 = new RuntimeException('exception2', 0, $exception3);
+        $exception1 = new Exception('exception1', 0, $exception2);
+
+        $report = Report::fromPHPThrowable($this->config, $exception1);
+        $actual = $report->getErrors();
+
+        $expected = [
+            ['errorClass' => 'Exception', 'errorMessage' => 'exception1', 'type' => 'php'],
+            ['errorClass' => 'RuntimeException', 'errorMessage' => 'exception2', 'type' => 'php'],
+            ['errorClass' => 'LogicException', 'errorMessage' => 'exception3', 'type' => 'php'],
+            ['errorClass' => 'BadMethodCallException', 'errorMessage' => 'exception4', 'type' => 'php'],
+            ['errorClass' => 'Bugsnag\Tests\Fakes\SomeException', 'errorMessage' => 'exception5', 'type' => 'php'],
+        ];
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testGetErrorsWithPhpError()
+    {
+        $report = Report::fromPHPError($this->config, E_WARNING, 'bad stuff!', '/usr/src/stuff.php', 1234);
+        $actual = $report->getErrors();
+
+        $expected = [
+            ['errorClass' => 'PHP Warning', 'errorMessage' => 'bad stuff!', 'type' => 'php'],
+        ];
+
+        $this->assertSame($expected, $actual);
     }
 }

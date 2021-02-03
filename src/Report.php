@@ -645,6 +645,39 @@ class Report
     }
 
     /**
+     * Get a list of all errors in a fixed format of:
+     * - 'errorClass'
+     * - 'errorMessage'
+     * - 'type' (always 'php').
+     *
+     * @return array
+     */
+    public function getErrors()
+    {
+        $errors = [$this->toError()];
+        $previous = $this->previous;
+
+        while ($previous) {
+            $errors[] = $previous->toError();
+            $previous = $previous->previous;
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @return array
+     */
+    private function toError()
+    {
+        return [
+            'errorClass' => $this->name,
+            'errorMessage' => $this->message,
+            'type' => 'php',
+        ];
+    }
+
+    /**
      * Get the array representation.
      *
      * @return array
