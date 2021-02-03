@@ -1146,6 +1146,25 @@ class ClientTest extends TestCase
         $this->assertNull($this->client->getMemoryLimitIncrease());
     }
 
+    public function testDiscardClassesDefault()
+    {
+        $this->assertSame([], $this->client->getDiscardClasses());
+    }
+
+    public function testDiscardClassesCanBeSet()
+    {
+        $discardClasses = [
+            \RuntimeException::class,
+            \LogicException::class,
+            \TypeError::class,
+            '/^(Under|Over)flowException$/',
+        ];
+
+        $this->client->setDiscardClasses($discardClasses);
+
+        $this->assertSame($discardClasses, $this->client->getDiscardClasses());
+    }
+
     private function getGuzzleOption($guzzle, $name)
     {
         if (GuzzleCompat::isUsingGuzzle5()) {
