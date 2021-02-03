@@ -162,6 +162,15 @@ class Configuration
     protected $memoryLimitIncrease = 5242880;
 
     /**
+     * An array of classes that should not be sent to Bugsnag.
+     *
+     * This can contain both fully qualified class names and regular expressions.
+     *
+     * @var array
+     */
+    protected $discardClasses = [];
+
+    /**
      * Create a new config instance.
      *
      * @param string $apiKey your bugsnag api key
@@ -800,5 +809,31 @@ class Configuration
     public function getMemoryLimitIncrease()
     {
         return $this->memoryLimitIncrease;
+    }
+
+    /**
+     * Set the array of classes that should not be sent to Bugsnag.
+     *
+     * @param array $discardClasses
+     *
+     * @return $this
+     */
+    public function setDiscardClasses(array $discardClasses)
+    {
+        $this->discardClasses = $discardClasses;
+
+        return $this;
+    }
+
+    /**
+     * Get the array of classes that should not be sent to Bugsnag.
+     *
+     * This can contain both fully qualified class names and regular expressions.
+     *
+     * @var array
+     */
+    public function getDiscardClasses()
+    {
+        return $this->discardClasses;
     }
 }

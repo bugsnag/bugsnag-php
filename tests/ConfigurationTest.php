@@ -325,4 +325,23 @@ class ConfigurationTest extends TestCase
 
         $this->assertNull($this->config->getMemoryLimitIncrease());
     }
+
+    public function testDiscardClassesDefault()
+    {
+        $this->assertSame([], $this->config->getDiscardClasses());
+    }
+
+    public function testDiscardClassesCanBeSet()
+    {
+        $discardClasses = [
+            \RuntimeException::class,
+            \LogicException::class,
+            \TypeError::class,
+            '/^(Under|Over)flowException$/',
+        ];
+
+        $this->config->setDiscardClasses($discardClasses);
+
+        $this->assertSame($discardClasses, $this->config->getDiscardClasses());
+    }
 }
