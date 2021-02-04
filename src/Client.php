@@ -987,4 +987,28 @@ class Client
     {
         return $this->config->getDiscardClasses();
     }
+
+    /**
+     * Set the array of metadata keys that should be redacted.
+     *
+     * @param string[] $redactedKeys
+     *
+     * @return $this
+     */
+    public function setRedactedKeys(array $redactedKeys)
+    {
+        $this->config->setRedactedKeys($redactedKeys);
+
+        return $this;
+    }
+
+    /**
+     * Get the array of metadata keys that should be redacted.
+     *
+     * @var string[]
+     */
+    public function getRedactedKeys()
+    {
+        return $this->config->getRedactedKeys();
+    }
 }

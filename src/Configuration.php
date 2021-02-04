@@ -171,6 +171,13 @@ class Configuration
     protected $discardClasses = [];
 
     /**
+     * An array of metadata keys that should be redacted.
+     *
+     * @var string[]
+     */
+    protected $redactedKeys = [];
+
+    /**
      * Create a new config instance.
      *
      * @param string $apiKey your bugsnag api key
@@ -835,5 +842,29 @@ class Configuration
     public function getDiscardClasses()
     {
         return $this->discardClasses;
+    }
+
+    /**
+     * Set the array of metadata keys that should be redacted.
+     *
+     * @param string[] $redactedKeys
+     *
+     * @return $this
+     */
+    public function setRedactedKeys(array $redactedKeys)
+    {
+        $this->redactedKeys = $redactedKeys;
+
+        return $this;
+    }
+
+    /**
+     * Get the array of metadata keys that should be redacted.
+     *
+     * @var string[]
+     */
+    public function getRedactedKeys()
+    {
+        return $this->redactedKeys;
     }
 }
