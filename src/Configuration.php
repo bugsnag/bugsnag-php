@@ -43,6 +43,8 @@ class Configuration
     /**
      * The strings to filter out from metaData.
      *
+     * @deprecated Use redactedKeys instead
+     *
      * @var string[]
      */
     protected $filters = [
@@ -268,6 +270,8 @@ class Configuration
      *
      * Eg. ['password', 'credit_card'].
      *
+     * @deprecated Use redactedKeys instead
+     *
      * @param string[] $filters an array of metaData filters
      *
      * @return $this
@@ -282,7 +286,9 @@ class Configuration
     /**
      * Get the array of metaData filters.
      *
-     * @var string
+     * @deprecated Use redactedKeys instead
+     *
+     * @var string[]
      */
     public function getFilters()
     {

@@ -532,6 +532,8 @@ class Client
      *
      * Eg. ['password', 'credit_card'].
      *
+     * @deprecated Use redactedKeys instead
+     *
      * @param string[] $filters an array of metaData filters
      *
      * @return $this
@@ -546,7 +548,9 @@ class Client
     /**
      * Get the array of metaData filters.
      *
-     * @var string
+     * @deprecated Use redactedKeys instead
+     *
+     * @var string[]
      */
     public function getFilters()
     {
