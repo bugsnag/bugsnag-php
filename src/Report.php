@@ -785,11 +785,21 @@ class Report
      */
     protected function shouldFilter($key, $isMetaData)
     {
-        if ($isMetaData) {
-            foreach ($this->config->getFilters() as $filter) {
-                if (stripos($key, $filter) !== false) {
-                    return true;
-                }
+        if (!$isMetaData) {
+            return false;
+        }
+
+        foreach ($this->config->getFilters() as $filter) {
+            if (stripos($key, $filter) !== false) {
+                return true;
+            }
+        }
+
+        foreach ($this->config->getRedactedKeys() as $redactedKey) {
+            if (@preg_match($redactedKey, $key) === 1) {
+                return true;
+            } elseif (Utils::stringCaseEquals($redactedKey, $key)) {
+                return true;
             }
         }
 
