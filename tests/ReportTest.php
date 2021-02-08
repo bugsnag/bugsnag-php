@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use BadMethodCallException;
+use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\Configuration;
 use Bugsnag\Report;
 use Bugsnag\Stacktrace;
@@ -176,6 +177,160 @@ class ReportTest extends TestCase
             ],
             $this->report->toArray()['metaData']['Testing']
         );
+    }
+
+    /**
+     * @dataProvider redactedKeysProvider
+     *
+     * @param array $metadata
+     * @param string[] $redactedKeys
+     * @param array $expected
+     *
+     * @return void
+     */
+    public function testRedactedKeys(
+        array $metadata,
+        array $redactedKeys,
+        array $expected
+    ) {
+        $this->config->setRedactedKeys($redactedKeys);
+        $this->report->setMetaData(['Testing' => $metadata]);
+
+        $actual = $this->report->toArray()['metaData']['Testing'];
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @dataProvider redactedKeysProvider
+     *
+     * @param array $metadata
+     * @param string[] $redactedKeys
+     * @param array $expected
+     *
+     * @return void
+     */
+    public function testRedactedKeysWithBreadcrumbMetadata(
+        array $metadata,
+        array $redactedKeys,
+        array $expected
+    ) {
+        $this->config->setRedactedKeys($redactedKeys);
+
+        $breadcrumb = new Breadcrumb('abc', Breadcrumb::LOG_TYPE, ['Testing' => $metadata]);
+        $this->report->addBreadcrumb($breadcrumb);
+
+        $actual = $this->report->toArray()['breadcrumbs'][0]['metaData']['Testing'];
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    public function redactedKeysProvider()
+    {
+        yield [
+            ['abc' => 'xyz', 'a' => 1, 'b' => 2, 'c' => 3],
+            ['a', 'c'],
+            ['abc' => 'xyz', 'a' => '[FILTERED]', 'b' => 2, 'c' => '[FILTERED]'],
+        ];
+
+        yield [
+            ['abc' => 'xyz', 'a' => 1, 'b' => 2, 'C' => 3],
+            ['A', 'c'],
+            ['abc' => 'xyz', 'a' => '[FILTERED]', 'b' => 2, 'C' => '[FILTERED]'],
+        ];
+
+        yield [
+            ['â' => 1, 'b' => 2, 'ñ' => 3, 'n' => 4],
+            ['â', 'ñ'],
+            ['â' => '[FILTERED]', 'b' => 2, 'ñ' => '[FILTERED]', 'n' => 4],
+        ];
+
+        yield [
+            ['â' => 1, 'b' => 2, 'Ñ' => 3],
+            ['Â', 'ñ'],
+            ['â' => '[FILTERED]', 'b' => 2, 'Ñ' => '[FILTERED]'],
+        ];
+
+        // 6e cc 83 is equivalent to "\u{006E}\u{0303}" but in a way PHP 5 can
+        // understand. This is the character "ñ" built out of "n" and a
+        // combining tilde
+        yield [
+            ["\x6e\xcc\x83" => 1, 'b' => 2, 'c' => 3, 'n' => 4],
+            ["\x6e\xcc\x83", 'c'],
+            ["\x6e\xcc\x83" => '[FILTERED]', 'b' => 2, 'c' => '[FILTERED]', 'n' => 4],
+        ];
+
+        // 4e cc 83 is equivalent to "\u{004E}\u{0303}", which is the capital
+        // version of the above ("N" + a combining tilde)
+        yield [
+            ["\x6e\xcc\x83" => 1, 'b' => 2, 'c' => 3, 'n' => 4],
+            ["\x4e\xcc\x83", 'c'],
+            ["\x6e\xcc\x83" => '[FILTERED]', 'b' => 2, 'c' => '[FILTERED]', 'n' => 4],
+        ];
+
+        // This is "ñ" both as a single character and with the combining tilde
+        yield [
+            ["\x6e\xcc\x83" => 1, 'b' => 2, 'c' => 3, 'n' => 4],
+            ["\xc3\xb1", 'c'],
+            ["\x6e\xcc\x83" => '[FILTERED]', 'b' => 2, 'c' => '[FILTERED]', 'n' => 4],
+        ];
+
+        // This is "Ñ" as a single character and "ñ" with the combining tilde
+        yield [
+            ["\x6e\xcc\x83" => 1, 'b' => 2, 'c' => 3, 'n' => 4],
+            ["\xc3\x91", 'c'],
+            ["\x6e\xcc\x83" => '[FILTERED]', 'b' => 2, 'c' => '[FILTERED]', 'n' => 4],
+        ];
+
+        // This is "Ñ" as a single character and "ñ" with the combining tilde
+        yield [
+            ["\xc3\x91" => 1, 'b' => 2, 'c' => 3, 'n' => 4],
+            ["\x6e\xcc\x83", 'c'],
+            ["\xc3\x91" => '[FILTERED]', 'b' => 2, 'c' => '[FILTERED]', 'n' => 4],
+        ];
+
+        yield [
+            ['abc' => 1, 'xyz' => 2],
+            ['/^.b.$/'],
+            ['abc' => '[FILTERED]', 'xyz' => 2],
+        ];
+
+        yield [
+            ['abc' => 1, 'xyz' => 2, 'oOo' => 3],
+            ['/^[a-z]{3}$/'],
+            ['abc' => '[FILTERED]', 'xyz' => '[FILTERED]', 'oOo' => 3],
+        ];
+
+        yield [
+            ['abc' => 1, 'xyz' => 2, 'oOo' => 3, 'oOoOo' => 4],
+            ['/^[A-z]{3}$/'],
+            ['abc' => '[FILTERED]', 'xyz' => '[FILTERED]', 'oOo' => '[FILTERED]', 'oOoOo' => 4],
+        ];
+
+        yield [
+            ['abc' => 1, 'xyz' => 2, 'yyy' => 3],
+            ['/(c|y)$/'],
+            ['abc' => '[FILTERED]', 'xyz' => 2, 'yyy' => '[FILTERED]'],
+        ];
+
+        yield [
+            ['abc' => 1, 'xyz' => 2, 'yyy' => 3],
+            ['/c$/', '/y$/'],
+            ['abc' => '[FILTERED]', 'xyz' => 2, 'yyy' => '[FILTERED]'],
+        ];
+
+        // This doesn't match the regex but does match as a string comparison
+        yield [
+            ['/^abc$/' => 1, 'xyz' => 2, 'oOo' => 3],
+            ['/^abc$/'],
+            ['/^abc$/' => '[FILTERED]', 'xyz' => 2, 'oOo' => 3],
+        ];
+
+        yield [
+            ['/abc/' => 1, 'xyz' => 2, 'oOo' => 3],
+            ['/abc/'],
+            ['/abc/' => '[FILTERED]', 'xyz' => 2, 'oOo' => 3],
+        ];
     }
 
     public function testCanGetStacktrace()

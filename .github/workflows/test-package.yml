@@ -29,6 +29,7 @@ jobs:
       with:
         php-version: ${{ matrix.php-version }}
         coverage: none
+        extensions: intl, mbstring
 
     - run: composer validate
 

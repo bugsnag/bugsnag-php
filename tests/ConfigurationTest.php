@@ -344,4 +344,18 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame($discardClasses, $this->config->getDiscardClasses());
     }
+
+    public function testRedactedKeysDefault()
+    {
+        $this->assertSame([], $this->config->getRedactedKeys());
+    }
+
+    public function testRedactedKeysCanBeSet()
+    {
+        $redactedKeys = ['password', 'password_confirmation'];
+
+        $this->config->setRedactedKeys($redactedKeys);
+
+        $this->assertSame($redactedKeys, $this->config->getRedactedKeys());
+    }
 }

@@ -1197,6 +1197,20 @@ class ClientTest extends TestCase
         $this->assertSame($discardClasses, $this->client->getDiscardClasses());
     }
 
+    public function testRedactedKeysDefault()
+    {
+        $this->assertSame([], $this->client->getRedactedKeys());
+    }
+
+    public function testRedactedKeysCanBeSet()
+    {
+        $redactedKeys = ['password', 'password_confirmation'];
+
+        $this->client->setRedactedKeys($redactedKeys);
+
+        $this->assertSame($redactedKeys, $this->client->getRedactedKeys());
+    }
+
     private function getGuzzleOption($guzzle, $name)
     {
         if (GuzzleCompat::isUsingGuzzle5()) {

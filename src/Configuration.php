@@ -43,6 +43,8 @@ class Configuration
     /**
      * The strings to filter out from metaData.
      *
+     * @deprecated Use redactedKeys instead
+     *
      * @var string[]
      */
     protected $filters = [
@@ -171,6 +173,13 @@ class Configuration
     protected $discardClasses = [];
 
     /**
+     * An array of metadata keys that should be redacted.
+     *
+     * @var string[]
+     */
+    protected $redactedKeys = [];
+
+    /**
      * Create a new config instance.
      *
      * @param string $apiKey your bugsnag api key
@@ -261,6 +270,8 @@ class Configuration
      *
      * Eg. ['password', 'credit_card'].
      *
+     * @deprecated Use redactedKeys instead
+     *
      * @param string[] $filters an array of metaData filters
      *
      * @return $this
@@ -275,7 +286,9 @@ class Configuration
     /**
      * Get the array of metaData filters.
      *
-     * @var string
+     * @deprecated Use redactedKeys instead
+     *
+     * @var string[]
      */
     public function getFilters()
     {
@@ -835,5 +848,29 @@ class Configuration
     public function getDiscardClasses()
     {
         return $this->discardClasses;
+    }
+
+    /**
+     * Set the array of metadata keys that should be redacted.
+     *
+     * @param string[] $redactedKeys
+     *
+     * @return $this
+     */
+    public function setRedactedKeys(array $redactedKeys)
+    {
+        $this->redactedKeys = $redactedKeys;
+
+        return $this;
+    }
+
+    /**
+     * Get the array of metadata keys that should be redacted.
+     *
+     * @var string[]
+     */
+    public function getRedactedKeys()
+    {
+        return $this->redactedKeys;
     }
 }
