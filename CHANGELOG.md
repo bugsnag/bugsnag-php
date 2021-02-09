@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 3.26.0 (2021-02-10)
 
 ### Enhancements
 
