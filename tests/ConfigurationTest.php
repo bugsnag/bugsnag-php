@@ -306,4 +306,56 @@ class ConfigurationTest extends TestCase
 
         $this->assertSame($expected, $this->config->getSessionEndpoint());
     }
+
+    public function testMemoryLimitIncreaseDefault()
+    {
+        $this->assertSame(1024 * 1024 * 5, $this->config->getMemoryLimitIncrease());
+    }
+
+    public function testMemoryLimitIncreaseCanBeSet()
+    {
+        $this->config->setMemoryLimitIncrease(12345);
+
+        $this->assertSame(12345, $this->config->getMemoryLimitIncrease());
+    }
+
+    public function testMemoryLimitIncreaseCanBeSetToNull()
+    {
+        $this->config->setMemoryLimitIncrease(null);
+
+        $this->assertNull($this->config->getMemoryLimitIncrease());
+    }
+
+    public function testDiscardClassesDefault()
+    {
+        $this->assertSame([], $this->config->getDiscardClasses());
+    }
+
+    public function testDiscardClassesCanBeSet()
+    {
+        $discardClasses = [
+            \RuntimeException::class,
+            \LogicException::class,
+            \TypeError::class,
+            '/^(Under|Over)flowException$/',
+        ];
+
+        $this->config->setDiscardClasses($discardClasses);
+
+        $this->assertSame($discardClasses, $this->config->getDiscardClasses());
+    }
+
+    public function testRedactedKeysDefault()
+    {
+        $this->assertSame([], $this->config->getRedactedKeys());
+    }
+
+    public function testRedactedKeysCanBeSet()
+    {
+        $redactedKeys = ['password', 'password_confirmation'];
+
+        $this->config->setRedactedKeys($redactedKeys);
+
+        $this->assertSame($redactedKeys, $this->config->getRedactedKeys());
+    }
 }

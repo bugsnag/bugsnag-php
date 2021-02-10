@@ -22,7 +22,7 @@ if (PHP_MAJOR_VERSION < 7) {
 }
 ?>
 --EXPECTF--
-object(RuntimeException)#15 (7) {
+object(RuntimeException)#%d (7) {
   ["message":protected]=>
   string(7) "abc xyz"
   ["string":"Exception":private]=>

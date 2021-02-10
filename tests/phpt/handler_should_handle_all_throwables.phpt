@@ -21,7 +21,7 @@ if (PHP_MAJOR_VERSION < 7) {
 }
 ?>
 --EXPECTF--
-object(DivisionByZeroError)#15 (7) {
+object(DivisionByZeroError)#%d (7) {
   ["message":protected]=>
   string(12) "22 / 0 = ???"
   ["string":"Error":private]=>

@@ -10,6 +10,7 @@ use Bugsnag\Tests\Fakes\FakeShutdownStrategy;
 use Exception;
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\Psr7\Uri;
+use LogicException;
 use PHPUnit\Framework\MockObject\MockObject;
 
 /**
@@ -459,6 +460,37 @@ class ClientTest extends TestCase
         );
 
         $this->assertTrue($pipelineCompleted);
+    }
+
+    public function testItAddsDiscardClassesMiddlewareByDefault()
+    {
+        $syslog = $this->getFunctionMock('Bugsnag\Middleware', 'syslog');
+        $syslog->expects($this->once())->with(
+            LOG_INFO,
+            'Discarding event because error class "Exception" matched discardClasses configuration'
+        );
+
+        $client = Client::make('foo');
+        $client->setDiscardClasses([Exception::class]);
+
+        $report = Report::fromPHPThrowable(
+            $client->getConfig(),
+            new Exception('oh no')
+        );
+
+        $pipeline = $client->getPipeline();
+        $pipelineCompleted = false;
+
+        $pipeline->execute(
+            $report,
+            function () use (&$pipelineCompleted) {
+                $pipelineCompleted = true;
+
+                throw new LogicException('This should never be reached!');
+            }
+        );
+
+        $this->assertFalse($pipelineCompleted);
     }
 
     public function testBreadcrumbsWorks()
@@ -1125,6 +1157,58 @@ class ClientTest extends TestCase
 
         $this->assertSame(1, $timeout);
         $this->assertSame(2, $connectTimeout);
+    }
+
+    public function testMemoryLimitIncreaseDefault()
+    {
+        $this->assertSame(1024 * 1024 * 5, $this->client->getMemoryLimitIncrease());
+    }
+
+    public function testMemoryLimitIncreaseCanBeSet()
+    {
+        $this->client->setMemoryLimitIncrease(12345);
+
+        $this->assertSame(12345, $this->client->getMemoryLimitIncrease());
+    }
+
+    public function testMemoryLimitIncreaseCanBeSetToNull()
+    {
+        $this->client->setMemoryLimitIncrease(null);
+
+        $this->assertNull($this->client->getMemoryLimitIncrease());
+    }
+
+    public function testDiscardClassesDefault()
+    {
+        $this->assertSame([], $this->client->getDiscardClasses());
+    }
+
+    public function testDiscardClassesCanBeSet()
+    {
+        $discardClasses = [
+            \RuntimeException::class,
+            \LogicException::class,
+            \TypeError::class,
+            '/^(Under|Over)flowException$/',
+        ];
+
+        $this->client->setDiscardClasses($discardClasses);
+
+        $this->assertSame($discardClasses, $this->client->getDiscardClasses());
+    }
+
+    public function testRedactedKeysDefault()
+    {
+        $this->assertSame([], $this->client->getRedactedKeys());
+    }
+
+    public function testRedactedKeysCanBeSet()
+    {
+        $redactedKeys = ['password', 'password_confirmation'];
+
+        $this->client->setRedactedKeys($redactedKeys);
+
+        $this->assertSame($redactedKeys, $this->client->getRedactedKeys());
     }
 
     private function getGuzzleOption($guzzle, $name)

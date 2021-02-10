@@ -12,6 +12,7 @@ use Bugsnag\Callbacks\RequestUser;
 use Bugsnag\Internal\GuzzleCompat;
 use Bugsnag\Middleware\BreadcrumbData;
 use Bugsnag\Middleware\CallbackBridge;
+use Bugsnag\Middleware\DiscardClasses;
 use Bugsnag\Middleware\NotificationSkipper;
 use Bugsnag\Middleware\SessionData;
 use Bugsnag\Request\BasicResolver;
@@ -137,6 +138,7 @@ class Client
         $this->sessionTracker = new SessionTracker($config, $this->http);
 
         $this->registerMiddleware(new NotificationSkipper($config));
+        $this->registerMiddleware(new DiscardClasses($config));
         $this->registerMiddleware(new BreadcrumbData($this->recorder));
         $this->registerMiddleware(new SessionData($this));
 
@@ -530,6 +532,8 @@ class Client
      *
      * Eg. ['password', 'credit_card'].
      *
+     * @deprecated Use redactedKeys instead
+     *
      * @param string[] $filters an array of metaData filters
      *
      * @return $this
@@ -544,7 +548,9 @@ class Client
     /**
      * Get the array of metaData filters.
      *
-     * @var string
+     * @deprecated Use redactedKeys instead
+     *
+     * @var string[]
      */
     public function getFilters()
     {
@@ -934,5 +940,79 @@ class Client
     public function getSessionClient()
     {
         return $this->config->getSessionClient();
+    }
+
+    /**
+     * Set the amount to increase the memory_limit when an OOM is triggered.
+     *
+     * This is an amount of bytes or 'null' to disable increasing the limit.
+     *
+     * @param int|null $value
+     */
+    public function setMemoryLimitIncrease($value)
+    {
+        return $this->config->setMemoryLimitIncrease($value);
+    }
+
+    /**
+     * Get the amount to increase the memory_limit when an OOM is triggered.
+     *
+     * This will return 'null' if this feature is disabled.
+     *
+     * @return int|null
+     */
+    public function getMemoryLimitIncrease()
+    {
+        return $this->config->getMemoryLimitIncrease();
+    }
+
+    /**
+     * Set the array of classes that should not be sent to Bugsnag.
+     *
+     * @param array $discardClasses
+     *
+     * @return $this
+     */
+    public function setDiscardClasses(array $discardClasses)
+    {
+        $this->config->setDiscardClasses($discardClasses);
+
+        return $this;
+    }
+
+    /**
+     * Get the array of classes that should not be sent to Bugsnag.
+     *
+     * This can contain both fully qualified class names and regular expressions.
+     *
+     * @var array
+     */
+    public function getDiscardClasses()
+    {
+        return $this->config->getDiscardClasses();
+    }
+
+    /**
+     * Set the array of metadata keys that should be redacted.
+     *
+     * @param string[] $redactedKeys
+     *
+     * @return $this
+     */
+    public function setRedactedKeys(array $redactedKeys)
+    {
+        $this->config->setRedactedKeys($redactedKeys);
+
+        return $this;
+    }
+
+    /**
+     * Get the array of metadata keys that should be redacted.
+     *
+     * @var string[]
+     */
+    public function getRedactedKeys()
+    {
+        return $this->config->getRedactedKeys();
     }
 }

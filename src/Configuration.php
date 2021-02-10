@@ -43,6 +43,8 @@ class Configuration
     /**
      * The strings to filter out from metaData.
      *
+     * @deprecated Use redactedKeys instead
+     *
      * @var string[]
      */
     protected $filters = [
@@ -82,7 +84,7 @@ class Configuration
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.25.0',
+        'version' => '3.26.0',
         'url' => 'https://bugsnag.com',
     ];
 
@@ -151,6 +153,31 @@ class Configuration
      * @var string
      */
     protected $buildEndpoint = self::BUILD_ENDPOINT;
+
+    /**
+     * The amount to increase the memory_limit to handle an OOM.
+     *
+     * The default is 5MiB and can be disabled by setting it to 'null'
+     *
+     * @var int|null
+     */
+    protected $memoryLimitIncrease = 5242880;
+
+    /**
+     * An array of classes that should not be sent to Bugsnag.
+     *
+     * This can contain both fully qualified class names and regular expressions.
+     *
+     * @var array
+     */
+    protected $discardClasses = [];
+
+    /**
+     * An array of metadata keys that should be redacted.
+     *
+     * @var string[]
+     */
+    protected $redactedKeys = [];
 
     /**
      * Create a new config instance.
@@ -243,6 +270,8 @@ class Configuration
      *
      * Eg. ['password', 'credit_card'].
      *
+     * @deprecated Use redactedKeys instead
+     *
      * @param string[] $filters an array of metaData filters
      *
      * @return $this
@@ -257,7 +286,9 @@ class Configuration
     /**
      * Get the array of metaData filters.
      *
-     * @var string
+     * @deprecated Use redactedKeys instead
+     *
+     * @var string[]
      */
     public function getFilters()
     {
@@ -765,5 +796,81 @@ class Configuration
         }
 
         return $this->sessionClient;
+    }
+
+    /**
+     * Set the amount to increase the memory_limit when an OOM is triggered.
+     *
+     * This is an amount of bytes or 'null' to disable increasing the limit.
+     *
+     * @param int|null $value
+     */
+    public function setMemoryLimitIncrease($value)
+    {
+        $this->memoryLimitIncrease = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get the amount to increase the memory_limit when an OOM is triggered.
+     *
+     * This will return 'null' if this feature is disabled.
+     *
+     * @return int|null
+     */
+    public function getMemoryLimitIncrease()
+    {
+        return $this->memoryLimitIncrease;
+    }
+
+    /**
+     * Set the array of classes that should not be sent to Bugsnag.
+     *
+     * @param array $discardClasses
+     *
+     * @return $this
+     */
+    public function setDiscardClasses(array $discardClasses)
+    {
+        $this->discardClasses = $discardClasses;
+
+        return $this;
+    }
+
+    /**
+     * Get the array of classes that should not be sent to Bugsnag.
+     *
+     * This can contain both fully qualified class names and regular expressions.
+     *
+     * @var array
+     */
+    public function getDiscardClasses()
+    {
+        return $this->discardClasses;
+    }
+
+    /**
+     * Set the array of metadata keys that should be redacted.
+     *
+     * @param string[] $redactedKeys
+     *
+     * @return $this
+     */
+    public function setRedactedKeys(array $redactedKeys)
+    {
+        $this->redactedKeys = $redactedKeys;
+
+        return $this;
+    }
+
+    /**
+     * Get the array of metadata keys that should be redacted.
+     *
+     * @var string[]
+     */
+    public function getRedactedKeys()
+    {
+        return $this->redactedKeys;
     }
 }

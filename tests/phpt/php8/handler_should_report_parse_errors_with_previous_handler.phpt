@@ -22,7 +22,7 @@ if (PHP_MAJOR_VERSION !== 8) {
 }
 ?>
 --EXPECTF--
-object(ParseError)#15 (7) {
+object(ParseError)#%d (7) {
   ["message":protected]=>
   string(34) "syntax error, unexpected token "}""
   ["string":"Error":private]=>

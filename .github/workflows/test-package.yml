@@ -19,7 +19,6 @@ jobs:
           guzzle-version: '^7.0'
         - php-version: 8.0
           guzzle-version: '^7.0'
-          composer-flags: '--ignore-platform-reqs'
 
     steps:
     - uses: actions/checkout@v2
@@ -28,6 +27,8 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-version }}
+        coverage: none
+        extensions: intl, mbstring
 
     - run: composer validate
 
