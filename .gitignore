@@ -4,3 +4,4 @@ vendor
 /composer.phar
 /.idea
 .phpunit.result.cache
+decisions.yml
