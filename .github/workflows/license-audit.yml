@@ -12,7 +12,7 @@ jobs:
     - name: install PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: ${{ matrix.php-version }}
+        php-version: '8.0'
         coverage: none
         extensions: intl, mbstring
 
@@ -21,9 +21,7 @@ jobs:
       run: curl https://raw.githubusercontent.com/bugsnag/license-audit/master/config/decision_files/global.yml -o decisions.yml
 
     - name: Install composer dependencies
-      run: |
-        pip3 install '.[flask]'
-        pip3 freeze --local | tee requirements.txt
+      run: composer install
 
     - name: Run License Finder
       # for some reason license finder doesn't run without a login shell (-l)
