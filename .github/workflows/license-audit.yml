@@ -16,12 +16,11 @@ jobs:
         coverage: none
         extensions: intl, mbstring
 
-
     - name: Fetch decisions.yml
       run: curl https://raw.githubusercontent.com/bugsnag/license-audit/master/config/decision_files/global.yml -o decisions.yml
 
     - name: Install composer dependencies
-      run: composer install
+      run: composer install --no-dev
 
     - name: Run License Finder
       # for some reason license finder doesn't run without a login shell (-l)
