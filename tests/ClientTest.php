@@ -70,8 +70,10 @@ class ClientTest extends TestCase
         $this->expectGuzzlePostWithCallback(
             $this->client->getNotifyEndpoint(),
             function ($options) {
-                $this->assertTrue(isset($options['json']['events'][0]['severity']));
-                $this->assertSame('info', $options['json']['events'][0]['severity']);
+                $payload = $this->getPayloadFromGuzzleOptions($options);
+
+                $this->assertTrue(isset($payload['events'][0]['severity']));
+                $this->assertSame('info', $payload['events'][0]['severity']);
 
                 return true;
             }
@@ -97,8 +99,10 @@ class ClientTest extends TestCase
         $this->expectGuzzlePostWithCallback(
             $this->client->getNotifyEndpoint(),
             function ($options) {
-                $this->assertTrue(isset($options['json']['events'][0]['severity']));
-                $this->assertSame('info', $options['json']['events'][0]['severity']);
+                $payload = $this->getPayloadFromGuzzleOptions($options);
+
+                $this->assertTrue(isset($payload['events'][0]['severity']));
+                $this->assertSame('info', $payload['events'][0]['severity']);
 
                 return true;
             }
