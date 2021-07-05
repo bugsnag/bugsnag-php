@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Avoid JSON encoding event payloads more than once, where possible
+  [#628](https://github.com/bugsnag/bugsnag-php/pull/628)
+
 ## 3.26.0 (2021-02-10)
 
 ### Enhancements

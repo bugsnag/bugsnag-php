@@ -56,4 +56,16 @@ abstract class TestCase extends BaseTestCase
 
         return PhpUnitVersion::id();
     }
+
+    protected function getPayloadFromGuzzleOptions(array $options)
+    {
+        $this->assertArrayHasKey('body', $options);
+        Assert::isType('string', $options['body']);
+
+        $payload = json_decode($options['body'], true);
+
+        $this->assertSame(JSON_ERROR_NONE, json_last_error(), json_last_error_msg());
+
+        return $payload;
+    }
 }

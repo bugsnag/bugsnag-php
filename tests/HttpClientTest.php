@@ -59,13 +59,15 @@ class HttpClientTest extends TestCase
     public function testHttpClient()
     {
         $verifyGuzzleParameters = function ($options) {
-            Assert::isType('array', $options);
-            Assert::isType('array', $options['json']['notifier']);
-            Assert::isType('array', $options['json']['events']);
-            $this->assertSame([], $options['json']['events'][0]['user']);
-            $this->assertSame(['foo' => 'bar'], $options['json']['events'][0]['metaData']);
-            $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
-            $this->assertSame('4.0', $options['json']['events'][0]['payloadVersion']);
+            $payload = $this->getPayloadFromGuzzleOptions($options);
+
+            Assert::isType('array', $payload);
+            Assert::isType('array', $payload['notifier']);
+            Assert::isType('array', $payload['events']);
+            $this->assertSame([], $payload['events'][0]['user']);
+            $this->assertSame(['foo' => 'bar'], $payload['events'][0]['metaData']);
+            $this->assertSame('6015a72ff14038114c3d12623dfb018f', $payload['apiKey']);
+            $this->assertSame('4.0', $payload['events'][0]['payloadVersion']);
 
             $headers = $options['headers'];
 
@@ -88,13 +90,15 @@ class HttpClientTest extends TestCase
     public function testHttpClientMultipleSend()
     {
         $verifyGuzzleParameters = function ($options) {
-            Assert::isType('array', $options);
-            Assert::isType('array', $options['json']['notifier']);
-            Assert::isType('array', $options['json']['events']);
-            $this->assertSame([], $options['json']['events'][0]['user']);
-            $this->assertSame(['foo' => 'bar'], $options['json']['events'][0]['metaData']);
-            $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
-            $this->assertSame('4.0', $options['json']['events'][0]['payloadVersion']);
+            $payload = $this->getPayloadFromGuzzleOptions($options);
+
+            Assert::isType('array', $payload);
+            Assert::isType('array', $payload['notifier']);
+            Assert::isType('array', $payload['events']);
+            $this->assertSame([], $payload['events'][0]['user']);
+            $this->assertSame(['foo' => 'bar'], $payload['events'][0]['metaData']);
+            $this->assertSame('6015a72ff14038114c3d12623dfb018f', $payload['apiKey']);
+            $this->assertSame('4.0', $payload['events'][0]['payloadVersion']);
 
             $headers = $options['headers'];
 
@@ -118,13 +122,15 @@ class HttpClientTest extends TestCase
     public function testMassiveMetaDataHttpClient()
     {
         $verifyGuzzleParameters = function ($options) {
-            Assert::isType('array', $options);
-            Assert::isType('array', $options['json']['notifier']);
-            Assert::isType('array', $options['json']['events']);
-            $this->assertSame([], $options['json']['events'][0]['user']);
-            $this->assertArrayNotHasKey('metaData', $options['json']['events'][0]);
-            $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
-            $this->assertSame('4.0', $options['json']['events'][0]['payloadVersion']);
+            $payload = $this->getPayloadFromGuzzleOptions($options);
+
+            Assert::isType('array', $payload);
+            Assert::isType('array', $payload['notifier']);
+            Assert::isType('array', $payload['events']);
+            $this->assertSame([], $payload['events'][0]['user']);
+            $this->assertArrayNotHasKey('metaData', $payload['events'][0]);
+            $this->assertSame('6015a72ff14038114c3d12623dfb018f', $payload['apiKey']);
+            $this->assertSame('4.0', $payload['events'][0]['payloadVersion']);
 
             $headers = $options['headers'];
 
@@ -164,13 +170,15 @@ class HttpClientTest extends TestCase
         $log->expects($this->once())->with($this->equalTo('Bugsnag Warning: Payload too large'));
 
         $verifyGuzzleParameters = function ($options) {
-            Assert::isType('array', $options);
-            Assert::isType('array', $options['json']['notifier']);
-            Assert::isType('array', $options['json']['events']);
-            $this->assertSame(['foo' => 'bar'], $options['json']['events'][0]['user']);
-            $this->assertSame([], $options['json']['events'][0]['metaData']);
-            $this->assertSame('6015a72ff14038114c3d12623dfb018f', $options['json']['apiKey']);
-            $this->assertSame('4.0', $options['json']['events'][0]['payloadVersion']);
+            $payload = $this->getPayloadFromGuzzleOptions($options);
+
+            Assert::isType('array', $payload);
+            Assert::isType('array', $payload['notifier']);
+            Assert::isType('array', $payload['events']);
+            $this->assertSame(['foo' => 'bar'], $payload['events'][0]['user']);
+            $this->assertSame([], $payload['events'][0]['metaData']);
+            $this->assertSame('6015a72ff14038114c3d12623dfb018f', $payload['apiKey']);
+            $this->assertSame('4.0', $payload['events'][0]['payloadVersion']);
 
             $headers = $options['headers'];
             $this->assertSame('6015a72ff14038114c3d12623dfb018f', $headers['Bugsnag-Api-Key']);
