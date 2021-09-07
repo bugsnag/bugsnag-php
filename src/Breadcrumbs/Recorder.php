@@ -85,6 +85,7 @@ class Recorder implements Countable, Iterator
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->breadcrumbs);
@@ -95,6 +96,7 @@ class Recorder implements Countable, Iterator
      *
      * @return \Bugsnag\Breadcrumbs\Breadcrumb
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->breadcrumbs[($this->head + $this->position) % static::MAX_ITEMS];
@@ -105,6 +107,7 @@ class Recorder implements Countable, Iterator
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -115,6 +118,7 @@ class Recorder implements Countable, Iterator
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->position++;
@@ -125,6 +129,7 @@ class Recorder implements Countable, Iterator
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;
@@ -135,6 +140,7 @@ class Recorder implements Countable, Iterator
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return $this->position < $this->count();
