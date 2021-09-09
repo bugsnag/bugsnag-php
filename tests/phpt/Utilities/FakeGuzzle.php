@@ -54,13 +54,19 @@ function reportRequest($method, $uri, $options)
     $numberOfEvents = 0;
     $errors = [];
 
-    if (isset($options['json']['events'])) {
-        $numberOfEvents = count($options['json']['events']);
+    if (isset($options['body'])) {
+        $payload = json_decode($options['body'], true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Unable to decode JSON body: '.json_last_error_msg());
+        }
+
+        $numberOfEvents = count($payload['events']);
         $errors = array_map(
             function ($event) {
                 return strtok($event['exceptions'][0]['message'], "\n");
             },
-            $options['json']['events']
+            $payload['events']
         );
     }
 

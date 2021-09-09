@@ -84,7 +84,7 @@ class Configuration
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.26.0',
+        'version' => '3.26.1',
         'url' => 'https://bugsnag.com',
     ];
 

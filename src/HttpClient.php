@@ -255,6 +255,7 @@ class HttpClient
             'Bugsnag-Api-Key' => $this->config->getApiKey(),
             'Bugsnag-Sent-At' => Date::now(),
             'Bugsnag-Payload-Version' => $version,
+            'Content-Type' => 'application/json',
         ];
     }
 
@@ -324,7 +325,7 @@ class HttpClient
             $this->post(
                 $uri,
                 [
-                    'json' => $normalized,
+                    'body' => $normalized,
                     'headers' => $this->getHeaders(self::NOTIFY_PAYLOAD_VERSION),
                 ]
             );
@@ -340,15 +341,17 @@ class HttpClient
      *
      * @throws RuntimeException
      *
-     * @return array
+     * @return string the JSON encoded data after normalization
      */
     protected function normalize(array $data)
     {
         $body = json_encode($data);
 
-        if ($this->length($body) > static::MAX_SIZE) {
-            unset($data['events'][0]['metaData']);
+        if ($this->length($body) <= static::MAX_SIZE) {
+            return $body;
         }
+
+        unset($data['events'][0]['metaData']);
 
         $body = json_encode($data);
 
@@ -356,7 +359,7 @@ class HttpClient
             throw new RuntimeException('Payload too large');
         }
 
-        return $data;
+        return $body;
     }
 
     /**
