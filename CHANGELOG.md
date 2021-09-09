@@ -7,6 +7,8 @@ Changelog
 
 * Avoid JSON encoding event payloads more than once, where possible
   [#628](https://github.com/bugsnag/bugsnag-php/pull/628)
+* Add the `ReturnTypeWillChange` to `Bugsnag\Breadcrumbs\Recorder` to avoid a deprecation in PHP 8.1
+  [#630](https://github.com/bugsnag/bugsnag-php/pull/630)
 
 ## 3.26.0 (2021-02-10)
 
