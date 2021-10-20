@@ -656,6 +656,30 @@ class Client
     }
 
     /**
+     * Sets whether arguments should be captured in stack traces.
+     *
+     * @param bool $sendArguments whether to send arguments to Bugsnag
+     *
+     * @return $this
+     */
+    public function setSendArguments($sendArguments)
+    {
+        $this->config->setSendArguments($sendArguments);
+
+        return $this;
+    }
+
+    /**
+     * Is sending arguments in stack traces enabled?
+     *
+     * @return bool
+     */
+    public function shouldSendArguments()
+    {
+        return $this->config->shouldSendArguments();
+    }
+
+    /**
      * Sets the notifier to report as to Bugsnag.
      *
      * This should only be set by other notifier libraries.
