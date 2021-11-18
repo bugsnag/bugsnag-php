@@ -262,8 +262,8 @@ class HttpClient
     /**
      * Send a POST request to Bugsnag.
      *
-     * @param string $uri  the uri to hit
-     * @param array  $data the request options
+     * @param string $uri     the uri to hit
+     * @param array  $options the request options
      *
      * @return void
      */

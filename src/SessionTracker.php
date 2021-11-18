@@ -10,27 +10,37 @@ class SessionTracker
     /**
      * The current session payload version.
      *
+     * @var string
+     *
      * @deprecated Use {HttpClient::SESSION_PAYLOAD_VERSION} instead.
      */
     protected static $SESSION_PAYLOAD_VERSION = HttpClient::SESSION_PAYLOAD_VERSION;
 
     /**
      * The amount of time between each sending attempt.
+     *
+     * @var int
      */
     protected static $DELIVERY_INTERVAL = 30;
 
     /**
      * The maximum amount of sessions to hold onto.
+     *
+     * @var int
      */
     protected static $MAX_SESSION_COUNT = 50;
 
     /**
      * The key for storing session counts.
+     *
+     * @var string
      */
     protected static $SESSION_COUNTS_KEY = 'bugsnag-session-counts';
 
     /**
      * The key for storing last sent data.
+     *
+     * @var string
      */
     protected static $SESSIONS_LAST_SENT_KEY = 'bugsnag-sessions-last-sent';
 
@@ -116,6 +126,8 @@ class SessionTracker
 
     /**
      * @param Configuration $config
+     *
+     * @return void
      *
      * @deprecated Change the Configuration via the Client object instead.
      */

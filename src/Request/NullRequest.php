@@ -51,7 +51,7 @@ class NullRequest implements RequestInterface
      */
     public function getContext()
     {
-        //
+        return null;
     }
 
     /**
@@ -61,6 +61,6 @@ class NullRequest implements RequestInterface
      */
     public function getUserId()
     {
-        //
+        return null;
     }
 }

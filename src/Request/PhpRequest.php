@@ -129,6 +129,8 @@ class PhpRequest implements RequestInterface
         if (isset($this->server['REQUEST_METHOD']) && isset($this->server['REQUEST_URI'])) {
             return $this->server['REQUEST_METHOD'].' '.strtok($this->server['REQUEST_URI'], '?');
         }
+
+        return null;
     }
 
     /**
@@ -169,5 +171,7 @@ class PhpRequest implements RequestInterface
         if (isset($this->server['REMOTE_ADDR'])) {
             return $this->server['REMOTE_ADDR'];
         }
+
+        return null;
     }
 }

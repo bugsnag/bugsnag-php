@@ -73,7 +73,7 @@ class Stacktrace
      *
      * @param \Bugsnag\Configuration $config    the configuration instance
      * @param array                  $backtrace the associated backtrace
-     * @param int                    $topFile   the top file to use
+     * @param string                 $topFile   the top file to use
      * @param int                    $topLine   the top line to use
      *
      * @return static
@@ -216,14 +216,14 @@ class Stacktrace
      *
      * @param string $path     the path to the file
      * @param int    $line     the line to centre about
-     * @param string $numLines the number of lines to fetch
+     * @param int    $numLines the number of lines to fetch
      *
      * @return string[]|null
      */
     protected function getCode($path, $line, $numLines)
     {
         if (empty($path) || empty($line) || !file_exists($path)) {
-            return;
+            return null;
         }
 
         try {
@@ -244,14 +244,16 @@ class Stacktrace
         } catch (RuntimeException $ex) {
             // do nothing
         }
+
+        return null;
     }
 
     /**
      * Get the start and end positions for the given line.
      *
-     * @param int    $line the line to centre about
-     * @param string $num  the number of lines to fetch
-     * @param int    $max  the maximum line number
+     * @param int $line the line to centre about
+     * @param int $num  the number of lines to fetch
+     * @param int $max  the maximum line number
      *
      * @return int[]
      */

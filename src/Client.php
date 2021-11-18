@@ -470,7 +470,7 @@ class Client
     /**
      * Get the Bugsnag API Key.
      *
-     * @var string
+     * @return string
      */
     public function getApiKey()
     {
@@ -550,7 +550,7 @@ class Client
      *
      * @deprecated Use redactedKeys instead
      *
-     * @var string[]
+     * @return string[]
      */
     public function getFilters()
     {
@@ -586,7 +586,7 @@ class Client
      *
      * @param string $file
      *
-     * @return string
+     * @return bool
      */
     public function isInProject($file)
     {
@@ -674,7 +674,7 @@ class Client
     /**
      * Get the notifier to report as to Bugsnag.
      *
-     * @var string[]
+     * @return string[]
      */
     public function getNotifier()
     {
@@ -948,6 +948,8 @@ class Client
      * This is an amount of bytes or 'null' to disable increasing the limit.
      *
      * @param int|null $value
+     *
+     * @return Configuration
      */
     public function setMemoryLimitIncrease($value)
     {
@@ -985,7 +987,7 @@ class Client
      *
      * This can contain both fully qualified class names and regular expressions.
      *
-     * @var array
+     * @return array
      */
     public function getDiscardClasses()
     {
@@ -1009,7 +1011,7 @@ class Client
     /**
      * Get the array of metadata keys that should be redacted.
      *
-     * @var string[]
+     * @return string[]
      */
     public function getRedactedKeys()
     {

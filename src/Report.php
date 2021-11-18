@@ -125,9 +125,9 @@ class Report
     /**
      * Attached session from SessionTracking.
      *
-     * @var array
+     * @var array|null;
      */
-    protected $session;
+    protected $session = null;
 
     /**
      * Create a new report from a PHP error.
@@ -330,6 +330,8 @@ class Report
 
     /**
      * Sets the unhandled flag.
+     *
+     * @param bool $unhandled
      *
      * @return $this
      */
@@ -637,7 +639,7 @@ class Report
     /**
      * Sets the session data.
      *
-     * @return $this
+     * @return void
      */
     public function setSessionData(array $session)
     {
@@ -746,12 +748,12 @@ class Report
      * @param mixed $obj        the data to cleanup
      * @param bool  $isMetaData if it is meta data
      *
-     * @return array|null
+     * @return mixed|null
      */
     protected function cleanupObj($obj, $isMetaData)
     {
         if (is_null($obj)) {
-            return;
+            return null;
         }
 
         if (is_array($obj)) {

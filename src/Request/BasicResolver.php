@@ -130,7 +130,7 @@ class BasicResolver implements ResolverInterface
     protected static function parseInput(array $server, $input)
     {
         if (!$input) {
-            return;
+            return null;
         }
 
         if (isset($server['CONTENT_TYPE']) && stripos($server['CONTENT_TYPE'], 'application/json') === 0) {
@@ -142,5 +142,7 @@ class BasicResolver implements ResolverInterface
 
             return (array) $params ?: null;
         }
+
+        return null;
     }
 }

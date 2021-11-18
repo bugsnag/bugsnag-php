@@ -101,9 +101,9 @@ class Breadcrumb
     /**
      * Create a new breadcrumb instance.
      *
-     * @param string $name     the name of the breadcrumb
-     * @param string $type     the type of breadcrumb
-     * @param array  $metaData additional information about the breadcrumb
+     * @param string|null $name     the name of the breadcrumb
+     * @param string      $type     the type of breadcrumb
+     * @param array       $metaData additional information about the breadcrumb
      *
      * @throws \InvalidArgumentException
      *
