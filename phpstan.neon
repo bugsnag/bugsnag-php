@@ -1,0 +1,8 @@
+parameters:
+    level: max
+    treatPhpDocTypesAsCertain: false
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
+    checkUnionTypes: false
+    paths:
+        - src/

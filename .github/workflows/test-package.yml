@@ -50,3 +50,5 @@ jobs:
       run: composer update --prefer-dist --no-progress --no-suggest --no-interaction ${{ matrix.composer-flags }}
 
     - run: composer run-script test
+
+    - run: composer run-script phpstan
