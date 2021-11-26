@@ -21,7 +21,6 @@ jobs:
           guzzle-version: '^7.0'
         - php-version: '8.1'
           guzzle-version: '^7.0'
-          composer-flags: '--ignore-platform-req php'
 
     steps:
     - uses: actions/checkout@v2
