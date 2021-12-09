@@ -1036,6 +1036,16 @@ class ClientTest extends TestCase
         $this->assertFalse($client->shouldSendCode());
     }
 
+    public function testSendArguments()
+    {
+        $client = Client::make('foo');
+        $this->assertFalse($client->shouldSendArguments());
+        $this->assertSame($client, $client->setSendArguments(true));
+        $this->assertTrue($client->shouldSendArguments());
+        $this->assertSame($client, $client->setSendArguments(false));
+        $this->assertFalse($client->shouldSendArguments());
+    }
+
     public function testBuildEndpoint()
     {
         $client = Client::make('foo');

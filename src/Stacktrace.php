@@ -45,8 +45,10 @@ class Stacktrace
      */
     public static function generate(Configuration $config)
     {
-        // Reduce memory usage by omitting args and objects from backtrace
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT);
+        // Reduce memory usage by omitting args and objects from backtrace by default
+        $backtrace = debug_backtrace(
+            $config->shouldSendArguments() ? 0 : DEBUG_BACKTRACE_IGNORE_ARGS & ~DEBUG_BACKTRACE_PROVIDE_OBJECT
+        );
 
         return static::fromBacktrace($config, $backtrace, '[generator]', 0);
     }
@@ -89,7 +91,8 @@ class Stacktrace
                     $topFile,
                     $topLine,
                     isset($frame['function']) ? $frame['function'] : null,
-                    isset($frame['class']) ? $frame['class'] : null
+                    isset($frame['class']) ? $frame['class'] : null,
+                    $config->shouldSendArguments() && isset($frame['args']) ? $frame['args'] : null
                 );
             }
 
@@ -157,14 +160,15 @@ class Stacktrace
     /**
      * Add the given frame to the stacktrace.
      *
-     * @param string      $file   the associated file
-     * @param int         $line   the line number
-     * @param string      $method the method called
-     * @param string|null $class  the associated class
+     * @param string       $file   the associated file
+     * @param int          $line   the line number
+     * @param string|null  $method the method called
+     * @param string|null  $class  the associated class
+     * @param array[]|null $args   the associated arguments
      *
      * @return void
      */
-    public function addFrame($file, $line, $method, $class = null)
+    public function addFrame($file, $line, $method, $class = null, array $args = null)
     {
         // Account for special "filenames" in eval'd code
         $matches = [];
@@ -176,7 +180,7 @@ class Stacktrace
         // Construct the frame
         $frame = [
             'lineNumber' => (int) $line,
-            'method' => $class ? "$class::$method" : $method,
+            'method' => self::renderMethod($class, $method, $args),
         ];
 
         // Attach some lines of code for context
@@ -191,6 +195,70 @@ class Stacktrace
         $frame['file'] = $this->config->getStrippedFilePath($file);
 
         $this->frames[] = $frame;
+    }
+
+    /**
+     * Turn a class, method and args into a human readable string.
+     *
+     * @param string|null  $class  the associated class
+     * @param string|null  $method the method called
+     * @param array[]|null $args   the associated arguments
+     *
+     * @return string|null
+     */
+    private static function renderMethod($class, $method, $args)
+    {
+        $rendered = $class ? sprintf('%s::%s', $class, $method) : $method;
+
+        if (null === $args || null === $rendered) {
+            return $rendered;
+        }
+
+        $renderedArgs = array_map(static function ($arg) {
+            return self::renderValue($arg);
+        }, $args);
+
+        return sprintf('%s(%s)', $rendered, implode(', ', $renderedArgs));
+    }
+
+    /**
+     * Code loosly based off of https://github.com/symfony/polyfill/blob/v1.23.1/src/Php80/Php80.php.
+     *
+     * MIT licensed https://github.com/symfony/polyfill/blob/v1.23.1/LICENSE.
+     *
+     * @param mixed $value
+     *
+     * @return string
+     */
+    private static function renderValue($value)
+    {
+        if (null === $value) {
+            return 'null';
+        }
+
+        if (is_scalar($value)) {
+            return json_encode($value);
+        }
+
+        if (is_array($value)) {
+            return 'array';
+        }
+
+        if ($value instanceof \__PHP_Incomplete_Class) {
+            return '__PHP_Incomplete_Class';
+        }
+
+        if (is_object($value)) {
+            $class = get_class($value);
+
+            if (false === strpos($class, '@')) {
+                return $class;
+            }
+
+            return (get_parent_class($class) ?: key(class_implements($class)) ?: 'class').'@anonymous';
+        }
+
+        return 'resource';
     }
 
     /**

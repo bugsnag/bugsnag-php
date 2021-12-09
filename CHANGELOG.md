@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.27.0 (UPCOMING)
+
+### Enhancements
+
+* Support sending arguments with stack traces, disabled by default.
+  [#632](https://github.com/bugsnag/bugsnag-php/pull/632)
+
 ## 3.26.1 (2021-09-09)
 
 ### Fixes

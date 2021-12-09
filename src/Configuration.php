@@ -78,6 +78,13 @@ class Configuration
     protected $sendCode = true;
 
     /**
+     * If argument sending is enabled.
+     *
+     * @var bool
+     */
+    protected $sendArguments = false;
+
+    /**
      * The notifier to report as.
      *
      * @var string[]
@@ -402,6 +409,30 @@ class Configuration
     public function shouldSendCode()
     {
         return $this->sendCode;
+    }
+
+    /**
+     * Sets whether arguments should be captured in stack traces.
+     *
+     * @param bool $sendArguments whether to send arguments to Bugsnag
+     *
+     * @return $this
+     */
+    public function setSendArguments($sendArguments)
+    {
+        $this->sendArguments = $sendArguments;
+
+        return $this;
+    }
+
+    /**
+     * Is sending arguments in stack traces enabled?
+     *
+     * @return bool
+     */
+    public function shouldSendArguments()
+    {
+        return $this->sendArguments;
     }
 
     /**

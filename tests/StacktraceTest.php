@@ -274,4 +274,24 @@ class StacktraceTest extends TestCase
         $topFrame = $stacktrace[0];
         $this->assertArrayNotHasKey('code', $topFrame);
     }
+
+    public function testArgumentsEnabled()
+    {
+        $config = new Configuration('key');
+        $config->setSendArguments(true);
+
+        $stacktrace = Stacktrace::generate($config)->toArray();
+
+        $this->assertEquals('Bugsnag\Tests\StacktraceTest::testArgumentsEnabled()', $stacktrace[0]['method']);
+    }
+
+    public function testArgumentsDisabled()
+    {
+        $config = new Configuration('key');
+        $config->setSendArguments(false);
+
+        $stacktrace = Stacktrace::generate($config)->toArray();
+
+        $this->assertEquals('Bugsnag\Tests\StacktraceTest::testArgumentsDisabled', $stacktrace[0]['method']);
+    }
 }
