@@ -311,8 +311,9 @@ class Handler
             && preg_match($this->oomRegex, $lastError['message'], $matches) === 1
         ) {
             $currentMemoryLimit = (int) $matches[1];
+            $newMemoryLimit = $currentMemoryLimit + $this->client->getMemoryLimitIncrease();
 
-            ini_set('memory_limit', $currentMemoryLimit + $this->client->getMemoryLimitIncrease());
+            ini_set('memory_limit', (string) $newMemoryLimit);
         }
 
         // Check if a fatal error caused this shutdown
