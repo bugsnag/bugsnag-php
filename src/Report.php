@@ -242,6 +242,9 @@ class Report
      */
     public function setPHPThrowable($throwable)
     {
+        // TODO: if we drop support for PHP 5, we can remove this check for
+        //       'Exception', which fixes the PHPStan issue here
+        // @phpstan-ignore-next-line
         if (!$throwable instanceof Throwable && !$throwable instanceof Exception) {
             throw new InvalidArgumentException('The throwable must implement Throwable or extend Exception.');
         }
