@@ -119,6 +119,16 @@ class Report
      * Identifies cause for severity.
      *
      * @var array[]
+     *
+     * @phpstan-var array{
+     *      type?: string,
+     *      unhandledOverridden?: bool,
+     *      attributes?: array{
+     *          errorType?: string,
+     *          level?: string,
+     *          framework?: string,
+     *      }
+     * }
      */
     protected $severityReason = [];
 
