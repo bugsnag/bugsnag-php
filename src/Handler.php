@@ -70,6 +70,7 @@ class Handler
             $client = Client::make($client);
         }
 
+        // @phpstan-ignore-next-line
         $handler = new static($client);
         $handler->registerBugsnagHandlers(true);
 

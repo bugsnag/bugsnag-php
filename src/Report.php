@@ -143,6 +143,7 @@ class Report
      */
     public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
     {
+        // @phpstan-ignore-next-line
         $report = new static($config);
 
         $report->setPHPError($code, $message, $file, $line, $fatal)
@@ -162,6 +163,7 @@ class Report
      */
     public static function fromPHPThrowable(Configuration $config, $throwable)
     {
+        // @phpstan-ignore-next-line
         $report = new static($config);
 
         $report->setPHPThrowable($throwable)
@@ -182,6 +184,7 @@ class Report
      */
     public static function fromNamedError(Configuration $config, $name, $message = null)
     {
+        // @phpstan-ignore-next-line
         $report = new static($config);
 
         $report->setName($name)

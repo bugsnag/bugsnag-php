@@ -62,6 +62,7 @@ class Stacktrace
      */
     public static function fromFrame(Configuration $config, $file, $line)
     {
+        // @phpstan-ignore-next-line
         $stacktrace = new static($config);
         $stacktrace->addFrame($file, $line, '[unknown]');
 
@@ -80,6 +81,7 @@ class Stacktrace
      */
     public static function fromBacktrace(Configuration $config, array $backtrace, $topFile, $topLine)
     {
+        // @phpstan-ignore-next-line
         $stacktrace = new static($config);
 
         // PHP backtrace's are misaligned, we need to shift the file/line down a frame

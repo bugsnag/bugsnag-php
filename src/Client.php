@@ -105,6 +105,7 @@ class Client
         $config = new Configuration($apiKey ?: $env->get('BUGSNAG_API_KEY'));
         $guzzle = static::makeGuzzle($notifyEndpoint ?: $env->get('BUGSNAG_ENDPOINT'));
 
+        // @phpstan-ignore-next-line
         $client = new static($config, null, $guzzle);
 
         if ($defaults) {
