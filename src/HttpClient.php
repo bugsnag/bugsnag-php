@@ -270,6 +270,8 @@ class HttpClient
     protected function post($uri, array $options = [])
     {
         if (GuzzleCompat::isUsingGuzzle5()) {
+            // TODO: validate this by running PHPStan with Guzzle 5
+            // @phpstan-ignore-next-line
             $this->guzzle->post($uri, $options);
         } else {
             $this->guzzle->request('POST', $uri, $options);
