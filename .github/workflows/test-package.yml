@@ -51,4 +51,37 @@ jobs:
 
     - run: composer run-script test
 
+  phpstan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # TODO: we likely have to care about Guzzle's version too - ideally we'd
+        #       check our use of Guzzle is correct on each version
+        php-version: ['7.1', '8.1']
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        coverage: none
+        extensions: intl, mbstring
+        # by default setup-php uses a production php.ini so force development values
+        ini-values: >-
+          zend.exception_ignore_args=Off,
+          zend.exception_string_param_max_len=15,
+          error_reporting=-1,
+          display_errors=On,
+          display_startup_errors=On,
+          zend.assertions=1
+
+    # - name: require guzzle
+    #   run: composer require "guzzlehttp/guzzle:${{ matrix.guzzle-version }}" --no-update ${{ matrix.composer-flags }}
+
+    - name: install dependencies
+      run: composer update --prefer-dist --no-progress --no-suggest --no-interaction ${{ matrix.composer-flags }}
+
     - run: composer run-script phpstan
