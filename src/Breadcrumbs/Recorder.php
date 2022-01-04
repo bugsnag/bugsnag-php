@@ -5,6 +5,9 @@ namespace Bugsnag\Breadcrumbs;
 use Countable;
 use Iterator;
 
+/**
+ * @implements Iterator<int, Breadcrumb>
+ */
 class Recorder implements Countable, Iterator
 {
     /**
