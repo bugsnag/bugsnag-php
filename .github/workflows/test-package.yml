@@ -81,7 +81,10 @@ jobs:
     # - name: require guzzle
     #   run: composer require "guzzlehttp/guzzle:${{ matrix.guzzle-version }}" --no-update ${{ matrix.composer-flags }}
 
+    - name: require phpstan
+      run: composer require "phpstan/phpstan:^1.2" --no-update ${{ matrix.composer-flags }}
+
     - name: install dependencies
       run: composer update --prefer-dist --no-progress --no-suggest --no-interaction ${{ matrix.composer-flags }}
 
-    - run: composer run-script phpstan
+    - run: vendor/bin/phpstan

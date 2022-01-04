@@ -20,8 +20,7 @@
         "mtdowling/burgomaster": "dev-master#72151eddf5f0cf101502b94bf5031f9c53501a04",
         "phpunit/phpunit": "^4.8.36|^7.5.15|^9.3.10",
         "php-mock/php-mock-phpunit": "^1.1|^2.1",
-        "sebastian/version": ">=1.0.3",
-        "phpstan/phpstan": "^1.2"
+        "sebastian/version": ">=1.0.3"
     },
     "autoload": {
         "psr-4" : {
@@ -39,7 +38,6 @@
         }
     },
     "scripts": {
-        "phpstan": "vendor/bin/phpstan",
         "test": "vendor/bin/phpunit"
     },
     "minimum-stability": "dev",
