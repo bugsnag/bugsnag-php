@@ -197,10 +197,9 @@ class Handler
 
             return;
         } catch (Throwable $exceptionFromPreviousHandler) {
-        // TODO: if we drop support for PHP 5, we can remove this catch, which
-        //       fixes the PHPStan issue here
-        // @phpstan-ignore-next-line
-        } catch (Exception $exceptionFromPreviousHandler) {
+        } catch (Exception $exceptionFromPreviousHandler) { // @phpstan-ignore-line
+            // TODO: if we drop support for PHP 5, we can remove this catch, which
+            //       fixes the PHPStan issue here
         }
 
         // If the previous handler threw the same exception that we are currently
