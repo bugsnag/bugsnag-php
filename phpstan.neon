@@ -1,7 +1,8 @@
 parameters:
-    level: 5
+    level: 6
 
     treatPhpDocTypesAsCertain: false
+    checkMissingIterableValueType: false # TODO: remove this!
 
     paths:
         - src/
