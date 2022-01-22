@@ -317,7 +317,7 @@ class Configuration
      */
     public function setProjectRootRegex($projectRootRegex)
     {
-        if ($projectRootRegex && @preg_match($projectRootRegex, null) === false) {
+        if ($projectRootRegex && @preg_match($projectRootRegex, '') === false) {
             throw new InvalidArgumentException('Invalid project root regex: '.$projectRootRegex);
         }
 
@@ -359,7 +359,7 @@ class Configuration
      */
     public function setStripPathRegex($stripPathRegex)
     {
-        if ($stripPathRegex && @preg_match($stripPathRegex, null) === false) {
+        if ($stripPathRegex && @preg_match($stripPathRegex, '') === false) {
             throw new InvalidArgumentException('Invalid strip path regex: '.$stripPathRegex);
         }
 
