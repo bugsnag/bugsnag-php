@@ -5,8 +5,8 @@ Changelog
 
 ### Fixes
 
-* Fixed PHP 8.1 compatability
-  [#629](https://github.com/bugsnag/bugsnag-php/pull/629)
+* Fixed PHP 8.1 compatibility
+  [#636](https://github.com/bugsnag/bugsnag-php/pull/636)
 
 ## 3.26.1 (2021-09-09)
 
