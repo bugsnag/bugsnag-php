@@ -34,7 +34,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.20-dev"
+            "dev-master": "3.26-dev"
         }
     },
     "scripts": {
