@@ -754,7 +754,7 @@ class Report
     protected function cleanupObj($obj, $isMetaData)
     {
         if (is_null($obj)) {
-            return;
+            return null;
         }
 
         if (is_array($obj)) {
