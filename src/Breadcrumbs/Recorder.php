@@ -138,7 +138,7 @@ class Recorder implements Countable, Iterator
     /**
      * Is the current key position set?
      *
-     * @return int
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function valid()

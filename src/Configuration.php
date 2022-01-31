@@ -330,7 +330,7 @@ class Configuration
      *
      * @param string $file
      *
-     * @return string
+     * @return bool
      */
     public function isInProject($file)
     {

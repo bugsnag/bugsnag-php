@@ -587,7 +587,7 @@ class Client
      *
      * @param string $file
      *
-     * @return string
+     * @return bool
      */
     public function isInProject($file)
     {

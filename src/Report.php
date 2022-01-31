@@ -749,7 +749,7 @@ class Report
      * @param mixed $obj        the data to cleanup
      * @param bool  $isMetaData if it is meta data
      *
-     * @return array|null
+     * @return mixed
      */
     protected function cleanupObj($obj, $isMetaData)
     {
