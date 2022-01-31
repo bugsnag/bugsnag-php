@@ -117,6 +117,8 @@ class SessionTracker
     /**
      * @param Configuration $config
      *
+     * @return void
+     *
      * @deprecated Change the Configuration via the Client object instead.
      */
     public function setConfig(Configuration $config)

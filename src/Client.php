@@ -949,6 +949,8 @@ class Client
      * This is an amount of bytes or 'null' to disable increasing the limit.
      *
      * @param int|null $value
+     *
+     * @return Configuration
      */
     public function setMemoryLimitIncrease($value)
     {

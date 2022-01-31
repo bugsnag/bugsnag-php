@@ -804,6 +804,8 @@ class Configuration
      * This is an amount of bytes or 'null' to disable increasing the limit.
      *
      * @param int|null $value
+     *
+     * @return $this
      */
     public function setMemoryLimitIncrease($value)
     {
