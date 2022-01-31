@@ -471,7 +471,7 @@ class Client
     /**
      * Get the Bugsnag API Key.
      *
-     * @var string
+     * @return string
      */
     public function getApiKey()
     {
@@ -551,7 +551,7 @@ class Client
      *
      * @deprecated Use redactedKeys instead
      *
-     * @var string[]
+     * @return string[]
      */
     public function getFilters()
     {
@@ -675,7 +675,7 @@ class Client
     /**
      * Get the notifier to report as to Bugsnag.
      *
-     * @var string[]
+     * @return string[]
      */
     public function getNotifier()
     {
@@ -986,7 +986,7 @@ class Client
      *
      * This can contain both fully qualified class names and regular expressions.
      *
-     * @var array
+     * @return array
      */
     public function getDiscardClasses()
     {
@@ -1010,7 +1010,7 @@ class Client
     /**
      * Get the array of metadata keys that should be redacted.
      *
-     * @var string[]
+     * @return string[]
      */
     public function getRedactedKeys()
     {

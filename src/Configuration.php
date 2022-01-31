@@ -204,7 +204,7 @@ class Configuration
     /**
      * Get the Bugsnag API Key.
      *
-     * @var string
+     * @return string
      */
     public function getApiKey()
     {
@@ -288,7 +288,7 @@ class Configuration
      *
      * @deprecated Use redactedKeys instead
      *
-     * @var string[]
+     * @return string[]
      */
     public function getFilters()
     {
@@ -423,7 +423,7 @@ class Configuration
     /**
      * Get the notifier to report as to Bugsnag.
      *
-     * @var string[]
+     * @return string[]
      */
     public function getNotifier()
     {
@@ -843,7 +843,7 @@ class Configuration
      *
      * This can contain both fully qualified class names and regular expressions.
      *
-     * @var array
+     * @return array
      */
     public function getDiscardClasses()
     {
@@ -867,7 +867,7 @@ class Configuration
     /**
      * Get the array of metadata keys that should be redacted.
      *
-     * @var string[]
+     * @return string[]
      */
     public function getRedactedKeys()
     {
