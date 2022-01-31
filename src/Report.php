@@ -337,6 +337,8 @@ class Report
     /**
      * Sets the unhandled flag.
      *
+     * @param bool $unhandled
+     *
      * @return $this
      */
     public function setUnhandled($unhandled)
