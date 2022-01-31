@@ -5,6 +5,9 @@ namespace Bugsnag\Breadcrumbs;
 use Countable;
 use Iterator;
 
+/**
+ * @implements Iterator<int, Breadcrumb>
+ */
 class Recorder implements Countable, Iterator
 {
     /**
@@ -138,7 +141,7 @@ class Recorder implements Countable, Iterator
     /**
      * Is the current key position set?
      *
-     * @return int
+     * @return bool
      */
     #[\ReturnTypeWillChange]
     public function valid()

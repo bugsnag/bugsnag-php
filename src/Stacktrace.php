@@ -62,6 +62,7 @@ class Stacktrace
      */
     public static function fromFrame(Configuration $config, $file, $line)
     {
+        // @phpstan-ignore-next-line
         $stacktrace = new static($config);
         $stacktrace->addFrame($file, $line, '[unknown]');
 
@@ -73,13 +74,14 @@ class Stacktrace
      *
      * @param \Bugsnag\Configuration $config    the configuration instance
      * @param array                  $backtrace the associated backtrace
-     * @param int                    $topFile   the top file to use
+     * @param string                 $topFile   the top file to use
      * @param int                    $topLine   the top line to use
      *
      * @return static
      */
     public static function fromBacktrace(Configuration $config, array $backtrace, $topFile, $topLine)
     {
+        // @phpstan-ignore-next-line
         $stacktrace = new static($config);
 
         // PHP backtrace's are misaligned, we need to shift the file/line down a frame
@@ -214,16 +216,16 @@ class Stacktrace
     /**
      * Extract the code for the given file and lines.
      *
-     * @param string $path     the path to the file
-     * @param int    $line     the line to centre about
-     * @param string $numLines the number of lines to fetch
+     * @param string $path the path to the file
+     * @param int $line the line to centre about
+     * @param int $numLines the number of lines to fetch
      *
      * @return string[]|null
      */
     protected function getCode($path, $line, $numLines)
     {
         if (empty($path) || empty($line) || !file_exists($path)) {
-            return;
+            return null;
         }
 
         try {
@@ -242,16 +244,16 @@ class Stacktrace
 
             return $code;
         } catch (RuntimeException $ex) {
-            // do nothing
+            return null;
         }
     }
 
     /**
      * Get the start and end positions for the given line.
      *
-     * @param int    $line the line to centre about
-     * @param string $num  the number of lines to fetch
-     * @param int    $max  the maximum line number
+     * @param int $line the line to centre about
+     * @param int $num the number of lines to fetch
+     * @param int $max the maximum line number
      *
      * @return int[]
      */

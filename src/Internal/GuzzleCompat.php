@@ -43,8 +43,9 @@ final class GuzzleCompat
      */
     public static function getBaseUri(GuzzleHttp\ClientInterface $guzzle)
     {
+        // TODO: validate this by running PHPStan with Guzzle 5
         return self::isUsingGuzzle5()
-            ? $guzzle->getBaseUrl()
+            ? $guzzle->getBaseUrl() // @phpstan-ignore-line
             : $guzzle->getConfig(self::getBaseUriOptionName());
     }
 

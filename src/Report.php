@@ -125,7 +125,7 @@ class Report
     /**
      * Attached session from SessionTracking.
      *
-     * @var array
+     * @var array|null
      */
     protected $session;
 
@@ -143,6 +143,7 @@ class Report
      */
     public static function fromPHPError(Configuration $config, $code, $message, $file, $line, $fatal = false)
     {
+        // @phpstan-ignore-next-line
         $report = new static($config);
 
         $report->setPHPError($code, $message, $file, $line, $fatal)
@@ -162,6 +163,7 @@ class Report
      */
     public static function fromPHPThrowable(Configuration $config, $throwable)
     {
+        // @phpstan-ignore-next-line
         $report = new static($config);
 
         $report->setPHPThrowable($throwable)
@@ -182,6 +184,7 @@ class Report
      */
     public static function fromNamedError(Configuration $config, $name, $message = null)
     {
+        // @phpstan-ignore-next-line
         $report = new static($config);
 
         $report->setName($name)
@@ -229,6 +232,9 @@ class Report
      */
     public function setPHPThrowable($throwable)
     {
+        // TODO: if we drop support for PHP 5, we can remove this check for
+        //       'Exception', which fixes the PHPStan issue here
+        // @phpstan-ignore-next-line
         if (!$throwable instanceof Throwable && !$throwable instanceof Exception) {
             throw new InvalidArgumentException('The throwable must implement Throwable or extend Exception.');
         }
@@ -330,6 +336,8 @@ class Report
 
     /**
      * Sets the unhandled flag.
+     *
+     * @param bool $unhandled
      *
      * @return $this
      */
@@ -637,7 +645,7 @@ class Report
     /**
      * Sets the session data.
      *
-     * @return $this
+     * @return void
      */
     public function setSessionData(array $session)
     {
@@ -746,12 +754,12 @@ class Report
      * @param mixed $obj        the data to cleanup
      * @param bool  $isMetaData if it is meta data
      *
-     * @return array|null
+     * @return mixed
      */
     protected function cleanupObj($obj, $isMetaData)
     {
         if (is_null($obj)) {
-            return;
+            return null;
         }
 
         if (is_array($obj)) {

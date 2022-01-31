@@ -103,5 +103,6 @@ class ConsoleRequest implements RequestInterface
      */
     public function getUserId()
     {
+        return null;
     }
 }

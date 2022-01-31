@@ -1,0 +1,14 @@
+parameters:
+    level: 6
+
+    treatPhpDocTypesAsCertain: false
+    checkMissingIterableValueType: false # TODO: remove this!
+
+    paths:
+        - src/
+
+    ignoreErrors:
+        -
+            message: "#^Property Bugsnag\\\\Handler\\:\\:\\$reservedMemory is never read, only written\\.$#"
+            count: 1
+            path: src/Handler.php

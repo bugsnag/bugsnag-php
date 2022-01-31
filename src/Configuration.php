@@ -133,7 +133,7 @@ class Configuration
     /**
      * A client to use to send sessions.
      *
-     * @var \GuzzleHttp\ClientInterface
+     * @var \GuzzleHttp\ClientInterface|null
      *
      * @deprecated This will be removed in the next major version.
      */
@@ -204,7 +204,7 @@ class Configuration
     /**
      * Get the Bugsnag API Key.
      *
-     * @var string
+     * @return string
      */
     public function getApiKey()
     {
@@ -288,7 +288,7 @@ class Configuration
      *
      * @deprecated Use redactedKeys instead
      *
-     * @var string[]
+     * @return string[]
      */
     public function getFilters()
     {
@@ -317,7 +317,7 @@ class Configuration
      */
     public function setProjectRootRegex($projectRootRegex)
     {
-        if ($projectRootRegex && @preg_match($projectRootRegex, null) === false) {
+        if ($projectRootRegex && @preg_match($projectRootRegex, '') === false) {
             throw new InvalidArgumentException('Invalid project root regex: '.$projectRootRegex);
         }
 
@@ -330,7 +330,7 @@ class Configuration
      *
      * @param string $file
      *
-     * @return string
+     * @return bool
      */
     public function isInProject($file)
     {
@@ -359,7 +359,7 @@ class Configuration
      */
     public function setStripPathRegex($stripPathRegex)
     {
-        if ($stripPathRegex && @preg_match($stripPathRegex, null) === false) {
+        if ($stripPathRegex && @preg_match($stripPathRegex, '') === false) {
             throw new InvalidArgumentException('Invalid strip path regex: '.$stripPathRegex);
         }
 
@@ -423,7 +423,7 @@ class Configuration
     /**
      * Get the notifier to report as to Bugsnag.
      *
-     * @var string[]
+     * @return string[]
      */
     public function getNotifier()
     {
@@ -804,6 +804,8 @@ class Configuration
      * This is an amount of bytes or 'null' to disable increasing the limit.
      *
      * @param int|null $value
+     *
+     * @return $this
      */
     public function setMemoryLimitIncrease($value)
     {
@@ -843,7 +845,7 @@ class Configuration
      *
      * This can contain both fully qualified class names and regular expressions.
      *
-     * @var array
+     * @return array
      */
     public function getDiscardClasses()
     {
@@ -867,7 +869,7 @@ class Configuration
     /**
      * Get the array of metadata keys that should be redacted.
      *
-     * @var string[]
+     * @return string[]
      */
     public function getRedactedKeys()
     {
