@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* A number of errors in docblocks have been corrected
+  [xPaw](https://github.com/xPaw)
+  [#633](https://github.com/bugsnag/bugsnag-php/pull/633)
+  [#637](https://github.com/bugsnag/bugsnag-php/pull/637)
+
 ## 3.26.1 (2021-09-09)
 
 ### Fixes
