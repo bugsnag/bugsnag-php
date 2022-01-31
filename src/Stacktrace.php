@@ -216,9 +216,9 @@ class Stacktrace
     /**
      * Extract the code for the given file and lines.
      *
-     * @param string $path     the path to the file
-     * @param int    $line     the line to centre about
-     * @param string $numLines the number of lines to fetch
+     * @param string $path the path to the file
+     * @param int $line the line to centre about
+     * @param int $numLines the number of lines to fetch
      *
      * @return string[]|null
      */
@@ -251,9 +251,9 @@ class Stacktrace
     /**
      * Get the start and end positions for the given line.
      *
-     * @param int    $line the line to centre about
-     * @param string $num  the number of lines to fetch
-     * @param int    $max  the maximum line number
+     * @param int $line the line to centre about
+     * @param int $num the number of lines to fetch
+     * @param int $max the maximum line number
      *
      * @return int[]
      */
