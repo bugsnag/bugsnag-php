@@ -640,7 +640,7 @@ class Report
     /**
      * Sets the session data.
      *
-     * @return $this
+     * @return void
      */
     public function setSessionData(array $session)
     {
