@@ -133,7 +133,7 @@ class Configuration
     /**
      * A client to use to send sessions.
      *
-     * @var \GuzzleHttp\ClientInterface
+     * @var \GuzzleHttp\ClientInterface|null
      *
      * @deprecated This will be removed in the next major version.
      */

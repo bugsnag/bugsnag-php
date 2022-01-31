@@ -125,7 +125,7 @@ class Report
     /**
      * Attached session from SessionTracking.
      *
-     * @var array
+     * @var array|null
      */
     protected $session;
 
