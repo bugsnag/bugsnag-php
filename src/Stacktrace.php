@@ -225,7 +225,7 @@ class Stacktrace
     protected function getCode($path, $line, $numLines)
     {
         if (empty($path) || empty($line) || !file_exists($path)) {
-            return;
+            return null;
         }
 
         try {
@@ -244,7 +244,7 @@ class Stacktrace
 
             return $code;
         } catch (RuntimeException $ex) {
-            // do nothing
+            return null;
         }
     }
 
