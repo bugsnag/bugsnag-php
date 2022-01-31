@@ -74,7 +74,7 @@ class Stacktrace
      *
      * @param \Bugsnag\Configuration $config    the configuration instance
      * @param array                  $backtrace the associated backtrace
-     * @param int                    $topFile   the top file to use
+     * @param string                 $topFile   the top file to use
      * @param int                    $topLine   the top line to use
      *
      * @return static
