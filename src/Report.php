@@ -779,7 +779,7 @@ class Report
         }
 
         if (is_object($obj)) {
-            if ($obj instanceof UnitEnum && !$obj instanceof BackedEnum) {
+            if ($obj instanceof UnitEnum) {
                 return $this->enumToString($obj);
             }
 
@@ -850,6 +850,13 @@ class Report
     private function enumToString(UnitEnum $enum)
     {
         // e.g. My\Enum::SomeCase
-        return sprintf('%s::%s', get_class($enum), $enum->name);
+        $string = sprintf('%s::%s', get_class($enum), $enum->name);
+
+        // add the value, if there is one
+        if ($enum instanceof BackedEnum) {
+            $string .= sprintf(' (%s)', $enum->value);
+        }
+
+        return $string;
     }
 }

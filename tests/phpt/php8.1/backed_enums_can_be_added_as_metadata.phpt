@@ -30,7 +30,7 @@ var_dump($client->getMetaData()['data']);
 echo "\n";
 
 $client->notifyException(new \Exception('hello'), function (\Bugsnag\Report $report): void {
-    echo "Backed enums should serialise to their backing value\n";
+    echo "Backed enums should be converted to string representation when serialised\n";
     var_dump($report->toArray()['metaData']['data']);
     echo "\n";
 });
@@ -54,16 +54,16 @@ array(4) {
   enum(Some\Namespace\IntBackedEnum::Circle)
 }
 
-Backed enums should serialise to their backing value
+Backed enums should be converted to string representation when serialised
 array(4) {
   ["admin"]=>
-  string(5) "admin"
+  string(46) "Some\Namespace\StringBackedEnum::Admin (admin)"
   ["user"]=>
-  string(4) "user"
+  string(44) "Some\Namespace\StringBackedEnum::User (user)"
   ["square"]=>
-  int(1)
+  string(40) "Some\Namespace\IntBackedEnum::Square (1)"
   ["circle"]=>
-  int(2)
+  string(40) "Some\Namespace\IntBackedEnum::Circle (2)"
 }
 
 Guzzle request made (1 event)!

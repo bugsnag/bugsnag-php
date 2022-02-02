@@ -3,6 +3,11 @@ Changelog
 
 ## TBD
 
+### Enhancements
+
+* Improve serialisation of backed enums. Previously a backed enum would JSON encode to their backing value, but will now include the enum name like `EnumName::CaseName (value)`
+  [#639](https://github.com/bugsnag/bugsnag-php/pull/639)
+
 ### Fixes
 
 * A number of errors in docblocks have been corrected
