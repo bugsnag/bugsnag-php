@@ -1,3 +1,6 @@
+includes:
+    - phpstan/ignore-by-php-version.neon.php
+
 parameters:
     level: 6
 

@@ -5,3 +5,4 @@ vendor
 /.idea
 .phpunit.result.cache
 decisions.yml
+phpstan.neon
