@@ -392,6 +392,9 @@ class ClientTest extends TestCase
         $this->assertSame(true, $report->getUnhandled());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testItAddsADefaultSetOfMiddlewares()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
@@ -933,6 +936,9 @@ class ClientTest extends TestCase
         $this->assertSame($event['severityReason'], ['type' => 'handledError']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testUrlModifiableByCallback()
     {
         $_SERVER['REQUEST_METHOD'] = 'GET';
