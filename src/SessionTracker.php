@@ -141,7 +141,7 @@ class SessionTracker
      */
     public function startSession()
     {
-        $currentTime = strftime('%Y-%m-%dT%H:%M:00');
+        $currentTime = date('Y-m-d\TH:i:00');
 
         $session = [
             'id' => uniqid('', true),
