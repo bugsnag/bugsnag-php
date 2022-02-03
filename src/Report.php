@@ -2,11 +2,13 @@
 
 namespace Bugsnag;
 
+use BackedEnum;
 use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\DateTime\Date;
 use Exception;
 use InvalidArgumentException;
 use Throwable;
+use UnitEnum;
 
 class Report
 {
@@ -777,6 +779,10 @@ class Report
         }
 
         if (is_object($obj)) {
+            if ($obj instanceof UnitEnum) {
+                return $this->enumToString($obj);
+            }
+
             return $this->cleanupObj(json_decode(json_encode($obj), true), $isMetaData);
         }
 
@@ -832,5 +838,25 @@ class Report
         }
 
         return $array;
+    }
+
+    /**
+     * Convert the given enum to a string.
+     *
+     * @param UnitEnum $enum
+     *
+     * @return string
+     */
+    private function enumToString(UnitEnum $enum)
+    {
+        // e.g. My\Enum::SomeCase
+        $string = sprintf('%s::%s', get_class($enum), $enum->name);
+
+        // add the value, if there is one
+        if ($enum instanceof BackedEnum) {
+            $string .= sprintf(' (%s)', $enum->value);
+        }
+
+        return $string;
     }
 }

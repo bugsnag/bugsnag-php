@@ -3,12 +3,19 @@ Changelog
 
 ## TBD
 
+### Enhancements
+
+* Improve serialisation of backed enums. Previously a backed enum would JSON encode to their backing value, but will now include the enum name like `EnumName::CaseName (value)`
+  [#639](https://github.com/bugsnag/bugsnag-php/pull/639)
+
 ### Fixes
 
 * A number of errors in docblocks have been corrected
   [xPaw](https://github.com/xPaw)
   [#633](https://github.com/bugsnag/bugsnag-php/pull/633)
   [#637](https://github.com/bugsnag/bugsnag-php/pull/637)
+* Handle serialising pure enums when added as metadata. Previously a pure enum would be JSON encoded as `null`, but will now be converted to a string like `EnumName::CaseName`
+  [#639](https://github.com/bugsnag/bugsnag-php/pull/639)
 
 ## 3.26.1 (2021-09-09)
 
