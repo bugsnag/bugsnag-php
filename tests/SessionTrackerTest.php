@@ -501,7 +501,7 @@ class SessionTrackerTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess as we need to mock 'strftime' and 'time'
+     * @runInSeparateProcess as we need to mock 'date' and 'time'
      */
     public function testThereIsAMaximumNumberOfSessionsThatWillBeSent()
     {
@@ -544,7 +544,7 @@ class SessionTrackerTest extends TestCase
             ->method('sendSessions')
             ->with($this->callback($expectCallback));
 
-        $strftimeReturnValues = array_map(
+        $dateReturnValues = array_map(
             function ($minute) {
                 $minute = str_pad($minute, 2, '0', STR_PAD_LEFT);
 
@@ -556,11 +556,11 @@ class SessionTrackerTest extends TestCase
 
         $invocation = 0;
 
-        $strftime = $this->getFunctionMock('Bugsnag', 'strftime');
-        $strftime->expects($this->exactly($sessionsToGenerate))
+        $date = $this->getFunctionMock('Bugsnag', 'date');
+        $date->expects($this->exactly($sessionsToGenerate))
             ->withAnyParameters()
-            ->willReturnCallback(function () use ($strftimeReturnValues, &$invocation) {
-                return $strftimeReturnValues[$invocation++];
+            ->willReturnCallback(function () use ($dateReturnValues, &$invocation) {
+                return $dateReturnValues[$invocation++];
             });
 
         // Mock 'time' to return a negative value, which will stop 'startSession'
