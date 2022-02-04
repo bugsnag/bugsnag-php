@@ -18,6 +18,8 @@ Changelog
   [#639](https://github.com/bugsnag/bugsnag-php/pull/639)
 * Remove use of the deprecated `strftime` function
   [#640](https://github.com/bugsnag/bugsnag-php/pull/640)
+* Fix session throttling when storage backend doesn't store integers
+  [#643](https://github.com/bugsnag/bugsnag-php/pull/643)
 
 ## 3.26.1 (2021-09-09)
 
