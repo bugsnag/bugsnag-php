@@ -437,8 +437,12 @@ class SessionTracker
         if (is_callable($this->storageFunction)) {
             $lastSent = call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY);
 
-            if (is_int($lastSent)) {
-                return $lastSent;
+            // $lastSent may be a string despite us storing an integer because
+            // some storage backends will convert all values into strings
+            // note: some invalid integers pass 'is_numeric' (e.g. bigger than
+            // PHP_INT_MAX) but these get cast to '0', which is the default anyway
+            if (is_numeric($lastSent)) {
+                return (int) $lastSent;
             }
 
             return 0;
