@@ -70,6 +70,7 @@ class Handler
             $client = Client::make($client);
         }
 
+        // @phpstan-ignore-next-line
         $handler = new static($client);
         $handler->registerBugsnagHandlers(true);
 
@@ -196,6 +197,9 @@ class Handler
 
             return;
         } catch (Throwable $exceptionFromPreviousHandler) {
+            // TODO: if we drop support for PHP 5, we can remove this catch, which
+            //       fixes the PHPStan issue here
+            // @phpstan-ignore-next-line
         } catch (Exception $exceptionFromPreviousHandler) {
         }
 
@@ -307,8 +311,9 @@ class Handler
             && preg_match($this->oomRegex, $lastError['message'], $matches) === 1
         ) {
             $currentMemoryLimit = (int) $matches[1];
+            $newMemoryLimit = $currentMemoryLimit + $this->client->getMemoryLimitIncrease();
 
-            ini_set('memory_limit', $currentMemoryLimit + $this->client->getMemoryLimitIncrease());
+            ini_set('memory_limit', (string) $newMemoryLimit);
         }
 
         // Check if a fatal error caused this shutdown

@@ -1,0 +1,7 @@
+parameters:
+    ignoreErrors:
+        - '#Class UnitEnum not found\.#'
+        - '#.*invalid type UnitEnum\.#'
+        - '#.*unknown class UnitEnum\.#'
+        - '#Class BackedEnum not found\.#'
+        - '#.*unknown class BackedEnum\.#'

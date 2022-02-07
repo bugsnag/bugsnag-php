@@ -8,6 +8,9 @@ use Bugsnag\Report;
 use Bugsnag\Tests\TestCase;
 use Exception;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class EnvironmentDataTest extends TestCase
 {
     /** @var \Bugsnag\Configuration */

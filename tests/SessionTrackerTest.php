@@ -209,6 +209,64 @@ class SessionTrackerTest extends TestCase
     }
 
     /**
+     * @dataProvider lastSentShouldSendSessionsProvider
+     * @dataProvider lastSentShouldNotSendSessionsProvider
+     */
+    public function testStartSessionDeliversSessionsWhenLastSentIsMoreThan30SecondsAgo($lastSent, $shouldSend)
+    {
+        $storage = [
+            'bugsnag-session-counts' => [
+                '2000-01-01T00:00:00' => 1,
+            ],
+            'bugsnag-sessions-last-sent' => $lastSent,
+        ];
+
+        $this->sessionTracker->setStorageFunction(function ($key, $value = null) use (&$storage) {
+            if ($value === null) {
+                return $storage[$key];
+            }
+
+            $storage[$key] = $value;
+        });
+
+        $expectation = $shouldSend ? $this->once() : $this->never();
+        $this->client->expects($expectation)->method('sendSessions');
+
+        $this->sessionTracker->startSession();
+    }
+
+    public function lastSentShouldSendSessionsProvider()
+    {
+        $times = [
+            0,
+            1234,
+            time() - 31,
+            time() - 1234,
+            time() - 123.4,
+        ];
+
+        foreach ($times as $time) {
+            yield "{$time}" => [$time, true];
+            yield "'{$time}'" => [(string) $time, true];
+        }
+    }
+
+    public function lastSentShouldNotSendSessionsProvider()
+    {
+        $times = [
+            time() + 1,
+            time() + 1234,
+            time() + 123.4,
+            PHP_INT_MAX,
+        ];
+
+        foreach ($times as $time) {
+            yield "{$time}" => [$time, false];
+            yield "'{$time}'" => [(string) $time, false];
+        }
+    }
+
+    /**
      * @param mixed $returnValue
      *
      * @return void
@@ -501,7 +559,7 @@ class SessionTrackerTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess as we need to mock 'strftime' and 'time'
+     * @runInSeparateProcess as we need to mock 'date' and 'time'
      */
     public function testThereIsAMaximumNumberOfSessionsThatWillBeSent()
     {
@@ -544,7 +602,7 @@ class SessionTrackerTest extends TestCase
             ->method('sendSessions')
             ->with($this->callback($expectCallback));
 
-        $strftimeReturnValues = array_map(
+        $dateReturnValues = array_map(
             function ($minute) {
                 $minute = str_pad($minute, 2, '0', STR_PAD_LEFT);
 
@@ -556,11 +614,11 @@ class SessionTrackerTest extends TestCase
 
         $invocation = 0;
 
-        $strftime = $this->getFunctionMock('Bugsnag', 'strftime');
-        $strftime->expects($this->exactly($sessionsToGenerate))
+        $date = $this->getFunctionMock('Bugsnag', 'date');
+        $date->expects($this->exactly($sessionsToGenerate))
             ->withAnyParameters()
-            ->willReturnCallback(function () use ($strftimeReturnValues, &$invocation) {
-                return $strftimeReturnValues[$invocation++];
+            ->willReturnCallback(function () use ($dateReturnValues, &$invocation) {
+                return $dateReturnValues[$invocation++];
             });
 
         // Mock 'time' to return a negative value, which will stop 'startSession'

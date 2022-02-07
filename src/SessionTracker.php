@@ -11,26 +11,36 @@ class SessionTracker
      * The current session payload version.
      *
      * @deprecated Use {HttpClient::SESSION_PAYLOAD_VERSION} instead.
+     *
+     * @var string
      */
     protected static $SESSION_PAYLOAD_VERSION = HttpClient::SESSION_PAYLOAD_VERSION;
 
     /**
      * The amount of time between each sending attempt.
+     *
+     * @var int
      */
     protected static $DELIVERY_INTERVAL = 30;
 
     /**
      * The maximum amount of sessions to hold onto.
+     *
+     * @var int
      */
     protected static $MAX_SESSION_COUNT = 50;
 
     /**
      * The key for storing session counts.
+     *
+     * @var string
      */
     protected static $SESSION_COUNTS_KEY = 'bugsnag-session-counts';
 
     /**
      * The key for storing last sent data.
+     *
+     * @var string
      */
     protected static $SESSIONS_LAST_SENT_KEY = 'bugsnag-sessions-last-sent';
 
@@ -117,6 +127,8 @@ class SessionTracker
     /**
      * @param Configuration $config
      *
+     * @return void
+     *
      * @deprecated Change the Configuration via the Client object instead.
      */
     public function setConfig(Configuration $config)
@@ -129,7 +141,7 @@ class SessionTracker
      */
     public function startSession()
     {
-        $currentTime = strftime('%Y-%m-%dT%H:%M:00');
+        $currentTime = date('Y-m-d\TH:i:00');
 
         $session = [
             'id' => uniqid('', true),
@@ -425,8 +437,12 @@ class SessionTracker
         if (is_callable($this->storageFunction)) {
             $lastSent = call_user_func($this->storageFunction, self::$SESSIONS_LAST_SENT_KEY);
 
-            if (is_int($lastSent)) {
-                return $lastSent;
+            // $lastSent may be a string despite us storing an integer because
+            // some storage backends will convert all values into strings
+            // note: some invalid integers pass 'is_numeric' (e.g. bigger than
+            // PHP_INT_MAX) but these get cast to '0', which is the default anyway
+            if (is_numeric($lastSent)) {
+                return (int) $lastSent;
             }
 
             return 0;

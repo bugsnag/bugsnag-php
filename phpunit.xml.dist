@@ -16,6 +16,7 @@
     stopOnError="false"
     stopOnFailure="false"
     verbose="true"
+    executionOrder="random"
 >
     <coverage processUncoveredFiles="true">
         <include>
