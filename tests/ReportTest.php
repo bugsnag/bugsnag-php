@@ -5,6 +5,7 @@ namespace Bugsnag\Tests;
 use BadMethodCallException;
 use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\Configuration;
+use Bugsnag\FeatureFlag;
 use Bugsnag\Report;
 use Bugsnag\Stacktrace;
 use Bugsnag\Tests\Fakes\SomeException;
@@ -787,5 +788,101 @@ class ReportTest extends TestCase
         ];
 
         $this->assertSame($expected, $actual);
+    }
+
+    public function testFeatureFlagsCanBeAddedToAReport()
+    {
+        $this->report->addFeatureFlag('a name');
+        $this->report->addFeatureFlag('another name', 'with variant');
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+        ];
+
+        $this->assertSame($expected, $this->report->toArray()['featureFlags']);
+    }
+
+    public function testMultipleFeatureFlagsCanBeAddedToAReportAtOnce()
+    {
+        $this->report->addFeatureFlag('a name');
+        $this->report->addFeatureFlags([
+            new FeatureFlag('another name', 'with variant'),
+            new FeatureFlag('name3'),
+            new FeatureFlag('four', 'yes'),
+        ]);
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+            ['featureFlag' => 'name3'],
+            ['featureFlag' => 'four', 'variant' => 'yes'],
+        ];
+
+        $this->assertSame($expected, $this->report->toArray()['featureFlags']);
+    }
+
+    public function testAFeatureFlagCanBeRemovedFromAReport()
+    {
+        $this->report->addFeatureFlag('a name');
+        $this->report->addFeatureFlag('another name', 'with variant');
+
+        $this->report->clearFeatureFlag('another name');
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+        ];
+
+        $this->assertSame($expected, $this->report->toArray()['featureFlags']);
+    }
+
+    public function testAllFeatureFlagsCanBeRemovedFromAReport()
+    {
+        $this->report->addFeatureFlag('a name');
+        $this->report->addFeatureFlag('another name', 'with variant');
+
+        $this->report->clearFeatureFlags();
+
+        $this->assertSame([], $this->report->toArray()['featureFlags']);
+    }
+
+    public function testReportFeatureFlagsAreInitialisedFromConfiguration()
+    {
+        $this->config->addFeatureFlag('a name');
+        $this->config->addFeatureFlag('another name', 'with variant');
+
+        $report = Report::fromNamedError($this->config, 'Name', 'Message');
+
+        $report->addFeatureFlag('yet another feature flag');
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+            ['featureFlag' => 'yet another feature flag'],
+        ];
+
+        $this->assertSame($expected, $report->toArray()['featureFlags']);
+    }
+
+    public function testMutatingReportFeatureFlagsDoesNotAffectConfiguration()
+    {
+        $this->config->addFeatureFlag('a name');
+
+        $report = Report::fromNamedError($this->config, 'Name', 'Message');
+
+        $report->addFeatureFlag('another name');
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+            ['featureFlag' => 'another name'],
+        ];
+
+        $this->assertSame($expected, $report->toArray()['featureFlags']);
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+        ];
+
+        $this->assertSame($expected, $this->config->getFeatureFlagsCopy()->toArray());
     }
 }
