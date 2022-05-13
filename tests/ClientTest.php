@@ -4,6 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Client;
 use Bugsnag\Configuration;
+use Bugsnag\FeatureFlag;
 use Bugsnag\Internal\GuzzleCompat;
 use Bugsnag\Report;
 use Bugsnag\Tests\Fakes\FakeShutdownStrategy;
@@ -1252,5 +1253,108 @@ class ClientTest extends TestCase
         }
 
         return $mock->with($uri, $this->callback($callback));
+    }
+
+    public function testFeatureFlagsCanBeAddedToClient()
+    {
+        $this->client->addFeatureFlag('a name');
+        $this->client->addFeatureFlag('another name', 'with variant');
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+        ];
+
+        $actual = $this->client->getConfig()->getFeatureFlagsCopy()->toArray();
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testMultipleFeatureFlagsCanBeAddedToClientAtOnce()
+    {
+        $this->client->addFeatureFlag('a name');
+        $this->client->addFeatureFlags([
+            new FeatureFlag('another name', 'with variant'),
+            new FeatureFlag('name3'),
+            new FeatureFlag('four', 'yes'),
+        ]);
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+            ['featureFlag' => 'name3'],
+            ['featureFlag' => 'four', 'variant' => 'yes'],
+        ];
+
+        $actual = $this->client->getConfig()->getFeatureFlagsCopy()->toArray();
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAFeatureFlagCanBeRemovedFromClient()
+    {
+        $this->client->addFeatureFlag('a name');
+        $this->client->addFeatureFlag('another name', 'with variant');
+
+        $this->client->clearFeatureFlag('another name');
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+        ];
+
+        $actual = $this->client->getConfig()->getFeatureFlagsCopy()->toArray();
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAllFeatureFlagsCanBeRemovedFromClient()
+    {
+        $this->client->addFeatureFlag('a name');
+        $this->client->addFeatureFlag('another name', 'with variant');
+
+        $this->client->clearFeatureFlags();
+
+        $actual = $this->client->getConfig()->getFeatureFlagsCopy()->toArray();
+
+        $this->assertSame([], $actual);
+    }
+
+    public function testFeatureFlagsAreSentToBugsnag()
+    {
+        $this->client->addFeatureFlag('added from client');
+        $this->client->addFeatureFlag('hello');
+
+        $this->client->notifyError('SomeError', 'Some message', function (Report $report) {
+            $report->addFeatureFlag('hi');
+
+            $report->addFeatureFlags([
+                new FeatureFlag('added from report 1', 'yes'),
+                new FeatureFlag('added from report 2'),
+            ]);
+
+            $report->clearFeatureFlag('hello');
+            $report->clearFeatureFlag('hi');
+        });
+
+        $this->expectGuzzlePostWithCallback(
+            $this->client->getNotifyEndpoint(),
+            function ($options) {
+                $payload = $this->getPayloadFromGuzzleOptions($options);
+
+                $this->assertTrue(isset($payload['events'][0]['featureFlags']));
+
+                $expected = [
+                    ['featureFlag' => 'added from client'],
+                    ['featureFlag' => 'added from report 1', 'variant' => 'yes'],
+                    ['featureFlag' => 'added from report 2'],
+                ];
+
+                $this->assertSame($expected, $payload['events'][0]['featureFlags']);
+
+                return true;
+            }
+        );
+
+        $this->client->flush();
     }
 }
