@@ -3,6 +3,7 @@
 namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
+use Bugsnag\FeatureFlag;
 
 class ConfigurationTest extends TestCase
 {
@@ -357,5 +358,69 @@ class ConfigurationTest extends TestCase
         $this->config->setRedactedKeys($redactedKeys);
 
         $this->assertSame($redactedKeys, $this->config->getRedactedKeys());
+    }
+
+    public function testFeatureFlagsCanBeAddedToConfiguration()
+    {
+        $this->config->addFeatureFlag('a name');
+        $this->config->addFeatureFlag('another name', 'with variant');
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+        ];
+
+        $actual = $this->config->getFeatureFlagsCopy()->toArray();
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testMultipleFeatureFlagsCanBeAddedToConfigurationAtOnce()
+    {
+        $this->config->addFeatureFlag('a name');
+        $this->config->addFeatureFlags([
+            new FeatureFlag('another name', 'with variant'),
+            new FeatureFlag('name3'),
+            new FeatureFlag('four', 'yes'),
+        ]);
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+            ['featureFlag' => 'name3'],
+            ['featureFlag' => 'four', 'variant' => 'yes'],
+        ];
+
+        $actual = $this->config->getFeatureFlagsCopy()->toArray();
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAFeatureFlagCanBeRemovedFromConfiguration()
+    {
+        $this->config->addFeatureFlag('a name');
+        $this->config->addFeatureFlag('another name', 'with variant');
+
+        $this->config->clearFeatureFlag('another name');
+
+        $expected = [
+            ['featureFlag' => 'a name'],
+        ];
+
+        $actual = $this->config->getFeatureFlagsCopy()->toArray();
+
+        $this->assertSame($expected, $actual);
+    }
+
+    public function testAllFeatureFlagsCanBeRemovedFromConfiguration()
+    {
+        $this->config->addFeatureFlag('a name');
+        $this->config->addFeatureFlag('another name', 'with variant');
+
+        $this->config->clearFeatureFlags();
+
+        $actual = $this->config->getFeatureFlagsCopy()->toArray();
+
+        $this->assertSame([], $actual);
     }
 }
