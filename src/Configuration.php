@@ -2,9 +2,10 @@
 
 namespace Bugsnag;
 
+use Bugsnag\Internal\FeatureFlagDelegate;
 use InvalidArgumentException;
 
-class Configuration
+class Configuration implements FeatureDataStore
 {
     /**
      * The default endpoint for event notifications.
@@ -117,6 +118,13 @@ class Configuration
     protected $metaData = [];
 
     /**
+     * The associated feature flags.
+     *
+     * @var FeatureFlagDelegate
+     */
+    private $featureFlags;
+
+    /**
      * The error reporting level.
      *
      * @var int|null
@@ -196,6 +204,7 @@ class Configuration
 
         $this->apiKey = $apiKey;
         $this->fallbackType = php_sapi_name();
+        $this->featureFlags = new FeatureFlagDelegate();
 
         // Add PHP runtime version to device data
         $this->mergeDeviceData(['runtimeVersions' => ['php' => phpversion()]]);
@@ -586,6 +595,64 @@ class Configuration
     public function getMetaData()
     {
         return $this->metaData;
+    }
+
+    /**
+     * Add a single feature flag to all future reports.
+     *
+     * @param string $name
+     * @param string|null $variant
+     *
+     * @return void
+     */
+    public function addFeatureFlag($name, $variant = null)
+    {
+        $this->featureFlags->add($name, $variant);
+    }
+
+    /**
+     * Add multiple feature flags to all future reports.
+     *
+     * @param FeatureFlag[] $featureFlags
+     * @phpstan-param list<FeatureFlag> $featureFlags
+     *
+     * @return void
+     */
+    public function addFeatureFlags(array $featureFlags)
+    {
+        $this->featureFlags->merge($featureFlags);
+    }
+
+    /**
+     * Remove the feature flag with the given name from all future reports.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function clearFeatureFlag($name)
+    {
+        $this->featureFlags->remove($name);
+    }
+
+    /**
+     * Remove all feature flags from all future reports.
+     *
+     * @return void
+     */
+    public function clearFeatureFlags()
+    {
+        $this->featureFlags->clear();
+    }
+
+    /**
+     * @internal
+     *
+     * @return FeatureFlagDelegate
+     */
+    public function getFeatureFlagsCopy()
+    {
+        return clone $this->featureFlags;
     }
 
     /**
