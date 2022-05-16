@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* New APIs to support feature flag and experiment functionality. For more information, please see https://docs.bugsnag.com/product/features-experiments.
+  [#646](https://github.com/bugsnag/bugsnag-php/pull/646)
+
 ## 3.27.0 (2022-02-07)
 
 ### Enhancements
