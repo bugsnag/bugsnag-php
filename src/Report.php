@@ -5,12 +5,13 @@ namespace Bugsnag;
 use BackedEnum;
 use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\DateTime\Date;
+use Bugsnag\Internal\FeatureFlagDelegate;
 use Exception;
 use InvalidArgumentException;
 use Throwable;
 use UnitEnum;
 
-class Report
+class Report implements FeatureDataStore
 {
     /**
      * The payload version for the error notification API.
@@ -88,6 +89,13 @@ class Report
      * @var array[]
      */
     protected $metaData = [];
+
+    /**
+     * The associated feature flags.
+     *
+     * @var FeatureFlagDelegate
+     */
+    private $featureFlags;
 
     /**
      * The associated user.
@@ -211,6 +219,7 @@ class Report
     {
         $this->config = $config;
         $this->time = Date::now();
+        $this->featureFlags = $config->getFeatureFlagsCopy();
     }
 
     /**
@@ -576,6 +585,54 @@ class Report
     }
 
     /**
+     * Add a single feature flag to this report.
+     *
+     * @param string $name
+     * @param string|null $variant
+     *
+     * @return void
+     */
+    public function addFeatureFlag($name, $variant = null)
+    {
+        $this->featureFlags->add($name, $variant);
+    }
+
+    /**
+     * Add multiple feature flags to this report.
+     *
+     * @param FeatureFlag[] $featureFlags
+     * @phpstan-param list<FeatureFlag> $featureFlags
+     *
+     * @return void
+     */
+    public function addFeatureFlags(array $featureFlags)
+    {
+        $this->featureFlags->merge($featureFlags);
+    }
+
+    /**
+     * Remove the feature flag with the given name from this report.
+     *
+     * @param string $name
+     *
+     * @return void
+     */
+    public function clearFeatureFlag($name)
+    {
+        $this->featureFlags->remove($name);
+    }
+
+    /**
+     * Remove all feature flags from this report.
+     *
+     * @return void
+     */
+    public function clearFeatureFlags()
+    {
+        $this->featureFlags->clear();
+    }
+
+    /**
      * Set the current user.
      *
      * @param array $user the current user
@@ -706,6 +763,7 @@ class Report
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
             'unhandled' => $this->getUnhandled(),
             'severityReason' => $this->getSeverityReason(),
+            'featureFlags' => $this->featureFlags->toArray(),
         ];
 
         if ($hash = $this->getGroupingHash()) {
