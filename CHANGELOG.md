@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## TBD
+## 3.28.0 (2022-05-18)
 
 ### Enhancements
 
