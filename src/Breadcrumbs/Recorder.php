@@ -15,7 +15,7 @@ class Recorder implements Countable, Iterator
      *
      * @var int
      */
-    private $maxBreadcrumbs = 25;
+    private $maxBreadcrumbs = 50;
 
     /**
      * The recorded breadcrumbs.

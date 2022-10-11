@@ -91,6 +91,7 @@ class RecorderTest extends TestCase
     public function testManyRecorded()
     {
         $recorder = new Recorder();
+        $recorder->setMaxBreadcrumbs(25);
 
         $one = new Breadcrumb('Foo', 'error');
         $two = new Breadcrumb('Bar', 'user');

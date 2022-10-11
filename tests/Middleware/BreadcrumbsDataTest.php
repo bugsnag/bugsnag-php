@@ -111,6 +111,7 @@ class BreadcrumbsDataTest extends TestCase
     {
         $breadcrumbs = null;
         $middleware = new BreadcrumbData($this->recorder);
+        $this->recorder->setMaxBreadcrumbs(25);
 
         $this->recorder->record(new Breadcrumb('Foo', 'error', ['foo' => 'bar']));
 
