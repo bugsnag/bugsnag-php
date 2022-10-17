@@ -5,17 +5,40 @@ namespace Bugsnag\Tests\Breadcrumbs;
 use Bugsnag\Breadcrumbs\Breadcrumb;
 use Bugsnag\Breadcrumbs\Recorder;
 use Bugsnag\Tests\TestCase;
+use Countable;
 use Iterator;
+use stdClass;
 
 class RecorderTest extends TestCase
 {
-    public function testIterable()
+    public function testItImplementsIteratorAndCountable()
     {
         $recorder = new Recorder();
 
         $this->assertInstanceOf(Iterator::class, $recorder);
+        $this->assertInstanceOf(Countable::class, $recorder);
+    }
 
-        $this->assertSame([], iterator_to_array($recorder));
+    public function testItCanBeIterated()
+    {
+        $breadcrumbs = [
+            new Breadcrumb('one', 'error'),
+            new Breadcrumb('two', 'user'),
+            new Breadcrumb('three', 'user'),
+            new Breadcrumb('four', 'user'),
+        ];
+
+        $recorder = new Recorder();
+        $recorder->record($breadcrumbs[0]);
+        $recorder->record($breadcrumbs[1]);
+        $recorder->record($breadcrumbs[2]);
+        $recorder->record($breadcrumbs[3]);
+
+        foreach ($recorder as $i => $breadcrumb) {
+            $this->assertSame($breadcrumbs[$i], $breadcrumb);
+        }
+
+        $this->assertSame($breadcrumbs, iterator_to_array($recorder));
     }
 
     public function testNoneRecorded()
@@ -68,6 +91,7 @@ class RecorderTest extends TestCase
     public function testManyRecorded()
     {
         $recorder = new Recorder();
+
         $one = new Breadcrumb('Foo', 'error');
         $two = new Breadcrumb('Bar', 'user');
         $three = new Breadcrumb('Baz', 'request');
@@ -89,5 +113,123 @@ class RecorderTest extends TestCase
 
         $this->assertCount(0, $recorder);
         $this->assertSame([], iterator_to_array($recorder));
+    }
+
+    public function testItCanGrow()
+    {
+        $recorder = new Recorder();
+        $recorder->setMaxBreadcrumbs(2);
+
+        $one = new Breadcrumb('one', 'error');
+        $two = new Breadcrumb('two', 'user');
+        $three = new Breadcrumb('three', 'user');
+        $four = new Breadcrumb('four', 'user');
+
+        $recorder->record($one);
+        $recorder->record($two);
+        $recorder->record($three);
+        $recorder->record($four);
+
+        $this->assertSame([$three, $four], iterator_to_array($recorder));
+
+        $recorder->setMaxBreadcrumbs(4);
+
+        $recorder->record($one);
+        $recorder->record($two);
+
+        $this->assertSame([$three, $four, $one, $two], iterator_to_array($recorder));
+
+        $recorder->record($three);
+        $recorder->record($four);
+
+        $this->assertSame([$one, $two, $three, $four], iterator_to_array($recorder));
+    }
+
+    public function testItCanShrink()
+    {
+        $recorder = new Recorder();
+        $recorder->setMaxBreadcrumbs(4);
+
+        $one = new Breadcrumb('one', 'error');
+        $two = new Breadcrumb('two', 'user');
+
+        $recorder->record($one);
+        $recorder->record($two);
+        $recorder->record($one);
+        $recorder->record($two);
+
+        $this->assertSame([$one, $two, $one, $two], iterator_to_array($recorder));
+
+        $recorder->setMaxBreadcrumbs(2);
+
+        $this->assertSame([$one, $two], iterator_to_array($recorder));
+
+        $recorder->record($two);
+        $recorder->record($one);
+
+        $this->assertSame([$two, $one], iterator_to_array($recorder));
+
+        $recorder->setMaxBreadcrumbs(0);
+
+        $this->assertSame([], iterator_to_array($recorder));
+
+        $recorder->record($two);
+
+        $this->assertSame([], iterator_to_array($recorder));
+    }
+
+    public function testItDoesNotAllowNegativeMaxes()
+    {
+        $log = $this->getFunctionMock('Bugsnag\Breadcrumbs', 'error_log');
+        $log->expects($this->once())
+            ->with($this->equalTo(
+                'Bugsnag Warning: maxBreadcrumbs should be an integer between 0 and 100 (inclusive)'
+            ));
+
+        $recorder = new Recorder();
+
+        $previousMax = $recorder->getMaxBreadcrumbs();
+
+        $recorder->setMaxBreadcrumbs(-1);
+
+        $this->assertNotSame(-1, $recorder->getMaxBreadcrumbs());
+        $this->assertSame($previousMax, $recorder->getMaxBreadcrumbs());
+    }
+
+    public function testItDoesNotAllowMaxesGreaterThan100()
+    {
+        $log = $this->getFunctionMock('Bugsnag\Breadcrumbs', 'error_log');
+        $log->expects($this->once())
+            ->with($this->equalTo(
+                'Bugsnag Warning: maxBreadcrumbs should be an integer between 0 and 100 (inclusive)'
+            ));
+
+        $recorder = new Recorder();
+
+        $previousMax = $recorder->getMaxBreadcrumbs();
+        $recorder->setMaxBreadcrumbs(101);
+
+        $this->assertNotSame(101, $recorder->getMaxBreadcrumbs());
+        $this->assertSame($previousMax, $recorder->getMaxBreadcrumbs());
+    }
+
+    public function testItDoesNotAllowNonIntegerMaxes()
+    {
+        $log = $this->getFunctionMock('Bugsnag\Breadcrumbs', 'error_log');
+        $log->expects($this->exactly(4))
+            ->with($this->equalTo(
+                'Bugsnag Warning: maxBreadcrumbs should be an integer between 0 and 100 (inclusive)'
+            ));
+
+        $recorder = new Recorder();
+
+        $previousMax = $recorder->getMaxBreadcrumbs();
+
+        $recorder->setMaxBreadcrumbs(10.1);
+        $recorder->setMaxBreadcrumbs(new stdClass());
+        $recorder->setMaxBreadcrumbs([1, 2, 3]);
+        $recorder->setMaxBreadcrumbs(null);
+
+        $this->assertSame($previousMax, $recorder->getMaxBreadcrumbs());
     }
 }
