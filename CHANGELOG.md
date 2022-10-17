@@ -1,6 +1,16 @@
 Changelog
 =========
 
+## TBD
+
+### Enhancements
+
+* The maximum number of breadcrumbs can now be configured between 0-100 (inclusive)
+  [#652](https://github.com/bugsnag/bugsnag-php/pull/652)
+
+* Raised the default maximum number of breadcrumbs to 50
+  [#652](https://github.com/bugsnag/bugsnag-php/pull/652)
+
 ## 3.28.0 (2022-05-18)
 
 ### Enhancements

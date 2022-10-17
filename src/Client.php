@@ -1066,4 +1066,24 @@ class Client implements FeatureDataStore
     {
         return $this->config->getRedactedKeys();
     }
+
+    /**
+     * @param int $maxBreadcrumbs
+     *
+     * @return $this
+     */
+    public function setMaxBreadcrumbs($maxBreadcrumbs)
+    {
+        $this->recorder->setMaxBreadcrumbs($maxBreadcrumbs);
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxBreadcrumbs()
+    {
+        return $this->recorder->getMaxBreadcrumbs();
+    }
 }

@@ -15,42 +15,24 @@ class Recorder implements Countable, Iterator
      *
      * @var int
      */
-    const MAX_ITEMS = 25;
+    private $maxBreadcrumbs = 50;
 
     /**
      * The recorded breadcrumbs.
      *
      * @var \Bugsnag\Breadcrumbs\Breadcrumb[]
      */
-    protected $breadcrumbs = [];
-
-    /**
-     * The head position.
-     *
-     * @var int
-     */
-    protected $head = 0;
-
-    /**
-     * The pointer position.
-     *
-     * @var int
-     */
-    protected $pointer = 0;
+    private $breadcrumbs = [];
 
     /**
      * The iteration position.
      *
      * @var int
      */
-    protected $position = 0;
+    private $position = 0;
 
     /**
      * Record a breadcrumb.
-     *
-     * We're recording a maximum of 25 breadcrumbs. Once we've recorded 25, we
-     * start wrapping back around and replacing the earlier ones. In order to
-     * indicate the start of the list, we advance a head pointer.
      *
      * @param \Bugsnag\Breadcrumbs\Breadcrumb $breadcrumb
      *
@@ -58,16 +40,12 @@ class Recorder implements Countable, Iterator
      */
     public function record(Breadcrumb $breadcrumb)
     {
-        // advance the head by one if we've caught up
-        if ($this->breadcrumbs && $this->pointer === $this->head) {
-            $this->head = ($this->head + 1) % static::MAX_ITEMS;
+        $this->breadcrumbs[] = $breadcrumb;
+
+        // drop the oldest breadcrumb if we're over the max
+        if ($this->count() > $this->maxBreadcrumbs) {
+            array_shift($this->breadcrumbs);
         }
-
-        // record the new breadcrumb
-        $this->breadcrumbs[$this->pointer] = $breadcrumb;
-
-        // advance the pointer so we set the next breadcrumb in the next slot
-        $this->pointer = ($this->pointer + 1) % static::MAX_ITEMS;
     }
 
     /**
@@ -77,10 +55,48 @@ class Recorder implements Countable, Iterator
      */
     public function clear()
     {
-        $this->head = 0;
-        $this->pointer = 0;
         $this->position = 0;
         $this->breadcrumbs = [];
+    }
+
+    /**
+     * Set the maximum number of breadcrumbs that are allowed to be stored.
+     *
+     * This must be an integer between 0 and 100 (inclusive).
+     *
+     * @param int $maxBreadcrumbs
+     *
+     * @return void
+     */
+    public function setMaxBreadcrumbs($maxBreadcrumbs)
+    {
+        if (!is_int($maxBreadcrumbs) || $maxBreadcrumbs < 0 || $maxBreadcrumbs > 100) {
+            error_log(
+                'Bugsnag Warning: maxBreadcrumbs should be an integer between 0 and 100 (inclusive)'
+            );
+
+            return;
+        }
+
+        $this->maxBreadcrumbs = $maxBreadcrumbs;
+
+        // drop the oldest breadcrumbs if we're over the max
+        if ($this->count() > $this->maxBreadcrumbs) {
+            $this->breadcrumbs = array_slice(
+                $this->breadcrumbs,
+                $this->count() - $this->maxBreadcrumbs
+            );
+        }
+    }
+
+    /**
+     * Get the maximum number of breadcrumbs that are allowed to be stored.
+     *
+     * @return int
+     */
+    public function getMaxBreadcrumbs()
+    {
+        return $this->maxBreadcrumbs;
     }
 
     /**
@@ -102,7 +118,7 @@ class Recorder implements Countable, Iterator
     #[\ReturnTypeWillChange]
     public function current()
     {
-        return $this->breadcrumbs[($this->head + $this->position) % static::MAX_ITEMS];
+        return $this->breadcrumbs[$this->position];
     }
 
     /**
