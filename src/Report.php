@@ -633,6 +633,16 @@ class Report implements FeatureDataStore
     }
 
     /**
+     * Get the list of feature flags for this report.
+     *
+     * @return \Bugsnag\FeatureFlag[]
+     */
+    public function getFeatureFlags()
+    {
+        return $this->featureFlags->toArray();
+    }
+
+    /**
      * Set the current user.
      *
      * @param array $user the current user

@@ -1357,4 +1357,59 @@ class ClientTest extends TestCase
 
         $this->client->flush();
     }
+
+    public function testFeatureFlagsCanBeAccessedInCallbacks()
+    {
+        $this->client->registerCallback(function (Report $report) {
+            $report->addFeatureFlag('hi');
+
+            $report->addFeatureFlags([
+                new FeatureFlag('added from report 1', 'yes'),
+                new FeatureFlag('added from report 2'),
+            ]);
+
+            $report->clearFeatureFlag('hello');
+            $report->clearFeatureFlag('hi');
+        });
+
+        $called = false;
+        $this->client->registerCallback(function (Report $report) use (&$called) {
+            $expected = [
+                new FeatureFlag('added from client'),
+                new FeatureFlag('added from report 1', 'yes'),
+                new FeatureFlag('added from report 2'),
+            ];
+
+            $this->assertEquals($expected, $report->getFeatureFlags());
+
+            $called = true;
+        });
+
+        $this->client->addFeatureFlag('added from client');
+        $this->client->addFeatureFlag('hello');
+
+        $this->client->notifyError('SomeError', 'Some message');
+
+        $this->expectGuzzlePostWithCallback(
+            $this->client->getNotifyEndpoint(),
+            function ($options) use ($called) {
+                $payload = $this->getPayloadFromGuzzleOptions($options);
+
+                $this->assertTrue(isset($payload['events'][0]['featureFlags']));
+                $this->assertTrue($called);
+
+                $expected = [
+                    ['featureFlag' => 'added from client'],
+                    ['featureFlag' => 'added from report 1', 'variant' => 'yes'],
+                    ['featureFlag' => 'added from report 2'],
+                ];
+
+                $this->assertSame($expected, $payload['events'][0]['featureFlags']);
+
+                return true;
+            }
+        );
+
+        $this->client->flush();
+    }
 }

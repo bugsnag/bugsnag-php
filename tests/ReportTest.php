@@ -795,12 +795,18 @@ class ReportTest extends TestCase
         $this->report->addFeatureFlag('a name');
         $this->report->addFeatureFlag('another name', 'with variant');
 
-        $expected = [
+        $expectedEventApi = [
             ['featureFlag' => 'a name'],
             ['featureFlag' => 'another name', 'variant' => 'with variant'],
         ];
 
-        $this->assertSame($expected, $this->report->toArray()['featureFlags']);
+        $expectedGetter = [
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'with variant'),
+        ];
+
+        $this->assertSame($expectedEventApi, $this->report->toArray()['featureFlags']);
+        $this->assertEquals($expectedGetter, $this->report->getFeatureFlags());
     }
 
     public function testMultipleFeatureFlagsCanBeAddedToAReportAtOnce()
@@ -812,14 +818,22 @@ class ReportTest extends TestCase
             new FeatureFlag('four', 'yes'),
         ]);
 
-        $expected = [
+        $expectedEventApi = [
             ['featureFlag' => 'a name'],
             ['featureFlag' => 'another name', 'variant' => 'with variant'],
             ['featureFlag' => 'name3'],
             ['featureFlag' => 'four', 'variant' => 'yes'],
         ];
 
-        $this->assertSame($expected, $this->report->toArray()['featureFlags']);
+        $expectedGetter = [
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'with variant'),
+            new FeatureFlag('name3'),
+            new FeatureFlag('four', 'yes'),
+        ];
+
+        $this->assertSame($expectedEventApi, $this->report->toArray()['featureFlags']);
+        $this->assertEquals($expectedGetter, $this->report->getFeatureFlags());
     }
 
     public function testAFeatureFlagCanBeRemovedFromAReport()
@@ -829,11 +843,11 @@ class ReportTest extends TestCase
 
         $this->report->clearFeatureFlag('another name');
 
-        $expected = [
-            ['featureFlag' => 'a name'],
-        ];
+        $expectedEventApi = [['featureFlag' => 'a name']];
+        $expectedGetter = [new FeatureFlag('a name')];
 
-        $this->assertSame($expected, $this->report->toArray()['featureFlags']);
+        $this->assertSame($expectedEventApi, $this->report->toArray()['featureFlags']);
+        $this->assertEquals($expectedGetter, $this->report->getFeatureFlags());
     }
 
     public function testAllFeatureFlagsCanBeRemovedFromAReport()
@@ -844,6 +858,7 @@ class ReportTest extends TestCase
         $this->report->clearFeatureFlags();
 
         $this->assertSame([], $this->report->toArray()['featureFlags']);
+        $this->assertSame([], $this->report->getFeatureFlags());
     }
 
     public function testReportFeatureFlagsAreInitialisedFromConfiguration()
@@ -855,13 +870,20 @@ class ReportTest extends TestCase
 
         $report->addFeatureFlag('yet another feature flag');
 
-        $expected = [
+        $expectedEventApi = [
             ['featureFlag' => 'a name'],
             ['featureFlag' => 'another name', 'variant' => 'with variant'],
             ['featureFlag' => 'yet another feature flag'],
         ];
 
-        $this->assertSame($expected, $report->toArray()['featureFlags']);
+        $expectedGetter = [
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'with variant'),
+            new FeatureFlag('yet another feature flag'),
+        ];
+
+        $this->assertSame($expectedEventApi, $report->toArray()['featureFlags']);
+        $this->assertEquals($expectedGetter, $report->getFeatureFlags());
     }
 
     public function testMutatingReportFeatureFlagsDoesNotAffectConfiguration()
@@ -872,17 +894,41 @@ class ReportTest extends TestCase
 
         $report->addFeatureFlag('another name');
 
-        $expected = [
+        $expectedEventApi = [
             ['featureFlag' => 'a name'],
             ['featureFlag' => 'another name'],
         ];
 
-        $this->assertSame($expected, $report->toArray()['featureFlags']);
+        $expectedGetter = [
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name'),
+        ];
+
+        $this->assertSame($expectedEventApi, $report->toArray()['featureFlags']);
+        $this->assertEquals($expectedGetter, $report->getFeatureFlags());
 
         $expected = [
             new FeatureFlag('a name'),
         ];
 
         $this->assertEquals($expected, $this->config->getFeatureFlagsCopy()->toArray());
+    }
+
+    public function testFeatureFlagsCanBeAccessedFromAReport()
+    {
+        $this->config->addFeatureFlag('a name');
+        $this->config->addFeatureFlag('another name', 'with variant');
+
+        $report = Report::fromNamedError($this->config, 'Name', 'Message');
+
+        $report->addFeatureFlag('yet another feature flag');
+
+        $expected = [
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'with variant'),
+            new FeatureFlag('yet another feature flag'),
+        ];
+
+        $this->assertEquals($expected, $report->getFeatureFlags());
     }
 }
