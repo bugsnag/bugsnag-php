@@ -880,9 +880,9 @@ class ReportTest extends TestCase
         $this->assertSame($expected, $report->toArray()['featureFlags']);
 
         $expected = [
-            ['featureFlag' => 'a name'],
+            new FeatureFlag('a name'),
         ];
 
-        $this->assertSame($expected, $this->config->getFeatureFlagsCopy()->toArray());
+        $this->assertEquals($expected, $this->config->getFeatureFlagsCopy()->toArray());
     }
 }

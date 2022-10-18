@@ -15,11 +15,11 @@ class FeatureFlagDelegateTest extends TestCase
         $delegate->add('another name', 'a variant');
 
         $expected = [
-            ['featureFlag' => 'a name'],
-            ['featureFlag' => 'another name', 'variant' => 'a variant'],
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'a variant'),
         ];
 
-        $this->assertSame($expected, $delegate->toArray());
+        $this->assertEquals($expected, $delegate->toArray());
     }
 
     public function testMerge()
@@ -33,12 +33,12 @@ class FeatureFlagDelegateTest extends TestCase
         ]);
 
         $expected = [
-            ['featureFlag' => 'name'],
-            ['featureFlag' => '2flag', 'variant' => '2variant'],
-            ['featureFlag' => 'flag', 'variant' => 'abc'],
+            new FeatureFlag('name'),
+            new FeatureFlag('2flag', '2variant'),
+            new FeatureFlag('flag', 'abc'),
         ];
 
-        $this->assertSame($expected, $delegate->toArray());
+        $this->assertEquals($expected, $delegate->toArray());
 
         $delegate->merge([
             // replace the 'name' flag with one that has a variant
@@ -47,13 +47,13 @@ class FeatureFlagDelegateTest extends TestCase
         ]);
 
         $expected = [
-            ['featureFlag' => '2flag', 'variant' => '2variant'],
-            ['featureFlag' => 'flag', 'variant' => 'abc'],
-            ['featureFlag' => 'name', 'variant' => 'with variant'],
-            ['featureFlag' => 'final flag'],
+            new FeatureFlag('2flag', '2variant'),
+            new FeatureFlag('flag', 'abc'),
+            new FeatureFlag('name', 'with variant'),
+            new FeatureFlag('final flag'),
         ];
 
-        $this->assertSame($expected, $delegate->toArray());
+        $this->assertEquals($expected, $delegate->toArray());
     }
 
     public function testMergeIgnoresIncorrectTypes()
@@ -69,11 +69,11 @@ class FeatureFlagDelegateTest extends TestCase
         ]);
 
         $expected = [
-            ['featureFlag' => '2flag', 'variant' => '2variant'],
-            ['featureFlag' => '3flag', 'variant' => '3variant'],
+            new FeatureFlag('2flag', '2variant'),
+            new FeatureFlag('3flag', '3variant'),
         ];
 
-        $this->assertSame($expected, $delegate->toArray());
+        $this->assertEquals($expected, $delegate->toArray());
     }
 
     public function testRemove()
@@ -86,10 +86,10 @@ class FeatureFlagDelegateTest extends TestCase
         $delegate->remove('a name');
 
         $expected = [
-            ['featureFlag' => 'another name', 'variant' => 'a variant'],
+            new FeatureFlag('another name', 'a variant'),
         ];
 
-        $this->assertSame($expected, $delegate->toArray());
+        $this->assertEquals($expected, $delegate->toArray());
 
         $delegate->remove('another name');
 

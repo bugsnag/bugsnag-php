@@ -1261,13 +1261,13 @@ class ClientTest extends TestCase
         $this->client->addFeatureFlag('another name', 'with variant');
 
         $expected = [
-            ['featureFlag' => 'a name'],
-            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'with variant'),
         ];
 
         $actual = $this->client->getConfig()->getFeatureFlagsCopy()->toArray();
 
-        $this->assertSame($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testMultipleFeatureFlagsCanBeAddedToClientAtOnce()
@@ -1280,15 +1280,15 @@ class ClientTest extends TestCase
         ]);
 
         $expected = [
-            ['featureFlag' => 'a name'],
-            ['featureFlag' => 'another name', 'variant' => 'with variant'],
-            ['featureFlag' => 'name3'],
-            ['featureFlag' => 'four', 'variant' => 'yes'],
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'with variant'),
+            new FeatureFlag('name3'),
+            new FeatureFlag('four', 'yes'),
         ];
 
         $actual = $this->client->getConfig()->getFeatureFlagsCopy()->toArray();
 
-        $this->assertSame($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testAFeatureFlagCanBeRemovedFromClient()
@@ -1299,12 +1299,12 @@ class ClientTest extends TestCase
         $this->client->clearFeatureFlag('another name');
 
         $expected = [
-            ['featureFlag' => 'a name'],
+            new FeatureFlag('a name'),
         ];
 
         $actual = $this->client->getConfig()->getFeatureFlagsCopy()->toArray();
 
-        $this->assertSame($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testAllFeatureFlagsCanBeRemovedFromClient()

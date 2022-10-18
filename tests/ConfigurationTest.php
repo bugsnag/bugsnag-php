@@ -366,13 +366,13 @@ class ConfigurationTest extends TestCase
         $this->config->addFeatureFlag('another name', 'with variant');
 
         $expected = [
-            ['featureFlag' => 'a name'],
-            ['featureFlag' => 'another name', 'variant' => 'with variant'],
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'with variant'),
         ];
 
         $actual = $this->config->getFeatureFlagsCopy()->toArray();
 
-        $this->assertSame($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testMultipleFeatureFlagsCanBeAddedToConfigurationAtOnce()
@@ -385,15 +385,15 @@ class ConfigurationTest extends TestCase
         ]);
 
         $expected = [
-            ['featureFlag' => 'a name'],
-            ['featureFlag' => 'another name', 'variant' => 'with variant'],
-            ['featureFlag' => 'name3'],
-            ['featureFlag' => 'four', 'variant' => 'yes'],
+            new FeatureFlag('a name'),
+            new FeatureFlag('another name', 'with variant'),
+            new FeatureFlag('name3'),
+            new FeatureFlag('four', 'yes'),
         ];
 
         $actual = $this->config->getFeatureFlagsCopy()->toArray();
 
-        $this->assertSame($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testAFeatureFlagCanBeRemovedFromConfiguration()
@@ -404,12 +404,12 @@ class ConfigurationTest extends TestCase
         $this->config->clearFeatureFlag('another name');
 
         $expected = [
-            ['featureFlag' => 'a name'],
+            new FeatureFlag('a name'),
         ];
 
         $actual = $this->config->getFeatureFlagsCopy()->toArray();
 
-        $this->assertSame($expected, $actual);
+        $this->assertEquals($expected, $actual);
     }
 
     public function testAllFeatureFlagsCanBeRemovedFromConfiguration()

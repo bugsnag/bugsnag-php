@@ -763,7 +763,12 @@ class Report implements FeatureDataStore
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
             'unhandled' => $this->getUnhandled(),
             'severityReason' => $this->getSeverityReason(),
-            'featureFlags' => $this->featureFlags->toArray(),
+            'featureFlags' => array_map(
+                function (FeatureFlag $flag) {
+                    return $flag->toArray();
+                },
+                $this->featureFlags->toArray()
+            ),
         ];
 
         if ($hash = $this->getGroupingHash()) {
