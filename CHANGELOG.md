@@ -11,6 +11,9 @@ Changelog
 * Raised the default maximum number of breadcrumbs to 50
   [#652](https://github.com/bugsnag/bugsnag-php/pull/652)
 
+* Add a `Report::getFeatureFlags` method to allow accessing feature flags in callbacks
+  [#653](https://github.com/bugsnag/bugsnag-php/pull/653)
+
 ## 3.28.0 (2022-05-18)
 
 ### Enhancements

@@ -633,6 +633,16 @@ class Report implements FeatureDataStore
     }
 
     /**
+     * Get the list of feature flags for this report.
+     *
+     * @return \Bugsnag\FeatureFlag[]
+     */
+    public function getFeatureFlags()
+    {
+        return $this->featureFlags->toArray();
+    }
+
+    /**
      * Set the current user.
      *
      * @param array $user the current user
@@ -763,7 +773,12 @@ class Report implements FeatureDataStore
             'metaData' => $this->cleanupObj($this->getMetaData(), true),
             'unhandled' => $this->getUnhandled(),
             'severityReason' => $this->getSeverityReason(),
-            'featureFlags' => $this->featureFlags->toArray(),
+            'featureFlags' => array_map(
+                function (FeatureFlag $flag) {
+                    return $flag->toArray();
+                },
+                $this->featureFlags->toArray()
+            ),
         ];
 
         if ($hash = $this->getGroupingHash()) {

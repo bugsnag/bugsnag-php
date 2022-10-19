@@ -74,21 +74,12 @@ final class FeatureFlagDelegate
     }
 
     /**
-     * Convert the list of stored feature flags into the format used by the
-     * Bugsnag Event API.
+     * Get the list of stored feature flags as an array.
      *
-     * For example: [{ "featureFlag": "name", "variant": "variant" }, ...]
-     *
-     * @return array[]
-     * @phpstan-return list<array{featureFlag: string, variant?: string}>
+     * @return \Bugsnag\FeatureFlag[]
      */
     public function toArray()
     {
-        return array_map(
-            function (FeatureFlag $flag) {
-                return $flag->toArray();
-            },
-            $this->storage
-        );
+        return $this->storage;
     }
 }
