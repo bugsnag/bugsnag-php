@@ -21,6 +21,8 @@ jobs:
           guzzle-version: '^7.0'
         - php-version: '8.1'
           guzzle-version: '^7.0'
+        - php-version: '8.2'
+          guzzle-version: '^7.0'
 
     steps:
     - uses: actions/checkout@v2
@@ -57,7 +59,7 @@ jobs:
       matrix:
         # TODO: we likely have to care about Guzzle's version too - ideally we'd
         #       check our use of Guzzle is correct on each version
-        php-version: ['7.1', '8.1']
+        php-version: ['7.1', '8.2']
         phpstan-version: ['~1.4']
 
     steps:
