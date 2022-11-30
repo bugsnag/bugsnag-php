@@ -920,7 +920,7 @@ class Report implements FeatureDataStore
      *
      * @return string
      */
-    private function enumToString(UnitEnum $enum)
+    private function enumToString($enum)
     {
         // e.g. My\Enum::SomeCase
         $string = sprintf('%s::%s', get_class($enum), $enum->name);
