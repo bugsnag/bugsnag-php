@@ -848,7 +848,7 @@ class Report implements FeatureDataStore
         }
 
         if (is_string($obj)) {
-            return (function_exists('mb_detect_encoding') && !mb_detect_encoding($obj, 'UTF-8', true)) ? utf8_encode($obj) : $obj;
+            return (function_exists('mb_detect_encoding') && !mb_detect_encoding($obj, 'UTF-8', true)) ? mb_convert_encoding($obj, 'UTF-8', 'ISO-8859-1') : $obj;
         }
 
         if (is_object($obj)) {
