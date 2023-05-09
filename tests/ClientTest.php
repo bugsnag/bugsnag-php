@@ -1419,7 +1419,7 @@ class ClientTest extends TestCase
             // U+FFFD (REPLACEMENT CHARACTER)
             $expectedReplacement = "\xef\xbf\xbd";
         } else {
-            $expectedReplacement = 'À';
+            $expectedReplacement = 'ﾀ';
         }
 
         $this->expectGuzzlePostWithCallback(

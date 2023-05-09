@@ -863,7 +863,7 @@ class Report implements FeatureDataStore
             // if we have the mbstring extension available, use that to detect
             // encodings and handle conversions to UTF-8
             if (function_exists('mb_check_encoding') && !mb_check_encoding($obj, 'UTF-8')) {
-                return mb_convert_encoding($obj, 'UTF-8', 'ISO-8859-1');
+                return mb_convert_encoding($obj, 'UTF-8', mb_list_encodings());
             }
 
             return $obj;
