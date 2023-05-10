@@ -1412,4 +1412,41 @@ class ClientTest extends TestCase
 
         $this->client->flush();
     }
+
+    public function testCanHandleInvalidUtf8InMetadata()
+    {
+        if (version_compare(PHP_VERSION, '7.2', '>=')) {
+            // U+FFFD (REPLACEMENT CHARACTER)
+            $expectedReplacement = "\xef\xbf\xbd";
+        } else {
+            $expectedReplacement = 'ﾀ';
+        }
+
+        $this->expectGuzzlePostWithCallback(
+            $this->client->getNotifyEndpoint(),
+            function ($options) use ($expectedReplacement) {
+                $payload = $this->getPayloadFromGuzzleOptions($options);
+
+                $expected = [
+                    'invalid UTF-8' => [
+                        'c0 is not valid as the first byte' => $expectedReplacement.'AAA',
+                    ],
+                ];
+
+                $this->assertSame($expected, $payload['events'][0]['metaData']);
+
+                return true;
+            }
+        );
+
+        $this->client->notifyException(new Exception('Something broke'), function ($report) {
+            $report->setMetaData([
+                'invalid UTF-8' => [
+                    'c0 is not valid as the first byte' => "\xc0AAA",
+                ],
+            ]);
+        });
+
+        $this->client->flush();
+    }
 }

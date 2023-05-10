@@ -1,6 +1,15 @@
 Changelog
 =========
 
+## 3.29.1 (2023-05-10)
+
+### Fixes
+
+* Avoid deprecated `utf8_encode` function
+  [gabrielrbarbosa](https://github.com/gabrielrbarbosa)
+  [#661](https://github.com/bugsnag/bugsnag-php/pull/661)
+  [#662](https://github.com/bugsnag/bugsnag-php/pull/662)
+
 ## 3.29.0 (2022-10-19)
 
 ### Enhancements
