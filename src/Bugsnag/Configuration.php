@@ -40,6 +40,7 @@ class Bugsnag_Configuration
     public $errorReportingLevel;
 
     public $curlOptions = array();
+    public $timeout;
 
     public $debug = false;
 

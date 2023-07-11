@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## TBD
+
+### Bug Fixes
+
+* Fix PHP 8.2 deprecation notice by adding missing `timeout` property to `Bugsnag_Configuration`
+  [#664](https://github.com/bugsnag/bugsnag-php/pull/664)
+
 ## 2.10.1 (2020-11-17)
 
 ### Bug Fixes
