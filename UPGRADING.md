@@ -8,7 +8,7 @@ Upgrading
 
 #### PHP 5.5+
 
-We now require PHP 5.5 or higher. If you're using an older version of PHP, you can still use v2. We will containue to maintain v2 along side v3. For more information, see the [legacy PHP integration guide](https://docs.bugsnag.com/platforms/php/other/legacy/).
+We now require PHP 5.5 or higher. If you're using an older version of PHP, you can still use v2. We will continue to maintain v2 along side v3. For more information, see the [legacy PHP integration guide](https://docs.bugsnag.com/platforms/php/other/legacy/).
 
 #### Namespaces
 
@@ -22,7 +22,7 @@ The method for setting the application type (`setType`) has also been removed in
 
 #### Configuration
 
-We've changed how our configuration system works. You can now build up our config object in a similar way to how you configured the client in v2, and then pass that as the first paramater when you construct the client object. In addition, we've removed some configuration options in favour of using our new notification pipeline system. Now you can register multiple callbacks to have maximum flexibility. We've also switched to using [Guzzle](http://guzzlephp.org), so you can change the base URI and proxy details by directly interacting with guzzle. For more information, see the [advanced configuration guide](https://docs.bugsnag.com/platforms/php/other/advanced-client-configuration).
+We've changed how our configuration system works. You can now build up our config object in a similar way to how you configured the client in v2, and then pass that as the first parameter when you construct the client object. In addition, we've removed some configuration options in favour of using our new notification pipeline system. Now you can register multiple callbacks to have maximum flexibility. We've also switched to using [Guzzle](http://guzzlephp.org), so you can change the base URI and proxy details by directly interacting with guzzle. For more information, see the [advanced configuration guide](https://docs.bugsnag.com/platforms/php/other/advanced-client-configuration).
 
 #### Customizing handled errors
 
