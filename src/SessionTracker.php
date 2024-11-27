@@ -116,7 +116,7 @@ class SessionTracker
      *                                is deprecated and $http will be required
      *                                in the next major version.
      */
-    public function __construct(Configuration $config, HttpClient $http = null)
+    public function __construct(Configuration $config, ?HttpClient $http = null)
     {
         $this->config = $config;
         $this->http = $http === null

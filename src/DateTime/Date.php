@@ -9,7 +9,7 @@ final class Date
     /**
      * @return string
      */
-    public static function now(ClockInterface $clock = null)
+    public static function now(?ClockInterface $clock = null)
     {
         if ($clock === null) {
             $clock = new Clock();

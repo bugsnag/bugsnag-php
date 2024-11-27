@@ -65,11 +65,6 @@ class ErrorTypes
             'severity' => 'info',
         ],
 
-        E_STRICT => [
-            'name' => 'PHP Strict',
-            'severity' => 'info',
-        ],
-
         E_RECOVERABLE_ERROR => [
             'name' => 'PHP Recoverable Error',
             'severity' => 'error',
@@ -204,9 +199,6 @@ class ErrorTypes
 
             case E_USER_NOTICE:
                 return 'E_USER_NOTICE';
-
-            case E_STRICT:
-                return 'E_STRICT';
 
             case E_RECOVERABLE_ERROR:
                 return 'E_RECOVERABLE_ERROR';

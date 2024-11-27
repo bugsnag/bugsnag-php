@@ -253,7 +253,7 @@ class Configuration implements FeatureDataStore
      *
      * @return $this
      */
-    public function setNotifyReleaseStages(array $notifyReleaseStages = null)
+    public function setNotifyReleaseStages(?array $notifyReleaseStages = null)
     {
         $this->notifyReleaseStages = $notifyReleaseStages;
 

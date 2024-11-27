@@ -50,7 +50,7 @@ class PhpRequest implements RequestInterface
      *
      * @return void
      */
-    public function __construct(array $server, array $session, array $cookies, array $headers, array $input = null)
+    public function __construct(array $server, array $session, array $cookies, array $headers, ?array $input = null)
     {
         $this->server = $server;
         $this->session = $session;
