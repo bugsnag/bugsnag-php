@@ -9,85 +9,106 @@ class ErrorTypes
      *
      * @var array[]
      */
-    protected static $ERROR_TYPES = [
-        E_ERROR => [
-            'name' => 'PHP Fatal Error',
-            'severity' => 'error',
-        ],
+    protected static $ERROR_TYPES;
 
-        E_WARNING => [
-            'name' => 'PHP Warning',
-            'severity' => 'warning',
-        ],
+    /**
+     * Static initializer to conditionally populate $ERROR_TYPES.
+     */
+    protected static function initializeErrorTypes()
+    {
+        static::$ERROR_TYPES = [
+            E_ERROR => [
+                'name' => 'PHP Fatal Error',
+                'severity' => 'error',
+            ],
 
-        E_PARSE => [
-            'name' => 'PHP Parse Error',
-            'severity' => 'error',
-        ],
+            E_WARNING => [
+                'name' => 'PHP Warning',
+                'severity' => 'warning',
+            ],
 
-        E_NOTICE => [
-            'name' => 'PHP Notice',
-            'severity' => 'info',
-        ],
+            E_PARSE => [
+                'name' => 'PHP Parse Error',
+                'severity' => 'error',
+            ],
 
-        E_CORE_ERROR => [
-            'name' => 'PHP Core Error',
-            'severity' => 'error',
-        ],
+            E_NOTICE => [
+                'name' => 'PHP Notice',
+                'severity' => 'info',
+            ],
 
-        E_CORE_WARNING => [
-            'name' => 'PHP Core Warning',
-            'severity' => 'warning',
-        ],
+            E_CORE_ERROR => [
+                'name' => 'PHP Core Error',
+                'severity' => 'error',
+            ],
 
-        E_COMPILE_ERROR => [
-            'name' => 'PHP Compile Error',
-            'severity' => 'error',
-        ],
+            E_CORE_WARNING => [
+                'name' => 'PHP Core Warning',
+                'severity' => 'warning',
+            ],
 
-        E_COMPILE_WARNING => [
-            'name' => 'PHP Compile Warning',
-            'severity' => 'warning',
-        ],
+            E_COMPILE_ERROR => [
+                'name' => 'PHP Compile Error',
+                'severity' => 'error',
+            ],
 
-        E_USER_ERROR => [
-            'name' => 'User Error',
-            'severity' => 'error',
-        ],
+            E_COMPILE_WARNING => [
+                'name' => 'PHP Compile Warning',
+                'severity' => 'warning',
+            ],
 
-        E_USER_WARNING => [
-            'name' => 'User Warning',
-            'severity' => 'warning',
-        ],
+            E_USER_ERROR => [
+                'name' => 'User Error',
+                'severity' => 'error',
+            ],
 
-        E_USER_NOTICE => [
-            'name' => 'User Notice',
-            'severity' => 'info',
-        ],
+            E_USER_WARNING => [
+                'name' => 'User Warning',
+                'severity' => 'warning',
+            ],
 
-            // E_STRICT has been depreciated in PHP 8.4.
-            // https://php.watch/versions/8.4/E_STRICT-deprecated
-            // Adding the property conditionally, to silence the deprecation warning.
-        (PHP_VERSION_ID < 80400 ? E_STRICT : null) => PHP_VERSION_ID < 80400 ? [
-            'name' => 'PHP Strict',
-            'severity' => 'info',
-        ] : null,
+            E_USER_NOTICE => [
+                'name' => 'User Notice',
+                'severity' => 'info',
+            ],
 
-        E_RECOVERABLE_ERROR => [
-            'name' => 'PHP Recoverable Error',
-            'severity' => 'error',
-        ],
+            E_RECOVERABLE_ERROR => [
+                'name' => 'PHP Recoverable Error',
+                'severity' => 'error',
+            ],
 
-        E_DEPRECATED => [
-            'name' => 'PHP Deprecated',
-            'severity' => 'info',
-        ],
+            E_DEPRECATED => [
+                'name' => 'PHP Deprecated',
+                'severity' => 'info',
+            ],
 
-        E_USER_DEPRECATED => [
-            'name' => 'User Deprecated',
-            'severity' => 'info',
-        ],
-    ];
+            E_USER_DEPRECATED => [
+                'name' => 'User Deprecated',
+                'severity' => 'info',
+            ],
+        ];
+
+        // Conditionally add E_STRICT if PHP version is below 8.4
+        // https://php.watch/versions/8.4/E_STRICT-deprecated
+        if (PHP_VERSION_ID < 80400) {
+            static::$ERROR_TYPES[E_STRICT] = [
+                'name' => 'PHP Strict',
+                'severity' => 'info',
+            ];
+        }
+    }
+
+    /**
+     * Get the error types map.
+     *
+     * @return array[]
+     */
+    protected static function getErrorTypes()
+    {
+        if (static::$ERROR_TYPES === null)
+            static::initializeErrorTypes();
+        return static::$ERROR_TYPES;
+    }
 
     /**
      * Is the given error code fatal?
@@ -110,8 +131,10 @@ class ErrorTypes
      */
     public static function getName($code)
     {
-        if (array_key_exists($code, static::$ERROR_TYPES)) {
-            return static::$ERROR_TYPES[$code]['name'];
+        $errorTypes = static::getErrorTypes();
+
+        if (array_key_exists($code, $errorTypes)) {
+            return $errorTypes[$code]['name'];
         }
 
         return 'Unknown';
@@ -126,15 +149,17 @@ class ErrorTypes
      */
     public static function getSeverity($code)
     {
-        if (array_key_exists($code, static::$ERROR_TYPES)) {
-            return static::$ERROR_TYPES[$code]['severity'];
+        $errorTypes = static::getErrorTypes();
+
+        if (array_key_exists($code, $errorTypes)) {
+            return $errorTypes[$code]['severity'];
         }
 
         return 'error';
     }
 
     /**
-     * Get the the levels for the given severity.
+     * Get the levels for the given severity.
      *
      * @param string $severity the given severity
      *
@@ -143,8 +168,9 @@ class ErrorTypes
     public static function getLevelsForSeverity($severity)
     {
         $levels = 0;
+        $errorTypes = static::getErrorTypes();
 
-        foreach (static::$ERROR_TYPES as $level => $info) {
+        foreach ($errorTypes as $level => $info) {
             if ($info['severity'] == $severity) {
                 $levels |= $level;
             }
@@ -160,7 +186,7 @@ class ErrorTypes
      */
     public static function getAllCodes()
     {
-        return array_keys(self::$ERROR_TYPES);
+        return array_keys(static::getErrorTypes());
     }
 
     /**
@@ -189,10 +215,14 @@ class ErrorTypes
             E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
             E_DEPRECATED => 'E_DEPRECATED',
             E_USER_DEPRECATED => 'E_USER_DEPRECATED',
-            (PHP_VERSION_ID < 80400 ? E_STRICT : null) => PHP_VERSION_ID < 80400 ? 'E_STRICT' : null,
         ];
+
+        // Conditionally add E_STRICT if PHP version is below 8.4
+        // https://php.watch/versions/8.4/E_STRICT-deprecated
+        if (PHP_VERSION_ID < 80400) {
+            $map[E_STRICT] = 'E_STRICT';
+        }
 
         return isset($map[$code]) ? $map[$code] : 'Unknown';
     }
-
 }
