@@ -13,6 +13,8 @@ class ErrorTypes
 
     /**
      * Static initializer to conditionally populate $ERROR_TYPES.
+     *
+     * @return void
      */
     protected static function initializeErrorTypes()
     {
