@@ -65,10 +65,13 @@ class ErrorTypes
             'severity' => 'info',
         ],
 
-        E_STRICT => [
+            // E_STRICT has been depreciated in PHP 8.4.
+            // https://php.watch/versions/8.4/E_STRICT-deprecated
+            // Adding the property conditionally, to silence the deprecation warning.
+        (PHP_VERSION_ID < 80400 ? E_STRICT : null) => PHP_VERSION_ID < 80400 ? [
             'name' => 'PHP Strict',
             'severity' => 'info',
-        ],
+        ] : null,
 
         E_RECOVERABLE_ERROR => [
             'name' => 'PHP Recoverable Error',
@@ -171,54 +174,25 @@ class ErrorTypes
      */
     public static function codeToString($code)
     {
-        switch ($code) {
-            case E_ERROR:
-                return 'E_ERROR';
+        $map = [
+            E_ERROR => 'E_ERROR',
+            E_WARNING => 'E_WARNING',
+            E_PARSE => 'E_PARSE',
+            E_NOTICE => 'E_NOTICE',
+            E_CORE_ERROR => 'E_CORE_ERROR',
+            E_CORE_WARNING => 'E_CORE_WARNING',
+            E_COMPILE_ERROR => 'E_COMPILE_ERROR',
+            E_COMPILE_WARNING => 'E_COMPILE_WARNING',
+            E_USER_ERROR => 'E_USER_ERROR',
+            E_USER_WARNING => 'E_USER_WARNING',
+            E_USER_NOTICE => 'E_USER_NOTICE',
+            E_RECOVERABLE_ERROR => 'E_RECOVERABLE_ERROR',
+            E_DEPRECATED => 'E_DEPRECATED',
+            E_USER_DEPRECATED => 'E_USER_DEPRECATED',
+            (PHP_VERSION_ID < 80400 ? E_STRICT : null) => PHP_VERSION_ID < 80400 ? 'E_STRICT' : null,
+        ];
 
-            case E_WARNING:
-                return 'E_WARNING';
-
-            case E_PARSE:
-                return 'E_PARSE';
-
-            case E_NOTICE:
-                return 'E_NOTICE';
-
-            case E_CORE_ERROR:
-                return 'E_CORE_ERROR';
-
-            case E_CORE_WARNING:
-                return 'E_CORE_WARNING';
-
-            case E_COMPILE_ERROR:
-                return 'E_COMPILE_ERROR';
-
-            case E_COMPILE_WARNING:
-                return 'E_COMPILE_WARNING';
-
-            case E_USER_ERROR:
-                return 'E_USER_ERROR';
-
-            case E_USER_WARNING:
-                return 'E_USER_WARNING';
-
-            case E_USER_NOTICE:
-                return 'E_USER_NOTICE';
-
-            case E_STRICT:
-                return 'E_STRICT';
-
-            case E_RECOVERABLE_ERROR:
-                return 'E_RECOVERABLE_ERROR';
-
-            case E_DEPRECATED:
-                return 'E_DEPRECATED';
-
-            case E_USER_DEPRECATED:
-                return 'E_USER_DEPRECATED';
-
-            default:
-                return 'Unknown';
-        }
+        return isset($map[$code]) ? $map[$code] : 'Unknown';
     }
+
 }
