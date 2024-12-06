@@ -23,6 +23,10 @@ jobs:
           guzzle-version: '^7.0'
         - php-version: '8.2'
           guzzle-version: '^7.0'
+        - php-version: '8.3'
+          guzzle-version: '^7.0'
+        - php-version: '8.4'
+          guzzle-version: '^7.9'
 
     steps:
     - uses: actions/checkout@v2

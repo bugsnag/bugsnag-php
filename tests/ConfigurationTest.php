@@ -46,7 +46,13 @@ class ConfigurationTest extends TestCase
 
     public function testShouldIgnore()
     {
-        $this->config->setErrorReportingLevel(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+        $reportingLevel = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
+
+        if (PHP_VERSION_ID < 80400) {
+            $reportingLevel &= ~E_STRICT;
+        }
+
+        $this->config->setErrorReportingLevel($reportingLevel);
 
         $this->assertTrue($this->config->shouldIgnoreErrorCode(E_NOTICE));
     }
@@ -55,7 +61,7 @@ class ConfigurationTest extends TestCase
     {
         $this->config->setErrorReportingLevel(E_ALL);
 
-        $this->assertfalse($this->config->shouldIgnoreErrorCode(E_NOTICE));
+        $this->assertFalse($this->config->shouldIgnoreErrorCode(E_NOTICE));
     }
 
     public function testRootPath()
@@ -98,7 +104,7 @@ class ConfigurationTest extends TestCase
     {
         $this->assertFalse($this->config->isInProject('/root/dir/app/afile.php'));
 
-        $this->config->setProjectRootRegex('/^('.preg_quote('/root/dir/app', '/').'|'.preg_quote('/root/dir/lib', '/').')[\\/]?/i');
+        $this->config->setProjectRootRegex('/^(' . preg_quote('/root/dir/app', '/') . '|' . preg_quote('/root/dir/lib', '/') . ')[\\/]?/i');
 
         $this->assertTrue($this->config->isInProject('/root/dir/app/afile.php'));
         $this->assertTrue($this->config->isInProject('/root/dir/lib/afile.php'));
@@ -106,7 +112,7 @@ class ConfigurationTest extends TestCase
         $this->assertFalse($this->config->isInProject('/root/dir/other-directory/afile.php'));
         $this->assertFalse($this->config->isInProject('/base/root/dir/app/afile.php'));
 
-        $this->config->setProjectRootRegex('/^('.preg_quote('/root/dir/app/', '/').'|'.preg_quote('/root/dir/lib/', '/').')[\\/]?/i');
+        $this->config->setProjectRootRegex('/^(' . preg_quote('/root/dir/app/', '/') . '|' . preg_quote('/root/dir/lib/', '/') . ')[\\/]?/i');
 
         $this->assertTrue($this->config->isInProject('/root/dir/app/afile.php'));
         $this->assertTrue($this->config->isInProject('/root/dir/lib/afile.php'));
@@ -117,7 +123,7 @@ class ConfigurationTest extends TestCase
 
     public function testRootPathRegexNull()
     {
-        $this->config->setProjectRootRegex('/^('.preg_quote('/root/dir/app', '/').'|'.preg_quote('/root/dir/lib', '/').')[\\/]?/i');
+        $this->config->setProjectRootRegex('/^(' . preg_quote('/root/dir/app', '/') . '|' . preg_quote('/root/dir/lib', '/') . ')[\\/]?/i');
         $this->config->setProjectRootRegex(null);
 
         $this->assertFalse($this->config->isInProject('/root/dir/app/afile.php'));
