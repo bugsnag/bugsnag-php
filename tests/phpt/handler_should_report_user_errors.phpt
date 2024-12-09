@@ -15,7 +15,7 @@ var_dump('I should not be reached');
 --SKIPIF--
 <?php
 if (PHP_VERSION_ID >= 80400) {
-    echo 'SKIP — this test uses methods depreciated in PHP 8.4+';
+    echo 'SKIP — this test uses methods deprecated in PHP 8.4+';
 }
 ?>
 --EXPECTF--
