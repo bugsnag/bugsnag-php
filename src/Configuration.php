@@ -253,7 +253,7 @@ class Configuration implements FeatureDataStore
      *
      * @return $this
      */
-    public function setNotifyReleaseStages(array $notifyReleaseStages = null)
+    public function setNotifyReleaseStages($notifyReleaseStages = null)
     {
         $this->notifyReleaseStages = $notifyReleaseStages;
 
@@ -313,7 +313,7 @@ class Configuration implements FeatureDataStore
      */
     public function setProjectRoot($projectRoot)
     {
-        $projectRootRegex = $projectRoot ? '/^'.preg_quote($projectRoot, '/').'[\\/]?/i' : null;
+        $projectRootRegex = $projectRoot ? '/^' . preg_quote($projectRoot, '/') . '[\\/]?/i' : null;
         $this->setProjectRootRegex($projectRootRegex);
     }
 
@@ -327,7 +327,7 @@ class Configuration implements FeatureDataStore
     public function setProjectRootRegex($projectRootRegex)
     {
         if ($projectRootRegex && @preg_match($projectRootRegex, '') === false) {
-            throw new InvalidArgumentException('Invalid project root regex: '.$projectRootRegex);
+            throw new InvalidArgumentException('Invalid project root regex: ' . $projectRootRegex);
         }
 
         $this->projectRootRegex = $projectRootRegex;
@@ -355,7 +355,7 @@ class Configuration implements FeatureDataStore
      */
     public function setStripPath($stripPath)
     {
-        $stripPathRegex = $stripPath ? '/^'.preg_quote($stripPath, '/').'[\\/]?/i' : null;
+        $stripPathRegex = $stripPath ? '/^' . preg_quote($stripPath, '/') . '[\\/]?/i' : null;
         $this->setStripPathRegex($stripPathRegex);
     }
 
@@ -369,7 +369,7 @@ class Configuration implements FeatureDataStore
     public function setStripPathRegex($stripPathRegex)
     {
         if ($stripPathRegex && @preg_match($stripPathRegex, '') === false) {
-            throw new InvalidArgumentException('Invalid strip path regex: '.$stripPathRegex);
+            throw new InvalidArgumentException('Invalid strip path regex: ' . $stripPathRegex);
         }
 
         $this->stripPathRegex = $stripPathRegex;
@@ -670,7 +670,7 @@ class Configuration implements FeatureDataStore
         if (!$this->isSubsetOfErrorReporting($errorReportingLevel)) {
             $missingLevels = implode(', ', $this->getMissingErrorLevelNames($errorReportingLevel));
             $message =
-                'Bugsnag Warning: errorReportingLevel cannot contain values that are not in error_reporting. '.
+                'Bugsnag Warning: errorReportingLevel cannot contain values that are not in error_reporting. ' .
                 "Any errors of these levels will be ignored: {$missingLevels}.";
 
             error_log($message);

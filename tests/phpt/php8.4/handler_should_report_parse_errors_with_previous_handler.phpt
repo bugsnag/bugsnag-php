@@ -17,17 +17,14 @@ var_dump('I should not be reached');
 ?>
 --SKIPIF--
 <?php
-if (PHP_MAJOR_VERSION !== 8) {
-    echo 'SKIP — this test has different output on PHP 5 & 7';
-}
-if (PHP_VERSION_ID >= 80400) {
-    echo 'SKIP — this test has different output on PHP 8.4+';
+if (PHP_VERSION_ID < 80400) {
+    echo 'SKIP — this test has different output on PHP <8.4';
 }
 ?>
 --EXPECTF--
 object(ParseError)#%d (7) {
   ["message":protected]=>
-  string(34) "syntax error, unexpected token "}""
+  string(34) "syntax error, unexpected token "{""
   ["string":"Error":private]=>
   string(0) ""
   ["code":protected]=>
@@ -43,9 +40,9 @@ object(ParseError)#%d (7) {
   NULL
 }
 
-Parse error: syntax error, unexpected token "}" in %s/parse_error.php on line 3
+Parse error: syntax error, unexpected token "{" in %s/parse_error.php on line 3
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
 * Events:
-    - syntax error, unexpected token "}"
+    - syntax error, unexpected token "{"
