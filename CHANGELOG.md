@@ -1,6 +1,20 @@
 Changelog
 =========
 
+## 3.29.2 (2025-01-XX)
+
+This release should ensure compatibility with PHP 8.4 by removing the usage of certain
+deprecated features by:
+- Removing `E_STRICT` from the error list in PHP 8.4+
+- Removing type annotations from parameters defaulting to `null`. Comment typal annotations
+will continue to be present and accurate
+
+### Fixes
+
+* Ensure PHP 8.4 compatibility
+  [#672](https://github.com/bugsnag/bugsnag-php/pull/672)
+
+
 ## 3.29.1 (2023-05-10)
 
 ### Fixes
