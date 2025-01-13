@@ -1,7 +1,7 @@
 Changelog
 =========
 
-## 3.29.2 (2025-01-XX)
+## 3.29.2 (2025-01-13)
 
 This release should ensure compatibility with PHP 8.4 by removing the usage of certain
 deprecated features by:
