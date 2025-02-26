@@ -117,6 +117,22 @@ class ReportTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $this->report->toArray()['user']);
     }
 
+    public function testUserDefaultFilters()
+    {
+        $this->report->setUser(['foo' => 'bar', 'password' => 'mypass', 'custom_field' => 'some data']);
+
+        $this->assertSame(['foo' => 'bar', 'password' => '[FILTERED]', 'custom_field' => 'some data'], $this->report->toArray()['user']);
+    }
+
+    public function testUserCustomFilters()
+    {
+        $this->config->setFilters(['custom_field']);
+
+        $this->report->setUser(['foo' => 'bar', 'password' => 'mypass', 'custom_field' => 'some data']);
+
+        $this->assertSame(['foo' => 'bar', 'password' => 'mypass', 'custom_field' => '[FILTERED]'], $this->report->toArray()['user']);
+    }
+
     public function testDefaultFilters()
     {
         $metadata = array_reduce(
