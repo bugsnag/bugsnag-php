@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.29.3 (2025-03-06)
+
+### Fixes
+
+* Redact user metadata according to redacted keys configuration
+  [#675](https://github.com/bugsnag/bugsnag-php/pull/675)
+
 ## 3.29.2 (2025-01-13)
 
 This release should ensure compatibility with PHP 8.4 by removing the usage of certain
