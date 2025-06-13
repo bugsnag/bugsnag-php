@@ -302,7 +302,7 @@ class ConfigurationTest extends TestCase
     {
         $expected = 'https://notify.bugsnag.com';
 
-        $this->assertSame($expected, $this->config->getSessionEndpoint());
+        $this->assertSame($expected, $this->config->getNotifyEndpoint());
     }
 
     public function testTheNotifyEndpointForHubHasASensibleDefault()
@@ -310,7 +310,7 @@ class ConfigurationTest extends TestCase
         $expected = 'https://notify.insighthub.smartbear.com';
         $this->config = new Configuration('00000123123123123');
 
-        $this->assertSame($expected, $this->config->getSessionEndpoint());
+        $this->assertSame($expected, $this->config->getNotifyEndpoint());
     }
 
     public function testTheSessionEndpointHasASensibleDefault()
@@ -332,7 +332,7 @@ class ConfigurationTest extends TestCase
     {
         $expected = 'https://build.bugsnag.com';
 
-        $this->assertSame($expected, $this->config->getSessionEndpoint());
+        $this->assertSame($expected, $this->config->getBuildEndpoint());
     }
 
     public function testTheBuildEndpointForHubHasASensibleDefault()
@@ -340,7 +340,7 @@ class ConfigurationTest extends TestCase
         $expected = 'https://build.insighthub.smartbear.com';
         $this->config = new Configuration('00000123123123123');
 
-        $this->assertSame($expected, $this->config->getSessionEndpoint());
+        $this->assertSame($expected, $this->config->getBuildEndpoint());
     }
 
     public function testTheSessionEndpointCanBeSetIfNecessary()
