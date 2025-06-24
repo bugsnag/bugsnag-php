@@ -298,11 +298,49 @@ class ConfigurationTest extends TestCase
         $this->assertTrue($this->config->shouldCaptureSessions());
     }
 
+    public function testTheNotifyEndpointHasASensibleDefault()
+    {
+        $expected = 'https://notify.bugsnag.com';
+
+        $this->assertSame($expected, $this->config->getNotifyEndpoint());
+    }
+
+    public function testTheNotifyEndpointForHubHasASensibleDefault()
+    {
+        $expected = 'https://notify.insighthub.smartbear.com';
+        $this->config = new Configuration('00000123123123123');
+
+        $this->assertSame($expected, $this->config->getNotifyEndpoint());
+    }
+
     public function testTheSessionEndpointHasASensibleDefault()
     {
         $expected = 'https://sessions.bugsnag.com';
 
         $this->assertSame($expected, $this->config->getSessionEndpoint());
+    }
+
+    public function testTheSessionEndpointForHubHasASensibleDefault()
+    {
+        $expected = 'https://sessions.insighthub.smartbear.com';
+        $this->config = new Configuration('00000123123123123');
+
+        $this->assertSame($expected, $this->config->getSessionEndpoint());
+    }
+
+    public function testTheBuildEndpointHasASensibleDefault()
+    {
+        $expected = 'https://build.bugsnag.com';
+
+        $this->assertSame($expected, $this->config->getBuildEndpoint());
+    }
+
+    public function testTheBuildEndpointForHubHasASensibleDefault()
+    {
+        $expected = 'https://build.insighthub.smartbear.com';
+        $this->config = new Configuration('00000123123123123');
+
+        $this->assertSame($expected, $this->config->getBuildEndpoint());
     }
 
     public function testTheSessionEndpointCanBeSetIfNecessary()
