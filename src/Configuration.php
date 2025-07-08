@@ -8,19 +8,34 @@ use InvalidArgumentException;
 class Configuration implements FeatureDataStore
 {
     /**
-     * The default endpoint for event notifications.
+     * The default endpoint for event notifications with Bugsnag.
      */
     const NOTIFY_ENDPOINT = 'https://notify.bugsnag.com';
 
     /**
-     * The default endpoint for session tracking.
+     * The default endpoint for session tracking with Bugsnag.
      */
     const SESSION_ENDPOINT = 'https://sessions.bugsnag.com';
 
     /**
-     * The default endpoint for build notifications.
+     * The default endpoint for build notifications with Bugsnag.
      */
     const BUILD_ENDPOINT = 'https://build.bugsnag.com';
+
+    /**
+     * The default endpoint for event notifications with InsightHub.
+     */
+    const HUB_NOTIFY_ENDPOINT = 'https://notify.insighthub.smartbear.com';
+
+    /**
+     * The default endpoint for session tracking with InsightHub.
+     */
+    const HUB_SESSION_ENDPOINT = 'https://sessions.insighthub.smartbear.com';
+
+    /**
+     * The default endpoint for build notifications with InsightHub.
+     */
+    const HUB_BUILD_ENDPOINT = 'https://build.insighthub.smartbear.com';
 
     /**
      * @var string
@@ -85,7 +100,7 @@ class Configuration implements FeatureDataStore
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.29.3',
+        'version' => '3.30.0',
         'url' => 'https://bugsnag.com',
     ];
 
@@ -150,17 +165,17 @@ class Configuration implements FeatureDataStore
     /**
      * @var string
      */
-    protected $notifyEndpoint = self::NOTIFY_ENDPOINT;
+    protected $notifyEndpoint;
 
     /**
      * @var string
      */
-    protected $sessionEndpoint = self::SESSION_ENDPOINT;
+    protected $sessionEndpoint;
 
     /**
      * @var string
      */
-    protected $buildEndpoint = self::BUILD_ENDPOINT;
+    protected $buildEndpoint;
 
     /**
      * The amount to increase the memory_limit to handle an OOM.
@@ -201,13 +216,34 @@ class Configuration implements FeatureDataStore
         if (!is_string($apiKey)) {
             throw new InvalidArgumentException('Invalid API key');
         }
-
         $this->apiKey = $apiKey;
+
+        if ($this->isHubApiKey()) {
+            $this->notifyEndpoint = self::HUB_NOTIFY_ENDPOINT;
+            $this->sessionEndpoint = self::HUB_SESSION_ENDPOINT;
+            $this->buildEndpoint = self::HUB_BUILD_ENDPOINT;
+        } else {
+            $this->notifyEndpoint = self::NOTIFY_ENDPOINT;
+            $this->sessionEndpoint = self::SESSION_ENDPOINT;
+            $this->buildEndpoint = self::BUILD_ENDPOINT;
+        }
+
         $this->fallbackType = php_sapi_name();
         $this->featureFlags = new FeatureFlagDelegate();
 
         // Add PHP runtime version to device data
         $this->mergeDeviceData(['runtimeVersions' => ['php' => phpversion()]]);
+    }
+
+    /**
+     * Checks if the API Key is associated with the InsightHub instance.
+     *
+     * @return bool
+     */
+    public function isHubApiKey()
+    {
+        // Does the API key start with 00000
+        return strpos($this->apiKey, '00000') === 0;
     }
 
     /**

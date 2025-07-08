@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.30.0 (2025-07-08)
+
+### Enhancements
+
+* Set default endpoints based on API key
+  [#679](https://github.com/bugsnag/bugsnag-php/pull/679)
+
 ## 3.29.3 (2025-03-06)
 
 ### Fixes
