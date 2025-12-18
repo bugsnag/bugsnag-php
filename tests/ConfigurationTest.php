@@ -305,9 +305,9 @@ class ConfigurationTest extends TestCase
         $this->assertSame($expected, $this->config->getNotifyEndpoint());
     }
 
-    public function testTheNotifyEndpointForHubHasASensibleDefault()
+    public function testTheSecondaryNotifyEndpointHasASensibleDefault()
     {
-        $expected = 'https://notify.insighthub.smartbear.com';
+        $expected = 'https://notify.bugsnag.smartbear.com';
         $this->config = new Configuration('00000123123123123');
 
         $this->assertSame($expected, $this->config->getNotifyEndpoint());
@@ -320,9 +320,9 @@ class ConfigurationTest extends TestCase
         $this->assertSame($expected, $this->config->getSessionEndpoint());
     }
 
-    public function testTheSessionEndpointForHubHasASensibleDefault()
+    public function testTheSecondarySessionEndpointHasASensibleDefault()
     {
-        $expected = 'https://sessions.insighthub.smartbear.com';
+        $expected = 'https://sessions.bugsnag.smartbear.com';
         $this->config = new Configuration('00000123123123123');
 
         $this->assertSame($expected, $this->config->getSessionEndpoint());
@@ -335,9 +335,9 @@ class ConfigurationTest extends TestCase
         $this->assertSame($expected, $this->config->getBuildEndpoint());
     }
 
-    public function testTheBuildEndpointForHubHasASensibleDefault()
+    public function testTheSecondaryBuildEndpointHasASensibleDefault()
     {
-        $expected = 'https://build.insighthub.smartbear.com';
+        $expected = 'https://build.bugsnag.smartbear.com';
         $this->config = new Configuration('00000123123123123');
 
         $this->assertSame($expected, $this->config->getBuildEndpoint());
