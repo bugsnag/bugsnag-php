@@ -6,7 +6,7 @@ Changelog
 ### Changes
 
 * Amend secondary instance URL to bugsnag.smartbear.com.
-  [#680](https://github.com/bugsnag/bugsnag-php/pull/680)
+  [#681](https://github.com/bugsnag/bugsnag-php/pull/681)
 
 ## 3.30.0 (2025-07-08)
 
