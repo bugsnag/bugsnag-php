@@ -25,9 +25,10 @@ jobs:
           guzzle-version: '^7.0'
         - php-version: '8.3'
           guzzle-version: '^7.0'
-        # PHP 8.4 skipped pending PLAT-14402
-        #- php-version: '8.4'
-        #  guzzle-version: '^7.9'
+        - php-version: '8.4'
+          guzzle-version: '^7.9'
+        - php-version: '8.5'
+          guzzle-version: '^7.10'
 
     steps:
     - uses: actions/checkout@v2

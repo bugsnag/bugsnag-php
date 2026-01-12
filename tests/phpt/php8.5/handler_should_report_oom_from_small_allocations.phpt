@@ -3,7 +3,7 @@ Bugsnag\Handler should report OOMs triggered by many small allocations
 --FILE--
 <?php
 
-$client = require __DIR__ . '/_prelude.php';
+$client = require __DIR__ . '/../_prelude.php';
 
 $handler = Bugsnag\Handler::register($client);
 
@@ -22,15 +22,14 @@ echo "No OOM!\n";
 ?>
 --SKIPIF--
 <?php
-if (PHP_MAJOR_VERSION < 7) {
-    echo "SKIP - PHP 5 does not run OOM in this test";
-}
-if (PHP_VERSION_ID >= 80500) {
-    echo 'SKIP — this test has a different output in PHP 8.5+';
+if (PHP_VERSION_ID < 80500) {
+    echo 'SKIP — this case is already tested in PHP <8.5';
 }
 ?>
 --EXPECTF--
 Fatal error: Allowed memory size of %d bytes exhausted (tried to allocate %d bytes) in %s on line %d
+Stack trace:
+#0 {main}
 Guzzle request made (1 event)!
 * Method: 'POST'
 * URI: 'http://localhost/notify'
