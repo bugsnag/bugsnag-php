@@ -2,7 +2,7 @@
 Bugsnag\Handler should increase the memory limit by the configured amount when an OOM happens
 --FILE--
 <?php
-$client = require __DIR__ . '/_prelude.php';
+$client = require __DIR__ . '/../_prelude.php';
 $client->setMemoryLimitIncrease(1024 * 1024 * 10);
 
 Bugsnag\Handler::register($client);
@@ -20,14 +20,17 @@ echo "No OOM!\n";
 ?>
 --SKIPIF--
 <?php
-if (PHP_VERSION_ID >= 80500) {
-    echo 'SKIP — this test has a different output in PHP 8.5+';
+if (PHP_VERSION_ID < 80500) {
+    echo 'SKIP — this case is already tested in PHP <8.5';
 }
 ?>
 --EXPECTF--
 string(7) "5242880"
 
 Fatal error: Allowed memory size of %d bytes exhausted (tried to allocate %d bytes) in %s on line 14
+Stack trace:
+#0 Standard input code(14): str_repeat('a', 2147483647)
+#1 {main}
 string(8) "15728640"
 Guzzle request made (1 event)!
 * Method: 'POST'
