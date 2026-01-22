@@ -6,3 +6,5 @@ vendor
 .phpunit.result.cache
 decisions.yml
 phpstan.neon
+bugsnag-php.iml
+bugsnag.phar

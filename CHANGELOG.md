@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.30.1 (2026-01-22)
+
+### Changes
+
+* Amend secondary instance URL to bugsnag.smartbear.com.
+  [#681](https://github.com/bugsnag/bugsnag-php/pull/681)
+
 ## 3.30.0 (2025-07-08)
 
 ### Enhancements

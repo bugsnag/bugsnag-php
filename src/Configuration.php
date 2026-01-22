@@ -23,19 +23,19 @@ class Configuration implements FeatureDataStore
     const BUILD_ENDPOINT = 'https://build.bugsnag.com';
 
     /**
-     * The default endpoint for event notifications with InsightHub.
+     * The secondary instance endpoint for event notifications.
      */
-    const HUB_NOTIFY_ENDPOINT = 'https://notify.insighthub.smartbear.com';
+    const SECONDARY_NOTIFY_ENDPOINT = 'https://notify.bugsnag.smartbear.com';
 
     /**
-     * The default endpoint for session tracking with InsightHub.
+     * The secondary instance endpoint for session tracking.
      */
-    const HUB_SESSION_ENDPOINT = 'https://sessions.insighthub.smartbear.com';
+    const SECONDARY_SESSION_ENDPOINT = 'https://sessions.bugsnag.smartbear.com';
 
     /**
-     * The default endpoint for build notifications with InsightHub.
+     * The secondary instance endpoint for build notifications.
      */
-    const HUB_BUILD_ENDPOINT = 'https://build.insighthub.smartbear.com';
+    const SECONDARY_BUILD_ENDPOINT = 'https://build.bugsnag.smartbear.com';
 
     /**
      * @var string
@@ -100,7 +100,7 @@ class Configuration implements FeatureDataStore
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.30.0',
+        'version' => '3.30.1',
         'url' => 'https://bugsnag.com',
     ];
 
@@ -218,10 +218,10 @@ class Configuration implements FeatureDataStore
         }
         $this->apiKey = $apiKey;
 
-        if ($this->isHubApiKey()) {
-            $this->notifyEndpoint = self::HUB_NOTIFY_ENDPOINT;
-            $this->sessionEndpoint = self::HUB_SESSION_ENDPOINT;
-            $this->buildEndpoint = self::HUB_BUILD_ENDPOINT;
+        if ($this->isSecondaryApiKey()) {
+            $this->notifyEndpoint = self::SECONDARY_NOTIFY_ENDPOINT;
+            $this->sessionEndpoint = self::SECONDARY_SESSION_ENDPOINT;
+            $this->buildEndpoint = self::SECONDARY_BUILD_ENDPOINT;
         } else {
             $this->notifyEndpoint = self::NOTIFY_ENDPOINT;
             $this->sessionEndpoint = self::SESSION_ENDPOINT;
@@ -236,11 +236,11 @@ class Configuration implements FeatureDataStore
     }
 
     /**
-     * Checks if the API Key is associated with the InsightHub instance.
+     * Checks if the API Key is associated with the secondary instance.
      *
      * @return bool
      */
-    public function isHubApiKey()
+    public function isSecondaryApiKey()
     {
         // Does the API key start with 00000
         return strpos($this->apiKey, '00000') === 0;

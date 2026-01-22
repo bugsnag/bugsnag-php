@@ -200,7 +200,9 @@ class RequestTest extends TestCase
 
         $method = (new ReflectionClass($request))->getMethod('getCurrentUrl');
 
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) { // No effect since 8.1, deprecated in 8.5
+            $method->setAccessible(true);
+        }
 
         $this->assertSame('http://example.com/blah/blah.php?some=param', $method->invoke($request));
     }
@@ -211,7 +213,9 @@ class RequestTest extends TestCase
 
         $method = (new ReflectionClass($request))->getMethod('getRequestIp');
 
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) { // No effect since 8.1, deprecated in 8.5
+            $method->setAccessible(true);
+        }
 
         $this->assertSame('123.45.67.8', $method->invoke($request));
     }
