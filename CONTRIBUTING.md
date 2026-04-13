@@ -20,16 +20,12 @@ Test the notifier by running the application locally.
 Releasing
 =========
 
-1. Commit all outstanding changes
-2. Bump the version in `src/Configuration.php`.
-3. Update the CHANGELOG.md, and README if appropriate.
-4. Check out a new branch and commit your changes
-5. Open a pull request for the release
-6. Once merged, pull the latest changes and then tag the release:
-    ```
-    git tag v3.x.x
-    git push --tags
-    ```
-7. Build a new phar package by running `make package` and attach it to the GitHub release.
-8. Ensure `utility/bugsnag-prepend.php` works with the example php project and attach it to the Github release.
-9. Update the setup guides for PHP (and its frameworks) with any new content.
+1. Merge all outstanding PRs to go into the release.
+1. Create a new release branch from `next`, named in the format `release/v1.x.x`.
+1. Bump the version in `src/Configuration.php`.
+1. Update the CHANGELOG.md, and README if appropriate.
+1. Open a pull request into `master` and get it approved.
+1. Merge the pull request using a message of the form "Release v1.x.x".
+1. Pull the latest `master` branch locally.
+1. Build a new phar package by running `make package`. 
+1. Create a new release on GitHub, attaching the phar.
