@@ -10,6 +10,14 @@
         "email": "notifiers@bugsnag.com",
         "homepage": "https://bugsnag.com"
     }],
+    "config": {
+        "audit": {
+            "ignore": [
+                "PKSA-z3gr-8qht-p93v",
+                "PKSA-w57n-mhp6-c9sd"
+            ]
+        }
+    },
     "require": {
         "php": ">=5.5",
         "composer/ca-bundle": "^1.0",
