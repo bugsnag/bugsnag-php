@@ -11,6 +11,7 @@
         "homepage": "https://bugsnag.com"
     }],
     "config": {
+        "_comment": "Audit ignores are required for older Guzzle versions (5.x/6.x) to run PHPUnit tests on PHP 5.5-7.2",
         "audit": {
             "ignore": [
                 "PKSA-z3gr-8qht-p93v",
