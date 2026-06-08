@@ -1,10 +1,63 @@
+# Build artifacts
 /build
-vendor
+bugsnag.phar
+
+# Composer
+vendor/
 /composer.lock
 /composer.phar
-/.idea
+auth.json
+
+# PHPUnit
 .phpunit.result.cache
-decisions.yml
+.phpunit.cache/
+coverage/
+clover.xml
+coverage.xml
+junit.xml
+
+# PHPStan
 phpstan.neon
+
+# PHP-CS-Fixer / PHP CodeSniffer
+.php-cs-fixer.cache
+.php_cs.cache
+.phpcs-cache
+
+# IDE / Editor
+/.idea
+/.vscode
 bugsnag-php.iml
-bugsnag.phar
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.bak
+*.orig
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+.php-version
+
+# Project-specific
+decisions.yml
+*.log
+
+# Security tools
+.gitleaks.toml
+.pre-commit-config.yaml
+.gitleaks-baseline.json
+
+# Docker
+docker-compose.override.yml
+
+# Certificates (if any)
+*.pem
+*.crt
