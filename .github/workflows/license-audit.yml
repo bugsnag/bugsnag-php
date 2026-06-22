@@ -10,7 +10,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: install PHP
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@2.37.1
       with:
         php-version: '8.2'
         coverage: none
