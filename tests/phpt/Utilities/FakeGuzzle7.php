@@ -10,7 +10,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * A Guzzle 7 compatible implementation of ClientInterface for use in PHPT tests.
+ * A Guzzle 7 and 8 compatible implementation of ClientInterface for use in PHPT tests.
  *
  * This should never be used directly; use 'FakeGuzzle' instead!
  */
