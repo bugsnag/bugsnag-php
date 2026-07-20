@@ -11,11 +11,13 @@
         "homepage": "https://bugsnag.com"
     }],
     "config": {
-        "_comment": "Audit ignores are required for older Guzzle versions (5.x/6.x) to run PHPUnit tests on PHP 5.5-7.2",
+        "_comment": "Audit ignores are required for older Guzzle versions (5.x/6.x) to run PHPUnit tests on PHP 5.5-7.2, and for guzzlehttp/psr7 1.x (CVE-2026-49214, CVE-2026-48998) which cannot be upgraded on PHP <7.2.5",
         "audit": {
             "ignore": [
                 "PKSA-z3gr-8qht-p93v",
-                "PKSA-w57n-mhp6-c9sd"
+                "PKSA-w57n-mhp6-c9sd",
+                "PKSA-gm5x-j3mz-71n9",
+                "PKSA-jj5t-2zs1-dcfm"
             ]
         }
     },
