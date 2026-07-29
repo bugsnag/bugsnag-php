@@ -43,7 +43,7 @@ final class GuzzleCompat
      *
      * @param GuzzleHttp\ClientInterface $guzzle
      *
-     * @return mixed|null
+     * @return mixed
      */
     public static function getBaseUri(GuzzleHttp\ClientInterface $guzzle)
     {
