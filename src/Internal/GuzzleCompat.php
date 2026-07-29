@@ -37,16 +37,26 @@ final class GuzzleCompat
     /**
      * Get the base URL/URI, which depends on the Guzzle version.
      *
+     * Returns null when using Guzzle 8+ and the provided ClientInterface
+     * implementation does not expose a `getConfig()` method (which was removed
+     * from the interface in Guzzle 8).
+     *
      * @param GuzzleHttp\ClientInterface $guzzle
      *
      * @return mixed
      */
     public static function getBaseUri(GuzzleHttp\ClientInterface $guzzle)
     {
-        // TODO: validate this by running PHPStan with Guzzle 5
-        return self::isUsingGuzzle5()
-            ? $guzzle->getBaseUrl() // @phpstan-ignore-line
-            : $guzzle->getConfig(self::getBaseUriOptionName());
+        if (self::isUsingGuzzle5()) {
+            // TODO: validate this by running PHPStan with Guzzle 5
+            return $guzzle->getBaseUrl(); // @phpstan-ignore-line
+        }
+
+        // Guzzle 8 removed 'getConfig' from ClientInterface, but it still
+        // exists on the concrete Client class
+        return method_exists($guzzle, 'getConfig')
+            ? $guzzle->getConfig(self::getBaseUriOptionName())
+            : null;
     }
 
     /**

@@ -18,6 +18,9 @@ $fakeGuzzleMapping = [
     5 => FakeGuzzle5::class,
     6 => FakeGuzzle6::class,
     7 => FakeGuzzle7::class,
+    // the Guzzle 7 implementation also satisfies Guzzle 8's ClientInterface,
+    // which is the same as Guzzle 7's but without 'getConfig'
+    8 => FakeGuzzle7::class,
 ];
 
 // Parse a version number like '1.0.0' into the major version only (1)
