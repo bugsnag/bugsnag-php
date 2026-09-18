@@ -35,7 +35,7 @@ return [
             'strict' => true,
 
             /*
-             * If enabled, the profiler tries to flush the content before the it starts collecting data. This option
+             * If enabled, the profiler tries to flush the content before it starts collecting data. This option
              * will be ignored if the Toolbar is enabled.
              *
              * Note: The flush listener listens to the MvcEvent::EVENT_FINISH event with a priority of -9400. You have
@@ -56,7 +56,7 @@ return [
             'cache_dir' => 'data/cache',
 
             /*
-             * If a matches is defined, the profiler will be disabled if the request does not match the pattern.
+             * If a match is defined, the profiler will be disabled if the request does not match the pattern.
              *
              * Example: 'matcher' => array('ip' => '127.0.0.1')
              * OR
@@ -143,7 +143,7 @@ return [
             'version_check' => false,
 
             /*
-             * Contains a list with all collector toolbar templates. The name  of the array key must be same as the name
+             * Contains a list with all collector toolbar templates. The name  of the array key must be the same as the name
              * of the collector.
              *
              * Example: 'profiler' => array(

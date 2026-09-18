@@ -84,7 +84,7 @@ class Stacktrace
         // @phpstan-ignore-next-line
         $stacktrace = new static($config);
 
-        // PHP backtrace's are misaligned, we need to shift the file/line down a frame
+        // PHP backtraces are misaligned, we need to shift the file/line down a frame
         foreach ($backtrace as $frame) {
             if (!static::frameInsideBugsnag($frame)) {
                 $stacktrace->addFrame(
