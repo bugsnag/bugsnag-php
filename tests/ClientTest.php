@@ -685,6 +685,21 @@ class ClientTest extends TestCase
         $this->client->flush();
     }
 
+    public function testClientCanBeGarbageCollected()
+    {
+        if (!class_exists('WeakReference')) {
+            $this->markTestSkipped('WeakReference requires PHP 7.4+');
+        }
+
+        $client = new Client($this->config, null, $this->guzzle);
+        $reference = \WeakReference::create($client);
+
+        unset($client);
+        gc_collect_cycles();
+
+        $this->assertNull($reference->get());
+    }
+
     public function testDeployWorksOutOfTheBox()
     {
         $this->expectGuzzlePostWith(
