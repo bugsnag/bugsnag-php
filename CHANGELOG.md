@@ -1,6 +1,12 @@
 Changelog
 =========
 
+## TBD
+
+### Fixes
+
+* Allow `Client` instances to be garbage collected. On PHP 7.4+ the shutdown function holds the client weakly and keeps only its HTTP client, so queued events are still sent at shutdown.
+
 ## 3.30.1 (2026-01-22)
 
 ### Changes

@@ -457,6 +457,16 @@ class Client implements FeatureDataStore
     }
 
     /**
+     * Get the http client instance.
+     *
+     * @return \Bugsnag\HttpClient
+     */
+    public function getHttpClient()
+    {
+        return $this->http;
+    }
+
+    /**
      * Returns the session tracker.
      *
      * @return \Bugsnag\SessionTracker
