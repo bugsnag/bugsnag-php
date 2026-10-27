@@ -237,7 +237,7 @@ class Stacktrace
             $code = [];
 
             $file->seek($bounds[0] - 1);
-            while ($file->key() < $bounds[1]) {
+            while (!$file->eof() && $file->key() < $bounds[1]) {
                 $code[$file->key() + 1] = rtrim(substr($file->current(), 0, static::MAX_LENGTH));
                 $file->next();
             }
