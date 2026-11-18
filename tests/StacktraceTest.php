@@ -4,6 +4,7 @@ namespace Bugsnag\Tests;
 
 use Bugsnag\Configuration;
 use Bugsnag\Stacktrace;
+use Bugsnag\Tests\Fakes\StacktraceWithBoundsPastEof;
 
 class StacktraceTest extends TestCase
 {
@@ -246,6 +247,23 @@ class StacktraceTest extends TestCase
 
         for ($i = 16; $i <= 20; $i++) {
             $this->assertCodeEquals($fileContents[$i - 1], $topFrame['code'][$i]);
+        }
+    }
+
+    public function testCodeStopsReadingAtEndOfFile()
+    {
+        // Bounds extend well past the end of the file; reading must stop at EOF
+        // rather than looping forever or padding with phantom lines
+        $fileContents = explode("\n", $this->getFixture('code/File.php'));
+        $stacktrace = StacktraceWithBoundsPastEof::fromFrame($this->config, $this->getFixturePath('code/File.php'), 17)->toArray();
+        $this->assertCount(1, $stacktrace);
+
+        $code = $stacktrace[0]['code'];
+        $this->assertSame(17, min(array_keys($code)));
+        $this->assertLessThanOrEqual(count($fileContents), max(array_keys($code)));
+
+        for ($i = 17; $i <= 19; $i++) {
+            $this->assertCodeEquals($fileContents[$i - 1], $code[$i]);
         }
     }
 

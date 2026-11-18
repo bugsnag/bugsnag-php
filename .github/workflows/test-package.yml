@@ -8,11 +8,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['5.5', '5.6', '7.0', '7.1', '7.2', '7.3', '7.4']
+        # Guzzle 5.x, 6.x and <7.15.2 have no release free of security
+        # advisories, and setup-php installs Composer 2.9+ on PHP 7.2+, which
+        # refuses to install them. PHP 7.2+ is therefore tested against
+        # Guzzle 7 only; Guzzle 5 & 6 remain covered on PHP 5.5-7.1
+        php-version: ['5.5', '5.6', '7.0', '7.1']
         guzzle-version: ['^5.3', '^6.0']
         include:
         - php-version: '7.2'
-          guzzle-version: '<7.3'
+          guzzle-version: '^7.0'
         - php-version: '7.3'
           guzzle-version: '^7.0'
         - php-version: '7.4'
