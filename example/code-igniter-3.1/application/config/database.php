@@ -15,7 +15,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | EXPLANATION OF VARIABLES
 | -------------------------------------------------------------------
 |
-|	['dsn']      The full DSN string describe a connection to the database.
+|	['dsn']      The full DSN string describes a connection to the database.
 |	['hostname'] The hostname of your database server.
 |	['username'] The username used to connect to the database
 |	['password'] The password used to connect to the database
@@ -25,7 +25,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |				 cubrid, ibase, mssql, mysql, mysqli, oci8,
 |				 odbc, pdo, postgre, sqlite, sqlite3, sqlsrv
 |	['dbprefix'] You can add an optional prefix, which will be added
-|				 to the table name when using the  Query Builder class
+|				 to the table name when using the Query Builder class
 |	['pconnect'] TRUE/FALSE - Whether to use a persistent connection
 |	['db_debug'] TRUE/FALSE - Whether database errors should be displayed.
 |	['cache_on'] TRUE/FALSE - Enables/disables query caching
@@ -48,15 +48,15 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |				'ssl_key'    - Path to the private key file
 |				'ssl_cert'   - Path to the public key certificate file
 |				'ssl_ca'     - Path to the certificate authority file
-|				'ssl_capath' - Path to a directory containing trusted CA certificats in PEM format
+|				'ssl_capath' - Path to a directory containing trusted CA certificates in PEM format
 |				'ssl_cipher' - List of *allowed* ciphers to be used for the encryption, separated by colons (':')
-|				'ssl_verify' - TRUE/FALSE; Whether verify the server certificate or not ('mysqli' only)
+|				'ssl_verify' - TRUE/FALSE; Whether to verify the server certificate or not ('mysqli' only)
 |
 |	['compress'] Whether or not to use client compression (MySQL only)
 |	['stricton'] TRUE/FALSE - forces 'Strict Mode' connections
 |							- good for ensuring strict SQL while developing
 |	['ssl_options']	Used to set various SSL options that can be used when making SSL connections.
-|	['failover'] array - A array with 0 or more data for connections if the main should fail.
+|	['failover'] array - An array with 0 or more data for connections if the main should fail.
 |	['save_queries'] TRUE/FALSE - Whether to "save" all executed queries.
 | 				NOTE: Disabling this will also effectively disable both
 | 				$this->db->last_query() and profiling of DB queries.
@@ -68,7 +68,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | The $active_group variable lets you choose which connection group to
 | make active.  By default there is only one group (the 'default' group).
 |
-| The $query_builder variables lets you determine whether or not to load
+| The $query_builder variable lets you determine whether or not to load
 | the query builder class.
 */
 $active_group = 'default';

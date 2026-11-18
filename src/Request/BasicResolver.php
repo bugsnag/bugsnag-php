@@ -37,7 +37,7 @@ class BasicResolver implements ResolverInterface
     /**
      * Get the request headers.
      *
-     * Note how we're caching this result for ever, across all instances.
+     * Note how we're caching this result forever, across all instances.
      *
      * This is because PHP is natively only designed to process one request,
      * then shutdown. Some applications can be designed to handle multiple
@@ -78,7 +78,7 @@ class BasicResolver implements ResolverInterface
     /**
      * Get the input params.
      *
-     * Note how we're caching this result for ever, across all instances.
+     * Note how we're caching this result forever, across all instances.
      *
      * This is because the input stream can only be read once on PHP 5.5, and
      * PHP is natively only designed to process one request, then shutdown.
