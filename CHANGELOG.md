@@ -1,6 +1,13 @@
 Changelog
 =========
 
+## 3.31.0 (2026-07-29)
+
+### Enhancements
+
+* Add support for Guzzle 8
+  [#696](https://github.com/bugsnag/bugsnag-php/pull/696)
+
 ## 3.30.1 (2026-01-22)
 
 ### Changes

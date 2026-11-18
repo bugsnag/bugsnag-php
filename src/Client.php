@@ -250,7 +250,7 @@ class Client implements FeatureDataStore
     }
 
     /**
-     * Regsier a new notification callback.
+     * Register a new notification callback.
      *
      * @param callable $callback
      *
@@ -264,7 +264,7 @@ class Client implements FeatureDataStore
     }
 
     /**
-     * Regsier all our default callbacks.
+     * Register all our default callbacks.
      *
      * @return $this
      */
