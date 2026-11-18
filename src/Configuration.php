@@ -100,7 +100,7 @@ class Configuration implements FeatureDataStore
      */
     protected $notifier = [
         'name' => 'Bugsnag PHP (Official)',
-        'version' => '3.31.0',
+        'version' => '3.32.0',
         'url' => 'https://bugsnag.com',
     ];
 
